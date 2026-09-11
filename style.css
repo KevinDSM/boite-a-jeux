@@ -37,7 +37,7 @@ body{margin:0;background:radial-gradient(120% 80% at 50% -10%,#2a2140 0%,var(--b
 @keyframes screen-in{from{opacity:0;transform:translateY(12px)}}
 
 /* ---------- typographie ---------- */
-h1{font-family:var(--font-d);font-weight:800;font-size:clamp(56px,18vw,88px);line-height:.86;letter-spacing:-.03em;margin:0;color:var(--ink)}
+h1{font-family:var(--font-d);font-weight:800;font-size:clamp(40px,12.5vw,66px);line-height:.95;letter-spacing:-.03em;margin:0;color:var(--ink)}
 .hero.small h1{font-size:clamp(40px,12vw,64px);line-height:.95}
 .tagline{color:var(--ink2);font-size:17px;margin:6px 0 0;max-width:30ch}
 .tagline em{font-style:normal;color:var(--acc2);font-family:var(--font-d);font-weight:700}

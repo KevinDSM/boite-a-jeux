@@ -17,6 +17,15 @@ Village People | Y.M.C.A.
 Michel Sardou | Les lacs du Connemara
 Dalida | Laissez-moi danser
 Johnny Hallyday | Allumer le feu
+Nino Ferrer | Le Sud
+Georges Brassens | Les copains d'abord
+Michel Fugain | Une belle histoire
+Claude Nougaro | Toulouse
+Louis Armstrong | What a Wonderful World
+The Beach Boys | Good Vibrations
+Simon & Garfunkel | The Sound of Silence
+Léo Ferré | Avec le temps
+Frank Sinatra | My Way
 # Années 80
 Michael Jackson | Billie Jean
 Indochine | L'aventurier
@@ -39,6 +48,16 @@ Francis Cabrel | Je l'aime à mourir
 Rick Astley | Never Gonna Give You Up
 Toto | Africa
 Desireless | Voyage voyage
+Michael Jackson | Thriller
+Prince | Purple Rain
+Queen | Another One Bites the Dust
+Michael Sembello | Maniac
+Renaud | Mistral gagnant
+Jean-Jacques Goldman | Je te donne
+Images | Les démons de minuit
+Gold | Plus près des étoiles
+Kool & The Gang | Celebration
+Lio | Banana Split
 # Années 90
 Nirvana | Smells Like Teen Spirit
 MC Solaar | Caroline
@@ -60,6 +79,16 @@ Haddaway | What Is Love
 Whigfield | Saturday Night
 Ace of Base | All That She Wants
 Pascal Obispo | Lucie
+Nirvana | Come As You Are
+Ophélie Winter | Dieu m'a donné la foi
+Pascal Obispo | Tombé pour elle
+Florent Pagny | Savoir aimer
+Snap! | Rhythm Is a Dancer
+Dr. Alban | It's My Life
+Scatman John | Scatman
+Alliage | Baila
+Doc Gynéco | Nirvana
+Cerrone | Supernature
 # Années 2000
 Daft Punk | One More Time
 Stromae | Alors on danse
@@ -83,6 +112,16 @@ Tokio Hotel | Durch den Monsun
 Black Eyed Peas | I Gotta Feeling
 Lady Gaga | Poker Face
 Sean Paul | Get Busy
+Corneille | Parce qu'on vient de loin
+Superbus | Butterfly
+M. Pokora | Elle me contrôle
+Vitaa & Diam's | Confessions nocturnes
+Zazie | Je suis un homme
+Nelly Furtado | Promiscuous
+Justin Timberlake | SexyBack
+Katy Perry | I Kissed a Girl
+Gwen Stefani | Hollaback Girl
+Kesha | Tik Tok
 # Années 2010
 Adele | Rolling in the Deep
 GIMS | Bella
@@ -108,6 +147,16 @@ Nekfeu | On verra
 Christine and the Queens | Christine
 Dua Lipa | New Rules
 Louane | Avenir
+Stromae | Papaoutai
+Fréro Delavega | Le chant des sirènes
+Julien Doré | Le lac
+Christine and the Queens | Saint Claude
+M. Pokora | Juste un instant
+Mark Ronson | Uptown Funk
+Lorde | Royals
+Sia | Chandelier
+Lady Gaga | Bad Romance
+Luis Fonsi | Despacito
 # Années 2020
 Aya Nakamura | Pookie
 GIMS | Jusqu'ici tout va bien
@@ -125,3 +174,14 @@ The Kid LAROI | Stay
 David Guetta | I'm Good
 Vitaa | À fleur de toi
 Santa | Popcorn salé
+
+Dua Lipa | Levitating
+Lil Nas X | Montero
+Angèle | Bruxelles je t'aime
+Vianney | Beau-papa
+Clara Luciani | Le reste
+Juliette Armanet | Le dernier jour du disco
+Glass Animals | Heat Waves
+Rosalía | Malamente
+Pomme | Anxiété
+Sam Smith | Unholy
