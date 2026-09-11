@@ -3,6 +3,9 @@
 Équivalent maison de Hitster : on écoute un extrait, on le place dans sa frise d'années.
 Premier à 10 cartes gagne. Chaque joueur joue sur son propre téléphone.
 
+**En ligne : https://kevindsm.github.io/decennies/** (dépôt GitHub `KevinDSM/decennies`).
+Toute modification poussée sur `main` est en ligne en une à deux minutes.
+
 ## Fichiers
 
 | Fichier | Rôle |
