@@ -202,8 +202,8 @@ const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game:
 let view = null;         // état public affiché
 let songsCache = null, songsECache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=9')).json(); return songsCache; }
-async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=9')).json(); return songsECache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=10')).json(); return songsCache; }
+async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=10')).json(); return songsECache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
@@ -434,14 +434,24 @@ let lastTurnKey = null, betMode = false;
 function fitsView(cards, idx, year) { const b = idx === 0 ? -Infinity : cards[idx - 1].year; const a = idx === cards.length ? Infinity : cards[idx].year; return year >= b && year <= a; }
 
 // ================= rendu Éclair =================
-let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eTimer = null, eActionsKey = null;
+let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eTimer = null, eActionsKey = null, eArmed = false;
+function stopSnippet() { clearTimeout(eTimer); eTimer = null; eSnippetLimit = 0; eArmed = false; audio.pause(); drawSegProgress(); }
 function playSnippet(sec) {
   if (!audio.src) return;
-  clearTimeout(eTimer); eSnippetLimit = sec; audio.pause(); audio.currentTime = 0;
-  audio.play().then(() => { eTimer = setTimeout(() => { audio.pause(); eSnippetLimit = 0; drawSegProgress(); }, sec * 1000); })
-    .catch(() => toast('Touche à nouveau pour lancer le son'));
+  clearTimeout(eTimer); eTimer = null; eArmed = false; eSnippetLimit = sec;
+  audio.pause();
+  try { audio.currentTime = 0; } catch { }
+  audio.play().catch(() => toast('Touche à nouveau pour lancer le son'));
 }
-audio.addEventListener('timeupdate', () => { if (eSnippetLimit && audio.currentTime >= eSnippetLimit) { audio.pause(); eSnippetLimit = 0; } drawSegProgress(); });
+// iOS : le retour à zéro n'est pris en compte qu'une fois le son chargé, et le vrai départ
+// arrive après un délai. On arme donc le chrono seulement quand la lecture a réellement commencé.
+audio.addEventListener('playing', () => {
+  if (!eSnippetLimit) return;
+  if (audio.currentTime > 0.05) { try { audio.currentTime = 0; } catch { } }
+  eArmed = true; clearTimeout(eTimer);
+  eTimer = setTimeout(stopSnippet, eSnippetLimit * 1000 + 60);
+});
+audio.addEventListener('timeupdate', () => { if (eSnippetLimit && eArmed && audio.currentTime >= eSnippetLimit) stopSnippet(); drawSegProgress(); });
 function drawSegProgress() {
   const bar = $('#e-segbar'); if (!bar.children.length || $('#s-eclair').hidden) return;
   let start = 0;
