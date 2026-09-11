@@ -50,6 +50,17 @@ Un lien avec code pré-rempli : `https://…/decennies/?c=ABCD`.
 - 1 jeton : passer la chanson. 3 jetons : acheter une carte directement.
 - L'hôte peut activer « enceinte » : le son sort de son téléphone pour tous.
 
+## Second jeu : Éclair
+
+Choisi dans le salon par l'hôte. Tout le monde joue la même chanson en même temps, chacun sur
+son téléphone. Paliers d'écoute 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre
+faux ou « Écouter plus » débloque le palier suivant. Base dédiée `songs-eclair.json`, générée
+depuis `playlists-eclair.txt` (tubes 2000 → 2025) :
+
+```bash
+python build_songs.py playlists-eclair.txt songs-eclair.json
+```
+
 ## Enrichir la base
 
 Ajouter des lignes `Artiste | Titre` sous une rubrique `# Nom de playlist` dans

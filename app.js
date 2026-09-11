@@ -10,6 +10,8 @@ const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
 const BET_SECONDS = 12;
+const E_LEVELS = [0.5, 1, 2, 3, 5];          // secondes écoutables par palier
+const E_POINTS = [5, 4, 3, 2, 1];             // points si trouvé à ce palier
 const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
 const genCode = () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; let c = ''; for (let i = 0; i < 4; i++) c += A[Math.random() * A.length | 0]; return c; };
@@ -50,7 +52,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
      turn, target, deck:[song], current:song|null, placement:null|idx, bets:{pid:idx}, passes:[pid],
      betEnds:ts, guess:{artist,title}|null, result:{ok,by,year,song,tokenWon}|null, winner:pid|null, speakerId } */
 class Game {
-  constructor(code, songs) { this.songs = songs; this.state = { code, phase: 'lobby', players: [], turn: 0, target: 10, deck: [], current: null, placement: null, bets: {}, passes: [], betEnds: 0, guess: null, result: null, winner: null, cats: null, speakerId: null }; }
+  constructor(code, songs, songsE) { this.songs = songs; this.songsE = songsE; this.state = { code, mode: 'timeline', rounds: 10, round: 0, eclair: {}, phase: 'lobby', players: [], turn: 0, target: 10, deck: [], current: null, placement: null, bets: {}, passes: [], betEnds: 0, guess: null, result: null, winner: null, cats: null, speakerId: null }; }
   get s() { return this.state; }
   player(id) { return this.s.players.find(p => p.id === id); }
   get active() { return this.s.players[this.s.turn % this.s.players.length]; }
@@ -71,8 +73,10 @@ class Game {
   }
   pool() { const cats = this.s.cats; return this.songs.filter(s => !cats || cats.includes(s.cat)); }
 
-  start({ target, cats, speakerId, soundAll }) {
+  start({ mode, rounds, target, cats, speakerId, soundAll }) {
     const s = this.s;
+    s.mode = mode || 'timeline';
+    if (s.mode === 'eclair') return this.startEclair(rounds || 10);
     s.target = target; s.cats = cats && cats.length ? cats : null; s.speakerId = speakerId; s.soundAll = !!soundAll;
     s.deck = shuffle(this.pool()); s.winner = null; s.turn = 0;
     s.players.forEach(p => { p.tokens = 2; p.timeline = [this.draw()]; });
@@ -143,11 +147,44 @@ class Game {
     this.nextSong(); s.phase = 'listen';
   }
   tick() { const s = this.s; if (s.phase === 'bet' && Date.now() > s.betEnds) this.reveal(); }
-  restart() { const s = this.s; s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; }
+  restart() { const s = this.s; s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0; s.eclair = {}; s.players.forEach(p => { p.timeline = []; p.score = 0; }); }
+
+  // ================= mode Éclair =================
+  startEclair(rounds) {
+    const s = this.s; s.rounds = rounds; s.round = 0; s.winner = null;
+    s.deck = shuffle([...this.songsE]);
+    s.players.forEach(p => { p.score = 0; });
+    this.nextRound();
+  }
+  nextRound() {
+    const s = this.s; s.round++;
+    if (!s.deck.length) s.deck = shuffle([...this.songsE]);
+    s.current = s.deck.pop(); s.eclair = {}; s.result = null;
+    s.players.forEach(p => { s.eclair[p.id] = { level: 0, done: false, points: 0, tries: [] }; });
+    s.phase = 'e-play';
+  }
+  eSlot(pid) { const s = this.s; if (!s.eclair[pid]) s.eclair[pid] = { level: 0, done: false, points: 0, tries: [] }; return s.eclair[pid]; }
+  eUnlock(pid) { const s = this.s; if (s.phase !== 'e-play') return 'Pas maintenant'; const e = this.eSlot(pid); if (e.done) return 'Tu as déjà terminé'; if (e.level < E_LEVELS.length - 1) e.level++; return null; }
+  eGuess(pid, title) {
+    const s = this.s; if (s.phase !== 'e-play') return 'Pas maintenant'; const e = this.eSlot(pid); if (e.done) return 'Tu as déjà terminé';
+    const ok = norm(title) === norm(s.current.title) || (norm(title).length > 3 && norm(s.current.title).includes(norm(title)));
+    e.tries.push({ title, ok });
+    if (ok) { e.done = true; e.points = E_POINTS[e.level]; this.player(pid).score += e.points; }
+    else if (e.level < E_LEVELS.length - 1) e.level++;
+    else { e.done = true; e.points = 0; }
+    this.eCheckDone(); return ok ? null : 'Raté !';
+  }
+  eGiveUp(pid) { const s = this.s; if (s.phase !== 'e-play') return null; const e = this.eSlot(pid); if (e.done) return null; e.done = true; e.points = 0; this.eCheckDone(); return null; }
+  eCheckDone() { const s = this.s; if (s.players.filter(p => p.online).every(p => this.eSlot(p.id).done)) s.phase = 'e-reveal'; }
+  eNext() {
+    const s = this.s; if (s.phase !== 'e-reveal') return;
+    if (s.round >= s.rounds) { s.phase = 'end'; const best = [...s.players].sort((a, b) => b.score - a.score)[0]; s.winner = best?.id || null; return; }
+    this.nextRound();
+  }
 
   // état diffusé aux invités : on masque tout ce qui trahit la chanson en cours
   publicState() {
-    const s = this.s; const hide = s.phase === 'listen' || s.phase === 'bet';
+    const s = this.s; const hide = s.phase === 'listen' || s.phase === 'bet' || s.phase === 'e-play';
     return { ...s, deck: undefined, deckLeft: s.deck.length, current: s.current ? (hide ? { preview: s.current.preview } : s.current) : null, betLeft: s.phase === 'bet' ? Math.max(0, Math.ceil((s.betEnds - Date.now()) / 1000)) : 0 };
   }
 }
@@ -155,9 +192,10 @@ class Game {
 // ------------------------------------------------------------ réseau
 const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game: null, me: uid(), name: '', code: '' };
 let view = null;         // état public affiché
-let songsCache = null;
+let songsCache = null, songsECache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=5')).json(); return songsCache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=6')).json(); return songsCache; }
+async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=6')).json(); return songsECache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
@@ -169,11 +207,11 @@ function makePeer(id) {
 }
 
 async function hostGame() {
-  const songs = await loadSongs();
+  const [songs, songsE] = await Promise.all([loadSongs(), loadSongsE()]);
   let code, peer;
   for (let i = 0; i < 5; i++) { code = genCode(); try { peer = await makePeer(ROOM_PREFIX + code); break; } catch (e) { if (e.message !== 'code-taken') throw e; } }
   if (!peer) throw new Error('Impossible de créer la salle');
-  net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs);
+  net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE);
   net.game.addPlayer(net.me, net.name, true);
   peer.on('connection', conn => {
     conn.on('data', m => handleClientMessage(conn, m));
@@ -203,6 +241,10 @@ function applyAction(pid, m) {
     case 'skip': return g.skip(pid);
     case 'buy': return g.buy(pid);
     case 'next': g.next(); return null;
+    case 'e-unlock': return g.eUnlock(pid);
+    case 'e-guess': return g.eGuess(pid, m.title);
+    case 'e-giveup': return g.eGiveUp(pid);
+    case 'e-next': g.eNext(); return null;
     case 'start': if (pid === net.me) g.start(m.opts); return null;
     case 'restart': if (pid === net.me) g.restart(); return null;
   }
@@ -240,6 +282,7 @@ function render() {
   const s = view;
   if (s.phase === 'lobby') { show('s-lobby'); renderLobby(s); return; }
   if (s.phase === 'end') { show('s-end'); renderEnd(s); audio.pause(); return; }
+  if (s.phase === 'e-play' || s.phase === 'e-reveal') { show('s-eclair'); renderEclair(s); return; }
   show('s-game'); renderGame(s);
 }
 
@@ -253,7 +296,14 @@ function renderLobby(s) {
     cats.forEach(c => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${c}" checked>${c}`; $('#opt-cats').appendChild(l); });
   }
   $('#btn-start').disabled = s.players.length < 1;
+  syncLobbyMode();
 }
+function syncLobbyMode() {
+  const mode = document.querySelector('#opt-mode input:checked')?.value || 'timeline';
+  const eclair = mode === 'eclair';
+  $('#opt-cats').hidden = eclair; $('#opt-target').closest('label').hidden = eclair; $('#row-sound').hidden = eclair; $('#row-rounds').hidden = !eclair;
+}
+document.querySelectorAll('#opt-mode input').forEach(r => r.onchange = syncLobbyMode);
 
 function renderGame(s) {
   const me = s.players.find(p => p.id === net.me);
@@ -354,11 +404,93 @@ function renderGame(s) {
 let lastTurnKey = null;
 function fitsView(cards, idx, year) { const b = idx === 0 ? -Infinity : cards[idx - 1].year; const a = idx === cards.length ? Infinity : cards[idx].year; return year >= b && year <= a; }
 
+// ================= rendu Éclair =================
+let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eTimer = null;
+function playSnippet(sec) {
+  if (!audio.src) return;
+  clearTimeout(eTimer); eSnippetLimit = sec; audio.pause(); audio.currentTime = 0;
+  audio.play().then(() => { eTimer = setTimeout(() => { audio.pause(); eSnippetLimit = 0; drawSegProgress(); }, sec * 1000); })
+    .catch(() => toast('Touche à nouveau pour lancer le son'));
+}
+audio.addEventListener('timeupdate', () => { if (eSnippetLimit && audio.currentTime >= eSnippetLimit) { audio.pause(); eSnippetLimit = 0; } drawSegProgress(); });
+function drawSegProgress() {
+  const bar = $('#e-segbar'); if (!bar.children.length || $('#s-eclair').hidden) return;
+  let start = 0;
+  [...bar.children].forEach((seg, i) => { const end = E_LEVELS[i]; const b = seg.querySelector('b'); const t = audio.currentTime; b.style.width = (Math.max(0, Math.min(1, (t - start) / (end - start))) * 100) + '%'; start = end; });
+}
+const fmtS = v => (v + '').replace('.', ',') + ' s';
+
+function renderEclair(s) {
+  const e = s.eclair[net.me] || { level: 0, done: false, points: 0, tries: [] };
+  const reveal = s.phase === 'e-reveal';
+
+  // scores
+  const sb = $('#e-scoreboard'); sb.innerHTML = '';
+  s.players.forEach(p => { const d = el('div', 'sb' + (p.id === net.me ? ' me' : '')); d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.score || 0}</b> pts</span></span>`; if (!p.online) d.style.opacity = .45; sb.appendChild(d); });
+
+  // bandeau
+  const b = $('#e-banner');
+  if (!reveal) b.innerHTML = e.done ? `Manche ${s.round}/${s.rounds} <span class="pts">${e.points ? '+' + e.points : '0'} pt${e.points > 1 ? 's' : ''}</span><small>On attend les autres…</small>`
+    : `Manche ${s.round}/${s.rounds}<small>Écoute ${fmtS(E_LEVELS[e.level])}. Trouve le titre pour <b class="pts">${E_POINTS[e.level]} pt${E_POINTS[e.level] > 1 ? 's' : ''}</b>, ou écoute plus.</small>`;
+  else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche ! Voir le classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
+
+  // carte + audio
+  loadAudio(s.current?.preview);
+  if (s.round !== eLastRound) { eLastRound = s.round; eSnippetLimit = 0; audio.pause(); $('#e-vinyl').classList.remove('revealed'); }
+  const vinyl = $('#e-vinyl'), info = $('#e-info');
+  if (reveal) { vinyl.classList.add('revealed'); $('#e-art').src = s.current.art; info.innerHTML = `<div class="year ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`; }
+  else { $('#e-art').removeAttribute('src'); info.innerHTML = e.tries.length ? `<small>Raté : ${e.tries.map(t => t.title).join(' · ')}</small>` : ''; }
+
+  // barre segmentée
+  const bar = $('#e-segbar'); bar.innerHTML = '';
+  let prev = 0;
+  E_LEVELS.forEach((sec, i) => { const seg = el('i'); seg.style.setProperty('--w', sec - prev); seg.dataset.s = fmtS(sec); if (i <= e.level || reveal) seg.classList.add('open'); seg.innerHTML = '<b></b>'; bar.appendChild(seg); prev = sec; });
+  const lim = reveal ? 30 : E_LEVELS[e.level];
+  $('#e-len').textContent = reveal ? '30 s' : fmtS(lim);
+  $('#e-play').onclick = () => { if (reveal) { eSnippetLimit = 0; audio.currentTime = 0; audio.play().catch(() => { }); } else playSnippet(lim); };
+
+  // actions
+  const ac = $('#e-actions'); ac.innerHTML = '';
+  if (!reveal && !e.done) {
+    const box = el('div', 'guess-box'); box.innerHTML = `<input id="e-input" placeholder="Titre de la chanson…" autocomplete="off" autocapitalize="off"><div class="suggest" id="e-suggest" hidden></div>`;
+    ac.appendChild(box);
+    const row = el('div', 'row');
+    row.innerHTML = `<button class="btn primary" id="e-submit">Valider</button>` +
+      (e.level < E_LEVELS.length - 1 ? `<button class="btn" id="e-more">Écouter plus <span class="cost">${fmtS(E_LEVELS[e.level + 1])} · ${E_POINTS[e.level + 1]} pt${E_POINTS[e.level + 1] > 1 ? 's' : ''}</span></button>` : '') +
+      `<button class="btn ghost small" id="e-giveup">Je donne ma langue au chat</button>`;
+    ac.appendChild(row);
+    ac.appendChild(el('div', 'note', 'Un titre faux débloque automatiquement le palier suivant.'));
+    const input = $('#e-input'), sug = $('#e-suggest');
+    let hl = -1, items = [];
+    const renderSug = () => { sug.innerHTML = ''; items.forEach((it, i) => { const d = el('div', i === hl ? 'hl' : ''); d.innerHTML = `${it.title} <small>· ${it.artist}</small>`; d.onmousedown = ev => { ev.preventDefault(); input.value = it.title; sug.hidden = true; }; sug.appendChild(d); }); sug.hidden = !items.length; };
+    input.oninput = () => { const q = norm(input.value); hl = -1; items = q.length < 2 ? [] : (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6); renderSug(); };
+    input.onkeydown = ev => { if (ev.key === 'ArrowDown') { hl = Math.min(items.length - 1, hl + 1); renderSug(); ev.preventDefault(); } else if (ev.key === 'ArrowUp') { hl = Math.max(0, hl - 1); renderSug(); ev.preventDefault(); } else if (ev.key === 'Enter') { if (hl >= 0) { input.value = items[hl].title; sug.hidden = true; } $('#e-submit').click(); ev.preventDefault(); } };
+    input.onblur = () => setTimeout(() => sug.hidden = true, 150);
+    $('#e-submit').onclick = () => { const t = input.value.trim(); if (!t) return; act({ t: 'e-guess', title: t }); input.value = ''; };
+    if ($('#e-more')) $('#e-more').onclick = () => act({ t: 'e-unlock' });
+    $('#e-giveup').onclick = () => act({ t: 'e-giveup' });
+  }
+  if (reveal) {
+    const res = el('div', 'round-res');
+    s.players.forEach(p => { const x = s.eclair[p.id] || {}; res.appendChild(el('div', '', `<span>${p.name}</span><span>${x.points ? `<b class="pts">+${x.points}</b> à ${fmtS(E_LEVELS[x.level])}` : '<span style="color:var(--rose)">pas trouvé</span>'}</span>`)); });
+    ac.appendChild(res);
+    const btn = el('button', 'btn ' + (s.round >= s.rounds ? 'mint' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante →'); btn.onclick = () => act({ t: 'e-next' }); ac.appendChild(btn);
+  }
+
+  // les autres
+  const ot = $('#e-others'); ot.innerHTML = '';
+  if (!reveal) s.players.filter(p => p.id !== net.me).forEach(p => { const x = s.eclair[p.id] || { level: 0 }; const sp = el('span', x.done ? (x.points ? 'done' : 'out') : ''); sp.textContent = `${p.name} · ${x.done ? (x.points ? 'trouvé +' + x.points : 'abandon') : 'écoute ' + fmtS(E_LEVELS[x.level])}`; ot.appendChild(sp); });
+}
+loadSongsE().then(l => { eCatalog = l; }).catch(() => { });
+
 function renderEnd(s) {
   const w = s.players.find(p => p.id === s.winner);
   $('#end-winner').textContent = w ? w.name : '—';
   const ol = $('#ranking'); ol.innerHTML = '';
-  [...s.players].sort((a, b) => b.timeline.length - a.timeline.length || b.tokens - a.tokens).forEach(p => { const li = el('li'); li.innerHTML = `<span>${p.name}</span><b>${p.timeline.length} cartes</b>`; ol.appendChild(li); });
+  const eclair = s.mode === 'eclair';
+  $('#s-end .tagline').textContent = eclair ? "a l'oreille la plus rapide." : 'a rempli sa frise le premier.';
+  [...s.players].sort((a, b) => eclair ? b.score - a.score : (b.timeline.length - a.timeline.length || b.tokens - a.tokens))
+    .forEach(p => { const li = el('li'); li.innerHTML = `<span>${p.name}</span><b>${eclair ? p.score + ' pts' : p.timeline.length + ' cartes'}</b>`; ol.appendChild(li); });
   $('#btn-again').hidden = !net.isHost;
 }
 
@@ -380,9 +512,10 @@ $('#f-home').addEventListener('submit', async e => {
 });
 $('#btn-solo').onclick = async () => { net.name = $('#in-name').value.trim() || 'Moi'; await hostGame(); };
 $('#btn-start').onclick = () => {
+  const mode = document.querySelector('#opt-mode input:checked').value;
   const cats = [...$('#opt-cats').querySelectorAll('input:checked')].map(i => i.value);
-  if (!cats.length) { toast('Choisis au moins une playlist'); return; }
-  act({ t: 'start', opts: { target: +$('#opt-target').value, cats, speakerId: $('#opt-sound').value === 'host' ? net.me : null, soundAll: $('#opt-sound').value === 'all' } });
+  if (mode === 'timeline' && !cats.length) { toast('Choisis au moins une playlist'); return; }
+  act({ t: 'start', opts: { mode, rounds: +$('#opt-rounds').value, target: +$('#opt-target').value, cats, speakerId: $('#opt-sound').value === 'host' ? net.me : null, soundAll: $('#opt-sound').value === 'all' } });
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });
 $('#btn-home').onclick = () => location.reload();

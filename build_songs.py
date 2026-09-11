@@ -1,6 +1,7 @@
 # Construit songs.json depuis l'API iTunes Search (gratuite, sans cle).
 # Usage : python build_songs.py   -> lit playlists.txt, ecrit songs.json
 import json, urllib.request, urllib.parse, re, time, sys
+SRC=sys.argv[1] if len(sys.argv)>1 else "playlists.txt"; DST=sys.argv[2] if len(sys.argv)>2 else "songs.json"
 sys.stdout.reconfigure(encoding="utf-8")
 BAD = re.compile(r"remix|mix|live|remaster|karaoke|version|edit|acoustic|instrumental|symphon|orch|cover|tribute|demo|radio", re.I)
 def base(t):
@@ -29,11 +30,11 @@ def lookup(q):
             "preview":pick["previewUrl"],"art":pick["artworkUrl100"].replace("100x100","300x300")}
 import os
 cache={}
-if os.path.exists("songs.json"):
-    for x in json.load(open("songs.json",encoding="utf-8")):
+if os.path.exists(DST):
+    for x in json.load(open(DST,encoding="utf-8")):
         if x.get("_q"): cache[x["_q"]]=x
 out=[]; seen=set(); cat=None
-for line in open("playlists.txt",encoding="utf-8"):
+for line in open(SRC,encoding="utf-8"):
     line=line.strip()
     if not line: continue
     if line.startswith("#"): cat=line[1:].strip(); continue
@@ -45,5 +46,5 @@ for line in open("playlists.txt",encoding="utf-8"):
     seen.add(key); s["cat"]=cat; out.append(s)
     print(f'{s["year"]}  {s["artist"]} - {s["title"]}')
     time.sleep(4 if line not in cache else 0)
-json.dump(out,open("songs.json","w",encoding="utf-8"),ensure_ascii=False,indent=0)
+json.dump(out,open(DST,"w",encoding="utf-8"),ensure_ascii=False,indent=0)
 print(len(out),"chansons")
