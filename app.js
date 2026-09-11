@@ -76,7 +76,7 @@ class Game {
   start({ mode, rounds, target, cats, speakerId, soundAll }) {
     const s = this.s;
     s.mode = mode || 'timeline';
-    if (s.mode === 'eclair') return this.startEclair(rounds || 10);
+    if (s.mode === 'eclair') return this.startEclair(rounds || 10, arguments[0].decades);
     s.target = target; s.cats = cats && cats.length ? cats : null; s.speakerId = speakerId; s.soundAll = !!soundAll;
     s.deck = shuffle(this.pool()); s.winner = null; s.turn = 0;
     s.players.forEach(p => { p.tokens = 2; p.timeline = [this.draw()]; });
@@ -156,19 +156,21 @@ class Game {
   restart() { const s = this.s; s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0; s.eclair = {}; s.players.forEach(p => { p.timeline = []; p.score = 0; }); }
 
   // ================= mode Éclair =================
-  startEclair(rounds) {
+  startEclair(rounds, decades) {
     const s = this.s; s.rounds = rounds; s.round = 0; s.winner = null;
-    s.deck = shuffle([...this.songsE]);
+    s.decades = decades && decades.length ? decades : null;
+    s.deck = shuffle(this.poolE());
     s.players.forEach(p => { p.score = 0; });
     this.nextRound();
   }
   nextRound() {
     const s = this.s; s.round++;
-    if (!s.deck.length) s.deck = shuffle([...this.songsE]);
+    if (!s.deck.length) s.deck = shuffle(this.poolE());
     s.current = s.deck.pop(); s.eclair = {}; s.result = null;
     s.players.forEach(p => { s.eclair[p.id] = { level: 0, done: false, points: 0, tries: [] }; });
     s.phase = 'e-play';
   }
+  poolE() { const d = this.s.decades; const p = this.songsE.filter(x => !d || d.includes(Math.floor((+x.cat || x.year) / 10) * 10)); return p.length ? p : [...this.songsE]; }
   eSlot(pid) { const s = this.s; if (!s.eclair[pid]) s.eclair[pid] = { level: 0, done: false, points: 0, tries: [] }; return s.eclair[pid]; }
   eUnlock(pid) { const s = this.s; if (s.phase !== 'e-play') return 'Pas maintenant'; const e = this.eSlot(pid); if (e.done) return 'Tu as déjà terminé'; if (e.level < E_LEVELS.length - 1) e.level++; return null; }
   eGuess(pid, title) {
@@ -200,8 +202,8 @@ const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game:
 let view = null;         // état public affiché
 let songsCache = null, songsECache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=8')).json(); return songsCache; }
-async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=8')).json(); return songsECache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=9')).json(); return songsCache; }
+async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=9')).json(); return songsECache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
@@ -314,7 +316,7 @@ function renderLobby(s) {
 function syncLobbyMode() {
   const mode = document.querySelector('#opt-mode input:checked')?.value || 'timeline';
   const eclair = mode === 'eclair';
-  $('#opt-cats').hidden = eclair; $('#opt-target').closest('label').hidden = eclair; $('#row-sound').hidden = eclair; $('#row-rounds').hidden = !eclair;
+  $('#opt-cats').hidden = eclair; $('#opt-decades').hidden = !eclair; $('#opt-target').closest('label').hidden = eclair; $('#row-sound').hidden = eclair; $('#row-rounds').hidden = !eclair;
 }
 document.querySelectorAll('#opt-mode input').forEach(r => r.onchange = syncLobbyMode);
 
@@ -547,7 +549,9 @@ $('#btn-start').onclick = () => {
   const mode = document.querySelector('#opt-mode input:checked').value;
   const cats = [...$('#opt-cats').querySelectorAll('input:checked')].map(i => i.value);
   if (mode === 'timeline' && !cats.length) { toast('Choisis au moins une playlist'); return; }
-  act({ t: 'start', opts: { mode, rounds: +$('#opt-rounds').value, target: +$('#opt-target').value, cats, speakerId: $('#opt-sound').value === 'host' ? net.me : null, soundAll: $('#opt-sound').value === 'all' } });
+  const decades = [...$('#opt-decades').querySelectorAll('input:checked')].map(i => +i.value);
+  if (mode === 'eclair' && !decades.length) { toast('Choisis au moins une décennie'); return; }
+  act({ t: 'start', opts: { mode, decades, rounds: +$('#opt-rounds').value, target: +$('#opt-target').value, cats, speakerId: $('#opt-sound').value === 'host' ? net.me : null, soundAll: $('#opt-sound').value === 'all' } });
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });
 $('#btn-home').onclick = () => location.reload();

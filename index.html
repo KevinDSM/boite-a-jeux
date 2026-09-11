@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -58,6 +58,13 @@
       <label><input type="radio" name="mode" value="eclair"><b>Éclair</b><small>Trouve le titre avec le moins de secondes possible.</small></label>
     </div>
     <fieldset class="chips" id="opt-cats"><legend class="eyebrow">Playlists</legend></fieldset>
+    <fieldset class="chips" id="opt-decades" hidden><legend class="eyebrow">Décennies</legend>
+      <label><input type="checkbox" value="1980" checked>Années 80</label>
+      <label><input type="checkbox" value="1990" checked>Années 90</label>
+      <label><input type="checkbox" value="2000" checked>Années 2000</label>
+      <label><input type="checkbox" value="2010" checked>Années 2010</label>
+      <label><input type="checkbox" value="2020" checked>2020 à aujourd'hui</label>
+    </fieldset>
     <label class="field row">
       <span>Cartes pour gagner</span>
       <select id="opt-target"><option>5</option><option>7</option><option selected>10</option><option>15</option></select>
@@ -160,6 +167,6 @@
 <div class="net-status" id="net"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>
