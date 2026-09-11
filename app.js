@@ -202,8 +202,8 @@ const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game:
 let view = null;         // état public affiché
 let songsCache = null, songsECache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=10')).json(); return songsCache; }
-async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=10')).json(); return songsECache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=11')).json(); return songsCache; }
+async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=11')).json(); return songsECache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
@@ -434,28 +434,32 @@ let lastTurnKey = null, betMode = false;
 function fitsView(cards, idx, year) { const b = idx === 0 ? -Infinity : cards[idx - 1].year; const a = idx === cards.length ? Infinity : cards[idx].year; return year >= b && year <= a; }
 
 // ================= rendu Éclair =================
-let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eTimer = null, eActionsKey = null, eArmed = false;
-function stopSnippet() { clearTimeout(eTimer); eTimer = null; eSnippetLimit = 0; eArmed = false; audio.pause(); drawSegProgress(); }
+let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eActionsKey = null, ePoll = null, eSeen = false, eSafety = null;
+const E_GRACE = 0.12;   // marge (s) pour compenser la latence de sortie audio, surtout sur iPhone
+function stopSnippet() { clearInterval(ePoll); ePoll = null; clearTimeout(eSafety); eSnippetLimit = 0; eSeen = false; audio.pause(); drawSegProgress(); }
 function playSnippet(sec) {
   if (!audio.src) return;
-  clearTimeout(eTimer); eTimer = null; eArmed = false; eSnippetLimit = sec;
+  clearInterval(ePoll); clearTimeout(eSafety); eSnippetLimit = sec; eSeen = false;
   audio.pause();
   try { audio.currentTime = 0; } catch { }
   audio.play().catch(() => toast('Touche à nouveau pour lancer le son'));
+  // Surveillance fine de la position : on ne coupe qu'après avoir vu la lecture repartir du début,
+  // car Safari iOS ignore parfois le retour à zéro tant que le son n'est pas chargé.
+  ePoll = setInterval(() => {
+    if (!eSnippetLimit) { clearInterval(ePoll); return; }
+    const t = audio.currentTime;
+    if (t < eSnippetLimit) { eSeen = true; }
+    else if (eSeen) { if (t >= eSnippetLimit + E_GRACE) stopSnippet(); }
+    else if (!audio.paused && t > eSnippetLimit + 0.3) { try { audio.currentTime = 0; } catch { } }
+    drawSegProgress();
+  }, 20);
+  eSafety = setTimeout(stopSnippet, (sec + 4) * 1000);
 }
-// iOS : le retour à zéro n'est pris en compte qu'une fois le son chargé, et le vrai départ
-// arrive après un délai. On arme donc le chrono seulement quand la lecture a réellement commencé.
-audio.addEventListener('playing', () => {
-  if (!eSnippetLimit) return;
-  if (audio.currentTime > 0.05) { try { audio.currentTime = 0; } catch { } }
-  eArmed = true; clearTimeout(eTimer);
-  eTimer = setTimeout(stopSnippet, eSnippetLimit * 1000 + 60);
-});
-audio.addEventListener('timeupdate', () => { if (eSnippetLimit && eArmed && audio.currentTime >= eSnippetLimit) stopSnippet(); drawSegProgress(); });
+audio.addEventListener('timeupdate', drawSegProgress);
 function drawSegProgress() {
   const bar = $('#e-segbar'); if (!bar.children.length || $('#s-eclair').hidden) return;
   let start = 0;
-  [...bar.children].forEach((seg, i) => { const end = E_LEVELS[i]; const b = seg.querySelector('b'); const t = audio.currentTime; b.style.width = (Math.max(0, Math.min(1, (t - start) / (end - start))) * 100) + '%'; start = end; });
+  [...bar.children].forEach((seg, i) => { const end = E_LEVELS[i]; const b = seg.querySelector('b'); const t = eSnippetLimit ? Math.min(audio.currentTime, eSnippetLimit) : audio.currentTime; b.style.width = (Math.max(0, Math.min(1, (t - start) / (end - start))) * 100) + '%'; start = end; });
 }
 const fmtS = v => (v + '').replace('.', ',') + ' s';
 
