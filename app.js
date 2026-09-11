@@ -150,7 +150,7 @@ const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game:
 let view = null;         // état public affiché
 let songsCache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json')).json(); return songsCache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=4')).json(); return songsCache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
