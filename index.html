@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#16121f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Décennies · blind test chronologique</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23ff6b35'/><circle cx='50' cy='50' r='30' fill='%2316121f'/><circle cx='50' cy='50' r='9' fill='%23f6ead3'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<button class="theme-btn" id="btn-theme" type="button" aria-label="Changer de thème" title="Mode clair / sombre">☀️</button>
+
+<!-- ============ ACCUEIL ============ -->
+<section class="screen" id="s-home">
+  <div class="hero">
+    <div class="vinyl vinyl-hero" aria-hidden="true"><i></i></div>
+    <h1>Décen<br>nies</h1>
+    <p class="tagline">Le blind test où tu ne devines pas le titre, mais <em>l'année</em>.</p>
+  </div>
+  <form class="stack" id="f-home">
+    <label class="field">
+      <span>Ton prénom</span>
+      <input id="in-name" maxlength="14" autocomplete="off" placeholder="Kevin" required>
+    </label>
+    <button class="btn primary" type="submit" data-act="create">Créer une partie</button>
+    <div class="or"><span>ou</span></div>
+    <div class="join-row">
+      <input id="in-code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn" type="submit" data-act="join">Rejoindre</button>
+    </div>
+    <p class="err" id="home-err"></p>
+  </form>
+  <button class="btn ghost small" id="btn-solo">Jouer seul pour découvrir</button>
+</section>
+
+<!-- ============ SALON ============ -->
+<section class="screen" id="s-lobby" hidden>
+  <header class="top">
+    <span class="eyebrow">Salon</span>
+    <button class="btn ghost small" id="btn-leave">Quitter</button>
+  </header>
+  <div class="code-card">
+    <span class="eyebrow">Code de la partie</span>
+    <div class="code" id="lobby-code">····</div>
+    <p class="muted">Tes amis ouvrent la même adresse et tapent ce code.</p>
+  </div>
+  <div class="players" id="lobby-players"></div>
+  <div class="host-only stack" id="lobby-opts">
+    <fieldset class="chips" id="opt-cats"><legend class="eyebrow">Playlists</legend></fieldset>
+    <label class="field row">
+      <span>Cartes pour gagner</span>
+      <select id="opt-target"><option>5</option><option>7</option><option selected>10</option><option>15</option></select>
+    </label>
+    <label class="field row check">
+      <span>Le son sort de ce téléphone pour tout le monde (enceinte)</span>
+      <input type="checkbox" id="opt-speaker">
+    </label>
+    <button class="btn primary" id="btn-start">Lancer la partie</button>
+  </div>
+  <p class="muted guest-only" id="lobby-wait">En attente de l'hôte…</p>
+</section>
+
+<!-- ============ JEU ============ -->
+<section class="screen game" id="s-game" hidden>
+  <header class="scoreboard" id="scoreboard"></header>
+
+  <div class="turn-banner" id="turn-banner"></div>
+
+  <section class="deck-card" id="deck-card">
+    <div class="vinyl" id="vinyl"><img id="art" alt=""><i></i></div>
+    <div class="track-info" id="track-info"></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="row center" id="audio-row">
+      <button class="btn primary" id="btn-play">▶ Écouter</button>
+    </div>
+  </section>
+
+  <div class="timeline-wrap">
+    <div class="timeline-owner" id="tl-owner"></div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <div class="actions" id="actions"></div>
+  <div class="toast" id="toast"></div>
+</section>
+
+<!-- ============ FIN ============ -->
+<section class="screen" id="s-end" hidden>
+  <div class="hero small">
+    <div class="vinyl vinyl-hero gold" aria-hidden="true"><i></i></div>
+    <span class="eyebrow">Partie terminée</span>
+    <h1 id="end-winner">Kevin</h1>
+    <p class="tagline">a rempli sa frise le premier.</p>
+  </div>
+  <ol class="ranking" id="ranking"></ol>
+  <button class="btn primary" id="btn-again">Rejouer avec le même groupe</button>
+  <button class="btn ghost" id="btn-home">Retour à l'accueil</button>
+</section>
+
+<div class="net-status" id="net"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
