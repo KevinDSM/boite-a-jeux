@@ -4,9 +4,9 @@ Modjo | Lady
 Britney Spears | Oops!... I Did It Again
 Eminem | The Real Slim Shady
 Madonna | Music
-Manu Chao | Me gustas tu
+Yannick | Ces soirées-là
 Lââm | Chanter pour ceux qui sont loin de chez eux
-Sonia Lacen | Aïcha
+Zebda | Tomber la chemise
 # 2001
 Shaggy | It Wasn't Me
 Kylie Minogue | Can't Get You Out of My Head
@@ -120,7 +120,7 @@ Daft Punk | Get Lucky
 Robin Thicke | Blurred Lines
 Stromae | Papaoutai
 Avicii | Wake Me Up
-Maître Gims | Bella
+GIMS | Bella
 Pharrell Williams | Happy
 Lorde | Royals
 Stromae | Formidable
@@ -183,7 +183,7 @@ The Weeknd | Blinding Lights
 Dua Lipa | Don't Start Now
 Vitaa & Slimane | Ça va ça vient
 Tones and I | Dance Monkey
-Jul | Bande organisée
+13 Organisé | Bande organisée
 Master KG | Jerusalema
 Hatik | Angela
 Doja Cat | Say So
@@ -200,7 +200,7 @@ Amir | Rétine
 Harry Styles | As It Was
 Stromae | L'enfer
 Bad Bunny | Tití Me Preguntó
-Rosalía | Despechá
+Rosalía | Malamente
 Sam Smith | Unholy
 David Guetta | I'm Good
 Elton John | Cold Heart
@@ -210,7 +210,7 @@ Miley Cyrus | Flowers
 Gazo | Casanova
 Dua Lipa | Dance the Night
 Taylor Swift | Cruel Summer
-Werenoi | Pyramide
+Werenoi | Balmain
 Pierre Garnier | Ceux qu'on était
 Zaho de Sagazan | La symphonie des éclairs
 Tate McRae | greedy
@@ -228,7 +228,7 @@ Lady Gaga | Abracadabra
 ROSÉ | APT.
 Alex Warren | Ordinary
 Gims | Sois pas timide
-Jul | Cœur blanc
-Théodora | Kongolese sous BBL
+Lola Young | Messy
+Kendrick Lamar | Not Like Us
 Doechii | Anxiety
-Bad Bunny | DtMF
+Sabrina Carpenter | Manchild
