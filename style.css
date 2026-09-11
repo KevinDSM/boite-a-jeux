@@ -220,3 +220,13 @@ input[type=checkbox]:checked::after{transform:translateX(18px);background:#fff}
 .pts{font-family:var(--font-d);font-weight:800;color:var(--gold)}
 .round-res{display:flex;flex-direction:column;gap:6px}
 .round-res div{display:flex;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px}
+
+/* ---------- aide ---------- */
+.help-btn{position:fixed;top:max(6px,env(safe-area-inset-top));left:52px;z-index:10;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:var(--font-d);font-weight:800;font-size:18px;display:grid;place-items:center;cursor:pointer}
+.help-btn:active{transform:scale(.92)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sheet{background:var(--bg2);color:var(--ink);border-radius:22px 22px 0 0;padding:18px 20px max(24px,env(safe-area-inset-bottom));width:100%;max-width:520px;max-height:85dvh;overflow-y:auto;animation:sheet-in .3s cubic-bezier(.2,.8,.2,1);font-size:15px;line-height:1.5}
+@keyframes sheet-in{from{transform:translateY(40px);opacity:0}}
+.sheet h3{font-family:var(--font-d);font-size:22px;margin:14px 0 6px;color:var(--acc2)}
+.sheet p{margin:6px 0}.sheet ul{margin:6px 0;padding-left:18px}.sheet li{margin:4px 0}
+.note b{color:var(--ink)}

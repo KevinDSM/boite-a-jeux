@@ -147,6 +147,12 @@ class Game {
     this.nextSong(); s.phase = 'listen';
   }
   tick() { const s = this.s; if (s.phase === 'bet' && Date.now() > s.betEnds) this.reveal(); }
+  forceNext(pid) {
+    const s = this.s; if (!['listen', 'bet'].includes(s.phase)) return 'Pas maintenant';
+    if (this.active.online && pid !== this.active.id) return `${this.active.name} est encore connecté`;
+    s.turn++; let guard = 0; while (!this.active.online && guard++ < s.players.length) s.turn++;
+    this.nextSong(); s.phase = 'listen'; return null;
+  }
   restart() { const s = this.s; s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0; s.eclair = {}; s.players.forEach(p => { p.timeline = []; p.score = 0; }); }
 
   // ================= mode Éclair =================
@@ -194,8 +200,8 @@ const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game:
 let view = null;         // état public affiché
 let songsCache = null, songsECache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=7')).json(); return songsCache; }
-async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=7')).json(); return songsECache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=8')).json(); return songsCache; }
+async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=8')).json(); return songsECache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
@@ -215,7 +221,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   peer.on('connection', conn => {
     conn.on('data', m => handleClientMessage(conn, m));
-    conn.on('close', () => { const pid = conn.metadata?.pid; net.conns.delete(pid); if (pid) { net.game.setOffline(pid); broadcast(); } });
+    conn.on('close', () => { const pid = conn.metadata?.pid; if (!pid || net.conns.get(pid) !== conn) return; net.conns.delete(pid); net.game.setOffline(pid); broadcast(); });
   });
   peer.on('disconnected', () => { setNet(false, 'reconnexion…'); peer.reconnect(); });
   peer.on('open', () => setNet(true, 'hôte'));
@@ -241,6 +247,7 @@ function applyAction(pid, m) {
     case 'skip': return g.skip(pid);
     case 'buy': return g.buy(pid);
     case 'next': g.next(); return null;
+    case 'force-next': return g.forceNext(pid);
     case 'e-unlock': return g.eUnlock(pid);
     case 'e-guess': return g.eGuess(pid, m.title);
     case 'e-giveup': return g.eGiveUp(pid);
@@ -280,6 +287,12 @@ function act(m) {
 function render() {
   if (!view) return;
   const s = view;
+  // préserve la saisie en cours : un état reçu du réseau ne doit pas effacer ce qu'on tape
+  const ae = document.activeElement; const keep = ae && ae.tagName === 'INPUT' && ae.id ? { id: ae.id, v: ae.value, a: ae.selectionStart, b: ae.selectionEnd } : null;
+  renderInner(s);
+  if (keep) { const n = document.getElementById(keep.id); if (n && n !== ae) { n.value = keep.v; n.focus({ preventScroll: true }); try { n.setSelectionRange(keep.a, keep.b); } catch { } n.dispatchEvent(new Event('input')); } }
+}
+function renderInner(s) {
   if (s.phase === 'lobby') { show('s-lobby'); renderLobby(s); return; }
   if (s.phase === 'end') { show('s-end'); renderEnd(s); audio.pause(); return; }
   if (s.phase === 'e-play' || s.phase === 'e-reveal') { show('s-eclair'); renderEclair(s); return; }
@@ -323,7 +336,7 @@ function renderGame(s) {
   // --- bandeau de tour
   const banner = $('#turn-banner');
   if (s.phase === 'listen') banner.innerHTML = isMe ? `À toi de jouer<small>Écoute, puis touche un « + » dans ta frise.</small>` : `${active.name} écoute<small>Tu pourras parier un jeton s'il se trompe.</small>`;
-  else if (s.phase === 'bet') banner.innerHTML = (isMe ? `Les autres peuvent parier` : `${active.name} a choisi`) + ` <span class="timer">${s.betLeft}s</span><small>${isMe ? 'Patiente, ou ils passent tous.' : (me && me.tokens > 0 && s.bets[me.id] == null ? 'Touche un autre « + » pour parier 1 jeton.' : 'Pari impossible.')}</small>`;
+  else if (s.phase === 'bet') banner.innerHTML = (isMe ? `Les autres peuvent parier contre toi` : `${active.name} a choisi un emplacement`) + ` <span class="timer">${s.betLeft}s</span><small>${isMe ? 'Patiente, ou ils passent tous.' : (betMode ? 'Touche l\'emplacement où TOI tu mettrais la chanson.' : (me && me.tokens > 0 && s.bets[me.id] == null && !s.passes.includes(me.id) ? 'Tu penses qu\'il se trompe ? Parie 1 jeton.' : 'Regarde le résultat.'))}</small>`;
   else if (s.phase === 'reveal') {
     const by = r.by ? s.players.find(p => p.id === r.by) : null;
     let txt = r.ok ? `${by.name} a trouvé !` : (by ? `${active.name} s'est trompé, ${by.name} rafle la carte !` : `${active.name} s'est trompé`);
@@ -348,7 +361,9 @@ function renderGame(s) {
   const tl = $('#timeline'); tl.innerHTML = '';
   const cards = tlOwner.timeline;
   const canPlace = s.phase === 'listen' && isMe;
-  const canBet = s.phase === 'bet' && !isMe && me && me.tokens > 0 && s.bets[me.id] == null && !s.passes.includes(me.id);
+  const mayBet = s.phase === 'bet' && !isMe && me && me.tokens > 0 && s.bets[me.id] == null && !s.passes.includes(me.id);
+  if (s.phase !== 'bet') betMode = false;
+  const canBet = mayBet && betMode;
   const nameOf = id => s.players.find(p => p.id === id)?.name;
   for (let i = 0; i <= cards.length; i++) {
     // en révélation la carte a déjà été insérée : décale les indices pour marquer le bon slot
@@ -362,7 +377,7 @@ function renderGame(s) {
       if (s.phase === 'reveal' && !r.ok) { const ok = fitsView(cards, i, r.year); slot.classList.add(ok ? 'right' : (i === placement ? 'wrong' : '')); }
     }
     if (!(canPlace || canBet)) slot.classList.add('disabled');
-    slot.onclick = () => { if (canPlace) act({ t: 'place', idx: i }); else if (canBet) { if (i === s.placement) toast(`C'est déjà le choix de ${active.name}`); else act({ t: 'bet', idx: i }); } };
+    slot.onclick = () => { if (canPlace) act({ t: 'place', idx: i }); else if (canBet) { if (i === s.placement) toast(`C'est déjà le choix de ${active.name}, choisis un autre « + »`); else { betMode = false; act({ t: 'bet', idx: i }); } } };
     tl.appendChild(slot);
     if (i < cards.length) {
       const c = cards[i]; const card = el('div', 'tcard');
@@ -381,10 +396,11 @@ function renderGame(s) {
   const ac = $('#actions'); ac.innerHTML = '';
   if (s.phase === 'listen' && isMe) {
     const g = el('div', 'guess'); g.innerHTML = `<input id="g-artist" placeholder="Artiste" autocomplete="off"><input id="g-title" placeholder="Titre" autocomplete="off">`;
-    ac.appendChild(el('div', 'note', 'Bonus : artiste + titre exacts = 1 jeton'));
+    ac.appendChild(el('div', 'note', `Bonus jeton : tu connais l'artiste <b>et</b> le titre ? Écris-les, +1 ● si les deux sont justes.`));
     ac.appendChild(g);
+    ac.appendChild(el('div', 'note', `Tu as <b>${me.tokens} jeton${me.tokens > 1 ? 's' : ''}</b> ● à dépenser si tu veux :`));
     const row = el('div', 'row');
-    row.innerHTML = `<button class="btn" id="b-skip" ${me.tokens < 1 ? 'disabled' : ''}>Passer <span class="cost">1 ●</span></button><button class="btn" id="b-buy" ${me.tokens < 3 ? 'disabled' : ''}>Acheter une carte <span class="cost">3 ●</span></button>`;
+    row.innerHTML = `<button class="btn" id="b-skip" ${me.tokens < 1 ? 'disabled' : ''}>Changer de chanson <span class="cost">1 ●</span></button><button class="btn" id="b-buy" ${me.tokens < 3 ? 'disabled' : ''}>Carte offerte <span class="cost">3 ●</span></button>`;
     ac.appendChild(row);
     $('#b-skip').onclick = () => act({ t: 'skip' });
     $('#b-buy').onclick = () => act({ t: 'buy' });
@@ -393,19 +409,30 @@ function renderGame(s) {
     if (s.guess) { $('#g-artist').value = s.guess.artist; $('#g-title').value = s.guess.title; }
   }
   if (s.phase === 'bet' && !isMe && me) {
-    if (s.bets[me.id] != null) ac.appendChild(el('div', 'note', 'Pari enregistré. On attend les autres.'));
-    else if (s.passes.includes(me.id)) ac.appendChild(el('div', 'note', 'Tu as passé.'));
-    else { const b = el('button', 'btn', 'Je ne parie pas'); b.onclick = () => act({ t: 'pass' }); ac.appendChild(b); }
+    if (s.bets[me.id] != null) ac.appendChild(el('div', 'note', 'Pari enregistré ● On attend les autres.'));
+    else if (s.passes.includes(me.id)) ac.appendChild(el('div', 'note', 'Tu ne paries pas. On attend les autres.'));
+    else if (me.tokens < 1) { ac.appendChild(el('div', 'note', 'Plus de jeton, tu ne peux pas parier.')); const b = el('button', 'btn', 'OK, j\'ai vu'); b.onclick = () => act({ t: 'pass' }); ac.appendChild(b); }
+    else if (betMode) { const b = el('button', 'btn ghost', 'Annuler le pari'); b.onclick = () => { betMode = false; render(); }; ac.appendChild(b); }
+    else {
+      const row = el('div', 'row');
+      const b1 = el('button', 'btn primary', `Parier qu'il se trompe <span class="cost">1 ●</span>`); b1.onclick = () => { betMode = true; render(); toast('Touche le « + » où tu mettrais la chanson'); };
+      const b2 = el('button', 'btn', 'Je ne parie pas'); b2.onclick = () => act({ t: 'pass' });
+      row.append(b1, b2); ac.appendChild(row);
+      ac.appendChild(el('div', 'note', `Si ${active.name} se trompe et que ton emplacement est le bon, la carte est pour toi.`));
+    }
+  }
+  if (['listen', 'bet'].includes(s.phase) && !isMe && !active.online) {
+    const b = el('button', 'btn ghost small', `${active.name} semble déconnecté · passer son tour`); b.onclick = () => act({ t: 'force-next' }); ac.appendChild(b);
   }
   if (s.phase === 'reveal') {
     const b = el('button', 'btn ' + (s.winner ? 'mint' : 'primary'), s.winner ? 'Voir le classement' : 'Tour suivant →'); b.onclick = () => act({ t: 'next' }); ac.appendChild(b);
   }
 }
-let lastTurnKey = null;
+let lastTurnKey = null, betMode = false;
 function fitsView(cards, idx, year) { const b = idx === 0 ? -Infinity : cards[idx - 1].year; const a = idx === cards.length ? Infinity : cards[idx].year; return year >= b && year <= a; }
 
 // ================= rendu Éclair =================
-let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eTimer = null;
+let eSnippetLimit = 0, eLastRound = null, eCatalog = null, eTimer = null, eActionsKey = null;
 function playSnippet(sec) {
   if (!audio.src) return;
   clearTimeout(eTimer); eSnippetLimit = sec; audio.pause(); audio.currentTime = 0;
@@ -449,8 +476,11 @@ function renderEclair(s) {
   $('#e-len').textContent = reveal ? '30 s' : fmtS(lim);
   $('#e-play').onclick = () => { if (reveal) { eSnippetLimit = 0; audio.currentTime = 0; audio.play().catch(() => { }); } else playSnippet(lim); };
 
-  // actions
-  const ac = $('#e-actions'); ac.innerHTML = '';
+  // actions (reconstruites seulement si mon état change, pour ne pas effacer la saisie)
+  const ac = $('#e-actions');
+  const key = `${s.phase}|${s.round}|${e.level}|${e.done}|${e.tries.length}`;
+  if (key === eActionsKey && ac.children.length) { renderEOthers(s, reveal); return; }
+  eActionsKey = key; ac.innerHTML = '';
   if (!reveal && !e.done) {
     const box = el('div', 'guess-box'); box.innerHTML = `<input id="e-input" placeholder="Titre de la chanson…" autocomplete="off" autocapitalize="off"><div class="suggest" id="e-suggest" hidden></div>`;
     ac.appendChild(box);
@@ -477,7 +507,9 @@ function renderEclair(s) {
     const btn = el('button', 'btn ' + (s.round >= s.rounds ? 'mint' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante →'); btn.onclick = () => act({ t: 'e-next' }); ac.appendChild(btn);
   }
 
-  // les autres
+  renderEOthers(s, reveal);
+}
+function renderEOthers(s, reveal) {
   const ot = $('#e-others'); ot.innerHTML = '';
   if (!reveal) s.players.filter(p => p.id !== net.me).forEach(p => { const x = s.eclair[p.id] || { level: 0 }; const sp = el('span', x.done ? (x.points ? 'done' : 'out') : ''); sp.textContent = `${p.name} · ${x.done ? (x.points ? 'trouvé +' + x.points : 'abandon') : 'écoute ' + fmtS(E_LEVELS[x.level])}`; ot.appendChild(sp); });
 }
@@ -519,6 +551,9 @@ $('#btn-start').onclick = () => {
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });
 $('#btn-home').onclick = () => location.reload();
+$('#btn-help').onclick = () => { $('#help').hidden = false; };
+$('#help-close').onclick = () => { $('#help').hidden = true; };
+$('#help').onclick = e => { if (e.target.id === 'help') $('#help').hidden = true; };
 $('#btn-leave').onclick = () => location.reload();
 $('#in-code').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); });
 

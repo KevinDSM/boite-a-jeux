@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -139,9 +139,27 @@
   <button class="btn ghost" id="btn-home">Retour à l'accueil</button>
 </section>
 
+<button class="help-btn" id="btn-help" type="button" aria-label="Règles" title="Règles">?</button>
+<div class="modal" id="help" hidden>
+  <div class="sheet">
+    <div class="top"><span class="eyebrow">Règles</span><button class="btn ghost small" id="help-close">Fermer</button></div>
+    <h3>Décennies</h3>
+    <p><b>But :</b> premier à remplir sa frise de cartes rangées par année.</p>
+    <p><b>À ton tour :</b> écoute l'extrait, touche le « + » où la chanson se place dans ta frise. Bonne année, la carte est à toi. Sinon elle est perdue.</p>
+    <p><b>Les jetons ● :</b> tu en as 2 au départ.</p>
+    <ul>
+      <li><b>Gagner 1 ●</b> : écris l'artiste et le titre avant de placer. Les deux justes = +1.</li>
+      <li><b>Parier 1 ●</b> : quand un autre joueur a placé, tu peux parier qu'il se trompe en montrant ton propre emplacement. S'il rate et que tu as raison, la carte est pour toi.</li>
+      <li><b>Changer de chanson, 1 ●</b> : tu ne connais pas du tout ? Passe à une autre.</li>
+      <li><b>Carte offerte, 3 ●</b> : une carte ajoutée à ta frise sans deviner.</li>
+    </ul>
+    <h3>Éclair</h3>
+    <p>Tout le monde écoute la même chanson. Trouve le titre avec le moins de secondes : 0,5 s vaut 5 points, puis 4, 3, 2, 1. Un titre faux débloque le palier suivant.</p>
+  </div>
+</div>
 <div class="net-status" id="net"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>
