@@ -37,7 +37,7 @@ body{margin:0;background:radial-gradient(120% 80% at 50% -10%,#2a2140 0%,var(--b
 @keyframes screen-in{from{opacity:0;transform:translateY(12px)}}
 
 /* ---------- typographie ---------- */
-h1{font-family:var(--font-d);font-weight:800;font-size:clamp(40px,12.5vw,66px);line-height:.95;letter-spacing:-.03em;margin:0;color:var(--ink)}
+h1{font-family:var(--font-d);font-weight:800;font-size:clamp(40px,13vw,68px);position:relative;line-height:.95;letter-spacing:-.03em;margin:0;color:var(--ink)}
 .hero.small h1{font-size:clamp(40px,12vw,64px);line-height:.95}
 .tagline{color:var(--ink2);font-size:17px;margin:6px 0 0;max-width:30ch}
 .tagline em{font-style:normal;color:var(--acc2);font-family:var(--font-d);font-weight:700}
@@ -45,7 +45,7 @@ h1{font-family:var(--font-d);font-weight:800;font-size:clamp(40px,12.5vw,66px);l
 .muted{color:var(--mute);font-size:14px;margin:0}
 .err{color:var(--rose);font-size:14px;min-height:20px;margin:0}
 
-.hero{padding:28px 0 8px;display:flex;flex-direction:column;gap:10px;position:relative}
+.hero{padding:78px 0 8px;display:flex;flex-direction:column;gap:10px;position:relative}
 .hero.small{align-items:center;text-align:center}
 
 /* ---------- vinyle ---------- */
@@ -60,7 +60,7 @@ h1{font-family:var(--font-d);font-weight:800;font-size:clamp(40px,12.5vw,66px);l
 .vinyl.spin{animation:spin 1.8s linear infinite}
 .vinyl.spin::after{animation:spin 1.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.vinyl-hero{width:150px;height:150px;position:absolute;right:-30px;top:-10px;opacity:.9;transform:rotate(-12deg);animation:float 6s ease-in-out infinite}
+.vinyl-hero{width:104px;height:104px;position:absolute;right:0;top:-6px;opacity:.9;transform:rotate(-12deg);z-index:-1;animation:float 6s ease-in-out infinite}
 .vinyl-hero.gold{position:static;transform:none;animation:spin 8s linear infinite}
 .vinyl-hero.gold i{background:var(--gold)}
 @keyframes float{50%{transform:rotate(-6deg) translateY(-8px)}}
