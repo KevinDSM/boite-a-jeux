@@ -33,6 +33,13 @@ audio.addEventListener('pause', () => { $('#vinyl').classList.remove('spin'); $(
 audio.addEventListener('timeupdate', () => { $('#prog').style.width = (audio.currentTime / (audio.duration || 30) * 100) + '%'; });
 $('#btn-play').onclick = togglePlay;
 
+// volume (utile sur ordinateur ; les iPhone ignorent audio.volume)
+let savedVol = 100; try { savedVol = +(localStorage.getItem('dc-vol') ?? 100); } catch { }
+audio.volume = savedVol / 100; $('#vol').value = savedVol;
+$('#btn-vol').onclick = () => { $('#vol-bar').hidden = !$('#vol-bar').hidden; };
+$('#vol').oninput = e => { audio.volume = e.target.value / 100; $('#btn-vol').textContent = e.target.value == 0 ? '🔇' : '🔊'; try { localStorage.setItem('dc-vol', e.target.value); } catch { } };
+$('#btn-vol').textContent = savedVol == 0 ? '🔇' : '🔊';
+
 let wakeLock = null;
 async function keepAwake() { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch { } }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !wakeLock) keepAwake(); });
@@ -150,7 +157,7 @@ const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game:
 let view = null;         // état public affiché
 let songsCache = null;
 
-async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=4')).json(); return songsCache; }
+async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=5')).json(); return songsCache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net-status ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
