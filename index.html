@@ -58,9 +58,13 @@
       <span>Cartes pour gagner</span>
       <select id="opt-target"><option>5</option><option>7</option><option selected>10</option><option>15</option></select>
     </label>
-    <label class="field row check">
-      <span>Le son sort de ce téléphone pour tout le monde (enceinte)</span>
-      <input type="checkbox" id="opt-speaker">
+    <label class="field row">
+      <span>Le son sort de…</span>
+      <select id="opt-sound">
+        <option value="active" selected>Téléphone du joueur actif</option>
+        <option value="host">Ce téléphone (enceinte)</option>
+        <option value="all">Tous les téléphones</option>
+      </select>
     </label>
     <button class="btn primary" id="btn-start">Lancer la partie</button>
   </div>

@@ -64,9 +64,9 @@ class Game {
   }
   pool() { const cats = this.s.cats; return this.songs.filter(s => !cats || cats.includes(s.cat)); }
 
-  start({ target, cats, speakerId }) {
+  start({ target, cats, speakerId, soundAll }) {
     const s = this.s;
-    s.target = target; s.cats = cats && cats.length ? cats : null; s.speakerId = speakerId;
+    s.target = target; s.cats = cats && cats.length ? cats : null; s.speakerId = speakerId; s.soundAll = !!soundAll;
     s.deck = shuffle(this.pool()); s.winner = null; s.turn = 0;
     s.players.forEach(p => { p.tokens = 2; p.timeline = [this.draw()]; });
     this.nextSong(); s.phase = 'listen';
@@ -276,7 +276,7 @@ function renderGame(s) {
 
   // --- carte en cours
   const vinyl = $('#vinyl'); const info = $('#track-info');
-  const speakerHere = s.speakerId ? s.speakerId === net.me : isMe;
+  const speakerHere = s.soundAll || (s.speakerId ? s.speakerId === net.me : isMe);
   loadAudio(s.current?.preview);
   if (s.phase === 'reveal') {
     vinyl.classList.add('revealed'); $('#art').src = r.song.art;
@@ -375,7 +375,7 @@ $('#btn-solo').onclick = async () => { net.name = $('#in-name').value.trim() || 
 $('#btn-start').onclick = () => {
   const cats = [...$('#opt-cats').querySelectorAll('input:checked')].map(i => i.value);
   if (!cats.length) { toast('Choisis au moins une playlist'); return; }
-  act({ t: 'start', opts: { target: +$('#opt-target').value, cats, speakerId: $('#opt-speaker').checked ? net.me : null } });
+  act({ t: 'start', opts: { target: +$('#opt-target').value, cats, speakerId: $('#opt-sound').value === 'host' ? net.me : null, soundAll: $('#opt-sound').value === 'all' } });
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });
 $('#btn-home').onclick = () => location.reload();
