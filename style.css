@@ -153,55 +153,6 @@
 [data-game="sprint"] h1,[data-game="sprint"] .banner,[data-game="sprint"] .crumb{text-transform:uppercase;letter-spacing:.01em}
 [data-game="sprint"] .banner small,[data-game="sprint"] .note{text-transform:none;letter-spacing:0}
 
-/* ============================ jeu : Manette ============================ */
-[data-game="jv"]{
-  --bg:        oklch(0.135 0.022 150);
-  --surface:   oklch(0.188 0.028 152);
-  --surface-2: oklch(0.235 0.034 152);
-  --line:      oklch(0.300 0.042 150);
-  --ink:       oklch(0.950 0.030 145);
-  --ink-2:     oklch(0.770 0.045 148);
-  --mute:      oklch(0.590 0.045 150);
-  --acc:       oklch(0.855 0.205 142);
-  --acc-soft:  oklch(0.880 0.140 130);
-  --on-acc:    oklch(0.16 0.045 150);
-  --pos:       oklch(0.860 0.200 142);
-  --neg:       oklch(0.700 0.190 28);
-  --gold:      oklch(0.850 0.155 85);
-  --glow: 0.20;
-  --r: 4px; --r-s: 3px; --r-pill: 3px;
-  --font-d: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
-  --track: 0.01em;
-}
-[data-theme="light"][data-game="jv"]{
-  --bg:        oklch(0.960 0.020 150);
-  --surface:   oklch(0.995 0.008 150);
-  --surface-2: oklch(0.930 0.022 150);
-  --line:      oklch(0.865 0.032 150);
-  --ink:       oklch(0.195 0.045 152);
-  --ink-2:     oklch(0.400 0.042 150);
-  --mute:      oklch(0.560 0.040 150);
-  --acc:       oklch(0.510 0.155 148);
-  --acc-soft:  oklch(0.440 0.130 145);
-  --on-acc:    oklch(0.99 0.010 150);
-  --pos:       oklch(0.510 0.155 148);
-  --neg:       oklch(0.530 0.185 26);
-  --glow: 0.10;
-}
-[data-game="jv"] h1,[data-game="jv"] .banner,[data-game="jv"] .crumb,[data-game="jv"] .btn{text-transform:uppercase;letter-spacing:.06em}
-[data-game="jv"] .banner{font-size:18px}
-[data-game="jv"] .banner small,[data-game="jv"] .note,[data-game="jv"] .sheet{text-transform:none;letter-spacing:0}
-[data-game="jv"] .btn{font-size:14px}
-[data-game="jv"] .code,[data-game="jv"] .sb .stats b{font-family:var(--font-d)}
-/* balayage de tube cathodique sur la scène */
-[data-game="jv"] .stage::after{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
-  background:repeating-linear-gradient(to bottom, oklch(0 0 0 / .16) 0 1px, transparent 1px 3px);
-  mix-blend-mode:multiply;opacity:.7}
-[data-theme="light"][data-game="jv"] .stage::after{background:repeating-linear-gradient(to bottom, oklch(0 0 0 / .07) 0 1px, transparent 1px 3px)}
-[data-game="jv"] .chrono-stage{border-radius:4px}
-[data-game="jv"] .track-info .big{font-size:26px;line-height:1.15}
-
 /* ============================ socle ============================ */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg);overflow-x:hidden;-webkit-text-size-adjust:100%}
@@ -400,19 +351,6 @@ select{appearance:none;padding-right:30px;min-height:44px;
 .podium .gain{font-family:var(--font-d);font-weight:800;color:var(--acc-soft)}
 .podium .miss{color:var(--neg);font-size:13px}
 
-.g-jv .gname{font-family:ui-monospace,"Consolas",monospace;text-transform:uppercase;letter-spacing:.06em;font-size:20px;color:oklch(0.85 0.20 142)}
-[data-theme="light"] .g-jv .gname{color:oklch(0.51 0.155 148)}
-.g-jv{background:oklch(0.185 0.030 152);border-color:oklch(0.29 0.040 150)}
-.g-jv[aria-pressed="true"]{border-color:oklch(0.855 0.205 142);background:oklch(0.225 0.045 150)}
-[data-theme="light"] .g-jv{background:oklch(0.962 0.022 150);border-color:oklch(0.872 0.032 150)}
-[data-theme="light"] .g-jv[aria-pressed="true"]{border-color:oklch(0.51 0.155 148);background:oklch(0.940 0.045 150)}
-.pad{width:46px;height:30px;display:block;border-radius:9px 9px 12px 12px;background:oklch(0.85 0.20 142);position:relative}
-.pad::before,.pad::after{content:"";position:absolute;top:9px;border-radius:2px;background:oklch(0.185 0.030 152)}
-.pad::before{left:6px;width:12px;height:4px;box-shadow:4px -4px 0 0 oklch(0.185 0.030 152),4px 4px 0 0 oklch(0.185 0.030 152)}
-.pad::after{right:6px;width:5px;height:5px;border-radius:50%;box-shadow:-9px 0 0 0 oklch(0.185 0.030 152)}
-[data-theme="light"] .pad{background:oklch(0.51 0.155 148)}
-[data-theme="light"] .pad::before{box-shadow:4px -4px 0 0 oklch(0.962 0.022 150),4px 4px 0 0 oklch(0.962 0.022 150);background:oklch(0.962 0.022 150)}
-[data-theme="light"] .pad::after{box-shadow:-9px 0 0 0 oklch(0.962 0.022 150);background:oklch(0.962 0.022 150)}
 
 .gsoon{border:1px dashed var(--line);border-radius:var(--r-s);padding:12px 16px;color:var(--mute);font-size:13px;text-align:center}
 
@@ -710,3 +648,6 @@ select{appearance:none;padding-right:30px;min-height:44px;
 .react-float{position:absolute;bottom:12vh;font-size:40px;line-height:1;will-change:transform,opacity}
 .react-float .who{position:absolute;right:-6px;bottom:-4px;font-size:11px;font-weight:700;background:var(--ink);color:var(--bg);padding:2px 6px;border-radius:var(--r-pill)}
 .screen.play.sab{padding-bottom:70px}
+
+.chips label.chip-jv:has(:checked){background:color-mix(in oklab, oklch(0.85 0.2 142) 22%, var(--surface));border-color:oklch(0.85 0.2 142);color:oklch(0.9 0.14 130)}
+[data-theme="light"] .chips label.chip-jv:has(:checked){border-color:oklch(0.51 0.155 148);color:oklch(0.44 0.13 145);background:oklch(0.94 0.045 150)}

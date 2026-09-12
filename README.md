@@ -29,17 +29,6 @@ le plus. 1er 5 points, 2e 3, 3e 2, ensuite 1. Trois essais par manche, la manche
 l'extrait est fini ou que tout le monde a répondu. Même base et même liste de suggestions
 qu'Éclair, choix des décennies.
 
-### Manette
-Des musiques de jeux vidéo, il faut nommer le jeu. Même barème et même déroulé que Sprint.
-Base dédiée `songs-jv.json` (83 jeux, 7 familles) avec sa propre liste de suggestions, qui ne
-contient que des noms de jeux. Une réponse trop vague comme « zelda » ne coûte pas d'essai :
-le jeu demande de préciser. Beaucoup de musiques Nintendo ou Sega n'existent sur iTunes que
-sous forme de reprises orchestrales, c'est la mélodie qui compte.
-
-```bash
-python build_jv.py            # playlists-jv.txt -> songs-jv.json
-```
-
 ### Sablier
 Le seul jeu sans musique : un Time's Up par équipes, porté depuis le projet d'origine
 (le moteur de règles `src/game.js` est repris tel quel dans `sablier-engine.js`, le salon 3D
@@ -56,7 +45,9 @@ Le deck privé « Entre nous » de l'original n'est volontairement pas publié.
 ### Éclair
 Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.
 Paliers 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre faux débloque le
-palier suivant. Choix des décennies de 1980 à aujourd'hui.
+palier suivant. Choix des décennies de 1980 à aujourd'hui, plus une case **Jeux vidéo** qui
+mêle 83 musiques de jeux (base `songs-jv.json`, générée par `build_jv.py`) : pour celles-là il
+faut donner le nom du jeu, et une réponse trop vague ne coûte pas d'essai.
 
 ## Fichiers
 
@@ -66,7 +57,7 @@ palier suivant. Choix des décennies de 1980 à aujourd'hui.
 | `songs.json` | base de Décennies (180 titres, playlists par époque) |
 | `songs-eclair.json` | base d'Éclair et de Sprint (450 tubes, 10 par année de 1980 à 2025) |
 | `playlists.txt`, `playlists-eclair.txt` | les listes `Artiste \| Titre` à enrichir |
-| `songs-jv.json`, `playlists-jv.txt`, `build_jv.py` | base des musiques de jeux vidéo, format `Jeu \| recherche iTunes` |
+| `songs-jv.json`, `playlists-jv.txt`, `build_jv.py` | musiques de jeux vidéo pour l'option d'Éclair, format `Jeu \| recherche iTunes` |
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 | `sablier-engine.js`, `sablier-ui.js`, `decks/` | le jeu Sablier : règles pures, écrans et canevas, cartes |
 

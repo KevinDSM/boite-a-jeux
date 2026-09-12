@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Platine">
-<link rel="manifest" href="manifest.json?v=18">
-<link rel="apple-touch-icon" href="icon-180.png?v=18">
+<link rel="manifest" href="manifest.json?v=19">
+<link rel="apple-touch-icon" href="icon-180.png?v=19">
 <title>Platine · jeux de musique entre amis</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=18">
+<link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -94,12 +94,6 @@
         <span class="gdesc">Tout le monde écoute en même temps. Le premier à donner l'artiste et le titre rafle la mise.</span>
         <span class="gmeta">1 à 8 joueurs · 15 min</span>
       </button>
-      <button class="gcard g-jv" type="button" data-game="jv">
-        <span class="gart" aria-hidden="true"><span class="pad"></span></span>
-        <span class="gname">Manette</span>
-        <span class="gdesc">Des musiques de jeux vidéo. Le premier à nommer le jeu marque le plus de points.</span>
-        <span class="gmeta">1 à 8 joueurs · 15 min</span>
-      </button>
       <button class="gcard g-sablier" type="button" data-game="sablier">
         <span class="gart" aria-hidden="true"><span class="hourglass"></span></span>
         <span class="gname">Sablier</span>
@@ -133,6 +127,7 @@
         <label><input type="checkbox" value="2000" checked>2000</label>
         <label><input type="checkbox" value="2010" checked>2010</label>
         <label><input type="checkbox" value="2020" checked>2020+</label>
+        <label class="chip-jv"><input type="checkbox" value="jv">Jeux vidéo</label>
       </fieldset>
       <label class="field row">
         <span>Nombre de manches</span>
@@ -154,20 +149,6 @@
       <label class="field row">
         <span>Le son sort de…</span>
         <select id="opt-sound-s">
-          <option value="all" selected>Tous les téléphones</option>
-          <option value="host">Ce téléphone (enceinte)</option>
-        </select>
-      </label>
-    </div>
-    <div class="opts" id="opts-jv" hidden>
-      <fieldset class="chips" id="opt-cats-jv"><legend class="eyebrow">Familles de jeux</legend></fieldset>
-      <label class="field row">
-        <span>Nombre de manches</span>
-        <select id="opt-rounds-jv"><option>5</option><option selected>10</option><option>15</option></select>
-      </label>
-      <label class="field row">
-        <span>Le son sort de…</span>
-        <select id="opt-sound-jv">
           <option value="all" selected>Tous les téléphones</option>
           <option value="host">Ce téléphone (enceinte)</option>
         </select>
@@ -297,8 +278,8 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="sablier-engine.js?v=18"></script>
-<script src="app.js?v=18"></script>
-<script src="sablier-ui.js?v=18"></script>
+<script src="sablier-engine.js?v=19"></script>
+<script src="app.js?v=19"></script>
+<script src="sablier-ui.js?v=19"></script>
 </body>
 </html>

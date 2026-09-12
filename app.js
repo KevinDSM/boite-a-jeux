@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '18';
+const ASSET_V = '19';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -22,7 +22,6 @@ const GAMES = {
   timeline: { key: 'timeline', theme: 'decennies', name: 'Décennies' },
   eclair: { key: 'eclair', theme: 'eclair', name: 'Éclair' },
   sprint: { key: 'sprint', theme: 'sprint', name: 'Sprint' },
-  jv: { key: 'jv', theme: 'jv', name: 'Manette' },
   sablier: { key: 'sablier', theme: 'sablier', name: 'Sablier' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
@@ -117,7 +116,13 @@ class Game {
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
-  poolE() { const d = this.s.decades; const p = this.songsE.filter(x => !d || d.includes(Math.floor((+x.cat || x.year) / 10) * 10)); return p.length ? p : this.songsE; }
+  poolE() {
+    const d = this.s.decades;   // null = toutes les périodes ; [] = aucune (jeux vidéo seuls)
+    const base = d === null ? this.songsE : this.songsE.filter(x => d.includes(Math.floor((+x.cat || x.year) / 10) * 10));
+    const jv = this.s.jv ? this.songsJV.map(x => ({ ...x, jv: true, title: x.game, artist: x.title, sub: x.artist })) : [];
+    const p = base.concat(jv);
+    return p.length ? p : this.songsE;
+  }
   draw() { if (!this.s.deck.length) this.s.deck = shuffle(this.s.mode === 'eclair' ? [...this.poolE()] : [...this.pool()]); return this.s.deck.pop(); }
   card() { return { ...this.draw(), at: ++this.seq }; }
 
@@ -127,7 +132,7 @@ class Game {
     const s = this.s;
     s.mode = o.mode || s.pick || 'timeline'; s.winner = null;
     if (s.mode === 'eclair') return this.startEclair(o);
-    if (s.mode === 'sprint' || s.mode === 'jv') return this.startSprint(o);
+    if (s.mode === 'sprint') return this.startSprint(o);
     if (s.mode === 'sablier') return this.startSablier(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
@@ -232,7 +237,7 @@ class Game {
   // --- Éclair
   startEclair(o) {
     const s = this.s;
-    s.rounds = o.rounds || 10; s.round = 0; s.decades = o.decades?.length ? o.decades : null;
+    s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null; s.jv = !!o.jv;
     s.deck = shuffle([...this.poolE()]);
     s.players.forEach(p => { p.score = 0; });
     this.nextRound();
@@ -249,7 +254,12 @@ class Game {
   eGuess(pid, title) {
     const s = this.s; if (s.phase !== 'e-play') return 'Pas maintenant';
     const e = this.eSlot(pid); if (e.done) return null;
-    const ok = norm(title) === norm(s.current.title) || (norm(title).length > 3 && norm(s.current.title).includes(norm(title)));
+    let ok;
+    if (s.current.jv) {                               // musique de jeu vidéo : on attend le nom du jeu
+      const r = this.jvResolve(title);
+      if (r.n > 1) return `${r.n} jeux correspondent, précise`;   // trop vague : n'use pas d'essai
+      ok = r.n === 1 && norm(r.game) === norm(s.current.title);
+    } else ok = norm(title) === norm(s.current.title) || (norm(title).length > 3 && norm(s.current.title).includes(norm(title)));
     e.tries.push({ title, ok });
     if (ok) { e.done = true; e.points = E_POINTS[e.level]; this.player(pid).score += e.points; }
     else if (e.level < E_LEVELS.length - 1) e.level++;
@@ -268,20 +278,18 @@ class Game {
   startSprint(o) {
     const s = this.s;
     s.rounds = o.rounds || 10; s.round = 0; s.decades = o.decades?.length ? o.decades : null;
-    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId;
-    s.cats = o.cats?.length ? o.cats : null;
-    s.deck = shuffle(s.mode === 'jv' ? [...this.poolJV()] : [...this.poolE()]);
+    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId; s.jv = false;
+    s.deck = shuffle([...this.poolE()]);
     s.players.forEach(p => { p.score = 0; });
     this.nextSprintRound();
   }
   nextSprintRound() {
     const s = this.s; s.round++;
-    if (!s.deck.length) s.deck = shuffle(s.mode === 'jv' ? [...this.poolJV()] : [...this.poolE()]);
+    if (!s.deck.length) s.deck = shuffle([...this.poolE()]);
     s.current = s.deck.pop(); s.order = []; s.result = null;
     s.sprint = {}; s.players.forEach(p => { s.sprint[p.id] = { tries: 0, done: false, points: 0, rank: 0 }; });
     s.roundEnds = Date.now() + SP_ROUND_MS; s.phase = 's-play';
   }
-  poolJV() { const c = this.s.cats; const p = this.songsJV.filter(x => !c || c.includes(x.cat)); return p.length ? p : this.songsJV; }
   jvNames() { return [...new Set(this.songsJV.map(x => x.game))]; }
   // « zelda » désigne plusieurs jeux : on demande de préciser au lieu de compter un raté
   jvResolve(text) {
@@ -302,12 +310,7 @@ class Game {
   spGuess(pid, text) {
     const s = this.s; if (s.phase !== 's-play') return 'Manche terminée';
     const e = this.spSlot(pid); if (e.done) return null;
-    let good;
-    if (s.mode === 'jv') {
-      const r = this.jvResolve(text);
-      if (r.n > 1) return `${r.n} jeux correspondent, précise`;   // n'use pas d'essai
-      good = r.n === 1 && norm(r.game) === norm(s.current.game);
-    } else good = this.spMatch(text, s.current);
+    const good = this.spMatch(text, s.current);
     if (good) {
       e.done = true; s.order.push(pid); e.rank = s.order.length;
       e.points = SP_POINTS[Math.min(e.rank - 1, SP_POINTS.length - 1)];
@@ -357,7 +360,7 @@ class Game {
     const s = this.s, hide = s.phase === 'listen' || s.phase === 'bet' || s.phase === 'e-play' || s.phase === 's-play';
     return {
       ...s, deck: undefined,
-      current: s.current ? (hide ? { preview: s.current.preview } : s.current) : null,
+      current: s.current ? (hide ? { preview: s.current.preview, jv: !!s.current.jv } : s.current) : null,
       betLeft: s.phase === 'bet' ? Math.max(0, Math.ceil((s.betEnds - Date.now()) / 1000)) : 0,
       solo: s.players.filter(p => p.online).length <= 1,
       spLeft: s.phase === 's-play' ? Math.max(0, Math.ceil((s.roundEnds - Date.now()) / 1000)) : 0,
@@ -603,7 +606,6 @@ function renderLobby(s) {
   $('#opts-timeline').hidden = s.pick !== 'timeline';
   $('#opts-eclair').hidden = s.pick !== 'eclair';
   $('#opts-sprint').hidden = s.pick !== 'sprint';
-  $('#opts-jv').hidden = s.pick !== 'jv';
   $('#opts-sablier').hidden = s.pick !== 'sablier';
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
     Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
@@ -614,11 +616,6 @@ function renderLobby(s) {
       $('#opt-sab-count').textContent = `${n} cartes disponibles, ${need} nécessaires pour ${s.players.length} joueur${s.players.length > 1 ? 's' : ''}.`;
     };
     $('#opts-sablier').addEventListener('input', refresh); refresh();
-  }
-  if (isHostPlayer() && !$('#opt-cats-jv').querySelector('label') && jvCatalog) {
-    [...new Set(jvCatalog.map(x => x.cat))].forEach(k => {
-      const l = el('label'); l.innerHTML = `<input type="checkbox" value="${k}" checked>${k}`; $('#opt-cats-jv').appendChild(l);
-    });
   }
   $('#lobby-wait').hidden = isHostPlayer();
   $('#lobby-wait').textContent = chosen ? `L'hôte prépare une partie de ${GAMES[s.pick].name}…` : 'L\'hôte choisit le jeu…';
@@ -827,13 +824,13 @@ function renderEclair(s) {
   const b = $('#e-banner');
   if (!reveal) b.innerHTML = e.done
     ? `Manche ${s.round}/${s.rounds} <span class="pts">${e.points ? '+' + e.points : '0'} pt${e.points > 1 ? 's' : ''}</span><small>On attend les autres…</small>`
-    : `Manche ${s.round}/${s.rounds}<small>Écoute ${fmtS(E_LEVELS[e.level])}. Le titre maintenant vaut <b class="pts">${E_POINTS[e.level]} pt${E_POINTS[e.level] > 1 ? 's' : ''}</b>.</small>`;
+    : `Manche ${s.round}/${s.rounds}<small>Écoute ${fmtS(E_LEVELS[e.level])}. ${s.current?.jv ? 'Le nom du jeu' : 'Le titre'} maintenant vaut <b class="pts">${E_POINTS[e.level]} pt${E_POINTS[e.level] > 1 ? 's' : ''}</b>.</small>`;
   else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
 
   loadAudio(s.current?.preview);
   if (s.round !== eLastRound) { eLastRound = s.round; stopSnippet(); $('#e-vinyl').classList.remove('revealed'); }
   const stage = $('#e-vinyl'), info = $('#e-info');
-  if (reveal) { stage.classList.add('revealed'); $('#e-art').src = s.current.art; info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`; }
+  if (reveal) { stage.classList.add('revealed'); $('#e-art').src = s.current.art; info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.jv ? s.current.sub : s.current.year}</small>`; }
   else { $('#e-art').removeAttribute('src'); info.innerHTML = e.tries.length ? `<small>Raté : ${e.tries.map(t => t.title).join(' · ')}</small>` : ''; }
 
   const bar = $('#e-segbar'); bar.innerHTML = ''; let prev = 0;
@@ -861,8 +858,12 @@ function renderEclair(s) {
 
   if (!reveal && !e.done) {
     const submitE = input => { const t = input.value.trim(); if (!t) return; act({ t: 'e-guess', title: t }); input.value = ''; };
-    ac.appendChild(makeGuessBox('e-input', 'Titre de la chanson…', submitE,
-      q => (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6).map(x => ({ label: x.title, sub: x.artist, fill: x.title }))));
+    const jvNow = !!s.current?.jv;
+    ac.appendChild(makeGuessBox('e-input', jvNow ? 'Nom du jeu…' : 'Titre de la chanson…', submitE, q => {
+      const games = s.jv ? (jvCatalog || []).filter(x => norm(x.game).includes(q)).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : [];
+      const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: x.title }));
+      return (jvNow ? games.concat(songs) : songs.concat(games)).slice(0, 6);
+    }));
     const row = el('div', 'row');
     row.innerHTML = `<button class="btn primary" id="e-submit">Valider</button>`
       + (e.level < E_LEVELS.length - 1 ? `<button class="btn" id="e-more">Écouter plus <span class="cost">${fmtS(E_LEVELS[e.level + 1])} · ${E_POINTS[e.level + 1]} pt${E_POINTS[e.level + 1] > 1 ? 's' : ''}</span></button>` : '')
@@ -934,7 +935,6 @@ function renderSprint(s) {
   const me = s.players.find(p => p.id === net.me);
   const e = s.sprint[net.me] || { tries: 0, done: false, points: 0, rank: 0 };
   const reveal = s.phase === 's-reveal';
-  const jv = s.mode === 'jv';
   const nameOf = id => s.players.find(p => p.id === id)?.name;
 
   const sb = $('#sp-scoreboard'); sb.innerHTML = '';
@@ -950,7 +950,7 @@ function renderSprint(s) {
     const left = SP_TRIES - e.tries;
     b.innerHTML = e.done
       ? `Manche ${s.round}/${s.rounds}${e.points ? ` · <span class="pts">+${e.points}</span>` : ''}<small>${e.points ? `${e.rank}${e.rank === 1 ? 'er' : 'e'} à trouver. On attend les autres.` : 'Manche finie pour toi, on attend les autres.'}</small>`
-      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>${jv ? 'De quel jeu vient cette musique ?' : 'Artiste et titre, le plus vite possible.'} ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
+      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>Artiste et titre, le plus vite possible. ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
   } else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
 
   // audio : tout le monde en même temps, sauf si l'hôte fait enceinte
@@ -965,9 +965,7 @@ function renderSprint(s) {
   stage.classList.toggle('hot', !reveal && s.spLeft <= 5);
   if (reveal) {
     stage.classList.add('revealed'); $('#sp-art').src = s.current.art;
-    info.innerHTML = jv
-      ? `<div class="big ok">${s.current.game}</div>${s.current.title}<small>${s.current.artist}</small>`
-      : `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`;
+    info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`;
     // couper une seule fois à l'entrée en révélation, sinon on empêcherait la réécoute
     if (spRevealKey !== s.round) { spRevealKey = s.round; audio.pause(); }
   } else {
@@ -986,14 +984,12 @@ function renderSprint(s) {
 
   if (!reveal && !e.done) {
     const submit = input => { const t = input.value.trim(); if (!t) return; act({ t: 'sp-guess', text: t }); input.value = ''; };
-    const source = jv
-      ? q => (jvCatalog || []).filter(x => norm(x.game).includes(q)).slice(0, 6).map(x => ({ label: x.game, sub: x.cat, fill: x.game }))
-      : q => (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
-    ac.appendChild(makeGuessBox('sp-input', jv ? 'Nom du jeu…' : 'Titre et artiste…', submit, source));
+    const source = q => (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
+    ac.appendChild(makeGuessBox('sp-input', 'Titre et artiste…', submit, source));
     const row = el('div', 'row');
     row.innerHTML = `<button class="btn primary" id="sp-submit">Valider</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
     ac.appendChild(row);
-    ac.appendChild(el('div', 'note', jv ? 'Choisis dans la liste : les noms de jeux y sont tous.' : 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
+    ac.appendChild(el('div', 'note', 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
     $('#sp-submit').onclick = () => submit($('#sp-input'));
     $('#sp-pass').onclick = () => act({ t: 'sp-giveup' });
   }
@@ -1045,8 +1041,7 @@ function renderEnd(s) {
   $('#end-winner').textContent = solo ? 'Terminé' : (w ? w.name : '—');
   $('#end-sub').textContent = solo
     ? (eclair ? `${w ? w.score : 0} points sur ${s.rounds} manches.` : `Frise complète : ${s.target} cartes bien placées.`)
-    : s.mode === 'jv' ? 'a la plus grosse ludothèque.'
-      : s.mode === 'sprint' ? 'a été le plus rapide sur la gâchette.'
+    : s.mode === 'sprint' ? 'a été le plus rapide sur la gâchette.'
         : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
   const ol = $('#ranking'); ol.innerHTML = '';
   [...s.players]
@@ -1077,6 +1072,7 @@ const HELP = {
       <li>0,5 s vaut 5 points, puis 1 s vaut 4, 2 s vaut 3, 3 s vaut 2, 5 s vaut 1.</li>
       <li>Un titre faux débloque automatiquement le palier suivant.</li>
       <li>« Écouter plus » débloque le palier sans tenter de réponse.</li>
+      <li>Avec la case <b>Jeux vidéo</b> cochée, des musiques de jeux se glissent parmi les chansons : pour celles-là, c'est le nom du jeu qu'il faut donner. Un nom trop vague comme « zelda » ne coûte pas d'essai, on te demande de préciser.</li>
     </ul>
     <p>Le plus grand total après toutes les manches gagne.</p>`,
   sprint: `<h3>Sprint</h3>
@@ -1086,14 +1082,6 @@ const HELP = {
       <li>Trois essais par manche, puis la manche est finie pour toi.</li>
       <li>La liste de suggestions remplit le titre et l'artiste d'un seul coup : sers-t'en, c'est plus rapide que de tout taper.</li>
       <li>La manche s'arrête quand l'extrait est fini ou que tout le monde a répondu.</li>
-    </ul>`,
-  jv: `<h3>Manette</h3>
-    <p>Une musique de jeu vidéo démarre chez tout le monde. Le but : nommer <b>le jeu</b> avant les autres.</p>
-    <ul>
-      <li>Le 1<sup>er</sup> marque 5 points, le 2<sup>e</sup> 3, le 3<sup>e</sup> 2, les suivants 1.</li>
-      <li>Trois essais par manche. Un nom trop vague comme « zelda » ne coûte pas d'essai : on te demande de préciser.</li>
-      <li>La liste de suggestions contient tous les jeux de la partie.</li>
-      <li>Beaucoup de musiques Nintendo ou Sega n'existent que sous forme de reprises orchestrales : c'est la mélodie qui compte.</li>
     </ul>`,
   sablier: `<h3>Sablier</h3>
     <p>Par équipes. Chacun reçoit des cartes et en écarte quelques-unes ; le reste forme le paquet commun. Le but : faire deviner le plus de cartes à son équipe, en un temps limité, sur plusieurs manches avec les <b>mêmes cartes</b>.</p>
@@ -1173,17 +1161,14 @@ $('#btn-start').onclick = () => {
     const snd = $('#opt-sound').value;
     act({ t: 'start', opts: { mode: 'timeline', cats, target: +$('#opt-target').value, speakerId: snd === 'host' ? net.me : null, soundAll: snd === 'all' } });
   } else if (pick === 'eclair') {
-    const decades = [...$('#opt-decades').querySelectorAll('input:checked')].map(i => +i.value);
-    if (!decades.length) { toast('Choisis au moins une décennie'); return; }
-    act({ t: 'start', opts: { mode: 'eclair', decades, rounds: +$('#opt-rounds').value } });
+    const checked = [...$('#opt-decades').querySelectorAll('input:checked')].map(i => i.value);
+    const decades = checked.filter(v => v !== 'jv').map(Number), jv = checked.includes('jv');
+    if (!decades.length && !jv) { toast('Choisis au moins une période ou les jeux vidéo'); return; }
+    act({ t: 'start', opts: { mode: 'eclair', decades, jv, rounds: +$('#opt-rounds').value } });
   } else if (pick === 'sprint') {
     const decades = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => +i.value);
     if (!decades.length) { toast('Choisis au moins une décennie'); return; }
     act({ t: 'start', opts: { mode: 'sprint', decades, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
-  } else if (pick === 'jv') {
-    const cats = [...$('#opt-cats-jv').querySelectorAll('input:checked')].map(i => i.value);
-    if (!cats.length) { toast('Choisis au moins une famille'); return; }
-    act({ t: 'start', opts: { mode: 'jv', cats, rounds: +$('#opt-rounds-jv').value, speakerId: $('#opt-sound-jv').value === 'host' ? net.me : null } });
   }
   if (pick === 'sablier') {
     if ((view?.players || []).filter(p => p.online).length < 2) { toast('Sablier se joue à deux minimum, par équipes'); return; }
