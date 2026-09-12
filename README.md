@@ -5,9 +5,9 @@
 Chacun joue sur son téléphone, tout le monde se connecte avec un code à 4 lettres.
 Le salon permet de choisir le jeu, et chaque jeu a sa propre identité visuelle.
 
-**En ligne : https://kevindsm.github.io/platine/** (dépôt GitHub `KevinDSM/platine`).
-L'ancienne adresse `…/decennies/` redirige, via un dépôt séparé qui ne contient qu'une page
-de redirection : GitHub Pages ne redirige pas tout seul après un renommage.
+**En ligne : https://kevindsm.github.io/boite-a-jeux/** (dépôt GitHub `KevinDSM/boite-a-jeux`).
+Les anciennes adresses `…/platine/` et `…/decennies/` redirigent, chacune via un dépôt séparé
+qui ne contient qu'une page de redirection : GitHub Pages ne redirige pas tout seul après un renommage.
 Toute modification poussée sur `main` est en ligne en une à deux minutes.
 
 ## Les jeux
