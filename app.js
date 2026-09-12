@@ -1,4 +1,4 @@
-/* Platine — hub de jeux de musique jouables à plusieurs téléphones.
+/* Boîte à jeux (ex-Platine) — hub de jeux jouables à plusieurs téléphones.
    Architecture : l'hôte (celui qui crée la partie) fait autorité. Il possède les bases de
    chansons et l'état de la partie, et diffuse un état "public" (sans l'année ni le titre de
    la chanson en cours) à tous les invités via WebRTC (PeerJS). Les invités n'envoient que
@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '21';
+const ASSET_V = '22';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -52,9 +52,9 @@ function show(id) {
   $('#btn-help').hidden = id === 's-home';
   $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair' || id === 's-sprint');
   if ($('#btn-vol').hidden) $('#vol-bar').hidden = true;
-  $('#crumb').textContent = id === 's-home' ? 'Platine'
+  $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux'
     : id === 's-lobby' ? 'Salon' + (net.code ? ' · ' + net.code : '')
-      : id === 's-end' ? 'Classement' : (GAMES[view?.mode]?.name || 'Platine');
+      : id === 's-end' ? 'Classement' : (GAMES[view?.mode]?.name || 'Boîte à jeux');
   syncThemeColor();
 }
 
@@ -1113,7 +1113,7 @@ const HELP = {
     <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
     <p>Pendant un tour, le public envoie des réactions emoji, et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran avec le crayon ✏️ (couleur de leur équipe, effacé au tour suivant).</p>
     <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
-  hub: `<h3>Platine</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
+  hub: `<h3>Boîte à jeux</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
 };
 $('#btn-help').onclick = () => { $('#help-body').innerHTML = HELP[view?.mode && view.phase !== 'lobby' ? view.mode : (view?.pick || 'hub')] || HELP.hub; $('#help').hidden = false; };

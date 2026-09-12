@@ -7,15 +7,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Platine">
-<link rel="manifest" href="manifest.json?v=21">
-<link rel="apple-touch-icon" href="icon-180.png?v=21">
-<title>Platine · jeux de musique entre amis</title>
+<meta name="apple-mobile-web-app-title" content="Boîte à jeux">
+<link rel="manifest" href="manifest.json?v=22">
+<link rel="apple-touch-icon" href="icon-180.png?v=22">
+<title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=21">
+<link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -23,7 +23,7 @@
 <!-- ====================== BARRE HAUTE ====================== -->
 <header class="topbar" id="topbar">
   <button class="ic" id="btn-back" type="button" aria-label="Retour" hidden>‹</button>
-  <span class="crumb" id="crumb">Platine</span>
+  <span class="crumb" id="crumb">Boîte à jeux</span>
   <span class="net" id="net" aria-live="polite"></span>
   <button class="ic" id="btn-vol" type="button" aria-label="Volume" hidden>🔊</button>
   <button class="ic" id="btn-help" type="button" aria-label="Règles" hidden>?</button>
@@ -36,9 +36,43 @@
 <!-- ====================== ACCUEIL ====================== -->
 <section class="screen" id="s-home">
   <div class="hub-hero">
-    <div class="platter" aria-hidden="true"><i></i></div>
-    <h1>Platine</h1>
-    <p class="lede">Des jeux de musique à jouer ensemble, chacun sur son téléphone.</p>
+    <div class="gamebox" aria-hidden="true">
+      <svg viewBox="0 0 120 100" width="118" height="98">
+        <!-- ombre au sol -->
+        <ellipse class="gb-shadow" cx="60" cy="90" rx="46" ry="7"/>
+        <!-- corps de la boîte, vue de trois quarts -->
+        <g class="gb-body">
+          <polygon class="gb-side" points="18,52 60,70 60,92 18,74"/>
+          <polygon class="gb-front" points="60,70 102,52 102,74 60,92"/>
+          <polygon class="gb-top" points="18,52 60,34 102,52 60,70"/>
+          <!-- bande de couleur sur le côté -->
+          <polygon class="gb-band" points="18,64 60,82 60,88 18,70"/>
+          <polygon class="gb-band2" points="60,82 102,64 102,70 60,88"/>
+        </g>
+        <!-- couvercle entrouvert -->
+        <g class="gb-lid">
+          <polygon class="gb-lid-top" points="14,44 60,24 106,44 60,64"/>
+          <polygon class="gb-lid-edge" points="14,44 60,64 60,69 14,49"/>
+          <polygon class="gb-lid-edge2" points="60,64 106,44 106,49 60,69"/>
+          <polygon class="gb-lid-mark" points="44,42 60,35 76,42 60,49"/>
+        </g>
+        <!-- ce qui dépasse : un dé et un pion -->
+        <g class="gb-die">
+          <polygon class="die-top" points="86,20 98,14 110,20 98,26"/>
+          <polygon class="die-left" points="86,20 98,26 98,40 86,34"/>
+          <polygon class="die-right" points="98,26 110,20 110,34 98,40"/>
+          <circle class="die-pip" cx="98" cy="20" r="1.8"/>
+          <circle class="die-pip" cx="90" cy="26" r="1.5"/><circle class="die-pip" cx="94" cy="32" r="1.5"/>
+          <circle class="die-pip" cx="102" cy="32" r="1.5"/><circle class="die-pip" cx="106" cy="26" r="1.5"/>
+        </g>
+        <g class="gb-meeple">
+          <circle cx="24" cy="24" r="6"/>
+          <path d="M14 46 L16 34 Q24 26 32 34 L34 46 Z"/>
+        </g>
+      </svg>
+    </div>
+    <h1>Boîte à jeux</h1>
+    <p class="lede">Des jeux à jouer ensemble, chacun sur son téléphone.</p>
   </div>
 
   <form class="stack" id="f-home">
@@ -57,7 +91,7 @@
 
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
-    <p class="fine">2 jeux disponibles · d'autres arrivent</p>
+    <p class="fine">4 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -282,8 +316,8 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="sablier-engine.js?v=21"></script>
-<script src="app.js?v=21"></script>
-<script src="sablier-ui.js?v=21"></script>
+<script src="sablier-engine.js?v=22"></script>
+<script src="app.js?v=22"></script>
+<script src="sablier-ui.js?v=22"></script>
 </body>
 </html>

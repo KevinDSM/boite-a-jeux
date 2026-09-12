@@ -1,7 +1,7 @@
 {
-  "name": "Platine",
-  "short_name": "Platine",
-  "description": "Des jeux de musique à jouer ensemble, chacun sur son téléphone.",
+  "name": "Boîte à jeux",
+  "short_name": "Boîte à jeux",
+  "description": "Des jeux à jouer ensemble, chacun sur son téléphone.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

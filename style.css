@@ -1,4 +1,4 @@
-/* Platine — hub de jeux de musique.
+/* Boîte à jeux — hub de jeux entre amis (ex-Platine).
    Le shell (accueil, salon) est neutre et chaud. Chaque jeu repeint ensuite l'interface
    via [data-game] : Décennies = prune / tangerine / vinyle arrondi.
                      Éclair   = nuit bleue / lime électrique / angles vifs. */
@@ -227,19 +227,24 @@ h1{font-family:var(--font-d);font-weight:800;font-size:clamp(42px,12.5vw,64px);l
 
 /* ============================ accueil ============================ */
 .hub-hero{padding:14px 0 4px;display:flex;flex-direction:column;gap:14px}
-.platter{
-  position:relative;width:92px;height:92px;border-radius:50%;
-  background:
-    repeating-radial-gradient(circle, oklch(0.11 0.02 62) 0 1.5px, oklch(0.19 0.02 62) 1.5px 3.6px);
-  box-shadow:0 0 0 7px var(--surface), 0 22px 44px -20px oklch(0 0 0 / .8);
-  animation:spin 9s linear infinite;
-}
-[data-theme="light"] .platter{background:repeating-radial-gradient(circle, oklch(0.28 0.02 62) 0 1.5px, oklch(0.38 0.02 62) 1.5px 3.6px)}
-.platter i{position:absolute;inset:37%;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px oklch(0.11 0.02 62);z-index:2}
-/* reflet balayant : c'est lui qui donne la rotation, sans bras de lecture */
-.platter::after{content:"";position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(from 0deg, transparent 0 38%, oklch(1 0 0 / .10) 46%, transparent 54% 88%, oklch(1 0 0 / .06) 94%, transparent)}
-[data-theme="light"] .platter::after{background:conic-gradient(from 0deg, transparent 0 38%, oklch(1 0 0 / .28) 46%, transparent 54% 88%, oklch(1 0 0 / .18) 94%, transparent)}
+/* la boîte de jeu de société : corps, couvercle entrouvert qui respire, dé et pion qui dépassent */
+.gamebox{width:118px;height:98px;filter:drop-shadow(0 18px 24px oklch(0 0 0/.35))}
+.gamebox svg{display:block;overflow:visible}
+.gb-shadow{fill:oklch(0 0 0/.28)}
+.gb-top{fill:oklch(0.36 0.026 62)} .gb-side{fill:oklch(0.24 0.02 62)} .gb-front{fill:oklch(0.30 0.022 62)}
+.gb-band{fill:var(--acc)} .gb-band2{fill:var(--acc-soft)}
+.gb-lid{transform-origin:14px 44px;animation:lid 5s var(--ease) infinite}
+.gb-lid-top{fill:var(--acc)} .gb-lid-edge{fill:oklch(0.52 0.15 60)} .gb-lid-edge2{fill:oklch(0.62 0.15 64)}
+.gb-lid-mark{fill:oklch(0.99 0.01 80/.85)}
+.gb-die{animation:hop 5s var(--ease) infinite}
+.die-top{fill:oklch(0.99 0.01 80)} .die-left{fill:oklch(0.86 0.015 80)} .die-right{fill:oklch(0.93 0.012 80)}
+.die-pip{fill:oklch(0.22 0.03 62)}
+.gb-meeple{fill:var(--pos);animation:hop 5s .25s var(--ease) infinite}
+@keyframes lid{0%,55%,100%{transform:rotate(0)}70%,85%{transform:rotate(-7deg)}}
+@keyframes hop{0%,55%,100%{transform:translateY(0)}70%,85%{transform:translateY(-6px)}}
+[data-theme="light"] .gb-top{fill:oklch(0.62 0.05 62)} [data-theme="light"] .gb-side{fill:oklch(0.46 0.05 62)} [data-theme="light"] .gb-front{fill:oklch(0.54 0.05 62)}
+[data-theme="light"] .gamebox{filter:drop-shadow(0 14px 20px oklch(0 0 0/.18))}
+[data-theme="light"] .gb-shadow{fill:oklch(0 0 0/.14)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hub-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
 

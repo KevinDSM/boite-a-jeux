@@ -1,4 +1,6 @@
-# Platine — hub de jeux de musique entre amis
+# Boîte à jeux — des jeux entre amis, chacun sur son téléphone
+
+(Anciennement « Platine », rebaptisé le 13/09/2026 : depuis Sablier, tout ne tourne plus autour de la musique.)
 
 Chacun joue sur son téléphone, tout le monde se connecte avec un code à 4 lettres.
 Le salon permet de choisir le jeu, et chaque jeu a sa propre identité visuelle.
