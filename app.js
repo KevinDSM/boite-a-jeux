@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '13';
+const ASSET_V = '14';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -35,7 +35,12 @@ function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.c
 let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
-  if (id !== shownId) { shownId = id; window.scrollTo(0, 0); }
+  if (id !== shownId) {
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair';
+    shownId = id; window.scrollTo(0, 0);
+    // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
+    if (wasPlay && id !== 's-game' && id !== 's-eclair') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; }
+  }
   const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
@@ -541,7 +546,18 @@ function tokenLine(n) {
 }
 
 // ------------------------------------------------ Éclair
-let eSnippetLimit = 0, eLastRound = null, eCatalog = null, ePoll = null, eSeen = false, eSafety = null, eActionsKey = null;
+let eSnippetLimit = 0, eLastRound = null, eCatalog = null, ePoll = null, eSeen = false, eSafety = null, eActionsKey = null, eReveal = false;
+// en révélation l'extrait complet se met en pause comme un lecteur normal ; pendant les
+// paliers le bouton relance toujours depuis le début, donc son libellé ne change pas.
+function syncELabel() {
+  const l = document.getElementById('e-label'); if (!l) return;
+  l.textContent = !eReveal ? '▶ Écouter'
+    : !audio.paused ? '❚❚ Pause'
+      : audio.currentTime > 0.05 && audio.currentTime < (audio.duration || 30) - 0.15 ? '▶ Reprendre' : '▶ Écouter';
+}
+audio.addEventListener('play', syncELabel);
+audio.addEventListener('pause', syncELabel);
+audio.addEventListener('ended', syncELabel);
 
 function stopSnippet() { clearInterval(ePoll); ePoll = null; clearTimeout(eSafety); eSnippetLimit = 0; eSeen = false; audio.pause(); $('#e-vinyl').classList.remove('pulse'); drawSeg(); }
 function playSnippet(sec) {
@@ -606,8 +622,16 @@ function renderEclair(s) {
     seg.innerHTML = '<b></b>'; bar.appendChild(seg); prev = sec;
   });
   const lim = reveal ? 30 : E_LEVELS[e.level];
+  eReveal = reveal;
+  if (reveal && eSnippetLimit) stopSnippet();      // un palier en cours ne survit pas à la révélation
   $('#e-len').textContent = reveal ? '30 s' : fmtS(lim);
-  $('#e-play').onclick = () => { if (reveal) { stopSnippet(); try { audio.currentTime = 0; } catch { } audio.play().catch(() => { }); } else playSnippet(lim); };
+  $('#e-play').onclick = () => {
+    if (!reveal) { playSnippet(lim); return; }
+    if (!audio.paused) { audio.pause(); return; }
+    if (audio.ended || audio.currentTime >= (audio.duration || 30) - 0.15) { try { audio.currentTime = 0; } catch { } }
+    audio.play().catch(() => toast('Touche à nouveau pour lancer le son'));
+  };
+  syncELabel();
 
   const ac = $('#e-actions');
   const key = `${s.phase}|${s.round}|${e.level}|${e.done}|${e.tries.length}`;
