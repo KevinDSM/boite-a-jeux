@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '15';
+const ASSET_V = '16';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -22,6 +22,7 @@ const GAMES = {
   timeline: { key: 'timeline', theme: 'decennies', name: 'Décennies' },
   eclair: { key: 'eclair', theme: 'eclair', name: 'Éclair' },
   sprint: { key: 'sprint', theme: 'sprint', name: 'Sprint' },
+  jv: { key: 'jv', theme: 'jv', name: 'Manette' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -45,7 +46,7 @@ function show(id) {
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
     if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sprint' ? 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -83,8 +84,8 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 // ============================================================ moteur (hôte)
 class Game {
-  constructor(code, songs, songsE) {
-    this.songs = songs; this.songsE = songsE; this.seq = 0;
+  constructor(code, songs, songsE, songsJV) {
+    this.songs = songs; this.songsE = songsE; this.songsJV = songsJV || []; this.seq = 0;
     this.state = {
       code, phase: 'lobby', pick: null, mode: 'timeline', players: [],
       // Décennies
@@ -124,7 +125,7 @@ class Game {
     const s = this.s;
     s.mode = o.mode || s.pick || 'timeline'; s.winner = null;
     if (s.mode === 'eclair') return this.startEclair(o);
-    if (s.mode === 'sprint') return this.startSprint(o);
+    if (s.mode === 'sprint' || s.mode === 'jv') return this.startSprint(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -265,16 +266,28 @@ class Game {
     const s = this.s;
     s.rounds = o.rounds || 10; s.round = 0; s.decades = o.decades?.length ? o.decades : null;
     s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId;
-    s.deck = shuffle([...this.poolE()]);
+    s.cats = o.cats?.length ? o.cats : null;
+    s.deck = shuffle(s.mode === 'jv' ? [...this.poolJV()] : [...this.poolE()]);
     s.players.forEach(p => { p.score = 0; });
     this.nextSprintRound();
   }
   nextSprintRound() {
     const s = this.s; s.round++;
-    if (!s.deck.length) s.deck = shuffle([...this.poolE()]);
+    if (!s.deck.length) s.deck = shuffle(s.mode === 'jv' ? [...this.poolJV()] : [...this.poolE()]);
     s.current = s.deck.pop(); s.order = []; s.result = null;
     s.sprint = {}; s.players.forEach(p => { s.sprint[p.id] = { tries: 0, done: false, points: 0, rank: 0 }; });
     s.roundEnds = Date.now() + SP_ROUND_MS; s.phase = 's-play';
+  }
+  poolJV() { const c = this.s.cats; const p = this.songsJV.filter(x => !c || c.includes(x.cat)); return p.length ? p : this.songsJV; }
+  jvNames() { return [...new Set(this.songsJV.map(x => x.game))]; }
+  // « zelda » désigne plusieurs jeux : on demande de préciser au lieu de compter un raté
+  jvResolve(text) {
+    const t = norm(text); if (t.length < 2) return { n: 0 };
+    const names = this.jvNames();
+    const exact = names.filter(n => norm(n) === t);
+    if (exact.length === 1) return { n: 1, game: exact[0] };
+    const hits = names.filter(n => norm(n).includes(t) || t.includes(norm(n)));
+    return hits.length === 1 ? { n: 1, game: hits[0] } : { n: hits.length, hits };
   }
   spSlot(pid) { const s = this.s; if (!s.sprint[pid]) s.sprint[pid] = { tries: 0, done: false, points: 0, rank: 0 }; return s.sprint[pid]; }
   spMatch(text, song) {
@@ -286,7 +299,13 @@ class Game {
   spGuess(pid, text) {
     const s = this.s; if (s.phase !== 's-play') return 'Manche terminée';
     const e = this.spSlot(pid); if (e.done) return null;
-    if (this.spMatch(text, s.current)) {
+    let good;
+    if (s.mode === 'jv') {
+      const r = this.jvResolve(text);
+      if (r.n > 1) return `${r.n} jeux correspondent, précise`;   // n'use pas d'essai
+      good = r.n === 1 && norm(r.game) === norm(s.current.game);
+    } else good = this.spMatch(text, s.current);
+    if (good) {
       e.done = true; s.order.push(pid); e.rank = s.order.length;
       e.points = SP_POINTS[Math.min(e.rank - 1, SP_POINTS.length - 1)];
       this.player(pid).score += e.points;
@@ -328,10 +347,11 @@ class Game {
 
 // ============================================================ réseau
 const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game: null, me: uid(), name: '', code: '' };
-let view = null, songsCache = null, songsECache = null;
+let view = null, songsCache = null, songsECache = null, songsJVCache = null;
 
 async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=' + ASSET_V)).json(); return songsCache; }
 async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=' + ASSET_V)).json(); return songsECache; }
+async function loadSongsJV() { if (!songsJVCache) songsJVCache = await (await fetch('songs-jv.json?v=' + ASSET_V)).json(); return songsJVCache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net ' + (on ? 'on' : 'off'); n.textContent = label; }
 
 function makePeer(id) {
@@ -343,11 +363,11 @@ function makePeer(id) {
 }
 
 async function hostGame() {
-  const [songs, songsE] = await Promise.all([loadSongs(), loadSongsE()]);
+  const [songs, songsE, songsJV] = await Promise.all([loadSongs(), loadSongsE(), loadSongsJV()]);
   let code, peer;
   for (let i = 0; i < 5; i++) { code = genCode(); try { peer = await makePeer(ROOM_PREFIX + code); break; } catch (e) { if (e.message !== 'code-taken') throw e; } }
   if (!peer) throw new Error('Impossible de créer la salle');
-  net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE);
+  net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE, songsJV);
   net.game.addPlayer(net.me, net.name, true);
   peer.on('connection', conn => {
     conn.on('data', m => handleClientMessage(conn, m));
@@ -459,6 +479,12 @@ function renderLobby(s) {
   $('#opts-timeline').hidden = s.pick !== 'timeline';
   $('#opts-eclair').hidden = s.pick !== 'eclair';
   $('#opts-sprint').hidden = s.pick !== 'sprint';
+  $('#opts-jv').hidden = s.pick !== 'jv';
+  if (isHostPlayer() && !$('#opt-cats-jv').querySelector('label') && jvCatalog) {
+    [...new Set(jvCatalog.map(x => x.cat))].forEach(k => {
+      const l = el('label'); l.innerHTML = `<input type="checkbox" value="${k}" checked>${k}`; $('#opt-cats-jv').appendChild(l);
+    });
+  }
   $('#lobby-wait').hidden = isHostPlayer();
   $('#lobby-wait').textContent = chosen ? `L'hôte prépare une partie de ${GAMES[s.pick].name}…` : 'L\'hôte choisit le jeu…';
 }
@@ -699,34 +725,16 @@ function renderEclair(s) {
   eActionsKey = key; ac.innerHTML = '';
 
   if (!reveal && !e.done) {
-    const box = el('div', 'guess-box');
-    box.innerHTML = `<input id="e-input" placeholder="Titre de la chanson…" autocomplete="off" autocapitalize="off"><div class="suggest" id="e-suggest" hidden></div>`;
-    ac.appendChild(box);
+    const submitE = input => { const t = input.value.trim(); if (!t) return; act({ t: 'e-guess', title: t }); input.value = ''; };
+    ac.appendChild(makeGuessBox('e-input', 'Titre de la chanson…', submitE,
+      q => (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6).map(x => ({ label: x.title, sub: x.artist, fill: x.title }))));
     const row = el('div', 'row');
     row.innerHTML = `<button class="btn primary" id="e-submit">Valider</button>`
       + (e.level < E_LEVELS.length - 1 ? `<button class="btn" id="e-more">Écouter plus <span class="cost">${fmtS(E_LEVELS[e.level + 1])} · ${E_POINTS[e.level + 1]} pt${E_POINTS[e.level + 1] > 1 ? 's' : ''}</span></button>` : '')
       + `<button class="btn ghost small" id="e-giveup">Je passe</button>`;
     ac.appendChild(row);
     ac.appendChild(el('div', 'note', 'Un titre faux débloque automatiquement le palier suivant.'));
-    const input = $('#e-input'), sug = $('#e-suggest');
-    let hl = -1, items = [];
-    const draw = () => {
-      sug.innerHTML = '';
-      items.forEach((it, i) => {
-        const d = el('div', i === hl ? 'hl' : ''); d.innerHTML = `${it.title} <small>· ${it.artist}</small>`;
-        d.onmousedown = ev => { ev.preventDefault(); input.value = it.title; sug.hidden = true; };
-        sug.appendChild(d);
-      });
-      sug.hidden = !items.length;
-    };
-    input.oninput = () => { const q = norm(input.value); hl = -1; items = q.length < 2 ? [] : (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6); draw(); };
-    input.onkeydown = ev => {
-      if (ev.key === 'ArrowDown') { hl = Math.min(items.length - 1, hl + 1); draw(); ev.preventDefault(); }
-      else if (ev.key === 'ArrowUp') { hl = Math.max(0, hl - 1); draw(); ev.preventDefault(); }
-      else if (ev.key === 'Enter') { if (hl >= 0) { input.value = items[hl].title; sug.hidden = true; } $('#e-submit').click(); ev.preventDefault(); }
-    };
-    input.onblur = () => setTimeout(() => sug.hidden = true, 150);
-    $('#e-submit').onclick = () => { const t = input.value.trim(); if (!t) return; act({ t: 'e-guess', title: t }); input.value = ''; };
+    $('#e-submit').onclick = () => submitE($('#e-input'));
     if ($('#e-more')) $('#e-more').onclick = () => act({ t: 'e-unlock' });
     $('#e-giveup').onclick = () => act({ t: 'e-giveup' });
   }
@@ -743,7 +751,7 @@ function renderEclair(s) {
   renderEOthers(s, reveal);
 }
 // champ de saisie avec suggestions issues du catalogue, partagé par Éclair et Sprint
-function makeGuessBox(inputId, placeholder, onSubmit, withArtist) {
+function makeGuessBox(inputId, placeholder, onSubmit, source) {
   const box = el('div', 'guess-box');
   box.innerHTML = `<input id="${inputId}" placeholder="${placeholder}" autocomplete="off" autocapitalize="off"><div class="suggest" id="${inputId}-sug" hidden></div>`;
   setTimeout(() => {
@@ -753,15 +761,15 @@ function makeGuessBox(inputId, placeholder, onSubmit, withArtist) {
     const draw = () => {
       sug.innerHTML = '';
       items.forEach((it, i) => {
-        const d = el('div', i === hl ? 'hl' : ''); d.innerHTML = `${it.title} <small>· ${it.artist}</small>`;
-        d.onmousedown = ev => { ev.preventDefault(); input.value = withArtist ? `${it.title} — ${it.artist}` : it.title; sug.hidden = true; input.focus(); };
+        const d = el('div', i === hl ? 'hl' : ''); d.innerHTML = `${it.label}${it.sub ? ` <small>· ${it.sub}</small>` : ''}`;
+        d.onmousedown = ev => { ev.preventDefault(); input.value = it.fill; sug.hidden = true; input.focus(); };
         sug.appendChild(d);
       });
       sug.hidden = !items.length;
     };
     input.oninput = () => {
       const q = norm(input.value); hl = -1;
-      items = q.length < 2 ? [] : (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6);
+      items = q.length < 2 ? [] : source(q);
       draw();
     };
     input.onkeydown = ev => {
@@ -769,7 +777,7 @@ function makeGuessBox(inputId, placeholder, onSubmit, withArtist) {
       else if (ev.key === 'ArrowUp') { hl = Math.max(0, hl - 1); draw(); ev.preventDefault(); }
       else if (ev.key === 'Enter') {
         ev.preventDefault();
-        if (hl >= 0) { input.value = withArtist ? `${items[hl].title} — ${items[hl].artist}` : items[hl].title; sug.hidden = true; hl = -1; items = []; draw(); return; }
+        if (hl >= 0) { input.value = items[hl].fill; sug.hidden = true; hl = -1; items = []; draw(); return; }
         onSubmit(input);
       }
     };
@@ -791,6 +799,7 @@ function renderSprint(s) {
   const me = s.players.find(p => p.id === net.me);
   const e = s.sprint[net.me] || { tries: 0, done: false, points: 0, rank: 0 };
   const reveal = s.phase === 's-reveal';
+  const jv = s.mode === 'jv';
   const nameOf = id => s.players.find(p => p.id === id)?.name;
 
   const sb = $('#sp-scoreboard'); sb.innerHTML = '';
@@ -806,7 +815,7 @@ function renderSprint(s) {
     const left = SP_TRIES - e.tries;
     b.innerHTML = e.done
       ? `Manche ${s.round}/${s.rounds}${e.points ? ` · <span class="pts">+${e.points}</span>` : ''}<small>${e.points ? `${e.rank}${e.rank === 1 ? 'er' : 'e'} à trouver. On attend les autres.` : 'Manche finie pour toi, on attend les autres.'}</small>`
-      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>Artiste et titre, le plus vite possible. ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
+      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>${jv ? 'De quel jeu vient cette musique ?' : 'Artiste et titre, le plus vite possible.'} ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
   } else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
 
   // audio : tout le monde en même temps, sauf si l'hôte fait enceinte
@@ -821,7 +830,9 @@ function renderSprint(s) {
   stage.classList.toggle('hot', !reveal && s.spLeft <= 5);
   if (reveal) {
     stage.classList.add('revealed'); $('#sp-art').src = s.current.art;
-    info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`;
+    info.innerHTML = jv
+      ? `<div class="big ok">${s.current.game}</div>${s.current.title}<small>${s.current.artist}</small>`
+      : `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`;
     // couper une seule fois à l'entrée en révélation, sinon on empêcherait la réécoute
     if (spRevealKey !== s.round) { spRevealKey = s.round; audio.pause(); }
   } else {
@@ -840,12 +851,14 @@ function renderSprint(s) {
 
   if (!reveal && !e.done) {
     const submit = input => { const t = input.value.trim(); if (!t) return; act({ t: 'sp-guess', text: t }); input.value = ''; };
-    const box = makeGuessBox('sp-input', 'Titre et artiste…', submit, true);
-    ac.appendChild(box);
+    const source = jv
+      ? q => (jvCatalog || []).filter(x => norm(x.game).includes(q)).slice(0, 6).map(x => ({ label: x.game, sub: x.cat, fill: x.game }))
+      : q => (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
+    ac.appendChild(makeGuessBox('sp-input', jv ? 'Nom du jeu…' : 'Titre et artiste…', submit, source));
     const row = el('div', 'row');
     row.innerHTML = `<button class="btn primary" id="sp-submit">Valider</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
     ac.appendChild(row);
-    ac.appendChild(el('div', 'note', 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
+    ac.appendChild(el('div', 'note', jv ? 'Choisis dans la liste : les noms de jeux y sont tous.' : 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
     $('#sp-submit').onclick = () => submit($('#sp-input'));
     $('#sp-pass').onclick = () => act({ t: 'sp-giveup' });
   }
@@ -886,6 +899,8 @@ function renderEOthers(s, reveal) {
   });
 }
 loadSongsE().then(l => { eCatalog = l; }).catch(() => { });
+let jvCatalog = null;
+loadSongsJV().then(l => { jvCatalog = l; }).catch(() => { });
 
 // ------------------------------------------------ fin
 function renderEnd(s) {
@@ -895,7 +910,9 @@ function renderEnd(s) {
   $('#end-winner').textContent = solo ? 'Terminé' : (w ? w.name : '—');
   $('#end-sub').textContent = solo
     ? (eclair ? `${w ? w.score : 0} points sur ${s.rounds} manches.` : `Frise complète : ${s.target} cartes bien placées.`)
-    : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
+    : s.mode === 'jv' ? 'a la plus grosse ludothèque.'
+      : s.mode === 'sprint' ? 'a été le plus rapide sur la gâchette.'
+        : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
   const ol = $('#ranking'); ol.innerHTML = '';
   [...s.players]
     .sort((a, b) => eclair ? b.score - a.score : (b.timeline.length - a.timeline.length || b.tokens - a.tokens))
@@ -934,6 +951,14 @@ const HELP = {
       <li>Trois essais par manche, puis la manche est finie pour toi.</li>
       <li>La liste de suggestions remplit le titre et l'artiste d'un seul coup : sers-t'en, c'est plus rapide que de tout taper.</li>
       <li>La manche s'arrête quand l'extrait est fini ou que tout le monde a répondu.</li>
+    </ul>`,
+  jv: `<h3>Manette</h3>
+    <p>Une musique de jeu vidéo démarre chez tout le monde. Le but : nommer <b>le jeu</b> avant les autres.</p>
+    <ul>
+      <li>Le 1<sup>er</sup> marque 5 points, le 2<sup>e</sup> 3, le 3<sup>e</sup> 2, les suivants 1.</li>
+      <li>Trois essais par manche. Un nom trop vague comme « zelda » ne coûte pas d'essai : on te demande de préciser.</li>
+      <li>La liste de suggestions contient tous les jeux de la partie.</li>
+      <li>Beaucoup de musiques Nintendo ou Sega n'existent que sous forme de reprises orchestrales : c'est la mélodie qui compte.</li>
     </ul>`,
   hub: `<h3>Platine</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
@@ -1007,10 +1032,14 @@ $('#btn-start').onclick = () => {
     const decades = [...$('#opt-decades').querySelectorAll('input:checked')].map(i => +i.value);
     if (!decades.length) { toast('Choisis au moins une décennie'); return; }
     act({ t: 'start', opts: { mode: 'eclair', decades, rounds: +$('#opt-rounds').value } });
-  } else {
+  } else if (pick === 'sprint') {
     const decades = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => +i.value);
     if (!decades.length) { toast('Choisis au moins une décennie'); return; }
     act({ t: 'start', opts: { mode: 'sprint', decades, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
+  } else {
+    const cats = [...$('#opt-cats-jv').querySelectorAll('input:checked')].map(i => i.value);
+    if (!cats.length) { toast('Choisis au moins une famille'); return; }
+    act({ t: 'start', opts: { mode: 'jv', cats, rounds: +$('#opt-rounds-jv').value, speakerId: $('#opt-sound-jv').value === 'host' ? net.me : null } });
   }
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });

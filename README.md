@@ -27,6 +27,17 @@ le plus. 1er 5 points, 2e 3, 3e 2, ensuite 1. Trois essais par manche, la manche
 l'extrait est fini ou que tout le monde a répondu. Même base et même liste de suggestions
 qu'Éclair, choix des décennies.
 
+### Manette
+Des musiques de jeux vidéo, il faut nommer le jeu. Même barème et même déroulé que Sprint.
+Base dédiée `songs-jv.json` (83 jeux, 7 familles) avec sa propre liste de suggestions, qui ne
+contient que des noms de jeux. Une réponse trop vague comme « zelda » ne coûte pas d'essai :
+le jeu demande de préciser. Beaucoup de musiques Nintendo ou Sega n'existent sur iTunes que
+sous forme de reprises orchestrales, c'est la mélodie qui compte.
+
+```bash
+python build_jv.py            # playlists-jv.txt -> songs-jv.json
+```
+
 ### Éclair
 Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.
 Paliers 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre faux débloque le
@@ -40,6 +51,7 @@ palier suivant. Choix des décennies de 1980 à aujourd'hui.
 | `songs.json` | base de Décennies (180 titres, playlists par époque) |
 | `songs-eclair.json` | base d'Éclair et de Sprint (450 tubes, 10 par année de 1980 à 2025) |
 | `playlists.txt`, `playlists-eclair.txt` | les listes `Artiste \| Titre` à enrichir |
+| `songs-jv.json`, `playlists-jv.txt`, `build_jv.py` | base des musiques de jeux vidéo, format `Jeu \| recherche iTunes` |
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 
 ## Ajouter un jeu

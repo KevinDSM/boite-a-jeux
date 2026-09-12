@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -90,6 +90,12 @@
         <span class="gdesc">Tout le monde écoute en même temps. Le premier à donner l'artiste et le titre rafle la mise.</span>
         <span class="gmeta">1 à 8 joueurs · 15 min</span>
       </button>
+      <button class="gcard g-jv" type="button" data-game="jv">
+        <span class="gart" aria-hidden="true"><span class="pad"></span></span>
+        <span class="gname">Manette</span>
+        <span class="gdesc">Des musiques de jeux vidéo. Le premier à nommer le jeu marque le plus de points.</span>
+        <span class="gmeta">1 à 8 joueurs · 15 min</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -138,6 +144,20 @@
       <label class="field row">
         <span>Le son sort de…</span>
         <select id="opt-sound-s">
+          <option value="all" selected>Tous les téléphones</option>
+          <option value="host">Ce téléphone (enceinte)</option>
+        </select>
+      </label>
+    </div>
+    <div class="opts" id="opts-jv" hidden>
+      <fieldset class="chips" id="opt-cats-jv"><legend class="eyebrow">Familles de jeux</legend></fieldset>
+      <label class="field row">
+        <span>Nombre de manches</span>
+        <select id="opt-rounds-jv"><option>5</option><option selected>10</option><option>15</option></select>
+      </label>
+      <label class="field row">
+        <span>Le son sort de…</span>
+        <select id="opt-sound-jv">
           <option value="all" selected>Tous les téléphones</option>
           <option value="host">Ce téléphone (enceinte)</option>
         </select>
@@ -236,6 +256,6 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="app.js?v=15"></script>
+<script src="app.js?v=16"></script>
 </body>
 </html>
