@@ -115,6 +115,44 @@
   --glow: 0.12;
 }
 
+/* ============================ jeu : Sprint ============================ */
+[data-game="sprint"]{
+  --bg:        oklch(0.145 0.030 348);
+  --surface:   oklch(0.200 0.038 346);
+  --surface-2: oklch(0.250 0.045 346);
+  --line:      oklch(0.310 0.050 346);
+  --ink:       oklch(0.965 0.014 340);
+  --ink-2:     oklch(0.780 0.030 340);
+  --mute:      oklch(0.610 0.040 342);
+  --acc:       oklch(0.690 0.245 356);
+  --acc-soft:  oklch(0.820 0.150 350);
+  --on-acc:    oklch(0.99 0.010 340);
+  --pos:       oklch(0.840 0.150 165);
+  --neg:       oklch(0.690 0.200 20);
+  --gold:      oklch(0.860 0.150 88);
+  --glow: 0.22;
+  --r: 11px; --r-s: 9px; --r-pill: 999px;
+  --font-d: "Archivo", "Bricolage Grotesque", sans-serif;
+  --track: -0.015em;
+}
+[data-theme="light"][data-game="sprint"]{
+  --bg:        oklch(0.965 0.018 348);
+  --surface:   oklch(0.995 0.008 348);
+  --surface-2: oklch(0.935 0.020 348);
+  --line:      oklch(0.875 0.028 348);
+  --ink:       oklch(0.200 0.048 348);
+  --ink-2:     oklch(0.420 0.040 346);
+  --mute:      oklch(0.575 0.035 344);
+  --acc:       oklch(0.560 0.230 0);
+  --acc-soft:  oklch(0.470 0.180 355);
+  --on-acc:    oklch(0.99 0.010 340);
+  --pos:       oklch(0.550 0.135 162);
+  --neg:       oklch(0.540 0.190 22);
+  --glow: 0.11;
+}
+[data-game="sprint"] h1,[data-game="sprint"] .banner,[data-game="sprint"] .crumb{text-transform:uppercase;letter-spacing:.01em}
+[data-game="sprint"] .banner small,[data-game="sprint"] .note{text-transform:none;letter-spacing:0}
+
 /* ============================ socle ============================ */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg);overflow-x:hidden;-webkit-text-size-adjust:100%}
@@ -280,6 +318,39 @@ select{appearance:none;padding-right:30px;min-height:44px;
   clip-path:polygon(58% 0, 0 58%, 40% 58%, 30% 100%, 100% 40%, 55% 40%);
   width:34px;height:46px;border:0;background:oklch(0.88 0.19 120)}
 [data-theme="light"] .bolt{background:oklch(0.62 0.17 132)}
+.g-sprint .gname{font-family:"Archivo",sans-serif;text-transform:uppercase;letter-spacing:.005em;color:oklch(0.76 0.22 356)}
+[data-theme="light"] .g-sprint .gname{color:oklch(0.56 0.23 0)}
+.g-sprint{background:oklch(0.200 0.042 346);border-color:oklch(0.30 0.048 346)}
+.g-sprint[aria-pressed="true"]{border-color:oklch(0.69 0.245 356);background:oklch(0.245 0.060 348)}
+[data-theme="light"] .g-sprint{background:oklch(0.965 0.020 350);border-color:oklch(0.875 0.030 350)}
+[data-theme="light"] .g-sprint[aria-pressed="true"]{border-color:oklch(0.56 0.23 0);background:oklch(0.945 0.040 352)}
+.chrono{width:46px;height:46px;border-radius:50%;display:block;border:4px solid oklch(0.76 0.22 356);position:relative;box-shadow:inset 0 0 0 3px oklch(0 0 0/.25)}
+.chrono::after{content:"";position:absolute;left:50%;top:18%;width:3px;height:34%;border-radius:2px;background:oklch(0.76 0.22 356);transform-origin:bottom center;transform:translateX(-50%) rotate(48deg)}
+[data-theme="light"] .chrono{border-color:oklch(0.56 0.23 0)}
+[data-theme="light"] .chrono::after{background:oklch(0.56 0.23 0)}
+.gcard[aria-pressed="true"] .chrono::after{animation:sweep 2s linear infinite}
+@keyframes sweep{to{transform:translateX(-50%) rotate(408deg)}}
+
+/* --- scène Sprint : le chrono remplace la pochette --- */
+.chrono-stage{position:relative;width:124px;height:124px;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:var(--surface-2);box-shadow:inset 0 0 0 2px var(--line)}
+.chrono-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s var(--ease)}
+.chrono-stage.revealed img{opacity:1}
+.chrono-stage .num{position:relative;z-index:2;font-family:var(--font-d);font-weight:800;font-size:46px;line-height:1;color:var(--acc);font-variant-numeric:tabular-nums;transition:opacity .3s}
+.chrono-stage.revealed .num{opacity:0}
+.chrono-stage.hot .num{animation:tick 1s steps(2) infinite;color:var(--neg)}
+@keyframes tick{50%{opacity:.45}}
+
+/* --- classement de manche --- */
+.podium{display:flex;flex-direction:column;gap:6px}
+.podium div{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:10px 14px;font-size:14px}
+.podium .pos{font-family:var(--font-d);font-weight:800;font-size:17px;color:var(--mute);min-width:22px}
+.podium .who{flex:1;font-weight:600}
+.podium.first .pos{color:var(--gold)}
+.podium div:first-child{border-color:var(--gold)}
+.podium div:first-child .pos{color:var(--gold)}
+.podium .gain{font-family:var(--font-d);font-weight:800;color:var(--acc-soft)}
+.podium .miss{color:var(--neg);font-size:13px}
+
 .gsoon{border:1px dashed var(--line);border-radius:var(--r-s);padding:12px 16px;color:var(--mute);font-size:13px;text-align:center}
 
 .opts{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;animation:screen-in .3s var(--ease)}

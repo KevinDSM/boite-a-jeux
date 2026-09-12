@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '14';
+const ASSET_V = '15';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -21,7 +21,11 @@ const E_GRACE = 0.12;                 // marge pour la latence de sortie audio (
 const GAMES = {
   timeline: { key: 'timeline', theme: 'decennies', name: 'Décennies' },
   eclair: { key: 'eclair', theme: 'eclair', name: 'Éclair' },
+  sprint: { key: 'sprint', theme: 'sprint', name: 'Sprint' },
 };
+const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
+const SP_TRIES = 3;                   // essais par manche
+const SP_ROUND_MS = 33000;            // durée d'une manche (l'extrait dure 30 s)
 
 const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -36,16 +40,16 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sprint' ? 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
-  $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair');
+  $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair' || id === 's-sprint');
   if ($('#btn-vol').hidden) $('#vol-bar').hidden = true;
   $('#crumb').textContent = id === 's-home' ? 'Platine'
     : id === 's-lobby' ? 'Salon' + (net.code ? ' · ' + net.code : '')
@@ -89,6 +93,8 @@ class Game {
       cats: null, speakerId: null, soundAll: false,
       // Éclair
       rounds: 10, round: 0, eclair: {}, decades: null,
+      // Sprint
+      sprint: {}, order: [], roundEnds: 0,
       winner: null,
     };
   }
@@ -118,6 +124,7 @@ class Game {
     const s = this.s;
     s.mode = o.mode || s.pick || 'timeline'; s.winner = null;
     if (s.mode === 'eclair') return this.startEclair(o);
+    if (s.mode === 'sprint') return this.startSprint(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -211,6 +218,7 @@ class Game {
   next() { const s = this.s; if (s.phase !== 'reveal') return; if (s.winner) { s.phase = 'end'; return; } this.advance(); }
   tick() {
     const s = this.s;
+    if (s.phase === 's-play' && Date.now() > s.roundEnds) { this.spEnd(); return; }
     if (s.phase === 'bet' && Date.now() > s.betEnds) {
       if (s.bet && s.bet.idx == null) { const p = this.player(s.bet.pid); if (p) p.tokens = Math.min(TOKEN_MAX, p.tokens + 1); s.bet = null; }
       this.reveal();
@@ -252,21 +260,68 @@ class Game {
     this.nextRound();
   }
 
+  // --- Sprint : tout le monde écoute, le premier qui nomme le morceau marque le plus
+  startSprint(o) {
+    const s = this.s;
+    s.rounds = o.rounds || 10; s.round = 0; s.decades = o.decades?.length ? o.decades : null;
+    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId;
+    s.deck = shuffle([...this.poolE()]);
+    s.players.forEach(p => { p.score = 0; });
+    this.nextSprintRound();
+  }
+  nextSprintRound() {
+    const s = this.s; s.round++;
+    if (!s.deck.length) s.deck = shuffle([...this.poolE()]);
+    s.current = s.deck.pop(); s.order = []; s.result = null;
+    s.sprint = {}; s.players.forEach(p => { s.sprint[p.id] = { tries: 0, done: false, points: 0, rank: 0 }; });
+    s.roundEnds = Date.now() + SP_ROUND_MS; s.phase = 's-play';
+  }
+  spSlot(pid) { const s = this.s; if (!s.sprint[pid]) s.sprint[pid] = { tries: 0, done: false, points: 0, rank: 0 }; return s.sprint[pid]; }
+  spMatch(text, song) {
+    const t = norm(text); if (!t) return false;
+    const title = norm(song.title), artist = norm(song.artist);
+    const a1 = artist.split(' ').filter(w => w.length > 2)[0] || artist;
+    return t.includes(title) && (t.includes(artist) || t.includes(a1));
+  }
+  spGuess(pid, text) {
+    const s = this.s; if (s.phase !== 's-play') return 'Manche terminée';
+    const e = this.spSlot(pid); if (e.done) return null;
+    if (this.spMatch(text, s.current)) {
+      e.done = true; s.order.push(pid); e.rank = s.order.length;
+      e.points = SP_POINTS[Math.min(e.rank - 1, SP_POINTS.length - 1)];
+      this.player(pid).score += e.points;
+    } else {
+      e.tries++;
+      if (e.tries >= SP_TRIES) { e.done = true; e.points = 0; }
+      this.spCheck(); return e.done ? 'Trois essais ratés, manche finie pour toi' : `Raté · ${SP_TRIES - e.tries} essai${SP_TRIES - e.tries > 1 ? 's' : ''} restant${SP_TRIES - e.tries > 1 ? 's' : ''}`;
+    }
+    this.spCheck(); return null;
+  }
+  spGiveUp(pid) { const s = this.s; if (s.phase !== 's-play') return null; const e = this.spSlot(pid); if (e.done) return null; e.done = true; e.points = 0; this.spCheck(); return null; }
+  spCheck() { const s = this.s; if (s.players.filter(p => p.online).every(p => this.spSlot(p.id).done)) s.phase = 's-reveal'; }
+  spEnd() { const s = this.s; s.players.forEach(p => { const e = this.spSlot(p.id); if (!e.done) { e.done = true; e.points = 0; } }); s.phase = 's-reveal'; }
+  spNext() {
+    const s = this.s; if (s.phase !== 's-reveal') return;
+    if (s.round >= s.rounds) { s.phase = 'end'; s.winner = [...s.players].sort((a, b) => b.score - a.score)[0]?.id || null; return; }
+    this.nextSprintRound();
+  }
+
   restart() {
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
-    s.eclair = {}; s.bet = null; s.passes = []; s.placement = null;
+    s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
     s.players.forEach(p => { p.timeline = []; p.score = 0; p.tokens = TOKEN_START; });
   }
 
   // état diffusé : masque ce qui trahirait la chanson en cours
   publicState() {
-    const s = this.s, hide = s.phase === 'listen' || s.phase === 'bet' || s.phase === 'e-play';
+    const s = this.s, hide = s.phase === 'listen' || s.phase === 'bet' || s.phase === 'e-play' || s.phase === 's-play';
     return {
       ...s, deck: undefined,
       current: s.current ? (hide ? { preview: s.current.preview } : s.current) : null,
       betLeft: s.phase === 'bet' ? Math.max(0, Math.ceil((s.betEnds - Date.now()) / 1000)) : 0,
       solo: s.players.filter(p => p.online).length <= 1,
+      spLeft: s.phase === 's-play' ? Math.max(0, Math.ceil((s.roundEnds - Date.now()) / 1000)) : 0,
     };
   }
 }
@@ -301,7 +356,7 @@ async function hostGame() {
   peer.on('disconnected', () => { setNet(false, 'reconnexion'); peer.reconnect(); });
   peer.on('open', () => setNet(true, 'hôte'));
   setNet(true, 'hôte');
-  setInterval(() => { const before = net.game.s.phase; net.game.tick(); if (before !== net.game.s.phase || net.game.s.phase === 'bet') broadcast(); }, 500);
+  setInterval(() => { const before = net.game.s.phase; net.game.tick(); if (before !== net.game.s.phase || net.game.s.phase === 'bet' || net.game.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -330,6 +385,9 @@ function applyAction(pid, m) {
     case 'e-guess': return g.eGuess(pid, m.title);
     case 'e-giveup': return g.eGiveUp(pid);
     case 'e-next': g.eNext(); return null;
+    case 'sp-guess': return g.spGuess(pid, m.text);
+    case 'sp-giveup': return g.spGiveUp(pid);
+    case 'sp-next': g.spNext(); return null;
   }
   return null;
 }
@@ -369,6 +427,7 @@ function render() {
   if (s.phase === 'lobby') { show('s-lobby'); renderLobby(s); }
   else if (s.phase === 'end') { show('s-end'); renderEnd(s); audio.pause(); }
   else if (s.phase === 'e-play' || s.phase === 'e-reveal') { show('s-eclair'); renderEclair(s); }
+  else if (s.phase === 's-play' || s.phase === 's-reveal') { show('s-sprint'); renderSprint(s); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -399,6 +458,7 @@ function renderLobby(s) {
   $('#lobby-opts').hidden = !(isHostPlayer() && chosen);
   $('#opts-timeline').hidden = s.pick !== 'timeline';
   $('#opts-eclair').hidden = s.pick !== 'eclair';
+  $('#opts-sprint').hidden = s.pick !== 'sprint';
   $('#lobby-wait').hidden = isHostPlayer();
   $('#lobby-wait').textContent = chosen ? `L'hôte prépare une partie de ${GAMES[s.pick].name}…` : 'L\'hôte choisit le jeu…';
 }
@@ -682,6 +742,139 @@ function renderEclair(s) {
   }
   renderEOthers(s, reveal);
 }
+// champ de saisie avec suggestions issues du catalogue, partagé par Éclair et Sprint
+function makeGuessBox(inputId, placeholder, onSubmit, withArtist) {
+  const box = el('div', 'guess-box');
+  box.innerHTML = `<input id="${inputId}" placeholder="${placeholder}" autocomplete="off" autocapitalize="off"><div class="suggest" id="${inputId}-sug" hidden></div>`;
+  setTimeout(() => {
+    const input = document.getElementById(inputId), sug = document.getElementById(inputId + '-sug');
+    if (!input) return;
+    let hl = -1, items = [];
+    const draw = () => {
+      sug.innerHTML = '';
+      items.forEach((it, i) => {
+        const d = el('div', i === hl ? 'hl' : ''); d.innerHTML = `${it.title} <small>· ${it.artist}</small>`;
+        d.onmousedown = ev => { ev.preventDefault(); input.value = withArtist ? `${it.title} — ${it.artist}` : it.title; sug.hidden = true; input.focus(); };
+        sug.appendChild(d);
+      });
+      sug.hidden = !items.length;
+    };
+    input.oninput = () => {
+      const q = norm(input.value); hl = -1;
+      items = q.length < 2 ? [] : (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6);
+      draw();
+    };
+    input.onkeydown = ev => {
+      if (ev.key === 'ArrowDown') { hl = Math.min(items.length - 1, hl + 1); draw(); ev.preventDefault(); }
+      else if (ev.key === 'ArrowUp') { hl = Math.max(0, hl - 1); draw(); ev.preventDefault(); }
+      else if (ev.key === 'Enter') {
+        ev.preventDefault();
+        if (hl >= 0) { input.value = withArtist ? `${items[hl].title} — ${items[hl].artist}` : items[hl].title; sug.hidden = true; hl = -1; items = []; draw(); return; }
+        onSubmit(input);
+      }
+    };
+    input.onblur = () => setTimeout(() => { if (sug) sug.hidden = true; }, 150);
+  }, 0);
+  return box;
+}
+
+// ------------------------------------------------ Sprint
+let spLastRound = null, spActionsKey = null, spRevealKey = null;
+function syncSPLabel() {
+  const b = document.getElementById('sp-play'); if (!b || $('#s-sprint').hidden) return;
+  b.textContent = audio.paused ? '▶ Lancer le son' : '❚❚ Pause';
+}
+audio.addEventListener('play', syncSPLabel);
+audio.addEventListener('pause', syncSPLabel);
+audio.addEventListener('ended', syncSPLabel);
+function renderSprint(s) {
+  const me = s.players.find(p => p.id === net.me);
+  const e = s.sprint[net.me] || { tries: 0, done: false, points: 0, rank: 0 };
+  const reveal = s.phase === 's-reveal';
+  const nameOf = id => s.players.find(p => p.id === id)?.name;
+
+  const sb = $('#sp-scoreboard'); sb.innerHTML = '';
+  s.players.forEach(p => {
+    const d = el('div', 'sb' + (p.id === net.me ? ' me' : ''));
+    d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.score || 0}</b> pts</span></span>`;
+    if (!p.online) d.style.opacity = .45;
+    sb.appendChild(d);
+  });
+
+  const b = $('#sp-banner');
+  if (!reveal) {
+    const left = SP_TRIES - e.tries;
+    b.innerHTML = e.done
+      ? `Manche ${s.round}/${s.rounds}${e.points ? ` · <span class="pts">+${e.points}</span>` : ''}<small>${e.points ? `${e.rank}${e.rank === 1 ? 'er' : 'e'} à trouver. On attend les autres.` : 'Manche finie pour toi, on attend les autres.'}</small>`
+      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>Artiste et titre, le plus vite possible. ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
+  } else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
+
+  // audio : tout le monde en même temps, sauf si l'hôte fait enceinte
+  loadAudio(s.current?.preview);
+  const speakerHere = s.soundAll || s.speakerId === net.me;
+  const stage = $('#sp-stage'), info = $('#sp-info');
+  if (s.round !== spLastRound) {
+    spLastRound = s.round; stage.classList.remove('revealed');
+    if (speakerHere && !reveal) { try { audio.currentTime = 0; } catch { } audio.play().catch(() => { }); }
+  }
+  $('#sp-clock').textContent = reveal ? '' : s.spLeft;
+  stage.classList.toggle('hot', !reveal && s.spLeft <= 5);
+  if (reveal) {
+    stage.classList.add('revealed'); $('#sp-art').src = s.current.art;
+    info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`;
+    // couper une seule fois à l'entrée en révélation, sinon on empêcherait la réécoute
+    if (spRevealKey !== s.round) { spRevealKey = s.round; audio.pause(); }
+  } else {
+    $('#sp-art').removeAttribute('src');
+    info.innerHTML = speakerHere ? '' : `<small>Le son sort du téléphone de ${nameOf(s.speakerId) || 'l\'hôte'}.</small>`;
+  }
+  $('#sp-audio').hidden = !speakerHere && !reveal;
+  syncSPLabel();
+  $('#sp-play').onclick = () => { if (audio.paused) audio.play().catch(() => toast('Touche à nouveau pour lancer le son')); else audio.pause(); };
+  const pr = $('#sp-prog'); if (pr) pr.style.width = reveal ? '100%' : (100 - (s.spLeft / (SP_ROUND_MS / 1000)) * 100) + '%';
+
+  const ac = $('#sp-actions');
+  const key = `${s.phase}|${s.round}|${e.done}|${e.tries}`;
+  if (key === spActionsKey && ac.children.length) { renderSPOthers(s, reveal); return; }
+  spActionsKey = key; ac.innerHTML = '';
+
+  if (!reveal && !e.done) {
+    const submit = input => { const t = input.value.trim(); if (!t) return; act({ t: 'sp-guess', text: t }); input.value = ''; };
+    const box = makeGuessBox('sp-input', 'Titre et artiste…', submit, true);
+    ac.appendChild(box);
+    const row = el('div', 'row');
+    row.innerHTML = `<button class="btn primary" id="sp-submit">Valider</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
+    ac.appendChild(row);
+    ac.appendChild(el('div', 'note', 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
+    $('#sp-submit').onclick = () => submit($('#sp-input'));
+    $('#sp-pass').onclick = () => act({ t: 'sp-giveup' });
+  }
+  if (reveal) {
+    const pod = el('div', 'podium');
+    s.order.forEach((pid, i) => {
+      const x = s.sprint[pid] || {};
+      pod.appendChild(el('div', '', `<span class="pos">${i + 1}</span><span class="who">${nameOf(pid)}</span><span class="gain">+${x.points}</span>`));
+    });
+    s.players.filter(p => !s.order.includes(p.id)).forEach(p => {
+      pod.appendChild(el('div', '', `<span class="pos">–</span><span class="who">${p.name}</span><span class="miss">pas trouvé</span>`));
+    });
+    ac.appendChild(pod);
+    const btn = el('button', 'btn lg ' + (s.round >= s.rounds ? 'pos' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante →');
+    btn.onclick = () => act({ t: 'sp-next' }); ac.appendChild(btn);
+  }
+  renderSPOthers(s, reveal);
+}
+function renderSPOthers(s, reveal) {
+  const ot = $('#sp-others'); ot.innerHTML = '';
+  if (reveal) return;
+  s.players.filter(p => p.id !== net.me).forEach(p => {
+    const x = s.sprint[p.id] || { tries: 0 };
+    const sp = el('span', x.done ? (x.points ? 'done' : 'out') : '');
+    sp.textContent = `${p.name} · ${x.done ? (x.points ? `${x.rank}${x.rank === 1 ? 'er' : 'e'} +${x.points}` : 'sèche') : `${x.tries} essai${x.tries > 1 ? 's' : ''}`}`;
+    ot.appendChild(sp);
+  });
+}
+
 function renderEOthers(s, reveal) {
   const ot = $('#e-others'); ot.innerHTML = '';
   if (reveal) return;
@@ -697,7 +890,7 @@ loadSongsE().then(l => { eCatalog = l; }).catch(() => { });
 // ------------------------------------------------ fin
 function renderEnd(s) {
   const w = s.players.find(p => p.id === s.winner);
-  const eclair = s.mode === 'eclair';
+  const eclair = s.mode !== 'timeline';
   const solo = s.players.filter(p => p.online).length <= 1;
   $('#end-winner').textContent = solo ? 'Terminé' : (w ? w.name : '—');
   $('#end-sub').textContent = solo
@@ -734,6 +927,14 @@ const HELP = {
       <li>« Écouter plus » débloque le palier sans tenter de réponse.</li>
     </ul>
     <p>Le plus grand total après toutes les manches gagne.</p>`,
+  sprint: `<h3>Sprint</h3>
+    <p>La même chanson démarre chez tout le monde en même temps. Le but : donner <b>l'artiste et le titre</b> avant les autres.</p>
+    <ul>
+      <li>Le 1<sup>er</sup> marque 5 points, le 2<sup>e</sup> 3, le 3<sup>e</sup> 2, les suivants 1.</li>
+      <li>Trois essais par manche, puis la manche est finie pour toi.</li>
+      <li>La liste de suggestions remplit le titre et l'artiste d'un seul coup : sers-t'en, c'est plus rapide que de tout taper.</li>
+      <li>La manche s'arrête quand l'extrait est fini ou que tout le monde a répondu.</li>
+    </ul>`,
   hub: `<h3>Platine</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
 };
@@ -802,10 +1003,14 @@ $('#btn-start').onclick = () => {
     if (!cats.length) { toast('Choisis au moins une playlist'); return; }
     const snd = $('#opt-sound').value;
     act({ t: 'start', opts: { mode: 'timeline', cats, target: +$('#opt-target').value, speakerId: snd === 'host' ? net.me : null, soundAll: snd === 'all' } });
-  } else {
+  } else if (pick === 'eclair') {
     const decades = [...$('#opt-decades').querySelectorAll('input:checked')].map(i => +i.value);
     if (!decades.length) { toast('Choisis au moins une décennie'); return; }
     act({ t: 'start', opts: { mode: 'eclair', decades, rounds: +$('#opt-rounds').value } });
+  } else {
+    const decades = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => +i.value);
+    if (!decades.length) { toast('Choisis au moins une décennie'); return; }
+    act({ t: 'start', opts: { mode: 'sprint', decades, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
   }
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });

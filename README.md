@@ -21,6 +21,12 @@ On écoute un extrait, on le place dans sa frise d'années. Premier à remplir s
 - **En solo**, jetons et paris disparaissent. On enchaîne les chansons, on passe librement
   celles qu'on ne connaît pas, et la partie s'arrête quand la frise est pleine.
 
+### Sprint
+La même chanson démarre chez tout le monde. Le premier à donner l'artiste et le titre marque
+le plus. 1er 5 points, 2e 3, 3e 2, ensuite 1. Trois essais par manche, la manche s'arrête quand
+l'extrait est fini ou que tout le monde a répondu. Même base et même liste de suggestions
+qu'Éclair, choix des décennies.
+
 ### Éclair
 Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.
 Paliers 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre faux débloque le
@@ -32,7 +38,7 @@ palier suivant. Choix des décennies de 1980 à aujourd'hui.
 |---|---|
 | `index.html`, `style.css`, `app.js` | l'appli, 100 % statique |
 | `songs.json` | base de Décennies (180 titres, playlists par époque) |
-| `songs-eclair.json` | base d'Éclair (450 tubes, 10 par année de 1980 à 2025) |
+| `songs-eclair.json` | base d'Éclair et de Sprint (450 tubes, 10 par année de 1980 à 2025) |
 | `playlists.txt`, `playlists-eclair.txt` | les listes `Artiste \| Titre` à enrichir |
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 

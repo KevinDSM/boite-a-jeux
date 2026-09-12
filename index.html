@@ -10,8 +10,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=14">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -84,6 +84,12 @@
         <span class="gdesc">Trouve le titre en un minimum de secondes. Plus tu es rapide, plus tu marques.</span>
         <span class="gmeta">1 à 8 joueurs · 15 min</span>
       </button>
+      <button class="gcard g-sprint" type="button" data-game="sprint">
+        <span class="gart" aria-hidden="true"><span class="chrono"></span></span>
+        <span class="gname">Sprint</span>
+        <span class="gdesc">Tout le monde écoute en même temps. Le premier à donner l'artiste et le titre rafle la mise.</span>
+        <span class="gmeta">1 à 8 joueurs · 15 min</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -115,6 +121,26 @@
       <label class="field row">
         <span>Nombre de manches</span>
         <select id="opt-rounds"><option>5</option><option selected>10</option><option>15</option></select>
+      </label>
+    </div>
+    <div class="opts" id="opts-sprint" hidden>
+      <fieldset class="chips" id="opt-decades-s"><legend class="eyebrow">Décennies</legend>
+        <label><input type="checkbox" value="1980" checked>80</label>
+        <label><input type="checkbox" value="1990" checked>90</label>
+        <label><input type="checkbox" value="2000" checked>2000</label>
+        <label><input type="checkbox" value="2010" checked>2010</label>
+        <label><input type="checkbox" value="2020" checked>2020+</label>
+      </fieldset>
+      <label class="field row">
+        <span>Nombre de manches</span>
+        <select id="opt-rounds-s"><option>5</option><option selected>10</option><option>15</option></select>
+      </label>
+      <label class="field row">
+        <span>Le son sort de…</span>
+        <select id="opt-sound-s">
+          <option value="all" selected>Tous les téléphones</option>
+          <option value="host">Ce téléphone (enceinte)</option>
+        </select>
       </label>
     </div>
     <button class="btn primary lg" id="btn-start">Lancer la partie</button>
@@ -162,6 +188,22 @@
   <div class="others" id="e-others"></div>
 </section>
 
+<!-- ====================== SPRINT ====================== -->
+<section class="screen play" id="s-sprint" hidden>
+  <header class="scoreboard" id="sp-scoreboard"></header>
+  <div class="banner" id="sp-banner"></div>
+
+  <section class="stage">
+    <div class="chrono-stage" id="sp-stage"><img id="sp-art" alt=""><span class="num" id="sp-clock">30</span></div>
+    <div class="track-info" id="sp-info"></div>
+    <div class="progress"><i id="sp-prog"></i></div>
+    <div class="row center" id="sp-audio"><button class="btn primary" id="sp-play">▶ Lancer le son</button></div>
+  </section>
+
+  <div class="actions" id="sp-actions"></div>
+  <div class="others" id="sp-others"></div>
+</section>
+
 <!-- ====================== FIN ====================== -->
 <section class="screen" id="s-end" hidden>
   <div class="endhero">
@@ -194,6 +236,6 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="app.js?v=14"></script>
+<script src="app.js?v=15"></script>
 </body>
 </html>
