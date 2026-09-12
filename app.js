@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '19';
+const ASSET_V = '20';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -277,8 +277,8 @@ class Game {
   // --- Sprint : tout le monde écoute, le premier qui nomme le morceau marque le plus
   startSprint(o) {
     const s = this.s;
-    s.rounds = o.rounds || 10; s.round = 0; s.decades = o.decades?.length ? o.decades : null;
-    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId; s.jv = false;
+    s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null;
+    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId; s.jv = !!o.jv;
     s.deck = shuffle([...this.poolE()]);
     s.players.forEach(p => { p.score = 0; });
     this.nextSprintRound();
@@ -310,7 +310,12 @@ class Game {
   spGuess(pid, text) {
     const s = this.s; if (s.phase !== 's-play') return 'Manche terminée';
     const e = this.spSlot(pid); if (e.done) return null;
-    const good = this.spMatch(text, s.current);
+    let good;
+    if (s.current.jv) {                               // musique de jeu vidéo : on attend le nom du jeu
+      const rr = this.jvResolve(text);
+      if (rr.n > 1) return `${rr.n} jeux correspondent, précise`;   // trop vague : n'use pas d'essai
+      good = rr.n === 1 && norm(rr.game) === norm(s.current.title);
+    } else good = this.spMatch(text, s.current);
     if (good) {
       e.done = true; s.order.push(pid); e.rank = s.order.length;
       e.points = SP_POINTS[Math.min(e.rank - 1, SP_POINTS.length - 1)];
@@ -950,7 +955,7 @@ function renderSprint(s) {
     const left = SP_TRIES - e.tries;
     b.innerHTML = e.done
       ? `Manche ${s.round}/${s.rounds}${e.points ? ` · <span class="pts">+${e.points}</span>` : ''}<small>${e.points ? `${e.rank}${e.rank === 1 ? 'er' : 'e'} à trouver. On attend les autres.` : 'Manche finie pour toi, on attend les autres.'}</small>`
-      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>Artiste et titre, le plus vite possible. ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
+      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>${s.current?.jv ? 'De quel jeu vient cette musique ?' : 'Artiste et titre, le plus vite possible.'} ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
   } else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
 
   // audio : tout le monde en même temps, sauf si l'hôte fait enceinte
@@ -965,7 +970,7 @@ function renderSprint(s) {
   stage.classList.toggle('hot', !reveal && s.spLeft <= 5);
   if (reveal) {
     stage.classList.add('revealed'); $('#sp-art').src = s.current.art;
-    info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.year}</small>`;
+    info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.jv ? s.current.sub : s.current.year}</small>`;
     // couper une seule fois à l'entrée en révélation, sinon on empêcherait la réécoute
     if (spRevealKey !== s.round) { spRevealKey = s.round; audio.pause(); }
   } else {
@@ -978,18 +983,23 @@ function renderSprint(s) {
   const pr = $('#sp-prog'); if (pr) pr.style.width = reveal ? '100%' : (100 - (s.spLeft / (SP_ROUND_MS / 1000)) * 100) + '%';
 
   const ac = $('#sp-actions');
-  const key = `${s.phase}|${s.round}|${e.done}|${e.tries}`;
+  const key = `${s.phase}|${s.round}|${e.done}|${e.tries}|${!!s.current?.jv}`;
   if (key === spActionsKey && ac.children.length) { renderSPOthers(s, reveal); return; }
   spActionsKey = key; ac.innerHTML = '';
 
   if (!reveal && !e.done) {
     const submit = input => { const t = input.value.trim(); if (!t) return; act({ t: 'sp-guess', text: t }); input.value = ''; };
-    const source = q => (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).slice(0, 6).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
-    ac.appendChild(makeGuessBox('sp-input', 'Titre et artiste…', submit, source));
+    const jvNow = !!s.current?.jv;
+    const source = q => {
+      const games = s.jv ? (jvCatalog || []).filter(x => norm(x.game).includes(q)).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : [];
+      const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
+      return (jvNow ? games.concat(songs) : songs.concat(games)).slice(0, 6);
+    };
+    ac.appendChild(makeGuessBox('sp-input', jvNow ? 'Nom du jeu…' : 'Titre et artiste…', submit, source));
     const row = el('div', 'row');
     row.innerHTML = `<button class="btn primary" id="sp-submit">Valider</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
     ac.appendChild(row);
-    ac.appendChild(el('div', 'note', 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
+    ac.appendChild(el('div', 'note', jvNow ? 'Choisis dans la liste : les jeux y sont tous.' : 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
     $('#sp-submit').onclick = () => submit($('#sp-input'));
     $('#sp-pass').onclick = () => act({ t: 'sp-giveup' });
   }
@@ -1082,6 +1092,7 @@ const HELP = {
       <li>Trois essais par manche, puis la manche est finie pour toi.</li>
       <li>La liste de suggestions remplit le titre et l'artiste d'un seul coup : sers-t'en, c'est plus rapide que de tout taper.</li>
       <li>La manche s'arrête quand l'extrait est fini ou que tout le monde a répondu.</li>
+      <li>Avec la case <b>Jeux vidéo</b> cochée, des musiques de jeux se glissent parmi les chansons : pour celles-là, c'est le nom du jeu qu'il faut donner. Un nom trop vague ne coûte pas d'essai.</li>
     </ul>`,
   sablier: `<h3>Sablier</h3>
     <p>Par équipes. Chacun reçoit des cartes et en écarte quelques-unes ; le reste forme le paquet commun. Le but : faire deviner le plus de cartes à son équipe, en un temps limité, sur plusieurs manches avec les <b>mêmes cartes</b>.</p>
@@ -1166,9 +1177,10 @@ $('#btn-start').onclick = () => {
     if (!decades.length && !jv) { toast('Choisis au moins une période ou les jeux vidéo'); return; }
     act({ t: 'start', opts: { mode: 'eclair', decades, jv, rounds: +$('#opt-rounds').value } });
   } else if (pick === 'sprint') {
-    const decades = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => +i.value);
-    if (!decades.length) { toast('Choisis au moins une décennie'); return; }
-    act({ t: 'start', opts: { mode: 'sprint', decades, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
+    const checked = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => i.value);
+    const decades = checked.filter(v => v !== 'jv').map(Number), jv = checked.includes('jv');
+    if (!decades.length && !jv) { toast('Choisis au moins une période ou les jeux vidéo'); return; }
+    act({ t: 'start', opts: { mode: 'sprint', decades, jv, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
   }
   if (pick === 'sablier') {
     if ((view?.players || []).filter(p => p.online).length < 2) { toast('Sablier se joue à deux minimum, par équipes'); return; }
