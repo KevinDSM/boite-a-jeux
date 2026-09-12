@@ -1,0 +1,797 @@
+{
+"id": "personnalites",
+"name": "Personnalités réelles",
+"description": "Le registre Times Up classique : histoire, sciences, arts, musique, cinéma, sport. Mélange d'évidences et de cartes velues.",
+"cards": [
+{
+"n": "Napoléon Bonaparte",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Jeanne d'Arc",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Cléopâtre",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Jules César",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Louis XIV",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Marie-Antoinette",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Charles de Gaulle",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Christophe Colomb",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Nelson Mandela",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Mahatma Gandhi",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Martin Luther King",
+"c": "Histoire",
+"d": 1
+},
+{
+"n": "Winston Churchill",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Abraham Lincoln",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Vercingétorix",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Toutânkhamon",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Gengis Khan",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Simone Veil",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Rosa Parks",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Che Guevara",
+"c": "Histoire",
+"d": 2
+},
+{
+"n": "Raspoutine",
+"c": "Histoire",
+"d": 3
+},
+{
+"n": "Catherine de Médicis",
+"c": "Histoire",
+"d": 3
+},
+{
+"n": "Soliman le Magnifique",
+"c": "Histoire",
+"d": 3
+},
+{
+"n": "Aliénor d'Aquitaine",
+"c": "Histoire",
+"d": 3
+},
+{
+"n": "Talleyrand",
+"c": "Histoire",
+"d": 3
+},
+{
+"n": "Olympe de Gouges",
+"c": "Histoire",
+"d": 3
+},
+{
+"n": "Albert Einstein",
+"c": "Sciences",
+"d": 1
+},
+{
+"n": "Marie Curie",
+"c": "Sciences",
+"d": 1
+},
+{
+"n": "Isaac Newton",
+"c": "Sciences",
+"d": 1
+},
+{
+"n": "Charles Darwin",
+"c": "Sciences",
+"d": 1
+},
+{
+"n": "Louis Pasteur",
+"c": "Sciences",
+"d": 1
+},
+{
+"n": "Léonard de Vinci",
+"c": "Sciences",
+"d": 1
+},
+{
+"n": "Galilée",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Nikola Tesla",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Stephen Hawking",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Alan Turing",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Thomas Edison",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Sigmund Freud",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Archimède",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Gustave Eiffel",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Neil Armstrong",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Thomas Pesquet",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Youri Gagarine",
+"c": "Sciences",
+"d": 2
+},
+{
+"n": "Ada Lovelace",
+"c": "Sciences",
+"d": 3
+},
+{
+"n": "Rosalind Franklin",
+"c": "Sciences",
+"d": 3
+},
+{
+"n": "Hubert Reeves",
+"c": "Sciences",
+"d": 3
+},
+{
+"n": "Katherine Johnson",
+"c": "Sciences",
+"d": 3
+},
+{
+"n": "Vincent van Gogh",
+"c": "Arts",
+"d": 1
+},
+{
+"n": "Pablo Picasso",
+"c": "Arts",
+"d": 1
+},
+{
+"n": "Claude Monet",
+"c": "Arts",
+"d": 2
+},
+{
+"n": "Salvador Dalí",
+"c": "Arts",
+"d": 2
+},
+{
+"n": "Frida Kahlo",
+"c": "Arts",
+"d": 2
+},
+{
+"n": "Banksy",
+"c": "Arts",
+"d": 2
+},
+{
+"n": "Andy Warhol",
+"c": "Arts",
+"d": 2
+},
+{
+"n": "Auguste Rodin",
+"c": "Arts",
+"d": 3
+},
+{
+"n": "Coco Chanel",
+"c": "Arts",
+"d": 2
+},
+{
+"n": "Victor Hugo",
+"c": "Littérature",
+"d": 1
+},
+{
+"n": "Molière",
+"c": "Littérature",
+"d": 1
+},
+{
+"n": "Jules Verne",
+"c": "Littérature",
+"d": 1
+},
+{
+"n": "William Shakespeare",
+"c": "Littérature",
+"d": 1
+},
+{
+"n": "J.K. Rowling",
+"c": "Littérature",
+"d": 1
+},
+{
+"n": "Émile Zola",
+"c": "Littérature",
+"d": 2
+},
+{
+"n": "Agatha Christie",
+"c": "Littérature",
+"d": 2
+},
+{
+"n": "Antoine de Saint-Exupéry",
+"c": "Littérature",
+"d": 2
+},
+{
+"n": "Simone de Beauvoir",
+"c": "Littérature",
+"d": 2
+},
+{
+"n": "Albert Camus",
+"c": "Littérature",
+"d": 2
+},
+{
+"n": "Stephen King",
+"c": "Littérature",
+"d": 2
+},
+{
+"n": "Charles Baudelaire",
+"c": "Littérature",
+"d": 3
+},
+{
+"n": "Marcel Proust",
+"c": "Littérature",
+"d": 3
+},
+{
+"n": "Amélie Nothomb",
+"c": "Littérature",
+"d": 3
+},
+{
+"n": "Mozart",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Beethoven",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Michael Jackson",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Elvis Presley",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Freddie Mercury",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Édith Piaf",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Johnny Hallyday",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Céline Dion",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Beyoncé",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Bob Marley",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Stromae",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Lady Gaga",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Rihanna",
+"c": "Musique",
+"d": 1
+},
+{
+"n": "Jacques Brel",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Serge Gainsbourg",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "David Bowie",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Daft Punk",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Aya Nakamura",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Angèle",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Orelsan",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Jul",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Amy Winehouse",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Charles Aznavour",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Mylène Farmer",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Jean-Michel Jarre",
+"c": "Musique",
+"d": 3
+},
+{
+"n": "Barbara",
+"c": "Musique",
+"d": 3
+},
+{
+"n": "Georges Brassens",
+"c": "Musique",
+"d": 2
+},
+{
+"n": "Charlie Chaplin",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Louis de Funès",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Jean Dujardin",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Omar Sy",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Marilyn Monroe",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Leonardo DiCaprio",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Brad Pitt",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Steven Spielberg",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Bruce Lee",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Jackie Chan",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Arnold Schwarzenegger",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Keanu Reeves",
+"c": "Cinéma",
+"d": 1
+},
+{
+"n": "Alain Delon",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Gérard Depardieu",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Marion Cotillard",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Audrey Hepburn",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Meryl Streep",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Quentin Tarantino",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Alfred Hitchcock",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Tim Burton",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Scarlett Johansson",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Luc Besson",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Jean Reno",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Jean Gabin",
+"c": "Cinéma",
+"d": 3
+},
+{
+"n": "Michel Blanc",
+"c": "Cinéma",
+"d": 3
+},
+{
+"n": "Josiane Balasko",
+"c": "Cinéma",
+"d": 3
+},
+{
+"n": "Christian Clavier",
+"c": "Cinéma",
+"d": 2
+},
+{
+"n": "Zinédine Zidane",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Kylian Mbappé",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Lionel Messi",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Cristiano Ronaldo",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Michael Jordan",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Usain Bolt",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Roger Federer",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Rafael Nadal",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Muhammad Ali",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Mike Tyson",
+"c": "Sport",
+"d": 1
+},
+{
+"n": "Diego Maradona",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Serena Williams",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Teddy Riner",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Tony Parker",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Antoine Griezmann",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Léon Marchand",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Sébastien Loeb",
+"c": "Sport",
+"d": 2
+},
+{
+"n": "Alain Prost",
+"c": "Sport",
+"d": 3
+},
+{
+"n": "Laure Manaudou",
+"c": "Sport",
+"d": 3
+},
+{
+"n": "Jeannie Longo",
+"c": "Sport",
+"d": 3
+},
+{
+"n": "Steve Jobs",
+"c": "Télé & Web",
+"d": 1
+},
+{
+"n": "Bill Gates",
+"c": "Télé & Web",
+"d": 1
+},
+{
+"n": "Elon Musk",
+"c": "Télé & Web",
+"d": 1
+},
+{
+"n": "Walt Disney",
+"c": "Télé & Web",
+"d": 1
+},
+{
+"n": "Squeezie",
+"c": "Télé & Web",
+"d": 1
+},
+{
+"n": "Cyril Hanouna",
+"c": "Télé & Web",
+"d": 1
+},
+{
+"n": "Mark Zuckerberg",
+"c": "Télé & Web",
+"d": 2
+},
+{
+"n": "Nagui",
+"c": "Télé & Web",
+"d": 2
+},
+{
+"n": "Michou",
+"c": "Télé & Web",
+"d": 2
+},
+{
+"n": "McFly et Carlito",
+"c": "Télé & Web",
+"d": 2
+},
+{
+"n": "Norman Thavaud",
+"c": "Télé & Web",
+"d": 2
+},
+{
+"n": "Jean-Pierre Pernaut",
+"c": "Télé & Web",
+"d": 3
+},
+{
+"n": "Bernard Pivot",
+"c": "Télé & Web",
+"d": 3
+},
+{
+"n": "Sophie Davant",
+"c": "Télé & Web",
+"d": 3
+},
+{
+"n": "Jean-Luc Reichmann",
+"c": "Télé & Web",
+"d": 2
+}
+]
+}

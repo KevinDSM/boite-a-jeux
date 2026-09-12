@@ -40,6 +40,19 @@ sous forme de reprises orchestrales, c'est la mélodie qui compte.
 python build_jv.py            # playlists-jv.txt -> songs-jv.json
 ```
 
+### Sablier
+Le seul jeu sans musique : un Time's Up par équipes, porté depuis le projet d'origine
+(le moteur de règles `src/game.js` est repris tel quel dans `sablier-engine.js`, le salon 3D
+et le mode Skribble sont laissés de côté). Chacun reçoit 12 cartes, en écarte 2, le reste forme
+le paquet commun rejoué à chaque manche : description libre, un seul mot, dessin. Trois secondes
+de préparation avant la carte, passer est libre, la carte en main au gong n'est jamais révélée et
+l'hôte peut la compter. Correction d'une carte comptée à tort entre deux tours. Manche dessin
+avec canevas partagé en direct, seau, gomme, galerie de fin. Réactions emoji pour le public.
+Les cartes déjà vues ne reviennent pas d'une soirée à l'autre (mémoire du téléphone hôte).
+
+Cartes : 953 dans `decks/*.json`, 5 decks, format `{ "n": nom, "c": catégorie, "d": 1|2|3 }`.
+Le deck privé « Entre nous » de l'original n'est volontairement pas publié.
+
 ### Éclair
 Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.
 Paliers 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre faux débloque le
@@ -55,12 +68,17 @@ palier suivant. Choix des décennies de 1980 à aujourd'hui.
 | `playlists.txt`, `playlists-eclair.txt` | les listes `Artiste \| Titre` à enrichir |
 | `songs-jv.json`, `playlists-jv.txt`, `build_jv.py` | base des musiques de jeux vidéo, format `Jeu \| recherche iTunes` |
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
+| `sablier-engine.js`, `sablier-ui.js`, `decks/` | le jeu Sablier : règles pures, écrans et canevas, cartes |
 
 ## Ajouter un jeu
 
 Un jeu se déclare dans `GAMES` (app.js), reçoit une carte dans le salon (`.gcard` dans
 index.html), un bloc d'options `#opts-<clé>`, une palette `[data-game="<thème>"]` dans
 style.css, un écran `.screen`, et ses phases dans le moteur `Game`.
+
+Sablier montre le second modèle possible : un moteur séparé qui produit une **vue par joueur**
+(`viewFor`), diffusée par `broadcast()` destinataire par destinataire, et des messages hors état
+(`sab-seg`, `sab-full`, `sab-react`) relayés par l'hôte pour le dessin et les réactions.
 
 ## Enrichir une base
 

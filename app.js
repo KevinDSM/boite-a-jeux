@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '17';
+const ASSET_V = '18';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -23,6 +23,7 @@ const GAMES = {
   eclair: { key: 'eclair', theme: 'eclair', name: 'Éclair' },
   sprint: { key: 'sprint', theme: 'sprint', name: 'Sprint' },
   jv: { key: 'jv', theme: 'jv', name: 'Manette' },
+  sablier: { key: 'sablier', theme: 'sablier', name: 'Sablier' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -41,12 +42,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -105,10 +106,11 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
+    if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
   setOffline(id) { const p = this.player(id); if (p) p.online = false; }
@@ -126,6 +128,7 @@ class Game {
     s.mode = o.mode || s.pick || 'timeline'; s.winner = null;
     if (s.mode === 'eclair') return this.startEclair(o);
     if (s.mode === 'sprint' || s.mode === 'jv') return this.startSprint(o);
+    if (s.mode === 'sablier') return this.startSablier(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -325,7 +328,24 @@ class Game {
     this.nextSprintRound();
   }
 
+  // ================= Sablier : la salle du moteur porté vit dans this.sab =================
+  startSablier(o) {
+    const s = this.s, host = s.players[0];
+    const room = Sablier.createRoom({ code: s.code, hostId: host.id, hostName: host.name, decks: o.decks });
+    s.players.slice(1).forEach(p => { const q = Sablier.addPlayer(room, p.id, p.name); q.connected = p.online; });
+    Sablier.updateSettings(room, o.settings || {}, Sablier.allCategories());
+    if (room.settings.teamMode === 'random') Sablier.randomizeTeams(room); else Sablier.clearTeams(room);
+    this.sab = room; s.phase = 'sab';
+  }
+  sabPool() { const st = this.sab.settings; return Sablier.pool(st.decks, st.difficulties, st.categories); }
+  sabExtras() {
+    const room = this.sab, pool = this.sabPool(), seen = Sablier.history.set();
+    return { problems: room.phase === 'teams' ? Sablier.teamProblems(room, pool) : [], poolSize: pool.length, freshCount: pool.filter(c => !seen.has(c.id)).length };
+  }
+  viewFor(base, pid) { return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+
   restart() {
+    this.sab = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -363,7 +383,7 @@ function makePeer(id) {
 }
 
 async function hostGame() {
-  const [songs, songsE, songsJV] = await Promise.all([loadSongs(), loadSongsE(), loadSongsJV()]);
+  const [songs, songsE, songsJV] = await Promise.all([loadSongs(), loadSongsE(), loadSongsJV(), loadDecks()]);
   let code, peer;
   for (let i = 0; i < 5; i++) { code = genCode(); try { peer = await makePeer(ROOM_PREFIX + code); break; } catch (e) { if (e.message !== 'code-taken') throw e; } }
   if (!peer) throw new Error('Impossible de créer la salle');
@@ -371,23 +391,25 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   peer.on('connection', conn => {
     conn.on('data', m => handleClientMessage(conn, m));
-    conn.on('close', () => { const pid = conn.metadata?.pid; if (!pid || net.conns.get(pid) !== conn) return; net.conns.delete(pid); net.game.setOffline(pid); broadcast(); });
+    conn.on('close', () => { const pid = conn.metadata?.pid; if (!pid || net.conns.get(pid) !== conn) return; net.conns.delete(pid); net.game.setOffline(pid); sabOffline(pid); broadcast(); });
   });
   peer.on('disconnected', () => { setNet(false, 'reconnexion'); peer.reconnect(); });
   peer.on('open', () => setNet(true, 'hôte'));
   setNet(true, 'hôte');
-  setInterval(() => { const before = net.game.s.phase; net.game.tick(); if (before !== net.game.s.phase || net.game.s.phase === 'bet' || net.game.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick(); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
 function handleClientMessage(conn, m) {
-  if (m.t === 'hello') { conn.metadata = { pid: m.pid }; net.conns.set(m.pid, conn); net.game.addPlayer(m.pid, m.name); broadcast(); return; }
+  if (m.t === 'hello') { conn.metadata = { pid: m.pid }; net.conns.set(m.pid, conn); net.game.addPlayer(m.pid, m.name); if (net.game.sab) { try { conn.send({ t: 'sab-full', strokes: net.game.sab.strokes }); } catch { } } broadcast(); return; }
   const err = applyAction(m.pid, m);
+  if (err === 'silent') return;
   if (err) { try { conn.send({ t: 'err', msg: err }); } catch { } }
   broadcast();
 }
 function applyAction(pid, m) {
   const g = net.game;
+  if (typeof m.t === 'string' && m.t.startsWith('sab:')) return sabAction(pid, m);
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
@@ -412,9 +434,13 @@ function applyAction(pid, m) {
   return null;
 }
 function broadcast() {
-  const pub = net.game.publicState();
-  for (const c of net.conns.values()) { try { c.send({ t: 'state', s: pub }); } catch { } }
-  view = pub; render();
+  const g = net.game, pub = g.publicState();
+  if (g.sab) g._sabExtras = g.sabExtras();          // calculé une fois par diffusion
+  for (const [pid, c] of net.conns) { try { c.send({ t: 'state', s: g.viewFor(pub, pid) }); } catch { } }
+  view = g.viewFor(pub, net.me); render();
+}
+function sendAll(m, exceptPid = null) {
+  for (const [pid, c] of net.conns) { if (pid !== exceptPid) { try { c.send(m); } catch { } } }
 }
 
 async function joinGame(code) {
@@ -424,18 +450,115 @@ async function joinGame(code) {
     const conn = peer.connect(ROOM_PREFIX + code, { reliable: true });
     const timer = setTimeout(() => reject(new Error('no-room')), 8000);
     conn.on('open', () => { clearTimeout(timer); net.hostConn = conn; conn.send({ t: 'hello', pid: net.me, name: net.name }); setNet(true, 'connecté'); resolve(); });
-    conn.on('data', m => { if (m.t === 'state') { view = m.s; render(); } else if (m.t === 'err') toast(m.msg); });
+    conn.on('data', m => { if (m.t === 'state') { view = m.s; render(); } else if (m.t === 'err') toast(m.msg); else sabOnMessage(m); });
     conn.on('close', () => { setNet(false, 'reconnexion'); setTimeout(() => joinGame(code).catch(() => { }), 2500); });
     peer.on('error', e => { clearTimeout(timer); reject(e); });
   });
 }
 
 function act(m) {
-  if (net.isHost) { const err = applyAction(net.me, m); if (err) toast(err); broadcast(); }
+  if (net.isHost) { const err = applyAction(net.me, m); if (err === 'silent') return; if (err) toast(err); broadcast(); }
   else if (net.hostConn?.open) net.hostConn.send({ ...m, pid: net.me });
   else toast('Pas connecté à l\'hôte');
 }
 const isHostPlayer = () => net.isHost;
+
+// ============================================================ Sablier : orchestration côté hôte
+function sabWipe() { const r = net.game.sab; if (!r) return; Sablier.clearStrokes(r); sendAll({ t: 'sab-full', strokes: [] }); sabOnMessage({ t: 'sab-full', strokes: [] }); }
+function sabFinishTurn(reason) {
+  const r = net.game.sab; if (!r) return;
+  sabWipe();
+  if (r.turn && ['turn-live', 'turn-idle'].includes(r.phase)) Sablier.endTurn(r, reason);
+}
+function sabAdvanceIfDone() { const r = net.game.sab; if (r && Sablier.selectionDone(r)) Sablier.buildDeckAndStart(r); }
+function sabTick() {
+  const r = net.game.sab; if (!r || r.phase !== 'turn-live' || !r.turn) return false;
+  const now = Date.now();
+  if (now >= r.turn.endsAt + 150) { sabFinishTurn('time'); return true; }
+  if (r.turn.startsAt && now >= r.turn.startsAt + 60 && !r.turn.revealed) { r.turn.revealed = true; return true; }  // la carte arrive avec le chrono
+  return false;
+}
+function sabOffline(pid) {
+  const r = net.game.sab; if (!r) return;
+  const p = Sablier.findPlayer(r, pid); if (p) p.connected = false;
+  if (r.phase === 'turn-live' && r.turn && r.turn.playerId === pid) sabFinishTurn('disconnect');
+  else sabAdvanceIfDone();
+}
+function sabAction(pid, m) {
+  const g = net.game, r = g.sab; if (!r) return 'Pas de partie de Sablier en cours';
+  const host = Sablier.isHost(r, pid);
+  const inPhase = (...ph) => ph.includes(r.phase);
+  switch (m.t) {
+    case 'sab:settings': {
+      if (!host || !inPhase('teams')) return null;
+      const before = r.settings.teamMode;
+      Sablier.updateSettings(r, m.patch || {}, Sablier.allCategories());
+      if (before !== r.settings.teamMode) { if (r.settings.teamMode === 'random') Sablier.randomizeTeams(r); else Sablier.clearTeams(r); }
+      return null;
+    }
+    case 'sab:team': if (!inPhase('teams')) return null; if (r.settings.teamMode !== 'manual' && !host) return null; Sablier.setTeam(r, pid, m.teamId ?? null); return null;
+    case 'sab:team-add': if (host && inPhase('teams') && Sablier.addTeam(r) && r.settings.teamMode === 'random') Sablier.randomizeTeams(r); return null;
+    case 'sab:team-rm': if (host && inPhase('teams') && Sablier.removeTeam(r) && r.settings.teamMode === 'random') Sablier.randomizeTeams(r); return null;
+    case 'sab:randomize': if (host && inPhase('teams')) Sablier.randomizeTeams(r); return null;
+    case 'sab:deal': {
+      if (!host || !inPhase('teams')) return null;
+      const pool = g.sabPool();
+      const problems = Sablier.teamProblems(r, pool); if (problems.length) return problems[0];
+      let seen = Sablier.history.set();
+      const need = r.players.length * r.settings.dealPerPlayer;
+      if (pool.filter(c => !seen.has(c.id)).length < need) { Sablier.history.clear(); seen = new Set(); }   // catalogue parcouru : nouveau cycle
+      Sablier.deal(r, pool, seen);
+      Sablier.history.add(r.players.flatMap(p => p.hand));
+      return null;
+    }
+    case 'sab:toggle': Sablier.toggleDiscard(r, pid, m.cardId); return null;
+    case 'sab:validate': if (Sablier.validateSelection(r, pid)) sabAdvanceIfDone(); return null;
+    case 'sab:unvalidate': Sablier.unvalidateSelection(r, pid); return null;
+    case 'sab:force': if (host && inPhase('selection')) Sablier.buildDeckAndStart(r); return null;
+    case 'sab:start': if (!Sablier.canStartTurn(r, pid)) return null; Sablier.startTurn(r); sabWipe(); return null;
+    case 'sab:guessed': {
+      const wasDraw = r.phase === 'turn-live' && Sablier.isDrawingRound(r), cardId = r.currentCardId;
+      const res = Sablier.markGuessed(r, pid); if (res === 'ignored') return null;
+      if (wasDraw) Sablier.captureDrawing(r, cardId, pid);
+      sabWipe();
+      if (res === 'round-over') sabFinishTurn('cleared');
+      return null;
+    }
+    case 'sab:passed': if (Sablier.markPassed(r, pid) !== 'ignored') sabWipe(); return null;
+    case 'sab:abort': if (host) sabFinishTurn('abort'); return null;
+    case 'sab:buzzer': if (host) Sablier.buzzerResolve(r, !!m.accept); return null;
+    case 'sab:amend': if (host && Array.isArray(m.ids)) { const n = Sablier.amendGuesses(r, m.ids); if (n) toast(`${n} carte${n > 1 ? 's' : ''} remise${n > 1 ? 's' : ''} dans la pile`); } return null;
+    case 'sab:next': if (host) Sablier.nextRound(r); return null;
+    case 'sab:reset': if (host) { Sablier.resetToLobby(r); sabWipe(); } return null;
+    case 'sab:seg': {
+      if (r.phase !== 'turn-live' || !r.turn || r.turn.playerId !== pid || !Sablier.isDrawingRound(r)) return null;
+      if (!Sablier.appendStroke(r, m.seg)) return null;
+      sendAll({ t: 'sab-seg', seg: m.seg }, pid);
+      if (pid !== net.me) sabOnMessage({ t: 'sab-seg', seg: m.seg });
+      return 'silent';
+    }
+    case 'sab:undo': case 'sab:clear': {
+      if (r.phase !== 'turn-live' || !r.turn || r.turn.playerId !== pid) return null;
+      if (m.t === 'sab:undo') Sablier.undoStroke(r); else Sablier.clearStrokes(r);
+      const msg = { t: 'sab-full', strokes: r.strokes }; sendAll(msg); sabOnMessage(msg);
+      return 'silent';
+    }
+    case 'sab:react': {
+      if (r.phase !== 'turn-live') return 'silent';
+      const e = Sablier.sanitizeReaction(m.e); if (!e) return 'silent';
+      const who = (Sablier.findPlayer(r, pid) || {}).name || '';
+      const msg = { t: 'sab-react', e, who }; sendAll(msg); sabOnMessage(msg);
+      return 'silent';
+    }
+  }
+  return null;
+}
+async function loadDecks() {
+  if (Sablier.deckIds().length) return;
+  const index = await (await fetch('decks/index.json?v=' + ASSET_V)).json();
+  const all = await Promise.all(index.map(d => fetch(`decks/${d.id}.json?v=${ASSET_V}`).then(r => r.json())));
+  Sablier.setDecks(all);
+}
 
 // ============================================================ rendu
 function render() {
@@ -448,6 +571,7 @@ function render() {
   else if (s.phase === 'end') { show('s-end'); renderEnd(s); audio.pause(); }
   else if (s.phase === 'e-play' || s.phase === 'e-reveal') { show('s-eclair'); renderEclair(s); }
   else if (s.phase === 's-play' || s.phase === 's-reveal') { show('s-sprint'); renderSprint(s); }
+  else if (s.phase === 'sab') { show('s-sablier'); renderSablier(s.sab); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -480,6 +604,17 @@ function renderLobby(s) {
   $('#opts-eclair').hidden = s.pick !== 'eclair';
   $('#opts-sprint').hidden = s.pick !== 'sprint';
   $('#opts-jv').hidden = s.pick !== 'jv';
+  $('#opts-sablier').hidden = s.pick !== 'sablier';
+  if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
+    Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
+    const refresh = () => {
+      const decks = [...$('#opt-sab-decks').querySelectorAll('input:checked')].map(i => i.value);
+      const diff = [...$('#opt-sab-diff').querySelectorAll('input:checked')].map(i => +i.value);
+      const n = Sablier.pool(decks, diff, null).length, need = s.players.length * (+$('#opt-sab-deal').value || 12);
+      $('#opt-sab-count').textContent = `${n} cartes disponibles, ${need} nécessaires pour ${s.players.length} joueur${s.players.length > 1 ? 's' : ''}.`;
+    };
+    $('#opts-sablier').addEventListener('input', refresh); refresh();
+  }
   if (isHostPlayer() && !$('#opt-cats-jv').querySelector('label') && jvCatalog) {
     [...new Set(jvCatalog.map(x => x.cat))].forEach(k => {
       const l = el('label'); l.innerHTML = `<input type="checkbox" value="${k}" checked>${k}`; $('#opt-cats-jv').appendChild(l);
@@ -960,6 +1095,15 @@ const HELP = {
       <li>La liste de suggestions contient tous les jeux de la partie.</li>
       <li>Beaucoup de musiques Nintendo ou Sega n'existent que sous forme de reprises orchestrales : c'est la mélodie qui compte.</li>
     </ul>`,
+  sablier: `<h3>Sablier</h3>
+    <p>Par équipes. Chacun reçoit des cartes et en écarte quelques-unes ; le reste forme le paquet commun. Le but : faire deviner le plus de cartes à son équipe, en un temps limité, sur plusieurs manches avec les <b>mêmes cartes</b>.</p>
+    <ul>
+      <li><b>Description libre :</b> tout est permis sauf les mots de la carte.</li>
+      <li><b>Un seul mot :</b> un mot, une seule fois. Comme les cartes sont déjà connues, ça suffit souvent.</li>
+      <li><b>Dessin :</b> tu dessines sur ton téléphone, ton équipe voit le dessin en direct.</li>
+    </ul>
+    <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
+    <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
   hub: `<h3>Platine</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
 };
@@ -1036,10 +1180,19 @@ $('#btn-start').onclick = () => {
     const decades = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => +i.value);
     if (!decades.length) { toast('Choisis au moins une décennie'); return; }
     act({ t: 'start', opts: { mode: 'sprint', decades, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
-  } else {
+  } else if (pick === 'jv') {
     const cats = [...$('#opt-cats-jv').querySelectorAll('input:checked')].map(i => i.value);
     if (!cats.length) { toast('Choisis au moins une famille'); return; }
     act({ t: 'start', opts: { mode: 'jv', cats, rounds: +$('#opt-rounds-jv').value, speakerId: $('#opt-sound-jv').value === 'host' ? net.me : null } });
+  }
+  if (pick === 'sablier') {
+    if ((view?.players || []).filter(p => p.online).length < 2) { toast('Sablier se joue à deux minimum, par équipes'); return; }
+    const roundTypes = [...$('#opt-sab-rounds').querySelectorAll('input:checked')].map(i => i.value);
+    if (!roundTypes.length) { toast('Choisis au moins une manche'); return; }
+    const decks = [...$('#opt-sab-decks').querySelectorAll('input:checked')].map(i => i.value);
+    if (!decks.length) { toast('Choisis au moins un deck'); return; }
+    const settings = { roundTypes, turnSeconds: +$('#opt-sab-turn').value, drawSeconds: +$('#opt-sab-draw').value, dealPerPlayer: +$('#opt-sab-deal').value, discardPerPlayer: +$('#opt-sab-discard').value, teamMode: $('#opt-sab-teammode').value, decks, difficulties: [...$('#opt-sab-diff').querySelectorAll('input:checked')].map(i => +i.value) };
+    act({ t: 'start', opts: { mode: 'sablier', decks, settings } });
   }
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });

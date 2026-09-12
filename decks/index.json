@@ -1,0 +1,32 @@
+[
+ {
+  "id": "animaux",
+  "name": "Animaux",
+  "description": "Du chien de la maison à l'axolotl : des bêtes à décrire, à mimer d'un mot ou à dessiner.",
+  "count": 68
+ },
+ {
+  "id": "fiction",
+  "name": "Fiction & pop culture",
+  "description": "Personnages de films, séries, jeux vidéo, BD, animés et contes. Plus jeune et plus fun que le deck d'origine.",
+  "count": 274
+ },
+ {
+  "id": "geek",
+  "name": "Culture geek",
+  "description": "Jeux vidéo en tout genre, films et séries cultes, manga et anime, et le folklore geek. Suggestion du canal Discord.",
+  "count": 266
+ },
+ {
+  "id": "licences",
+  "name": "Lieux, licences & marques",
+  "description": "Ni acteurs ni personnages : des monuments, des sagas ciné, des jeux, des marques, des groupes et des objets cultes.",
+  "count": 187
+ },
+ {
+  "id": "personnalites",
+  "name": "Personnalités réelles",
+  "description": "Le registre Times Up classique : histoire, sciences, arts, musique, cinéma, sport. Mélange d'évidences et de cartes velues.",
+  "count": 158
+ }
+]

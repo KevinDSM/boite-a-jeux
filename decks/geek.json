@@ -1,0 +1,1337 @@
+{
+"id": "geek",
+"name": "Culture geek",
+"description": "Jeux vidéo en tout genre, films et séries cultes, manga et anime, et le folklore geek. Suggestion du canal Discord.",
+"cards": [
+{
+"n": "Samus Aran",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Cloud Strife",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Sephiroth",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Crash Bandicoot",
+"c": "Héros de jeux vidéo",
+"d": 1
+},
+{
+"n": "Spyro",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Rayman",
+"c": "Héros de jeux vidéo",
+"d": 1
+},
+{
+"n": "Sub-Zero",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Ryu",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Chun-Li",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Toad",
+"c": "Héros de jeux vidéo",
+"d": 1
+},
+{
+"n": "Wario",
+"c": "Héros de jeux vidéo",
+"d": 1
+},
+{
+"n": "Waluigi",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Princesse Daisy",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Mewtwo",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Dracaufeu",
+"c": "Héros de jeux vidéo",
+"d": 1
+},
+{
+"n": "Évoli",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Ronflex",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Bulbizarre",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Salamèche",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Carapuce",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Psykokwak",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Rondoudou",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Ellie de The Last of Us",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Arthur Morgan",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Nathan Drake",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Aloy",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Le Doom Slayer",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Gordon Freeman",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Tracer",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Sans d'Undertale",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Cuphead",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Fox McCloud",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Captain Falcon",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Meta Knight",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Roi Dadidou",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Bayonetta",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Le Dragonnier d'Elden Ring",
+"c": "Héros de jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Lapin Crétin",
+"c": "Héros de jeux vidéo",
+"d": 1
+},
+{
+"n": "Un Sim",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Le Fantôme de Pac-Man",
+"c": "Héros de jeux vidéo",
+"d": 2
+},
+{
+"n": "Elden Ring",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "The Last of Us",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Red Dead Redemption",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Skyrim",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Halo",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Portal",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Half-Life",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Doom",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Resident Evil",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Silent Hill",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Final Fantasy",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Kingdom Hearts",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Metroid",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Splatoon",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Super Smash Bros",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Fall Guys",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Hades",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Stardew Valley",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Celeste",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Undertale",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Hollow Knight",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Baldur's Gate 3",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Cyberpunk 2077",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Overcooked",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Mario Party",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Pokémon Go",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Genshin Impact",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Apex Legends",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "PUBG",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Rainbow Six Siege",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Dofus",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Diablo",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "StarCraft",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Hearthstone",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Age of Empires",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Civilization",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Space Invaders",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Donkey Kong Country",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Mario Bros",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Sonic the Hedgehog",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Ellen Ripley",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Marty McFly",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Doc Brown",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Spock",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Capitaine Kirk",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Dark Maul",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Grogu (Bébé Yoda)",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Le Mandalorien",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Kylo Ren",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Rey",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "L'Empereur Palpatine",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Galadriel",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Smaug",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Bilbon Sacquet",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Gimli",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Saroumane",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Drago Malefoy",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Ron Weasley",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Bellatrix Lestrange",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Scarlet Witch",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Black Panther",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Ant-Man",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Venom",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Magnéto",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Professeur Xavier",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Nick Fury",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Captain Marvel",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Rocket Raccoon",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Aquaman",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Flash",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Robin",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Bane",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Lex Luthor",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Le Pingouin (Batman)",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Poison Ivy",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Predator",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "RoboCop",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "SOS Fantômes",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Men in Black",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Tron",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Blade Runner",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Mad Max",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Dune",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Paul Atréides",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Sherlock (BBC)",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "The Witcher (série)",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Black Mirror",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Doctor Who",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "The Boys",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Homelander",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Rick et Morty",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Futurama",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Bender",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Avatar, le dernier maître de l'air",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Aang",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Arcane",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Cobra Kai",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Lost",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Buffy contre les vampires",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "X-Files",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Fox Mulder",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Vikings",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Ragnar Lothbrok",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "The Walking Dead",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Rick Grimes",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Daryl Dixon",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Westworld",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Severance",
+"c": "Films & séries geek",
+"d": 3
+},
+{
+"n": "Mercredi Addams",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "La Famille Addams",
+"c": "Films & séries geek",
+"d": 1
+},
+{
+"n": "Vecna",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Le Demogorgon",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Dustin de Stranger Things",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Le shérif Hopper",
+"c": "Films & séries geek",
+"d": 2
+},
+{
+"n": "Nami",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Sanji",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Chopper",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Shanks le Roux",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Portgas D. Ace",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Barbe Noire",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Kakashi",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Itachi",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Sakura",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Gaara",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Jiraya",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Madara Uchiwa",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Freezer",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Cell",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Boo",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Piccolo",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Gohan",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Krilin",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Trunks",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Bulma",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Tortue Géniale",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Shenron",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Sacha Ketchum",
+"c": "Manga & anime",
+"d": 1
+},
+{
+"n": "La Team Rocket",
+"c": "Manga & anime",
+"d": 1
+},
+{
+"n": "Miaouss",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Tanjiro",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Nezuko",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Zenitsu",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Inosuke",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Izuku Midoriya (Deku)",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "All Might",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Bakugo",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Satoru Gojo",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Yuji Itadori",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Sukuna",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Gon Freecss",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Killua",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Hisoka",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Edward Elric",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Alphonse Elric",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Shinji Ikari",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "L'EVA-01",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Ichigo Kurosaki",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Ken Kaneki",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Anya Forger",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Loid Forger",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Denji",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Le Château ambulant",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Princesse Mononoké",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Kiki la petite sorcière",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Spike Spiegel",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Guts",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Olive et Tom",
+"c": "Manga & anime",
+"d": 1
+},
+{
+"n": "Seiya",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Ken le survivant",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Goldorak",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Albator",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Nicky Larson",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Ranma",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Détective Conan",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Doraemon",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Astro Boy",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "Akira",
+"c": "Manga & anime",
+"d": 3
+},
+{
+"n": "One Piece",
+"c": "Manga & anime",
+"d": 1
+},
+{
+"n": "Dragon Ball Z",
+"c": "Manga & anime",
+"d": 1
+},
+{
+"n": "Demon Slayer",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "My Hero Academia",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Jujutsu Kaisen",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Hunter x Hunter",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Fullmetal Alchemist",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Death Note",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "Le Voyage de Chihiro",
+"c": "Manga & anime",
+"d": 2
+},
+{
+"n": "La Nintendo Switch",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "La PlayStation 5",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "La Xbox",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "La Nintendo 64",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La GameCube",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La Wii",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "La Mega Drive",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "La Game Boy Advance",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La Nintendo DS",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "Steam",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La manette",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "Le joystick",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le speedrun",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Le cosplay",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La Japan Expo",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le Comic-Con",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Donjons et Dragons",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le dé à 20 faces",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Magic : l'Assemblée",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Warhammer",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Le ragequit",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Le noob",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le lag",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le camping (jeu vidéo)",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "La LAN party",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Le casque VR",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le sabre laser",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "Le Faucon Millenium",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "L'Étoile de la Mort",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La DeLorean volante",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le TARDIS",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "L'Anneau unique",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le Nimbus 2000",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "La Pokéball",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "Le champignon de Mario",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "La carapace bleue",
+"c": "Culture geek",
+"d": 2
+},
+{
+"n": "Le Portal Gun",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Le Konami Code",
+"c": "Culture geek",
+"d": 3
+},
+{
+"n": "Le Game Over",
+"c": "Culture geek",
+"d": 1
+},
+{
+"n": "Le bouton Start",
+"c": "Culture geek",
+"d": 2
+}
+]
+}

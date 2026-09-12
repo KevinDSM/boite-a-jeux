@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Platine">
-<link rel="manifest" href="manifest.json?v=17">
-<link rel="apple-touch-icon" href="icon-180.png?v=17">
+<link rel="manifest" href="manifest.json?v=18">
+<link rel="apple-touch-icon" href="icon-180.png?v=18">
 <title>Platine · jeux de musique entre amis</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=17">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -100,6 +100,12 @@
         <span class="gdesc">Des musiques de jeux vidéo. Le premier à nommer le jeu marque le plus de points.</span>
         <span class="gmeta">1 à 8 joueurs · 15 min</span>
       </button>
+      <button class="gcard g-sablier" type="button" data-game="sablier">
+        <span class="gart" aria-hidden="true"><span class="hourglass"></span></span>
+        <span class="gname">Sablier</span>
+        <span class="gdesc">Par équipes, fais deviner des cartes : d'abord librement, puis en un seul mot, puis en dessinant.</span>
+        <span class="gmeta">4 à 24 joueurs · 45 min · sans musique</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -167,6 +173,25 @@
         </select>
       </label>
     </div>
+    <div class="opts" id="opts-sablier" hidden>
+      <fieldset class="chips" id="opt-sab-rounds"><legend class="eyebrow">Manches, dans l'ordre</legend>
+        <label><input type="checkbox" value="free" checked>Description libre</label>
+        <label><input type="checkbox" value="word" checked>Un seul mot</label>
+        <label><input type="checkbox" value="draw" checked>Dessin</label>
+      </fieldset>
+      <label class="field row"><span>Chrono par tour</span><input class="num" id="opt-sab-turn" type="number" min="15" max="120" value="30" inputmode="numeric"> s</label>
+      <label class="field row"><span>Chrono en manche dessin</span><input class="num" id="opt-sab-draw" type="number" min="15" max="180" value="60" inputmode="numeric"> s</label>
+      <label class="field row"><span>Cartes distribuées à chacun</span><input class="num" id="opt-sab-deal" type="number" min="4" max="20" value="12" inputmode="numeric"></label>
+      <label class="field row"><span>Cartes à écarter</span><input class="num" id="opt-sab-discard" type="number" min="0" max="10" value="2" inputmode="numeric"></label>
+      <label class="field row"><span>Équipes</span><select id="opt-sab-teammode"><option value="random" selected>Tirage au sort</option><option value="manual">Au choix</option></select></label>
+      <fieldset class="chips" id="opt-sab-decks"><legend class="eyebrow">Decks de cartes</legend></fieldset>
+      <fieldset class="chips" id="opt-sab-diff"><legend class="eyebrow">Difficulté</legend>
+        <label><input type="checkbox" value="1" checked>Facile</label>
+        <label><input type="checkbox" value="2" checked>Moyenne</label>
+        <label><input type="checkbox" value="3" checked>Velue</label>
+      </fieldset>
+      <p class="fine" id="opt-sab-count"></p>
+    </div>
     <button class="btn primary lg" id="btn-start">Lancer la partie</button>
   </div>
   <p class="fine" id="lobby-wait">L'hôte choisit le jeu…</p>
@@ -228,6 +253,18 @@
   <div class="others" id="sp-others"></div>
 </section>
 
+<!-- ====================== SABLIER ====================== -->
+<section class="screen play sab" id="s-sablier" hidden>
+  <div class="sab-teams" id="sab-teams"></div>
+  <div class="stack" id="sab-main"></div>
+  <div class="sab-draw" id="sab-draw" hidden>
+    <canvas id="sab-canvas" width="1000" height="750"></canvas>
+    <div id="sab-tools" hidden></div>
+  </div>
+</section>
+<div class="react-layer" id="sab-react-layer" aria-hidden="true"></div>
+<div class="sab-react" id="sab-react" hidden></div>
+
 <!-- ====================== FIN ====================== -->
 <section class="screen" id="s-end" hidden>
   <div class="endhero">
@@ -260,6 +297,8 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="app.js?v=17"></script>
+<script src="sablier-engine.js?v=18"></script>
+<script src="app.js?v=18"></script>
+<script src="sablier-ui.js?v=18"></script>
 </body>
 </html>

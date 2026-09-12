@@ -1,0 +1,942 @@
+{
+"id": "licences",
+"name": "Lieux, licences & marques",
+"description": "Ni acteurs ni personnages : des monuments, des sagas ciné, des jeux, des marques, des groupes et des objets cultes.",
+"cards": [
+{
+"n": "La Tour Eiffel",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "La Statue de la Liberté",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "La Grande Muraille de Chine",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "La Tour de Pise",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Le Colisée",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Les Pyramides de Gizeh",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Le Mont Saint-Michel",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Big Ben",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Notre-Dame de Paris",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "L'Arc de Triomphe",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Le Louvre",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Le Mont Everest",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Disneyland Paris",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "La Joconde",
+"c": "Monuments & lieux",
+"d": 1
+},
+{
+"n": "Le Taj Mahal",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Château de Versailles",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "La Sagrada Família",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Machu Picchu",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Stonehenge",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Christ Rédempteur",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "L'Opéra de Sydney",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Golden Gate",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Times Square",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Sacré-Cœur",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Mont Rushmore",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Mur de Berlin",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Grand Canyon",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Le Stade de France",
+"c": "Monuments & lieux",
+"d": 2
+},
+{
+"n": "Petra",
+"c": "Monuments & lieux",
+"d": 3
+},
+{
+"n": "Angkor Vat",
+"c": "Monuments & lieux",
+"d": 3
+},
+{
+"n": "L'Acropole d'Athènes",
+"c": "Monuments & lieux",
+"d": 3
+},
+{
+"n": "Le Kremlin",
+"c": "Monuments & lieux",
+"d": 3
+},
+{
+"n": "La Vallée des Rois",
+"c": "Monuments & lieux",
+"d": 3
+},
+{
+"n": "Le Puy du Fou",
+"c": "Monuments & lieux",
+"d": 3
+},
+{
+"n": "Star Wars",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Le Seigneur des Anneaux",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Jurassic Park",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Marvel",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Matrix",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Retour vers le futur",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Pirates des Caraïbes",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Game of Thrones",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Friends",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Stranger Things",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "La Casa de Papel",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Squid Game",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Intouchables",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Titanic",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Avatar",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Le Roi Lion",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Toy Story",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "La Reine des neiges",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Fast and Furious",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Mission Impossible",
+"c": "Licences ciné & séries",
+"d": 1
+},
+{
+"n": "Le Parrain",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Breaking Bad",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Kaamelott",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Les Bronzés",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "OSS 117",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Alien",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Le Cinquième Élément",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Inception",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Interstellar",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Les Visiteurs",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Bienvenue chez les Ch'tis",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Le Hobbit",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Twilight",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Hunger Games",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "Docteur House",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "L'Attaque des Titans",
+"c": "Licences ciné & séries",
+"d": 2
+},
+{
+"n": "JoJo's Bizarre Adventure",
+"c": "Licences ciné & séries",
+"d": 3
+},
+{
+"n": "Peaky Blinders",
+"c": "Licences ciné & séries",
+"d": 3
+},
+{
+"n": "The Office",
+"c": "Licences ciné & séries",
+"d": 3
+},
+{
+"n": "Plus belle la vie",
+"c": "Licences ciné & séries",
+"d": 3
+},
+{
+"n": "Koh-Lanta",
+"c": "Télé & jeux",
+"d": 1
+},
+{
+"n": "Fort Boyard",
+"c": "Télé & jeux",
+"d": 1
+},
+{
+"n": "Le Juste Prix",
+"c": "Télé & jeux",
+"d": 1
+},
+{
+"n": "Questions pour un champion",
+"c": "Télé & jeux",
+"d": 1
+},
+{
+"n": "Top Chef",
+"c": "Télé & jeux",
+"d": 2
+},
+{
+"n": "Danse avec les stars",
+"c": "Télé & jeux",
+"d": 2
+},
+{
+"n": "N'oubliez pas les paroles",
+"c": "Télé & jeux",
+"d": 2
+},
+{
+"n": "Pékin Express",
+"c": "Télé & jeux",
+"d": 2
+},
+{
+"n": "Les Douze Coups de midi",
+"c": "Télé & jeux",
+"d": 2
+},
+{
+"n": "Le Meilleur Pâtissier",
+"c": "Télé & jeux",
+"d": 2
+},
+{
+"n": "Secret Story",
+"c": "Télé & jeux",
+"d": 3
+},
+{
+"n": "Loft Story",
+"c": "Télé & jeux",
+"d": 3
+},
+{
+"n": "Minecraft",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Fortnite",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "GTA",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Call of Duty",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Mario Kart",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Pokémon",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "FIFA",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Tetris",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Les Sims",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Candy Crush",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Among Us",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "League of Legends",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Counter-Strike",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Animal Crossing",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Assassin's Creed",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Rocket League",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "World of Warcraft",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Street Fighter",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Just Dance",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Angry Birds",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Tomb Raider",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "The Legend of Zelda",
+"c": "Licences de jeux vidéo",
+"d": 1
+},
+{
+"n": "Clair Obscur : Expédition 33",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Wii Sports",
+"c": "Licences de jeux vidéo",
+"d": 2
+},
+{
+"n": "Dark Souls",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Valorant",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Overwatch",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Guitar Hero",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Le Démineur",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Trackmania",
+"c": "Licences de jeux vidéo",
+"d": 3
+},
+{
+"n": "Google",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "YouTube",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "TikTok",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Instagram",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Netflix",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Amazon",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Apple",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Nintendo",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "PlayStation",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Wikipédia",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Spotify",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "WhatsApp",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Discord",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Snapchat",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Facebook",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "IKEA",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "McDonald's",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Coca-Cola",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Nutella",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Lego",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Nike",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Ferrari",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Tesla",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "ChatGPT",
+"c": "Marques & internet",
+"d": 1
+},
+{
+"n": "Uber",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Twitch",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Décathlon",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Carrefour",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Red Bull",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Adidas",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Airbnb",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Le Bon Coin",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Doctolib",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Michelin",
+"c": "Marques & internet",
+"d": 2
+},
+{
+"n": "Deliveroo",
+"c": "Marques & internet",
+"d": 3
+},
+{
+"n": "Les Beatles",
+"c": "Groupes & musique",
+"d": 1
+},
+{
+"n": "Queen",
+"c": "Groupes & musique",
+"d": 1
+},
+{
+"n": "Les Rolling Stones",
+"c": "Groupes & musique",
+"d": 1
+},
+{
+"n": "Coldplay",
+"c": "Groupes & musique",
+"d": 1
+},
+{
+"n": "Nirvana",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "AC/DC",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "Pink Floyd",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "Indochine",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "IAM",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "NTM",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "ABBA",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "Metallica",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "BTS",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "Les Enfoirés",
+"c": "Groupes & musique",
+"d": 2
+},
+{
+"n": "Téléphone",
+"c": "Groupes & musique",
+"d": 3
+},
+{
+"n": "Tryo",
+"c": "Groupes & musique",
+"d": 3
+},
+{
+"n": "Le Rubik's Cube",
+"c": "Objets cultes",
+"d": 1
+},
+{
+"n": "Le Monopoly",
+"c": "Objets cultes",
+"d": 1
+},
+{
+"n": "La Game Boy",
+"c": "Objets cultes",
+"d": 1
+},
+{
+"n": "Le baby-foot",
+"c": "Objets cultes",
+"d": 1
+},
+{
+"n": "Le Titanic",
+"c": "Objets cultes",
+"d": 1
+},
+{
+"n": "La DeLorean",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le Concorde",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "La 2CV",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "La Vespa",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le Walkman",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "La cassette VHS",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "La Mini Cooper",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le Trivial Pursuit",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le Tamagotchi",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le Nokia 3310",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le yo-yo",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le tourne-disque",
+"c": "Objets cultes",
+"d": 2
+},
+{
+"n": "Le Minitel",
+"c": "Objets cultes",
+"d": 3
+},
+{
+"n": "Le fax",
+"c": "Objets cultes",
+"d": 3
+},
+{
+"n": "La boule à neige",
+"c": "Objets cultes",
+"d": 3
+}
+]
+}

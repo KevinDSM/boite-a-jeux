@@ -1,0 +1,347 @@
+{
+"id": "animaux",
+"name": "Animaux",
+"description": "Du chien de la maison à l'axolotl : des bêtes à décrire, à mimer d'un mot ou à dessiner.",
+"cards": [
+{
+"n": "Le chien",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le chat",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "La vache",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "L'éléphant",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "La girafe",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le lion",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le singe",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "La poule",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le cochon",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le cheval",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le lapin",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "La souris",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le serpent",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "La tortue",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le pingouin",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le dauphin",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le requin",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le papillon",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "L'abeille",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "L'araignée",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "L'escargot",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "La grenouille",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le canard",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le mouton",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "L'ours",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le loup",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le renard",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le panda",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le kangourou",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le crocodile",
+"c": "Animaux",
+"d": 1
+},
+{
+"n": "Le zèbre",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "La chouette",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le chameau",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le perroquet",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le hérisson",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "L'autruche",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le paon",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le flamant rose",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le koala",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "L'hippopotame",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le rhinocéros",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le gorille",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "La chauve-souris",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "L'écureuil",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le castor",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le moustique",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "La fourmi",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "La méduse",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le poulpe",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le hamster",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "L'âne",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le corbeau",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le phoque",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le caméléon",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le scorpion",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "Le guépard",
+"c": "Animaux",
+"d": 2
+},
+{
+"n": "L'ornithorynque",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "Le paresseux",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "Le tatou",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "Le lama",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "L'axolotl",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "Le narval",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "La mante religieuse",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "La luciole",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "L'okapi",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "Le suricate",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "Le capybara",
+"c": "Animaux",
+"d": 3
+},
+{
+"n": "La belette",
+"c": "Animaux",
+"d": 3
+}
+]
+}

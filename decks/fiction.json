@@ -1,0 +1,1377 @@
+{
+"id": "fiction",
+"name": "Fiction & pop culture",
+"description": "Personnages de films, séries, jeux vidéo, BD, animés et contes. Plus jeune et plus fun que le deck d'origine.",
+"cards": [
+{
+"n": "Harry Potter",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Hermione Granger",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Voldemort",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Albus Dumbledore",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Hagrid",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Dobby",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Severus Rogue",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Gandalf",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Gollum",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Frodon Sacquet",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Legolas",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Aragorn",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Sauron",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Dark Vador",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Luke Skywalker",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Yoda",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Chewbacca",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "R2-D2",
+"c": "Cinéma & Séries",
+"d": 1
+},
+{
+"n": "Princesse Leia",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Han Solo",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Obi-Wan Kenobi",
+"c": "Cinéma & Séries",
+"d": 2
+},
+{
+"n": "Boba Fett",
+"c": "Cinéma & Séries",
+"d": 3
+},
+{
+"n": "Jar Jar Binks",
+"c": "Cinéma & Séries",
+"d": 3
+},
+{
+"n": "Batman",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Superman",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Spider-Man",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Iron Man",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Hulk",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Captain America",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Thor",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Wonder Woman",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Le Joker",
+"c": "Super-héros",
+"d": 1
+},
+{
+"n": "Thanos",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Catwoman",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Deadpool",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Wolverine",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Black Widow",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Loki",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Groot",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Docteur Strange",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Harley Quinn",
+"c": "Super-héros",
+"d": 2
+},
+{
+"n": "Mickey Mouse",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Donald Duck",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Bugs Bunny",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Homer Simpson",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Bart Simpson",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Bob l'éponge",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Shrek",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Simba",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Aladdin",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Cendrillon",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Blanche-Neige",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Ariel",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Elsa",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Woody",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Buzz l'Éclair",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Nemo",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Tarzan",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Peter Pan",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Pinocchio",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Les Minions",
+"c": "Animation",
+"d": 1
+},
+{
+"n": "Marge Simpson",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Eric Cartman",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Patrick Étoile",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "L'Âne de Shrek",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Mufasa",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Timon et Pumbaa",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Scar",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Le Génie d'Aladdin",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Jasmine",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Olaf",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Dory",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Wall-E",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Rémy de Ratatouille",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Mulan",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Pocahontas",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Capitaine Crochet",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Gru",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Peter Griffin",
+"c": "Animation",
+"d": 3
+},
+{
+"n": "Carl de Là-haut",
+"c": "Animation",
+"d": 3
+},
+{
+"n": "Mérida",
+"c": "Animation",
+"d": 3
+},
+{
+"n": "Casper",
+"c": "Animation",
+"d": 2
+},
+{
+"n": "Astérix",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Obélix",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Tintin",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Milou",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Capitaine Haddock",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Lucky Luke",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Titeuf",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Panoramix",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Idéfix",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Professeur Tournesol",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Gaston Lagaffe",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Spirou",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Boule et Bill",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Le Marsupilami",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Assurancetourix",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Abraracourcix",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "La Castafiore",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Cédric",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Goku",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Naruto",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Luffy",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Pikachu",
+"c": "BD & Manga",
+"d": 1
+},
+{
+"n": "Vegeta",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Sasuke",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Zoro",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Sailor Moon",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Totoro",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Saitama",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Chihiro",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Light Yagami",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "L de Death Note",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Eren Jäger",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Mikasa Ackerman",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Armin Arlert",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Levi Ackerman",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Le Titan Colossal",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Erwin Smith",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Hansi Zoë",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Reiner Braun",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Annie Leonhart",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Historia Reiss",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Zeke Jäger",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Sasha Braus",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Jean Kirschtein",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Le Titan Cuirassé",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Le Bataillon d'exploration",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Ymir Fritz",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Jotaro Kujo",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Dio Brando",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Star Platinum",
+"c": "BD & Manga",
+"d": 2
+},
+{
+"n": "Joseph Joestar",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Jonathan Joestar",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Josuke Higashikata",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Giorno Giovanna",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Jolyne Cujoh",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "The World",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Killer Queen",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Yoshikage Kira",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Bruno Bucciarati",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Robert Speedwagon",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Kars",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Iggy",
+"c": "BD & Manga",
+"d": 3
+},
+{
+"n": "Mario",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Luigi",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Princesse Peach",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Yoshi",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Donkey Kong",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Sonic",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Lara Croft",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Pac-Man",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Bowser",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Kirby",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Kratos",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Steve de Minecraft",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Le Creeper",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Master Chief",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Geralt de Riv",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Ezio Auditore",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Solid Snake",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Link",
+"c": "Jeux vidéo",
+"d": 1
+},
+{
+"n": "Zelda",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Ganondorf",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "La Triforce",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "L'Épée de Légende",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Epona",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Navi",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Midona",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Impa",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Sheik",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Skull Kid",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Tingle",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Korogu",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Gardien",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Octorok",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Arthas Menethil",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Le Roi-liche",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Illidan Hurlorage",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Sylvanas Coursevent",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Thrall",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Jaina Portvaillant",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Uther le Porteur de Lumière",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Gul'dan",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Grommash Hurlenfer",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Aile de Mort",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Medivh",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Anduin Wrynn",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Varian Wrynn",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Kel'Thuzad",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Ragnaros",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Murloc",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Pandaren",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Leeroy Jenkins",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Teemo",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Jinx",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Vi",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Yasuo",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Ahri",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Caitlyn",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Ekko",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Silco",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Viktor",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Jayce",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Heimerdinger",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Singed",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Darius",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Garen",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Lux",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Zed",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Thresh",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Blitzcrank",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Lee Sin",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Katarina",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Malphite",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Le Baron Nashor",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Un Poro",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Gustave",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Maelle",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Verso",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "La Peintresse",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Esquie",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Le Gommage",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "L'Expédition 33",
+"c": "Jeux vidéo",
+"d": 2
+},
+{
+"n": "Lune",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Sciel",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Monoco",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Renoir",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Alicia",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Clea",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Simon",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Sophie",
+"c": "Jeux vidéo",
+"d": 3
+},
+{
+"n": "Sherlock Holmes",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Dracula",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Frankenstein",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Robin des Bois",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Zorro",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Le Petit Prince",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Le Petit Chaperon rouge",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Alice au pays des merveilles",
+"c": "Héros & Contes",
+"d": 1
+},
+{
+"n": "Docteur Watson",
+"c": "Héros & Contes",
+"d": 2
+},
+{
+"n": "D'Artagnan",
+"c": "Héros & Contes",
+"d": 2
+},
+{
+"n": "Le Chat Botté",
+"c": "Héros & Contes",
+"d": 2
+},
+{
+"n": "Le Chapelier fou",
+"c": "Héros & Contes",
+"d": 2
+},
+{
+"n": "Willy Wonka",
+"c": "Héros & Contes",
+"d": 2
+},
+{
+"n": "Arsène Lupin",
+"c": "Héros & Contes",
+"d": 2
+},
+{
+"n": "James Bond",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Indiana Jones",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Rocky Balboa",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Terminator",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Rambo",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Forrest Gump",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Jack Sparrow",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "E.T.",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "King Kong",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Godzilla",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Neo de Matrix",
+"c": "Cinéma culte",
+"d": 1
+},
+{
+"n": "Morpheus",
+"c": "Cinéma culte",
+"d": 2
+},
+{
+"n": "Hannibal Lecter",
+"c": "Cinéma culte",
+"d": 2
+},
+{
+"n": "Amélie Poulain",
+"c": "Cinéma culte",
+"d": 2
+},
+{
+"n": "Jean-Claude Dusse",
+"c": "Cinéma culte",
+"d": 3
+},
+{
+"n": "Jacquouille la Fripouille",
+"c": "Cinéma culte",
+"d": 3
+},
+{
+"n": "Walter White",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Eleven de Stranger Things",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Jon Snow",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Daenerys Targaryen",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Tyrion Lannister",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Ross Geller",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Joey Tribbiani",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Sheldon Cooper",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Le Professeur de La Casa de Papel",
+"c": "Séries",
+"d": 2
+},
+{
+"n": "Michael Scott",
+"c": "Séries",
+"d": 3
+},
+{
+"n": "Dexter Morgan",
+"c": "Séries",
+"d": 3
+},
+{
+"n": "Saul Goodman",
+"c": "Séries",
+"d": 3
+}
+]
+}
