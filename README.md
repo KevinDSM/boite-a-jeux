@@ -18,6 +18,8 @@ On écoute un extrait, on le place dans sa frise d'années. Premier à remplir s
   Pari gagné : la carte rejoint sa frise. Pari perdu : il perd le jeton **et** une carte
   (jamais sa dernière).
 - Regagner un jeton : écrire l'artiste et le titre avant de placer, les deux justes.
+- **En solo**, jetons et paris disparaissent. On enchaîne les chansons, on passe librement
+  celles qu'on ne connaît pas, et la partie s'arrête quand la frise est pleine.
 
 ### Éclair
 Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.

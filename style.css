@@ -197,12 +197,11 @@ h1{font-family:var(--font-d);font-weight:800;font-size:clamp(42px,12.5vw,64px);l
   animation:spin 9s linear infinite;
 }
 [data-theme="light"] .platter{background:repeating-radial-gradient(circle, oklch(0.28 0.02 62) 0 1.5px, oklch(0.38 0.02 62) 1.5px 3.6px)}
-.platter i{position:absolute;inset:37%;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px oklch(0.11 0.02 62)}
-.platter .arm{
-  position:absolute;top:6px;right:-30px;width:64px;height:5px;border-radius:3px;
-  background:linear-gradient(90deg, var(--ink-2), color-mix(in oklab, var(--ink-2) 40%, transparent));
-  transform:rotate(34deg);transform-origin:right center;animation:none;
-}
+.platter i{position:absolute;inset:37%;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px oklch(0.11 0.02 62);z-index:2}
+/* reflet balayant : c'est lui qui donne la rotation, sans bras de lecture */
+.platter::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg, transparent 0 38%, oklch(1 0 0 / .10) 46%, transparent 54% 88%, oklch(1 0 0 / .06) 94%, transparent)}
+[data-theme="light"] .platter::after{background:conic-gradient(from 0deg, transparent 0 38%, oklch(1 0 0 / .28) 46%, transparent 54% 88%, oklch(1 0 0 / .18) 94%, transparent)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hub-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
 

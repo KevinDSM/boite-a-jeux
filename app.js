@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '12';
+const ASSET_V = '13';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -160,6 +160,12 @@ class Game {
     if (pid !== this.active.id || !['listen', 'bet'].includes(s.phase)) return 'Impossible';
     s.guess = { artist, title }; return null;
   }
+  soloSkip(pid) {
+    const s = this.s;
+    if (s.phase !== 'listen' || pid !== this.active.id) return null;
+    if (s.players.filter(p => p.online).length > 1) return 'Réservé au jeu en solo';
+    this.nextSong(); return null;
+  }
   forceNext(pid) {
     const s = this.s; if (!['listen', 'bet'].includes(s.phase)) return 'Pas maintenant';
     if (this.active.online && pid !== this.active.id) return `${this.active.name} est encore connecté`;
@@ -255,6 +261,7 @@ class Game {
       ...s, deck: undefined,
       current: s.current ? (hide ? { preview: s.current.preview } : s.current) : null,
       betLeft: s.phase === 'bet' ? Math.max(0, Math.ceil((s.betEnds - Date.now()) / 1000)) : 0,
+      solo: s.players.filter(p => p.online).length <= 1,
     };
   }
 }
@@ -313,6 +320,7 @@ function applyAction(pid, m) {
     case 'guess': return g.guess(pid, m.artist, m.title);
     case 'next': g.next(); return null;
     case 'force-next': return g.forceNext(pid);
+    case 'solo-skip': return g.soloSkip(pid);
     case 'e-unlock': return g.eUnlock(pid);
     case 'e-guess': return g.eGuess(pid, m.title);
     case 'e-giveup': return g.eGiveUp(pid);
@@ -404,7 +412,7 @@ function renderGame(s) {
   const sb = $('#scoreboard'); sb.innerHTML = '';
   s.players.forEach(p => {
     const d = el('div', 'sb' + (p.id === active.id ? ' active' : '') + (p.id === net.me ? ' me' : ''));
-    d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.timeline.length}</b>/${s.target}</span><span class="tok"><b>${p.tokens}</b> ●</span></span>`;
+    d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.timeline.length}</b>/${s.target}</span>${s.solo ? '' : `<span class="tok"><b>${p.tokens}</b> ●</span>`}</span>`;
     if (!p.online) d.style.opacity = .45;
     sb.appendChild(d);
   });
@@ -414,20 +422,22 @@ function renderGame(s) {
   const b = $('#turn-banner');
   const iAmBettor = s.bet?.pid === net.me;
   if (s.phase === 'listen') {
-    b.innerHTML = isMe ? `À toi de jouer<small>Écoute, puis touche le « + » où la chanson se place dans ta frise.</small>`
-      : `${active.name} écoute<small>Prépare-toi : tu pourras parier qu'il se trompe.</small>`;
+    b.innerHTML = !isMe ? `${active.name} écoute<small>Prépare-toi : tu pourras parier qu'il se trompe.</small>`
+      : s.solo ? `Carte ${me.timeline.length + 1}<small>Écoute, puis touche le « + » où la chanson se place. Objectif : ${s.target} cartes.</small>`
+        : `À toi de jouer<small>Écoute, puis touche le « + » où la chanson se place dans ta frise.</small>`;
   } else if (s.phase === 'bet') {
     const t = `<span class="timer">${s.betLeft}s</span>`;
     if (s.bet && s.bet.idx == null) b.innerHTML = iAmBettor ? `Ton pari ${t}<small>Touche le « + » où TOI tu placerais la chanson.</small>` : `${nameOf(s.bet.pid)} a pris le pari ${t}<small>Un seul pari par tour. On attend son choix.</small>`;
     else b.innerHTML = isMe ? `Ton choix est posé ${t}<small>Quelqu'un peut encore parier contre toi.</small>` : `${active.name} a choisi ${t}<small>Tu penses qu'il se trompe ? Prends le pari.</small>`;
   } else if (s.phase === 'reveal') {
     const win = r.by ? nameOf(r.by) : null;
-    const head = r.ok ? `${nameOf(r.activeId)} a trouvé` : (r.betWon ? `Raté ! ${win} rafle la carte` : `${nameOf(r.activeId)} s'est trompé`);
+    const head = s.solo ? (r.ok ? 'Bien vu' : 'Raté') : (r.ok ? `${nameOf(r.activeId)} a trouvé` : (r.betWon ? `Raté ! ${win} rafle la carte` : `${nameOf(r.activeId)} s'est trompé`));
     const bits = [];
     if (r.tokenWon === true) bits.push(`Artiste et titre justes : +1 jeton.`);
     if (r.betPid && !r.betWon) bits.push(`Pari perdu pour ${nameOf(r.betPid)} : 1 jeton${r.lost ? ` et la carte ${r.lost}` : ''} en moins.`);
     if (s.winner) bits.push('Frise complète, partie terminée.');
-    b.innerHTML = `${head}<small>${bits.join(' ') || 'Touche « Tour suivant » quand tout le monde a vu.'}</small>`;
+    const fallback = s.solo ? (r.ok ? 'La carte rejoint ta frise.' : 'Cette carte est écartée, on enchaîne.') : 'Touche « Tour suivant » quand tout le monde a vu.';
+    b.innerHTML = `${head}<small>${bits.join(' ') || fallback}</small>`;
   }
 
   // scène
@@ -480,7 +490,12 @@ function renderGame(s) {
 
   // actions
   const ac = $('#actions'); ac.innerHTML = '';
-  if (s.phase === 'listen' && isMe) {
+  if (s.phase === 'listen' && isMe && s.solo) {
+    const sk = el('button', 'btn', 'Je ne connais pas · chanson suivante');
+    sk.onclick = () => act({ t: 'solo-skip' }); ac.appendChild(sk);
+    ac.appendChild(el('div', 'note', 'Seul, tu passes autant de chansons que tu veux : ni jetons, ni paris.'));
+  }
+  if (s.phase === 'listen' && isMe && !s.solo) {
     ac.appendChild(el('div', 'note', 'Tu connais la chanson ? Écris artiste <b>et</b> titre : +1 jeton si les deux sont justes.'));
     const g = el('div', 'guess');
     g.innerHTML = `<input id="g-artist" placeholder="Artiste" autocomplete="off"><input id="g-title" placeholder="Titre" autocomplete="off">`;
@@ -507,9 +522,9 @@ function renderGame(s) {
       ac.appendChild(el('div', 'note', `Un seul joueur peut parier par tour, le premier qui se lance. S'il se trompe, tu perds le jeton <b>et</b> une carte.`));
     }
   }
-  if (me && ['listen', 'bet'].includes(s.phase)) ac.appendChild(tokenLine(me.tokens));
+  if (me && !s.solo && ['listen', 'bet'].includes(s.phase)) ac.appendChild(tokenLine(me.tokens));
   if (s.phase === 'reveal') {
-    const btn = el('button', 'btn lg ' + (s.winner ? 'pos' : 'primary'), s.winner ? 'Voir le classement' : 'Tour suivant →');
+    const btn = el('button', 'btn lg ' + (s.winner ? 'pos' : 'primary'), s.winner ? (s.solo ? 'Voir le résultat' : 'Voir le classement') : (s.solo ? 'Chanson suivante →' : 'Tour suivant →'));
     btn.onclick = () => act({ t: 'next' }); ac.appendChild(btn);
   }
   if (['listen', 'bet'].includes(s.phase) && !isMe && !active.online) {
@@ -659,8 +674,11 @@ loadSongsE().then(l => { eCatalog = l; }).catch(() => { });
 function renderEnd(s) {
   const w = s.players.find(p => p.id === s.winner);
   const eclair = s.mode === 'eclair';
-  $('#end-winner').textContent = w ? w.name : '—';
-  $('#end-sub').textContent = eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.';
+  const solo = s.players.filter(p => p.online).length <= 1;
+  $('#end-winner').textContent = solo ? 'Terminé' : (w ? w.name : '—');
+  $('#end-sub').textContent = solo
+    ? (eclair ? `${w ? w.score : 0} points sur ${s.rounds} manches.` : `Frise complète : ${s.target} cartes bien placées.`)
+    : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
   const ol = $('#ranking'); ol.innerHTML = '';
   [...s.players]
     .sort((a, b) => eclair ? b.score - a.score : (b.timeline.length - a.timeline.length || b.tokens - a.tokens))
@@ -680,7 +698,9 @@ const HELP = {
       <li><b>Gagné :</b> le joueur actif s'est trompé et ton emplacement était le bon. La carte rejoint ta frise.</li>
       <li><b>Perdu :</b> tu perds le jeton et une carte de ta frise. Tu gardes toujours au moins une carte.</li>
       <li><b>Regagner un jeton :</b> à ton tour, écris l'artiste et le titre avant de placer. Les deux justes, +1 jeton.</li>
-    </ul>`,
+    </ul>
+    <h3>Tout seul</h3>
+    <p>Si tu es le seul joueur, les jetons et les paris disparaissent. Tu enchaînes les chansons, tu passes librement celles que tu ne connais pas, et tu t'arrêtes quand ta frise est pleine.</p>`,
   eclair: `<h3>Éclair</h3>
     <p>Tout le monde écoute la même chanson en même temps, chacun sur son téléphone.</p>
     <p><b>But :</b> trouver le titre avec le moins de secondes d'écoute possible.</p>
