@@ -36,7 +36,11 @@ et le mode Skribble sont laissés de côté). Chacun reçoit 12 cartes, en écar
 le paquet commun rejoué à chaque manche : description libre, un seul mot, dessin. Trois secondes
 de préparation avant la carte, passer est libre, la carte en main au gong n'est jamais révélée et
 l'hôte peut la compter. Correction d'une carte comptée à tort entre deux tours. Manche dessin
-avec canevas partagé en direct, seau, gomme, galerie de fin. Réactions emoji pour le public.
+avec canevas partagé en direct, seau, gomme, galerie de fin. Réactions emoji pour le public,
+et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran de tout le monde
+(crayon ✏️ dans la barre des réactions, couleur de l'équipe, effacé au tour suivant).
+L'interface reprend celle du projet d'origine : fil d'étapes, chrono avec barre, grande carte,
+boutons Passer / Deviné, bandeau des trouvées, scores par équipe.
 Les cartes déjà vues ne reviennent pas d'une soirée à l'autre (mémoire du téléphone hôte).
 
 Cartes : 953 dans `decks/*.json`, 5 decks, format `{ "n": nom, "c": catégorie, "d": 1|2|3 }`.

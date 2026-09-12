@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '20';
+const ASSET_V = '21';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -549,6 +549,15 @@ function sabAction(pid, m) {
       if (r.phase !== 'turn-live' || !r.turn || r.turn.playerId !== pid) return null;
       if (m.t === 'sab:undo') Sablier.undoStroke(r); else Sablier.clearStrokes(r);
       const msg = { t: 'sab-full', strokes: r.strokes }; sendAll(msg); sabOnMessage(msg);
+      return 'silent';
+    }
+    case 'sab:doodle': {
+      // gribouillage latéral : seulement pendant un tour, par une équipe qui ne joue pas
+      if (r.phase !== 'turn-live' || !r.turn || !m.id || !Array.isArray(m.p)) return 'silent';
+      const p = Sablier.findPlayer(r, pid); if (!p || !p.teamId || p.teamId === r.turn.teamId) return 'silent';
+      const team = r.teams.find(t => t.id === p.teamId);
+      const msg = { t: 'sab-doodle', id: String(m.id).slice(0, 24), p: m.p.slice(0, 400).map(Number), c: team ? team.color : '#888888', e: !!m.e };
+      sendAll(msg, pid); if (pid !== net.me) sabOnMessage(msg);
       return 'silent';
     }
     case 'sab:react': {
@@ -1102,6 +1111,7 @@ const HELP = {
       <li><b>Dessin :</b> tu dessines sur ton téléphone, ton équipe voit le dessin en direct.</li>
     </ul>
     <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
+    <p>Pendant un tour, le public envoie des réactions emoji, et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran avec le crayon ✏️ (couleur de leur équipe, effacé au tour suivant).</p>
     <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
   hub: `<h3>Platine</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,

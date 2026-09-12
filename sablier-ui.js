@@ -1,173 +1,239 @@
-/* Sablier — écrans, canevas de dessin et réactions.
+/* Sablier — écrans, canevas de dessin, gribouillages latéraux et réactions.
    Reçoit la vue par joueur calculée par l'hôte (view.sab) et n'envoie que des actions
-   via act({ t: 'sab:…' }). Le canevas vit hors de la zone re-rendue : ses traits
-   arrivent en messages séparés, pas dans l'état. */
+   via act({ t: 'sab:…' }). La mise en page reprend celle du Sablier d'origine :
+   fil d'étapes, chrono avec barre, grande carte, boutons Passer / Deviné, bandeau des
+   trouvées, tableau des scores par équipe. Le canevas vit hors de la zone re-rendue :
+   ses traits arrivent en messages séparés, pas dans l'état. */
 
 'use strict';
 
-let sabClockTimer = null, sabOffset = 0, sabLastPhaseKey = null;
-const sabTeamOf = (v, id) => v.teams.find(t => t.id === id);
-const initial = n => (n || '?').trim()[0].toUpperCase();
+let sabClockTimer = null, sabOffset = 0, sabLastPhaseKey = null, sabView = null, sabWasMyTurn = false, sabLastPassed = 0;
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const diffDots = d => `<span class="dots" title="Difficulté ${d}/3">${'●'.repeat(d)}${'○'.repeat(3 - d)}</span>`;
+const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
+const SAB_STEP = { teams: 1, selection: 2 };
 
 function renderSablier(v) {
   if (!v) return;
+  sabView = v;
   sabOffset = v.serverNow - Date.now();          // décalage d'horloge avec l'hôte
   const me = v.you, host = !!me?.isHost;
-  const root = $('#sab-main');
-  const key = `${v.phase}|${v.round}|${v.turn?.playerId}|${v.turn?.endsAt}|${v.selection?.readyCount}|${me?.ready}|${me?.discardCount}|${v.players.length}|${v.teams.map(t => t.players.length + ':' + t.total).join(',')}|${v.turn?.guessedCount}|${v.turn?.passedCount}|${!!v.buzzer}|${(v.correctable || []).length}|${!!v.card}|${v.unassigned.length}|${v.settings.teamMode}|${v.lastTurn?.playerName}`;
+  const root = $('#sab-main'), after = $('#sab-after');
+  const key = `${v.phase}|${v.round}|${v.turn?.playerId}|${v.turn?.endsAt}|${v.turn?.startsAt}|${v.selection?.readyCount}|${me?.ready}|${me?.discardCount}|${v.players.length}|${v.teams.map(t => t.players.map(p => p.id + (p.connected ? '' : '-')).join('+') + ':' + t.total).join(',')}|${v.turn?.guessedCount}|${v.turn?.passedCount}|${!!v.buzzer}|${(v.correctable || []).length}|${v.card?.n}|${v.unassigned.length}|${v.settings.teamMode}|${v.lastTurn?.playerName}|${v.cardsLeft}`;
   const rebuild = key !== sabLastPhaseKey; sabLastPhaseKey = key;
 
-  // bandeau des équipes, toujours visible pendant la partie
-  const strip = $('#sab-teams');
-  const live = v.phase === 'turn-live' || v.phase === 'turn-idle';
-  strip.innerHTML = v.teams.map(t => `
-    <div class="tm" style="--tc:${t.color}${v.turn && v.turn.teamId === t.id && live ? ';box-shadow:0 0 0 2px var(--tc)' : ''}">
-      <div class="tm-head"><b>${esc(t.name)}</b><span class="tm-score">${t.total}</span></div>
-      <div class="tm-members">${t.players.map(p => `<span class="mem${v.turn && v.turn.playerId === p.id && live ? ' speaking' : ''}${p.connected ? '' : ' off'}">${esc(p.name)}</span>`).join('') || '<span class="mem empty">personne</span>'}</div>
-    </div>`).join('');
-  strip.hidden = v.phase === 'selection';
+  // fil d'étapes : Équipes → Cartes → Partie
+  $('#sab-steps').dataset.step = SAB_STEP[v.phase] || 3;
 
-  // canevas et réactions : visibles seulement pendant un tour dessiné / un tour en cours
+  // bandeau des équipes : pendant la défausse (qui est prêt) et pendant un tour (qui parle)
+  const strip = $('#sab-teams');
+  const showStrip = v.phase === 'selection' || v.phase === 'turn-live';
+  strip.hidden = !showStrip;
+  if (showStrip) strip.innerHTML = v.teams.map(t => `
+    <div class="team-strip-row" style="--tc:${t.color}"><span class="ts-name">${esc(t.name)}</span>${t.players.map(p => {
+      const cls = ['ts-p']; if (p.id === me?.id) cls.push('me'); if (!p.connected) cls.push('off');
+      if (v.phase === 'selection' && p.ready) cls.push('ready');
+      if (v.phase === 'turn-live' && v.turn?.playerId === p.id) cls.push('speaks');
+      return `<span class="${cls.join(' ')}">${esc(p.name)}</span>`;
+    }).join('') || '<span class="ts-p empty">personne</span>'}</div>`).join('');
+
+  // canevas et outils : seulement pendant un tour dessiné
   const drawing = v.phase === 'turn-live' && v.roundDraw;
   $('#sab-draw').hidden = !drawing;
   $('#sab-tools').hidden = !(drawing && me?.isDescriber);
-  if (drawing) { sabFitCanvas(); sabCanDraw = !!me?.isDescriber; }
-  $('#sab-react').hidden = !(v.phase === 'turn-live' && !me?.isDescriber);
+  $('#sab-draw').classList.toggle('readonly', !me?.isDescriber);
+  if (drawing) { sabFitCanvas(); sabCanDraw = !!me?.isDescriber; } else sabCanDraw = false;
+
+  // réactions pour le public, gribouillages pour les équipes qui ne jouent pas
+  const liveAudience = v.phase === 'turn-live' && !me?.isDescriber;
+  $('#sab-react').hidden = !liveAudience;
+  const canDoodle = liveAudience && !!me?.teamId && me.teamId !== v.turn?.teamId;
+  sabDoodleAllowed(canDoodle);
+  if (v.phase !== 'turn-live') sabDoodleClear();
+
+  // signal « c'est à toi » : vibration quand ton tour arrive
+  const myTurn = v.phase === 'turn-idle' && v.turn?.playerId === me?.id;
+  if (myTurn && !sabWasMyTurn && navigator.vibrate) navigator.vibrate([150, 80, 150]);
+  sabWasMyTurn = myTurn;
 
   if (rebuild) {
-    root.innerHTML = '';
-    ({ teams: sabTeams, selection: sabSelection, 'turn-idle': sabIdle, 'turn-live': sabLive, 'round-end': sabRoundEnd, 'game-end': sabGameEnd }[v.phase] || sabTeams)(v, root, me, host);
+    root.innerHTML = ''; after.innerHTML = '';
+    ({ teams: sabTeams, selection: sabSelection, 'turn-idle': sabIdle, 'turn-live': sabLive, 'round-end': sabRoundEnd, 'game-end': sabGameEnd }[v.phase] || sabTeams)(v, root, after, me, host);
   }
   sabClock(v);
 }
 
 // ------------------------------------------------------------ équipes
-function sabTeams(v, root, me, host) {
+function sabTeams(v, root, after, me, host) {
   const s = v.settings;
-  root.appendChild(el('div', 'banner', `Les équipes<small>${s.teamMode === 'random' ? 'Tirage au sort équilibré. L\'hôte peut relancer.' : 'Chacun touche l\'équipe qu\'il rejoint.'}</small>`));
-  const grid = el('div', 'teams-grid');
-  v.teams.forEach(t => {
-    const d = el('button', 'team', ''); d.type = 'button'; d.style.setProperty('--tc', t.color);
-    d.innerHTML = `<span class="team-name">${esc(t.name)}</span><div class="team-list">${t.players.map(p => `<span class="mem${p.id === me?.id ? ' me' : ''}">${esc(p.name)}</span>`).join('') || '<span class="mem empty">—</span>'}</div>`;
-    d.onclick = () => { if (s.teamMode === 'manual' || host) act({ t: 'sab:team', teamId: t.id }); };
-    grid.appendChild(d);
-  });
-  root.appendChild(grid);
-  if (v.unassigned.length) root.appendChild(el('div', 'note', `Sans équipe : ${v.unassigned.map(p => esc(p.name)).join(', ')}`));
   if (host) {
-    const row = el('div', 'row');
-    row.innerHTML = `<button class="btn" id="sab-reroll" ${s.teamMode === 'manual' ? 'hidden' : ''}>Retirer au sort</button>
-      <button class="btn" id="sab-mode">${s.teamMode === 'random' ? 'Passer au choix libre' : 'Passer au tirage au sort'}</button>
-      <button class="btn small" id="sab-team-add" ${v.teams.length >= 4 ? 'disabled' : ''}>+ équipe</button>
-      <button class="btn small" id="sab-team-rm" ${v.teams.length <= 2 ? 'disabled' : ''}>− équipe</button>`;
-    root.appendChild(row);
+    const panel = el('div', 'panel', '<h2>Comment former les équipes ?</h2>');
+    const sw = el('div', 'mode-switch', `
+      <button type="button" class="mode${s.teamMode === 'random' ? ' on' : ''}" data-mode="random"><strong>Aléatoire</strong><small>Réparti au hasard, équipes équilibrées</small></button>
+      <button type="button" class="mode${s.teamMode === 'manual' ? ' on' : ''}" data-mode="manual"><strong>Au choix</strong><small>Chacun rejoint l'équipe qu'il veut</small></button>`);
+    sw.querySelectorAll('.mode').forEach(b => b.onclick = () => { if (b.dataset.mode !== s.teamMode) act({ t: 'sab:settings', patch: { teamMode: b.dataset.mode } }); });
+    panel.appendChild(sw);
+    const row = el('div', 'row', `
+      <button type="button" class="btn small" id="sab-reroll" ${s.teamMode === 'manual' ? 'hidden' : ''}>Retirer au sort</button>
+      <button type="button" class="btn small" id="sab-team-add" ${v.teams.length >= 4 ? 'disabled' : ''}>+ Une équipe</button>
+      <button type="button" class="btn small" id="sab-team-rm" ${v.teams.length <= 2 ? 'disabled' : ''}>− Une équipe</button>`);
+    panel.appendChild(row); root.appendChild(panel);
     $('#sab-reroll').onclick = () => act({ t: 'sab:randomize' });
-    $('#sab-mode').onclick = () => act({ t: 'sab:settings', patch: { teamMode: s.teamMode === 'random' ? 'manual' : 'random' } });
     $('#sab-team-add').onclick = () => act({ t: 'sab:team-add' });
     $('#sab-team-rm').onclick = () => act({ t: 'sab:team-rm' });
-    if (v.problems?.length) root.appendChild(el('div', 'note warn', v.problems.map(esc).join('<br>')));
-    const go = el('button', 'btn primary lg', `Distribuer les cartes <span class="cost">${s.dealPerPlayer} chacun</span>`);
-    go.disabled = !!v.problems?.length; go.onclick = () => act({ t: 'sab:deal' }); root.appendChild(go);
-    root.appendChild(el('div', 'fine center', `${v.poolSize} cartes disponibles, ${v.freshCount} jamais vues`));
-  } else root.appendChild(el('div', 'note', 'L\'hôte lance la distribution.'));
+  }
+
+  const panel = el('div', 'panel', `<h2>Équipes</h2><p class="hint">${s.teamMode === 'manual' ? 'Touche une équipe pour la rejoindre.' : host ? 'Tirage au sort équilibré. Touche une équipe pour y déplacer quelqu\'un, ou relance.' : 'L\'hôte tire les équipes au sort.'}</p>`);
+  const list = el('div', 'teams');
+  v.teams.forEach(t => {
+    const mine = t.id === me?.teamId;
+    const d = el('button', 'team' + (mine ? ' mine' : ''), `
+      <div class="team-head"><span class="team-name">${esc(t.name)}</span><span class="team-count">${plural(t.players.length, 'joueur')}</span></div>
+      ${t.players.length ? `<div class="team-players">${t.players.map(p => `<span class="pill${p.id === me?.id ? ' me' : ''}${p.isHost ? ' host' : ''}${p.connected ? '' : ' off'}">${esc(p.name)}</span>`).join('')}</div>` : '<p class="team-empty">Personne pour l\'instant</p>'}`);
+    d.type = 'button'; d.style.setProperty('--tc', t.color);
+    d.disabled = !(s.teamMode === 'manual' || host);
+    d.onclick = () => act({ t: 'sab:team', teamId: t.id });
+    list.appendChild(d);
+  });
+  panel.appendChild(list); root.appendChild(panel);
+
+  if (v.unassigned.length) root.appendChild(el('div', 'panel', `<div class="panel-head"><h2>Sans équipe</h2><span class="counter">${v.unassigned.length}</span></div><div class="team-players">${v.unassigned.map(p => `<span class="pill${p.id === me?.id ? ' me' : ''}">${esc(p.name)}</span>`).join('')}</div>`));
+
+  const actions = el('div', 'sticky-actions');
+  if (host) {
+    if (v.problems?.length) actions.appendChild(el('p', 'error', v.problems.map(esc).join('<br>')));
+    const go = el('button', 'btn primary lg', 'Distribuer les cartes');
+    go.type = 'button'; go.disabled = !!v.problems?.length; go.onclick = () => act({ t: 'sab:deal' }); actions.appendChild(go);
+    actions.appendChild(el('p', 'hint center', `${s.dealPerPlayer} cartes chacun, ${s.discardPerPlayer} à écarter · ${v.poolSize} disponibles, ${v.freshCount} jamais vues`));
+  } else actions.appendChild(el('p', 'hint center', 'En attente de l\'hôte…'));
+  root.appendChild(actions);
 }
 
 // ------------------------------------------------------------ défausse
-function sabSelection(v, root, me, host) {
-  const sel = v.selection, hand = v.hand || [];
-  const left = sel.toDiscard - (me?.discardCount || 0);
-  root.appendChild(el('div', 'banner', me?.ready ? `Main validée<small>On attend ${sel.waitingFor.length ? esc(sel.waitingFor.join(', ')) : 'les autres'}… ${sel.readyCount}/${sel.totalCount} prêts.</small>`
-    : `Écarte ${sel.toDiscard} carte${sel.toDiscard > 1 ? 's' : ''}<small>Celles que tu ne te sens pas de faire deviner. Touche pour écarter.${left ? ` Encore ${left}.` : ''}</small>`));
-  const grid = el('div', 'hand');
+function sabSelection(v, root, after, me, host) {
+  const sel = v.selection, hand = v.hand || [], mine = me?.discardCount || 0;
+  const head = el('div', 'selection-head', me?.ready
+    ? `<h2>Main validée</h2><p class="hint">On attend ${sel.waitingFor.length ? esc(sel.waitingFor.join(', ')) : 'les autres'}.</p>`
+    : `<h2>Écarte ${plural(sel.toDiscard, 'carte')}</h2><p class="hint">Garde celles que tu penses faire deviner. Les cartes gardées par tout le monde formeront le paquet de la partie.</p>`);
+  head.appendChild(el('div', 'sel-progress', `<span class="counter big">${mine} / ${sel.toDiscard}</span><span class="hint">${sel.readyCount} / ${sel.totalCount} prêts</span>`));
+  root.appendChild(head);
+
+  const grid = el('div', 'hand' + (me?.ready ? ' locked' : ''));
   hand.forEach(c => {
-    const card = el('button', 'pcard' + (c.discarded ? ' out' : ''), `<span class="pc-cat">${esc(c.c)}</span><span class="pc-name">${esc(c.n)}</span>${diffDots(c.d)}`);
+    const card = el('button', 'hand-card' + (c.discarded ? ' discarded' : ''), `<span class="hc-cat">${esc(c.c)}</span><span class="hc-name">${esc(c.n)}</span>${diffDots(c.d)}`);
     card.type = 'button'; card.disabled = !!me?.ready;
     card.onclick = () => act({ t: 'sab:toggle', cardId: c.id });
     grid.appendChild(card);
   });
   root.appendChild(grid);
-  const row = el('div', 'row');
-  if (me?.ready) { const b = el('button', 'btn', 'Modifier ma sélection'); b.onclick = () => act({ t: 'sab:unvalidate' }); row.appendChild(b); }
-  else { const b = el('button', 'btn primary lg', 'Valider ma main'); b.disabled = left !== 0; b.onclick = () => act({ t: 'sab:validate' }); row.appendChild(b); }
-  root.appendChild(row);
-  if (host && sel.readyCount < sel.totalCount) { const f = el('button', 'btn ghost small', 'Démarrer sans attendre les retardataires'); f.onclick = () => act({ t: 'sab:force' }); root.appendChild(f); }
+
+  const actions = el('div', 'sticky-actions');
+  if (me?.ready) { const b = el('button', 'btn', 'Modifier ma sélection'); b.type = 'button'; b.onclick = () => act({ t: 'sab:unvalidate' }); actions.appendChild(b); }
+  else {
+    const left = sel.toDiscard - mine;
+    const b = el('button', 'btn primary lg', 'Valider ma sélection'); b.type = 'button'; b.disabled = left !== 0; b.onclick = () => act({ t: 'sab:validate' }); actions.appendChild(b);
+    if (left > 0) actions.appendChild(el('p', 'hint center', `Encore ${plural(left, 'carte')} à écarter.`));
+  }
+  if (host && sel.readyCount < sel.totalCount) { const f = el('button', 'btn ghost', 'Démarrer sans attendre les retardataires'); f.type = 'button'; f.onclick = () => act({ t: 'sab:force' }); actions.appendChild(f); }
+  after.appendChild(actions);
 }
 
 // ------------------------------------------------------------ entre deux tours
-function sabIdle(v, root, me, host) {
+function sabIdle(v, root, after, me, host) {
   const t = v.turn, isMe = t && t.playerId === me?.id;
-  root.appendChild(el('div', 'roundtag', `Manche ${v.round}/${v.roundCount} · ${esc(v.roundTitle)}<small>${esc(v.roundRule)}</small>`));
+  root.appendChild(el('div', 'round-banner', `<span>Manche ${v.round}/${v.roundCount}</span><span class="dot"></span><span>${esc(v.roundTitle)}</span><span class="dot"></span><span>${plural(v.cardsLeft, 'carte')}</span>`));
+
   if (v.lastTurn) {
-    const lt = v.lastTurn;
-    root.appendChild(el('div', 'recap', `<span class="who" style="--tc:${lt.teamColor}">${esc(lt.playerName)}</span> a fait deviner <b>${lt.guessedNames.length}</b> carte${lt.guessedNames.length > 1 ? 's' : ''}${lt.passedCount ? `, ${lt.passedCount} passée${lt.passedCount > 1 ? 's' : ''}` : ''}${lt.guessedNames.length ? `<small>${lt.guessedNames.map(esc).join(' · ')}</small>` : ''}`));
+    const lt = v.lastTurn, n = lt.guessedNames.length;
+    root.appendChild(el('div', 'recap', `<h3>Tour précédent — <span style="color:${lt.teamColor}">${esc(lt.playerName)}</span></h3>
+      <ul class="recap-list">${n ? lt.guessedNames.map(x => `<li>${esc(x)}</li>`).join('') : '<li class="none">Aucune carte devinée</li>'}</ul>
+      ${lt.passedCount ? `<p class="recap-passed">${lt.passedCount} carte${lt.passedCount > 1 ? 's' : ''} passée${lt.passedCount > 1 ? 's' : ''}</p>` : ''}`));
   }
+
   if (host && v.buzzer) {
-    const b = el('div', 'gong', `<b>Le gong</b><p>${esc(v.buzzer.playerName)} avait une carte en main quand le temps s'est écoulé. A-t-elle été devinée juste sur le gong ?</p>`);
-    const row = el('div', 'row');
-    const y = el('button', 'btn pos', 'Oui, on la compte'); y.onclick = () => act({ t: 'sab:buzzer', accept: true });
-    const n = el('button', 'btn', 'Non'); n.onclick = () => act({ t: 'sab:buzzer', accept: false });
-    row.append(y, n); b.appendChild(row); root.appendChild(b);
+    const b = el('div', 'panel gong', `<h2>⏰ Sur le gong</h2><p class="hint">${esc(v.buzzer.playerName)} avait une carte en main quand le temps s'est écoulé. A-t-elle été devinée juste sur le gong ?</p>`);
+    const row = el('div', 'row split');
+    const n = el('button', 'btn', 'Non, pas devinée'); n.type = 'button'; n.onclick = () => act({ t: 'sab:buzzer', accept: false });
+    const y = el('button', 'btn guess', 'Oui, on la compte'); y.type = 'button'; y.onclick = () => act({ t: 'sab:buzzer', accept: true });
+    row.append(n, y); b.appendChild(row); root.appendChild(b);
   }
+
   if (t) {
-    const box = el('div', 'turnbox', ''); box.style.setProperty('--tc', t.teamColor);
-    box.innerHTML = `<span class="eyebrow">Au tour de l'équipe ${esc(t.teamName)}</span><div class="turn-who">${esc(t.playerName)}</div><small>${v.cardsLeft} carte${v.cardsLeft > 1 ? 's' : ''} encore dans le paquet</small>`;
-    if (isMe) { const go = el('button', 'btn primary lg', `C'est parti <span class="cost">${v.turnTotal} s</span>`); go.onclick = () => act({ t: 'sab:start' }); box.appendChild(go); }
-    else box.appendChild(el('div', 'note', `${esc(t.playerName)} lance son tour quand il est prêt.`));
+    const box = el('div', 'panel spotlight', `<p class="up-next-label">Au tour de</p><p class="up-next-name">${isMe ? 'Toi !' : esc(t.playerName)}</p><p class="up-next-team" style="color:${t.teamColor}">Équipe ${esc(t.teamName)}</p>
+      <div class="rule-box"><strong>${esc(v.roundTitle)}</strong><p>${esc(v.roundRule)}</p></div>`);
+    if (isMe) { const go = el('button', 'btn primary lg', `C'est à moi — démarrer <span class="cost">${v.turnTotal} s</span>`); go.type = 'button'; go.onclick = () => act({ t: 'sab:start' }); box.appendChild(go); }
+    else box.appendChild(el('p', 'hint center', `${esc(t.playerName)} démarre quand tout le monde est prêt.`));
     root.appendChild(box);
-    if (host && !isMe) { const sk = el('button', 'btn ghost small', 'Tour bloqué ? Passer ce tour'); sk.onclick = () => act({ t: 'sab:abort' }); root.appendChild(sk); }
   }
+
   root.appendChild(sabScores(v));
   if (host) sabAmend(v, root);
+  if (host && t && !isMe) { const sk = el('button', 'btn ghost', 'Passer ce tour'); sk.type = 'button'; sk.onclick = () => act({ t: 'sab:abort' }); root.appendChild(sk); }
 }
 
 // ------------------------------------------------------------ le tour
-function sabLive(v, root, me, host) {
-  const t = v.turn, isMe = !!me?.isDescriber;
-  const head = el('div', 'livehead', ''); head.style.setProperty('--tc', t.teamColor);
-  head.innerHTML = `<div><span class="eyebrow">Équipe ${esc(t.teamName)} · ${esc(v.roundTitle)}</span><div class="turn-who">${isMe ? 'À toi' : esc(t.playerName)}</div></div><div class="clock" id="sab-clock">–</div>`;
-  root.appendChild(head);
+function sabLive(v, root, after, me, host) {
+  const t = v.turn, isMe = !!me?.isDescriber, mini = v.roundDraw ? ' mini' : '';
+  root.appendChild(el('div', 'timer-wrap', `<div class="timer" id="sab-clock">–</div><div class="timer-bar"><div class="timer-bar-fill" id="sab-clock-bar"></div></div>`));
+
   if (isMe) {
-    if (!v.card) root.appendChild(el('div', 'ready', 'Prépare-toi<small>La carte arrive avec le chrono.</small>'));
+    if (!v.card) root.appendChild(el('div', 'game-card' + mini, `<span class="game-card-cat">Prépare-toi</span><span class="game-card-name">La carte arrive avec le chrono</span>`));
     else {
-      root.appendChild(el('div', 'bigcard', `<span class="pc-cat">${esc(v.card.c)}</span><span class="pc-name">${esc(v.card.n)}</span>${diffDots(v.card.d)}`));
-      const row = el('div', 'row');
-      const ok = el('button', 'btn pos lg', 'Deviné ✓'); ok.onclick = () => act({ t: 'sab:guessed' });
-      const pass = el('button', 'btn', 'Passer'); pass.onclick = () => act({ t: 'sab:passed' });
-      row.append(ok, pass); root.appendChild(row);
+      const card = el('div', 'game-card flash' + mini, `<span class="game-card-cat">${esc(v.card.c)}</span><span class="game-card-name">${esc(v.card.n)}</span><span class="game-card-diff">${diffDots(v.card.d)}</span>`);
+      root.appendChild(card);
+      const acts = el('div', 'play-actions');
+      const pass = el('button', 'btn pass', 'Passer'); pass.type = 'button'; pass.onclick = () => act({ t: 'sab:passed' });
+      const ok = el('button', 'btn guess', 'Deviné !'); ok.type = 'button'; ok.onclick = () => act({ t: 'sab:guessed' });
+      acts.append(pass, ok); after.appendChild(acts);
     }
-    root.appendChild(el('div', 'note', `${t.guessedCount} devinée${t.guessedCount > 1 ? 's' : ''} · ${t.passedCount} passée${t.passedCount > 1 ? 's' : ''} · ${v.cardsLeft} dans le paquet`));
+    after.appendChild(el('div', 'found-strip', `<span class="tally ok"><strong>${t.guessedCount}</strong> trouvée${t.guessedCount > 1 ? 's' : ''}</span><span class="tally pass"><strong>${t.passedCount}</strong> passée${t.passedCount > 1 ? 's' : ''}</span><span class="tally"><strong>${v.cardsLeft}</strong> dans le paquet</span>`));
   } else {
-    root.appendChild(el('div', 'note', v.roundDraw ? `${esc(t.playerName)} dessine, son équipe devine à voix haute.` : `${esc(t.playerName)} fait deviner à son équipe.`));
-    root.appendChild(el('div', 'guessed', t.guessedNames.length ? t.guessedNames.map(n => `<span>${esc(n)}</span>`).join('') : '<span class="fine">Rien de deviné pour l\'instant</span>'));
-    root.appendChild(el('div', 'fine center', `${t.passedCount} passée${t.passedCount > 1 ? 's' : ''} · ${v.cardsLeft} dans le paquet`));
+    root.appendChild(el('div', 'listen-card' + mini, `<p class="listen-who"><strong>${esc(t.playerName)}</strong> ${v.roundDraw ? 'dessine' : 'fait deviner'}</p><p class="listen-team" style="color:${t.teamColor}">Équipe ${esc(t.teamName)}</p><div class="pulse"></div><p class="listen-rule">${esc(v.roundRule)}</p>`));
+    const foot = el('div', 'audience-foot', `<div class="found-strip"><span class="tally ok"><strong>${t.guessedCount}</strong> trouvée${t.guessedCount > 1 ? 's' : ''}</span><span class="tally pass${t.passedCount > sabLastPassed ? ' bump' : ''}"><strong>${t.passedCount}</strong> passée${t.passedCount > 1 ? 's' : ''}</span><span class="tally"><strong>${v.cardsLeft}</strong> dans le paquet</span></div>
+      <ul class="found-list">${t.guessedNames.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`);
+    after.appendChild(foot);
   }
+  sabLastPassed = t.passedCount;
 }
 
 // ------------------------------------------------------------ fin de manche / partie
-function sabRoundEnd(v, root, me, host) {
-  root.appendChild(el('div', 'banner', `Manche ${v.round} terminée<small>Le paquet est vide. Les mêmes cartes reviennent, mélangées.</small>`));
+function sabRoundEnd(v, root, after, me, host) {
+  root.appendChild(el('header', 'hero', `<div class="hero-mark">🏁</div><h1>Manche ${v.round} terminée</h1><p class="hero-sub">Le paquet est vide. Les mêmes cartes reviennent, mélangées.</p>`));
   root.appendChild(sabScores(v, true));
   sabGallery(v, root);
-  if (v.nextRoundInfo) root.appendChild(el('div', 'roundtag next', `Manche suivante : ${esc(v.nextRoundInfo.title)}<small>${esc(v.nextRoundInfo.rule)}</small>`));
-  if (host) { const b = el('button', 'btn primary lg', 'Manche suivante →'); b.onclick = () => act({ t: 'sab:next' }); root.appendChild(b); sabAmend(v, root); }
-  else root.appendChild(el('div', 'note', 'L\'hôte lance la manche suivante.'));
+  const panel = el('div', 'panel');
+  if (v.nextRoundInfo) panel.appendChild(el('div', 'rule-box', `<strong>Manche suivante : ${esc(v.nextRoundInfo.title)}</strong><p>${esc(v.nextRoundInfo.rule)}</p>`));
+  if (host) { const b = el('button', 'btn primary lg', 'Manche suivante'); b.type = 'button'; b.onclick = () => act({ t: 'sab:next' }); panel.appendChild(b); }
+  else panel.appendChild(el('p', 'hint center', 'En attente de l\'hôte…'));
+  root.appendChild(panel);
+  if (host) sabAmend(v, root);
 }
-function sabGameEnd(v, root, me, host) {
+function sabGameEnd(v, root, after, me, host) {
   const sorted = [...v.teams].sort((a, b) => b.total - a.total);
   const w = sorted[0], tie = sorted[1] && sorted[1].total === w.total;
-  root.appendChild(el('div', 'banner', tie ? `Égalité !<small>Deux équipes à ${w.total} points.</small>` : `L'équipe ${esc(w.name)} gagne<small>${w.total} carte${w.total > 1 ? 's' : ''} devinées sur ${v.roundCount} manche${v.roundCount > 1 ? 's' : ''}.</small>`));
+  root.appendChild(el('header', 'hero', `<div class="hero-mark">🏆</div><h1>Partie terminée</h1><p class="hero-sub">${tie ? `Égalité à ${plural(w.total, 'point')} !` : `L'équipe <b style="color:${w.color}">${esc(w.name)}</b> gagne avec ${plural(w.total, 'carte')} sur ${plural(v.roundCount, 'manche')}.`}</p>`));
   root.appendChild(sabScores(v, true));
   sabGallery(v, root);
-  if (host) { const b = el('button', 'btn primary lg', 'Rejouer avec les mêmes équipes'); b.onclick = () => act({ t: 'sab:reset' }); root.appendChild(b); sabAmend(v, root); }
+  const panel = el('div', 'panel');
+  if (host) { const b = el('button', 'btn primary lg', 'Rejouer avec les mêmes équipes'); b.type = 'button'; b.onclick = () => act({ t: 'sab:reset' }); panel.appendChild(b); }
+  else panel.appendChild(el('p', 'hint center', 'En attente de l\'hôte…'));
+  root.appendChild(panel);
+  if (host) sabAmend(v, root);
 }
 
 // ------------------------------------------------------------ morceaux partagés
 function sabScores(v, detail = false) {
-  const box = el('div', 'scores', '');
-  const rounds = v.round;
-  box.innerHTML = `<table><thead><tr><th></th>${detail ? Array.from({ length: rounds }, (_, i) => `<th>M${i + 1}</th>`).join('') : ''}<th>Total</th></tr></thead><tbody>${[...v.teams].sort((a, b) => b.total - a.total).map(t => `<tr style="--tc:${t.color}"><td><i class="sw"></i>${esc(t.name)}</td>${detail ? Array.from({ length: rounds }, (_, i) => `<td>${t.scores[i] ?? '–'}</td>`).join('') : ''}<td><b>${t.total}</b></td></tr>`).join('')}</tbody></table>`;
+  const box = el('div', 'scores');
+  const sorted = [...v.teams].sort((a, b) => b.total - a.total);
+  const top = sorted[0]?.total || 0;
+  sorted.forEach(t => {
+    const row = el('div', 'score-row' + (t.total === top && top > 0 ? ' leader' : '') + (v.turn && v.turn.teamId === t.id && (v.phase === 'turn-idle' || v.phase === 'turn-live') ? ' active' : ''));
+    row.style.setProperty('--tc', t.color);
+    const perRound = detail ? t.scores.slice(0, v.round).map((s, i) => `M${i + 1} ${s ?? 0}`).join(' · ') : t.scores.slice(0, v.round).map((s, i) => `M${i + 1} ${s ?? 0}`).join(' · ');
+    row.innerHTML = `<span class="score-name">${esc(t.name)}</span><span class="score-detail">${perRound}</span><span class="score-total">${t.total}</span>
+      <div class="score-players">${t.players.map(p => `<span class="ts-p${p.id === v.you?.id ? ' me' : ''}${p.connected ? '' : ' off'}${v.turn && v.turn.playerId === p.id && (v.phase === 'turn-idle' || v.phase === 'turn-live') ? ' speaks' : ''}">${esc(p.name)}</span>`).join('')}</div>`;
+    box.appendChild(row);
+  });
   return box;
 }
 function sabAmend(v, root) {
@@ -175,33 +241,102 @@ function sabAmend(v, root) {
   const det = el('details', 'amend', `<summary>Une carte a été comptée par erreur ?</summary>`);
   const list = el('div', 'amend-list', v.correctable.map(c => `<label><input type="checkbox" value="${c.id}"><span>${esc(c.n)}</span><small>${esc(c.teamName)} · ${esc(c.playerName)}</small></label>`).join(''));
   det.appendChild(list);
-  const b = el('button', 'btn small', 'Retirer les cartes cochées');
+  const b = el('button', 'btn small', 'Retirer les cartes cochées'); b.type = 'button';
   b.onclick = () => { const ids = [...list.querySelectorAll('input:checked')].map(i => i.value); if (ids.length) act({ t: 'sab:amend', ids }); };
   det.appendChild(b); root.appendChild(det);
 }
 function sabGallery(v, root) {
   const items = v.gallery || []; if (!items.length) return;
   const found = items.filter(i => !i.missed), missed = items.filter(i => i.missed);
-  const wrap = el('div', 'gallery-wrap', `<h3>Les dessins</h3>`);
+  const wrap = el('div', 'panel gallery-wrap', `<h2>Les dessins</h2>`);
   const grid = (list, cls) => { const g = el('div', 'gallery ' + cls); list.forEach(it => { const fig = el('figure', '', ''); const c = document.createElement('canvas'); c.width = 400; c.height = 300; sabDrawStrokesTo(c, it.strokes); fig.appendChild(c); fig.appendChild(el('figcaption', '', `${cls === 'missed' ? '✗ ' : ''}${esc(it.n)}<small>${esc(it.playerName)}</small>`)); g.appendChild(fig); }); return g; };
   if (found.length) wrap.appendChild(grid(found, 'found'));
-  if (missed.length) { wrap.appendChild(el('h4', '', 'Pas devinées à temps, carte révélée')); wrap.appendChild(grid(missed, 'missed')); }
+  if (missed.length) { wrap.appendChild(el('h3', '', 'Pas devinées à temps')); wrap.appendChild(grid(missed, 'missed')); }
   root.appendChild(wrap);
 }
 
-// chrono local, calé sur l'horloge de l'hôte
+// chrono local, calé sur l'horloge de l'hôte : chiffre + barre qui se vide
 function sabClock(v) {
   clearInterval(sabClockTimer); sabClockTimer = null;
   const t = v.turn; if (v.phase !== 'turn-live' || !t?.endsAt) return;
+  const total = Math.max(1, (v.turnTotal || 30) * 1000);
   const tick = () => {
-    const el_ = $('#sab-clock'); if (!el_) return;
+    const num = $('#sab-clock'), bar = $('#sab-clock-bar'); if (!num) return;
     const now = Date.now() + sabOffset;
-    if (t.startsAt && now < t.startsAt) { el_.textContent = Math.ceil((t.startsAt - now) / 1000); el_.className = 'clock pre'; return; }
-    const left = Math.max(0, Math.ceil((t.endsAt - now) / 1000));
-    el_.textContent = left; el_.className = 'clock' + (left <= 5 ? ' hot' : '');
+    if (t.startsAt && now < t.startsAt) { num.textContent = Math.ceil((t.startsAt - now) / 1000); num.className = 'timer pre'; if (bar) { bar.style.width = '100%'; bar.className = 'timer-bar-fill pre'; } return; }
+    const leftMs = Math.max(0, t.endsAt - now), left = Math.ceil(leftMs / 1000);
+    const cls = left <= 5 ? 'crit' : left <= 10 ? 'warn' : '';
+    num.textContent = left; num.className = 'timer ' + cls;
+    if (bar) { bar.style.width = `${Math.min(100, (leftMs / total) * 100)}%`; bar.className = 'timer-bar-fill ' + cls; }
   };
   tick(); sabClockTimer = setInterval(tick, 200);
 }
+
+// ------------------------------------------------------------ gribouillages latéraux
+// Pendant un tour, les équipes qui ne jouent pas griffonnent dans les bandes de chaque
+// côté de l'écran (25 % à gauche, 25 % à droite). Éphémère, relayé par l'hôte, couleur
+// de l'équipe. Le centre reste à ceux qui jouent.
+const sabDcv = $('#sab-doodle'), sabDg = sabDcv.getContext('2d');
+const sabDoodles = new Map(); // id -> { p, c, e }
+let sabDoodleMode = false, sabDoodleErase = false, sabDoodleOk = false, sabDoodleCur = null, sabDoodleCurErase = false, sabDoodlePending = [], sabDoodleFlush = null, sabDoodleSeq = 0, sabDoodleLoop = null;
+
+function sabFitDoodle() { const dpr = Math.min(2, devicePixelRatio || 1); const w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr); if (w !== sabDcv.width || h !== sabDcv.height) { sabDcv.width = w; sabDcv.height = h; } }
+window.addEventListener('resize', () => { sabFitDoodle(); sabDrawDoodles(); });
+const sabInBand = x => x <= 0.25 || x >= 0.75;
+function sabDoodleAdd(id, pts, c, erase) {
+  let d = sabDoodles.get(id);
+  if (!d) { d = { p: [], c, e: !!erase }; sabDoodles.set(id, d); if (sabDoodles.size > 400) sabDoodles.delete(sabDoodles.keys().next().value); }
+  d.p.push(...pts);
+  if (!sabDoodleLoop) sabDoodleLoop = requestAnimationFrame(sabDrawDoodles);
+}
+function sabDrawDoodles() {
+  sabDoodleLoop = null; sabFitDoodle();
+  const W = sabDcv.width, H = sabDcv.height;
+  sabDg.clearRect(0, 0, W, H); sabDg.lineCap = 'round'; sabDg.lineJoin = 'round';
+  sabDoodles.forEach(d => {
+    if (d.p.length < 2) return;
+    sabDg.globalCompositeOperation = d.e ? 'destination-out' : 'source-over';
+    sabDg.lineWidth = Math.max(2, W * (d.e ? 0.02 : 0.006)); sabDg.strokeStyle = d.c;
+    sabDg.beginPath(); sabDg.moveTo(d.p[0] * W, d.p[1] * H);
+    if (d.p.length === 2) sabDg.lineTo(d.p[0] * W + 0.01, d.p[1] * H);
+    for (let i = 2; i + 1 < d.p.length; i += 2) sabDg.lineTo(d.p[i] * W, d.p[i + 1] * H);
+    sabDg.stroke();
+  });
+  sabDg.globalCompositeOperation = 'source-over';
+}
+function sabDoodleClear() { if (!sabDoodles.size) return; sabDoodles.clear(); sabDg.clearRect(0, 0, sabDcv.width, sabDcv.height); }
+function sabMyTeamColor() { const t = sabView?.teams.find(x => x.id === sabView.you?.teamId); return t ? t.color : '#888888'; }
+function sabDoodleAllowed(ok) {
+  sabDoodleOk = ok;
+  const b = $('#sab-doodle-btn'), g = $('#sab-doodle-erase');
+  if (b) b.hidden = !ok; if (g) g.hidden = !ok;
+  if (!ok && sabDoodleMode) sabSetDoodleMode(false);
+}
+function sabSetDoodleMode(on, erase = false) {
+  sabDoodleMode = !!on; sabDoodleErase = sabDoodleMode && !!erase;
+  document.body.classList.toggle('doodling', sabDoodleMode);
+  $('#sab-doodle-btn')?.classList.toggle('on', sabDoodleMode && !sabDoodleErase);
+  $('#sab-doodle-erase')?.classList.toggle('on', sabDoodleErase);
+  if (!sabDoodleMode) sabDoodleEnd();
+}
+const sabDoodlePos = e => [Math.round((e.clientX / innerWidth) * 1000) / 1000, Math.round((e.clientY / innerHeight) * 1000) / 1000];
+function sabDoodleSend() { sabDoodleFlush = null; if (!sabDoodleCur || !sabDoodlePending.length) return; act({ t: 'sab:doodle', id: sabDoodleCur, p: sabDoodlePending, e: sabDoodleCurErase }); sabDoodlePending = []; }
+function sabDoodleEnd() { if (sabDoodleFlush) { clearTimeout(sabDoodleFlush); sabDoodleFlush = null; } sabDoodleSend(); sabDoodleCur = null; }
+sabDcv.addEventListener('pointerdown', e => {
+  if (!sabDoodleMode) return;
+  const [x, y] = sabDoodlePos(e); if (!sabInBand(x)) return;
+  e.preventDefault();
+  sabDoodleCur = `${++sabDoodleSeq}-${Math.random().toString(36).slice(2, 7)}`; sabDoodleCurErase = sabDoodleErase;
+  sabDoodleAdd(sabDoodleCur, [x, y], sabMyTeamColor(), sabDoodleCurErase); sabDoodlePending.push(x, y);
+  if (!sabDoodleFlush) sabDoodleFlush = setTimeout(sabDoodleSend, 40);
+});
+sabDcv.addEventListener('pointermove', e => {
+  if (!sabDoodleCur) return;
+  const [x, y] = sabDoodlePos(e); if (!sabInBand(x)) { sabDoodleEnd(); return; }
+  sabDoodleAdd(sabDoodleCur, [x, y], sabMyTeamColor(), sabDoodleCurErase); sabDoodlePending.push(x, y);
+  if (!sabDoodleFlush) sabDoodleFlush = setTimeout(sabDoodleSend, 40);
+});
+['pointerup', 'pointercancel'].forEach(ev => window.addEventListener(ev, () => { if (sabDoodleCur) sabDoodleEnd(); }));
 
 // ------------------------------------------------------------ canevas (repris de l'original)
 const sabCv = $('#sab-canvas'), sabG2 = sabCv.getContext('2d');
@@ -286,11 +421,16 @@ function sabOnMessage(m) {
   if (m.t === 'sab-seg') sabApplySeg(m.seg);
   else if (m.t === 'sab-full') { sabStrokes = (m.strokes || []).map(s => ({ ...s, p: s.p.slice() })); sabRedrawAll(); }
   else if (m.t === 'sab-react') sabSpawnReaction(m.e, m.who);
+  else if (m.t === 'sab-doodle' && m.id && Array.isArray(m.p)) sabDoodleAdd(m.id, m.p, m.c || '#888888', m.e);
 }
 (function buildReactions() {
   const bar = $('#sab-react'); let last = 0;
-  bar.innerHTML = Sablier.REACTIONS.map(e => `<button type="button" class="react-btn" data-e="${e}">${e}</button>`).join('');
+  bar.innerHTML = Sablier.REACTIONS.map(e => `<button type="button" class="react-btn" data-e="${e}">${e}</button>`).join('')
+    + '<button type="button" class="react-btn pencil" id="sab-doodle-btn" title="Gribouiller sur les côtés" hidden>✏️</button>'
+    + '<button type="button" class="react-btn pencil" id="sab-doodle-erase" title="Gommer les gribouillages" hidden>🧽</button>';
   bar.addEventListener('click', e => {
+    if (e.target.closest('#sab-doodle-btn')) { sabSetDoodleMode(!(sabDoodleMode && !sabDoodleErase), false); return; }
+    if (e.target.closest('#sab-doodle-erase')) { sabSetDoodleMode(!(sabDoodleMode && sabDoodleErase), true); return; }
     const b = e.target.closest('.react-btn'); if (!b) return;
     const now = Date.now(); if (now - last < 250) return; last = now;
     act({ t: 'sab:react', e: b.dataset.e });
