@@ -3,105 +3,136 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#16121f">
+<meta name="theme-color" content="#221c17">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Décennies · blind test chronologique</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23ff6b35'/><circle cx='50' cy='50' r='30' fill='%2316121f'/><circle cx='50' cy='50' r='9' fill='%23f6ead3'/></svg>">
+<title>Platine · jeux de musique entre amis</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=11">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
-<button class="theme-btn" id="btn-theme" type="button" aria-label="Changer de thème" title="Mode clair / sombre">☀️</button>
 
-<!-- ============ ACCUEIL ============ -->
+<!-- ====================== BARRE HAUTE ====================== -->
+<header class="topbar" id="topbar">
+  <button class="ic" id="btn-back" type="button" aria-label="Retour" hidden>‹</button>
+  <span class="crumb" id="crumb">Platine</span>
+  <span class="net" id="net" aria-live="polite"></span>
+  <button class="ic" id="btn-vol" type="button" aria-label="Volume" hidden>🔊</button>
+  <button class="ic" id="btn-help" type="button" aria-label="Règles" hidden>?</button>
+  <button class="ic" id="btn-theme" type="button" aria-label="Thème">☀</button>
+</header>
+<div class="vol-pop" id="vol-bar" hidden>
+  <span>🔈</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume"><span>🔊</span>
+</div>
+
+<!-- ====================== ACCUEIL ====================== -->
 <section class="screen" id="s-home">
-  <div class="hero">
-    <div class="vinyl vinyl-hero" aria-hidden="true"><i></i></div>
-    <h1>Décennies</h1>
-    <p class="tagline">Le blind test où tu ne devines pas le titre, mais <em>l'année</em>.</p>
+  <div class="hub-hero">
+    <div class="platter" aria-hidden="true"><span class="arm"></span><i></i></div>
+    <h1>Platine</h1>
+    <p class="lede">Des jeux de musique à jouer ensemble, chacun sur son téléphone.</p>
   </div>
+
   <form class="stack" id="f-home">
     <label class="field">
       <span>Ton prénom</span>
       <input id="in-name" maxlength="14" autocomplete="off" placeholder="Prénom" required>
     </label>
-    <button class="btn primary" type="submit" data-act="create">Créer une partie</button>
-    <div class="or"><span>ou</span></div>
+    <button class="btn primary lg" type="submit" data-act="create">Créer une partie</button>
+    <div class="or"><span>ou rejoindre</span></div>
     <div class="join-row">
-      <input id="in-code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false">
-      <button class="btn" type="submit" data-act="join">Rejoindre</button>
+      <input id="in-code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie">
+      <button class="btn" type="submit" data-act="join">Entrer</button>
     </div>
-    <p class="err" id="home-err"></p>
+    <p class="err" id="home-err" role="alert"></p>
   </form>
-  <button class="btn ghost small" id="btn-solo">Jouer seul pour découvrir</button>
+
+  <div class="hub-foot">
+    <button class="btn ghost" id="btn-solo">Essayer seul</button>
+    <p class="fine">2 jeux disponibles · d'autres arrivent</p>
+  </div>
 </section>
 
-<!-- ============ SALON ============ -->
+<!-- ====================== SALON ====================== -->
 <section class="screen" id="s-lobby" hidden>
-  <header class="top">
-    <span class="eyebrow">Salon</span>
-    <button class="btn ghost small" id="btn-leave">Quitter</button>
-  </header>
-  <div class="code-card">
-    <span class="eyebrow">Code de la partie</span>
-    <div class="code" id="lobby-code">····</div>
-    <p class="muted">Tes amis ouvrent la même adresse et tapent ce code.</p>
-  </div>
-  <div class="players" id="lobby-players"></div>
-  <div class="host-only stack" id="lobby-opts">
-    <div class="mode-pick" id="opt-mode">
-      <label><input type="radio" name="mode" value="timeline" checked><b>Décennies</b><small>Place chaque chanson dans ta frise d'années.</small></label>
-      <label><input type="radio" name="mode" value="eclair"><b>Éclair</b><small>Trouve le titre avec le moins de secondes possible.</small></label>
+  <div class="code-strip">
+    <div>
+      <span class="eyebrow">Code</span>
+      <div class="code" id="lobby-code">····</div>
     </div>
-    <fieldset class="chips" id="opt-cats"><legend class="eyebrow">Playlists</legend></fieldset>
-    <fieldset class="chips" id="opt-decades" hidden><legend class="eyebrow">Décennies</legend>
-      <label><input type="checkbox" value="1980" checked>Années 80</label>
-      <label><input type="checkbox" value="1990" checked>Années 90</label>
-      <label><input type="checkbox" value="2000" checked>Années 2000</label>
-      <label><input type="checkbox" value="2010" checked>Années 2010</label>
-      <label><input type="checkbox" value="2020" checked>2020 à aujourd'hui</label>
-    </fieldset>
-    <label class="field row">
-      <span>Cartes pour gagner</span>
-      <select id="opt-target"><option>5</option><option>7</option><option selected>10</option><option>15</option></select>
-    </label>
-    <label class="field row" id="row-rounds" hidden>
-      <span>Nombre de manches</span>
-      <select id="opt-rounds"><option>5</option><option selected>10</option><option>15</option></select>
-    </label>
-    <label class="field row" id="row-sound">
-      <span>Le son sort de…</span>
-      <select id="opt-sound">
-        <option value="active" selected>Téléphone du joueur actif</option>
-        <option value="host">Ce téléphone (enceinte)</option>
-        <option value="all">Tous les téléphones</option>
-      </select>
-    </label>
-    <button class="btn primary" id="btn-start">Lancer la partie</button>
+    <p class="fine">Tes amis ouvrent la même adresse<br>et tapent ce code.</p>
   </div>
-  <p class="muted guest-only" id="lobby-wait">En attente de l'hôte…</p>
+
+  <div class="players" id="lobby-players"></div>
+
+  <section class="picker">
+    <h2 class="section-title">Choisir un jeu</h2>
+    <div class="games" id="games">
+      <button class="gcard g-decennies" type="button" data-game="timeline">
+        <span class="gart" aria-hidden="true"><span class="disc"></span></span>
+        <span class="gname">Décennies</span>
+        <span class="gdesc">Place chaque chanson dans ta frise d'années. Le premier à remplir sa frise gagne.</span>
+        <span class="gmeta">2 à 8 joueurs · 30 min</span>
+      </button>
+      <button class="gcard g-eclair" type="button" data-game="eclair">
+        <span class="gart" aria-hidden="true"><span class="bolt"></span></span>
+        <span class="gname">Éclair</span>
+        <span class="gdesc">Trouve le titre en un minimum de secondes. Plus tu es rapide, plus tu marques.</span>
+        <span class="gmeta">1 à 8 joueurs · 15 min</span>
+      </button>
+      <div class="gsoon">Autres jeux en préparation</div>
+    </div>
+  </section>
+
+  <div id="lobby-opts" hidden>
+    <div class="opts" id="opts-timeline" hidden>
+      <fieldset class="chips" id="opt-cats"><legend class="eyebrow">Playlists</legend></fieldset>
+      <label class="field row">
+        <span>Cartes pour gagner</span>
+        <select id="opt-target"><option>5</option><option>7</option><option selected>10</option><option>15</option></select>
+      </label>
+      <label class="field row">
+        <span>Le son sort de…</span>
+        <select id="opt-sound">
+          <option value="active" selected>Téléphone du joueur actif</option>
+          <option value="host">Ce téléphone (enceinte)</option>
+          <option value="all">Tous les téléphones</option>
+        </select>
+      </label>
+    </div>
+    <div class="opts" id="opts-eclair" hidden>
+      <fieldset class="chips" id="opt-decades"><legend class="eyebrow">Décennies</legend>
+        <label><input type="checkbox" value="1980" checked>80</label>
+        <label><input type="checkbox" value="1990" checked>90</label>
+        <label><input type="checkbox" value="2000" checked>2000</label>
+        <label><input type="checkbox" value="2010" checked>2010</label>
+        <label><input type="checkbox" value="2020" checked>2020+</label>
+      </fieldset>
+      <label class="field row">
+        <span>Nombre de manches</span>
+        <select id="opt-rounds"><option>5</option><option selected>10</option><option>15</option></select>
+      </label>
+    </div>
+    <button class="btn primary lg" id="btn-start">Lancer la partie</button>
+  </div>
+  <p class="fine" id="lobby-wait">L'hôte choisit le jeu…</p>
 </section>
 
-<!-- ============ JEU ============ -->
-<section class="screen game" id="s-game" hidden>
+<!-- ====================== DÉCENNIES ====================== -->
+<section class="screen play" id="s-game" hidden>
   <header class="scoreboard" id="scoreboard"></header>
+  <div class="banner" id="turn-banner"></div>
 
-  <div class="turn-banner" id="turn-banner"></div>
-
-  <section class="deck-card" id="deck-card">
+  <section class="stage">
     <div class="vinyl" id="vinyl"><img id="art" alt=""><i></i></div>
     <div class="track-info" id="track-info"></div>
     <div class="progress"><i id="prog"></i></div>
     <div class="row center" id="audio-row">
       <button class="btn primary" id="btn-play">▶ Écouter</button>
-      <button class="btn vol-btn" id="btn-vol" type="button" aria-label="Volume" title="Volume">🔊</button>
-    </div>
-    <div class="vol-bar" id="vol-bar" hidden>
-      <span>🔈</span><input type="range" id="vol" min="0" max="100" step="1" aria-label="Volume de l'appli"><span>🔊</span>
     </div>
   </section>
 
@@ -111,62 +142,58 @@
   </div>
 
   <div class="actions" id="actions"></div>
-  <div class="toast" id="toast"></div>
 </section>
 
-<!-- ============ ÉCLAIR ============ -->
-<section class="screen game" id="s-eclair" hidden>
+<!-- ====================== ÉCLAIR ====================== -->
+<section class="screen play" id="s-eclair" hidden>
   <header class="scoreboard" id="e-scoreboard"></header>
-  <div class="turn-banner" id="e-banner"></div>
+  <div class="banner" id="e-banner"></div>
 
-  <section class="deck-card" id="e-card">
-    <div class="vinyl" id="e-vinyl"><img id="e-art" alt=""><i></i></div>
+  <section class="stage">
+    <div class="bolt-stage" id="e-vinyl"><img id="e-art" alt=""><span class="bolt"></span></div>
     <div class="track-info" id="e-info"></div>
     <div class="segbar" id="e-segbar"></div>
     <div class="row center">
-      <button class="btn primary big" id="e-play">▶ Écouter <span class="cost" id="e-len">0,5 s</span></button>
+      <button class="btn primary lg" id="e-play">▶ Écouter <span class="cost" id="e-len">0,5 s</span></button>
     </div>
   </section>
 
   <div class="actions" id="e-actions"></div>
   <div class="others" id="e-others"></div>
-  <div class="toast" id="toast2"></div>
 </section>
 
-<!-- ============ FIN ============ -->
+<!-- ====================== FIN ====================== -->
 <section class="screen" id="s-end" hidden>
-  <div class="hero small">
-    <div class="vinyl vinyl-hero gold" aria-hidden="true"><i></i></div>
+  <div class="endhero">
     <span class="eyebrow">Partie terminée</span>
-    <h1 id="end-winner">Kevin</h1>
-    <p class="tagline">a rempli sa frise le premier.</p>
+    <h1 id="end-winner">—</h1>
+    <p class="lede" id="end-sub"></p>
   </div>
   <ol class="ranking" id="ranking"></ol>
-  <button class="btn primary" id="btn-again">Rejouer avec le même groupe</button>
-  <button class="btn ghost" id="btn-home">Retour à l'accueil</button>
+  <div class="stack">
+    <button class="btn primary lg" id="btn-again">Rejouer · retour au salon</button>
+    <button class="btn ghost" id="btn-home">Quitter</button>
+  </div>
 </section>
 
-<button class="help-btn" id="btn-help" type="button" aria-label="Règles" title="Règles">?</button>
+<!-- ====================== FEUILLES ====================== -->
 <div class="modal" id="help" hidden>
   <div class="sheet">
-    <div class="top"><span class="eyebrow">Règles</span><button class="btn ghost small" id="help-close">Fermer</button></div>
-    <h3>Décennies</h3>
-    <p><b>But :</b> premier à remplir sa frise de cartes rangées par année.</p>
-    <p><b>À ton tour :</b> écoute l'extrait, touche le « + » où la chanson se place dans ta frise. Bonne année, la carte est à toi. Sinon elle est perdue.</p>
-    <p><b>Les jetons ● :</b> tu en as 2 au départ.</p>
-    <ul>
-      <li><b>Gagner 1 ●</b> : écris l'artiste et le titre avant de placer. Les deux justes = +1.</li>
-      <li><b>Parier 1 ●</b> : quand un autre joueur a placé, tu peux parier qu'il se trompe en montrant ton propre emplacement. S'il rate et que tu as raison, la carte est pour toi.</li>
-      <li><b>Changer de chanson, 1 ●</b> : tu ne connais pas du tout ? Passe à une autre.</li>
-      <li><b>Carte offerte, 3 ●</b> : une carte ajoutée à ta frise sans deviner.</li>
-    </ul>
-    <h3>Éclair</h3>
-    <p>Tout le monde écoute la même chanson. Trouve le titre avec le moins de secondes : 0,5 s vaut 5 points, puis 4, 3, 2, 1. Un titre faux débloque le palier suivant.</p>
+    <div class="sheet-top"><span class="eyebrow">Règles</span><button class="btn ghost small" id="help-close">Fermer</button></div>
+    <div id="help-body"></div>
   </div>
 </div>
-<div class="net-status" id="net"></div>
+<div class="modal" id="confirm" hidden>
+  <div class="sheet">
+    <div class="sheet-top"><span class="eyebrow" id="confirm-title">Quitter</span><button class="btn ghost small" id="confirm-close">Annuler</button></div>
+    <p id="confirm-text"></p>
+    <button class="btn primary lg" id="confirm-ok">Confirmer</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>

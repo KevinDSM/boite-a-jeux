@@ -1,83 +1,59 @@
-# Décennies — blind test chronologique entre téléphones
+# Platine — hub de jeux de musique entre amis
 
-Équivalent maison de Hitster : on écoute un extrait, on le place dans sa frise d'années.
-Premier à 10 cartes gagne. Chaque joueur joue sur son propre téléphone.
+Chacun joue sur son téléphone, tout le monde se connecte avec un code à 4 lettres.
+Le salon permet de choisir le jeu, et chaque jeu a sa propre identité visuelle.
 
 **En ligne : https://kevindsm.github.io/decennies/** (dépôt GitHub `KevinDSM/decennies`).
 Toute modification poussée sur `main` est en ligne en une à deux minutes.
+
+## Les jeux
+
+### Décennies
+On écoute un extrait, on le place dans sa frise d'années. Premier à remplir sa frise, gagné.
+
+- 1 carte de départ, 2 jetons, 3 jetons au maximum.
+- À ton tour : écoute, touche le « + » où la chanson se place. Bonne année, la carte est à toi.
+- **Les jetons servent uniquement à parier.** Quand un joueur a posé son choix, le premier
+  qui se lance prend le pari du tour, pour 1 jeton. Un seul pari par tour.
+  Pari gagné : la carte rejoint sa frise. Pari perdu : il perd le jeton **et** une carte
+  (jamais sa dernière).
+- Regagner un jeton : écrire l'artiste et le titre avant de placer, les deux justes.
+
+### Éclair
+Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.
+Paliers 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre faux débloque le
+palier suivant. Choix des décennies de 1980 à aujourd'hui.
 
 ## Fichiers
 
 | Fichier | Rôle |
 |---|---|
 | `index.html`, `style.css`, `app.js` | l'appli, 100 % statique |
-| `songs.json` | la base de chansons (extraits 30 s Apple, année, pochette) |
-| `playlists.txt` | la liste `Artiste \| Titre` par playlist, à enrichir |
-| `build_songs.py` | régénère `songs.json` depuis `playlists.txt` via l'API iTunes |
+| `songs.json` | base de Décennies (180 titres, playlists par époque) |
+| `songs-eclair.json` | base d'Éclair (450 tubes, 10 par année de 1980 à 2025) |
+| `playlists.txt`, `playlists-eclair.txt` | les listes `Artiste \| Titre` à enrichir |
+| `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 
-## Jouer maintenant, sur le Wi-Fi de la maison
+## Ajouter un jeu
 
-Dans ce dossier :
+Un jeu se déclare dans `GAMES` (app.js), reçoit une carte dans le salon (`.gcard` dans
+index.html), un bloc d'options `#opts-<clé>`, une palette `[data-game="<thème>"]` dans
+style.css, un écran `.screen`, et ses phases dans le moteur `Game`.
 
-```bash
-python -m http.server 8766
-```
-
-Puis sur chaque téléphone connecté au même Wi-Fi : `http://IP-DU-PC:8766`
-(l'IP du PC : `ipconfig`, ligne IPv4). Un joueur crée la partie, les autres tapent le code.
-
-Le réseau entre téléphones passe par WebRTC (PeerJS, relais gratuit sans compte).
-Il faut donc Internet pour la mise en relation et pour les extraits audio.
-
-## Mettre en ligne gratuitement (GitHub Pages)
-
-1. Créer un compte GitHub, puis un dépôt public nommé `decennies`.
-2. Y déposer les 4 fichiers `index.html`, `style.css`, `app.js`, `songs.json`
-   (bouton « Add file → Upload files » sur la page du dépôt).
-3. Dans le dépôt : Settings → Pages → Source « Deploy from a branch » → branche `main` → Save.
-4. Deux minutes plus tard l'appli est à `https://TON-PSEUDO.github.io/decennies/`.
-
-Sur téléphone, « Ajouter à l'écran d'accueil » donne une vraie icône d'appli.
-Un lien avec code pré-rempli : `https://…/decennies/?c=ABCD`.
-
-## Règles implémentées
-
-- 1 carte de départ et 2 jetons par joueur.
-- À ton tour : écoute, touche un « + » dans ta frise. Bonne année → la carte est à toi.
-- Les autres ont 12 secondes pour parier 1 jeton sur un autre emplacement.
-  Si tu te trompes et qu'un parieur a raison, il récupère la carte.
-- Bonus : artiste **et** titre exacts saisis avant de valider → +1 jeton.
-- 1 jeton : passer la chanson. 3 jetons : acheter une carte directement.
-- L'hôte peut activer « enceinte » : le son sort de son téléphone pour tous.
-
-## Second jeu : Éclair
-
-Choisi dans le salon par l'hôte. Tout le monde joue la même chanson en même temps, chacun sur
-son téléphone. Paliers d'écoute 0,5 / 1 / 2 / 3 / 5 s valant 5 / 4 / 3 / 2 / 1 points. Un titre
-faux ou « Écouter plus » débloque le palier suivant. Base dédiée `songs-eclair.json`, générée
-depuis `playlists-eclair.txt` (tubes 2000 → 2025) :
+## Enrichir une base
 
 ```bash
+python build_songs.py playlists.txt songs.json
 python build_songs.py playlists-eclair.txt songs-eclair.json
 ```
 
-## Enrichir la base
-
-Ajouter des lignes `Artiste | Titre` sous une rubrique `# Nom de playlist` dans
-`playlists.txt`, puis :
-
-```bash
-python build_songs.py
-```
-
-Le script prend l'année la plus ancienne parmi toutes les éditions du titre (pour éviter les
-dates de compilations) et ignore remixes, lives et karaokés. Vérifier à l'œil les lignes
-affichées : 2 à 3 % d'années peuvent rester douteuses, corrigeables directement dans `songs.json`.
-Un titre marqué `KO` n'existe pas sur iTunes France ou est mal orthographié.
+Le script prend l'année la plus ancienne parmi les éditions d'un titre (pour éviter les dates
+de compilations) et ignore remixes, lives et karaokés. Un titre marqué `KO` est absent du
+catalogue iTunes France.
 
 ## Limites connues
 
-- L'hôte doit garder l'appli ouverte : c'est son téléphone qui tient la partie.
-  Si l'hôte ferme la page, la partie est perdue.
-- Un joueur qui perd le réseau est reconnecté automatiquement avec sa frise.
+- L'hôte doit garder l'appli ouverte : c'est son téléphone qui fait tourner la partie.
 - Sur iPhone, le premier extrait peut demander un tap sur « Écouter » (règle Safari).
+- Les fichiers sont versionnés par `?v=` : penser à incrémenter `ASSET_V` et les balises
+  dans `index.html` à chaque mise en ligne.
