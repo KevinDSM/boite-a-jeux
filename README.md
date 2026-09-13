@@ -29,7 +29,7 @@ On écoute un extrait, on le place dans sa frise d'années. Premier à remplir s
 La même chanson démarre chez tout le monde. Le premier à donner l'artiste et le titre marque
 le plus. 1er 5 points, 2e 3, 3e 2, ensuite 1. Trois essais par manche, la manche s'arrête quand
 l'extrait est fini ou que tout le monde a répondu. Même base et même liste de suggestions
-qu'Éclair, choix des décennies, et la même case **Jeux vidéo** facultative.
+qu'Éclair, choix des décennies, et la même case **Jeux vidéo** facultative, et une case **Animés** facultative (génériques et musiques d'animés, on donne le nom de l'anime, liste dans `playlists-anime.txt`).
 
 ### Sablier
 Sans musique : un Time's Up par équipes, porté depuis le projet d'origine

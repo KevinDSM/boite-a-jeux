@@ -17,7 +17,7 @@ DST = sys.argv[2] if len(sys.argv) > 2 else "songs-jv.json"
 # arrangements qui déforment trop la mélodie : on les évite si on a mieux
 BAD = re.compile(r"lo-?fi|8[\s-]?bit|chiptune|piano only|solo piano|guitar|metal|karaok|lullab|"
                  r"sleep|study|meditat|relax|jazz|dubstep|nightcore|speed ?up|slowed", re.I)
-GOOD = re.compile(r"original (game )?(soundtrack|score)|\bost\b|video game soundtrack", re.I)
+GOOD = re.compile(r"original (game )?(soundtrack|score)|\bost\b|video game soundtrack|opening|ending|anime|générique|generique|theme song", re.I)
 
 def norm(t):
     t = t.lower().translate(str.maketrans("éèêëàâäçùûüôöîï", "eeeeaaacuuuooii"))

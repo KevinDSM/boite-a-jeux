@@ -110,7 +110,7 @@ const Undercover = (() => {
     room.inRound = shuffle(ids.slice());   // ordre d'affichage, sans trahir les rôles
     room.tour = 0; room.order = []; room.speaker = 0;
     room.votes = {}; room.candidates = null; room.tie = false;
-    room.lastElim = null; room.whiteTry = null; room.result = null;
+    room.lastElim = null; room.whiteTry = null; room.result = null; room.clues = {};
     room.phase = 'reveal';
   }
 
@@ -188,11 +188,15 @@ const Undercover = (() => {
         me.ready = true;
         if (room.inRound.filter(id => isOnline(room, id)).every(id => room.roles[id].ready)) beginClues(room);
         return null;
-      case 'uc:clue':
+      case 'uc:clue': {
         if (room.phase !== 'clues') return null;
-        if (room.order[room.speaker] !== pid && !host) return null;
+        const speaker = room.order[room.speaker];
+        if (speaker !== pid && !host) return null;
+        const text = String(m.text || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+        if (text && speaker === pid) (room.clues[pid] = room.clues[pid] || []).push({ tour: room.tour, text });
         room.speaker += 1; skipOffline(room);
         return null;
+      }
       case 'uc:vote':
         if (room.phase !== 'vote' || !me || !me.alive) return null;
         if (m.target === pid) return 'Tu ne peux pas voter contre toi';
@@ -259,6 +263,7 @@ const Undercover = (() => {
           voted: room.phase === 'vote' && !!room.votes[id],
           role: over || !r.alive ? r.role : null,
           word: over ? r.word : null, gain: over ? r.gain : 0,
+          clues: ((room.clues || {})[id] || []).map(c => c.text),
         };
       }),
       waiting: room.players.filter(p => !room.inRound.includes(p.id)).map(p => p.name),
@@ -313,6 +318,15 @@ function renderUndercover(v) {
     return ul;
   };
 
+  // tout ce qui a été dit, rappelé au vote et en fin de manche
+  const recap = () => {
+    if (!v.players.some(p => p.clues && p.clues.length)) return null;
+    const box = el('div', 'uc-recap', '<span class="uc-label">Indices donnés</span>');
+    v.players.forEach(p => box.appendChild(el('div', 'uc-recap-row' + (p.alive ? '' : ' out'), `<b>${esc(p.name)}</b><span>${p.clues.length ? p.clues.map(esc).join(' · ') : '—'}</span>`)));
+    return box;
+  };
+  const addRecap = () => { const rc = recap(); if (rc) root.appendChild(rc); };
+
   if (v.phase === 'reveal' && me.inRound) {
     root.appendChild(el('h2', 'uc-title', 'Découvre ton mot'));
     root.appendChild(secretCard(true));
@@ -332,7 +346,13 @@ function renderUndercover(v) {
     const ol = el('ol', 'uc-order');
     v.order.forEach(o => ol.appendChild(el('li', (o.done ? 'done' : '') + (o.id === v.speakerId ? ' now' : ''), esc(o.name))));
     root.appendChild(ol);
-    if (mine) root.appendChild(btn('primary lg', 'Indice donné', () => act({ t: 'uc:clue' })));
+    addRecap();
+    if (mine) {
+      const f = el('form', 'uc-clue-form', '<input id="uc-clue-in" maxlength="40" autocomplete="off" placeholder="Ton indice, tel que tu le dis"><button class="btn primary" type="submit">Envoyer</button>');
+      f.onsubmit = e => { e.preventDefault(); const t = $('#uc-clue-in').value.trim(); if (!t) { toast("Écris ton indice, ou touche « Dit à voix haute »"); return; } act({ t: 'uc:clue', text: t }); };
+      root.appendChild(f);
+      root.appendChild(btn('ghost', "Dit à voix haute, sans l'écrire", () => act({ t: 'uc:clue' })));
+    }
     if (host && !mine) root.appendChild(btn('', 'Joueur suivant', () => act({ t: 'uc:clue' })));
     if (host) root.appendChild(btn('ghost', 'Passer directement au vote', () => act({ t: 'uc:force' })));
   }
@@ -344,13 +364,14 @@ function renderUndercover(v) {
       const grid = el('div', 'uc-vote');
       v.players.filter(p => p.alive && p.id !== myId()).forEach(p => {
         const allowed = !v.candidates || v.candidates.includes(p.id);
-        const b = el('button', 'uc-target' + (me.vote === p.id ? ' on' : ''), `<b>${esc(p.name)}</b><small>${p.voted ? 'a voté' : ''}</small>`);
+        const b = el('button', 'uc-target' + (me.vote === p.id ? ' on' : ''), `<b>${esc(p.name)}</b><span class="uc-said">${p.clues.length ? p.clues.map(esc).join(' · ') : 'aucun indice écrit'}</span><small>${p.voted ? 'a voté' : ''}</small>`);
         b.type = 'button'; b.disabled = !allowed; b.onclick = () => act({ t: 'uc:vote', target: p.id });
         grid.appendChild(b);
       });
       root.appendChild(grid);
     } else root.appendChild(el('p', 'note', me.inRound ? 'Tu es éliminé : tu regardes sans voter.' : 'Vote en cours.'));
     root.appendChild(el('p', 'note', `${v.votedCount} / ${v.voterCount} votes`));
+    if (!(me.inRound && me.alive)) addRecap();
     if (host) root.appendChild(btn('ghost', 'Dépouiller maintenant', () => act({ t: 'uc:force' })));
   }
 
@@ -361,6 +382,7 @@ function renderUndercover(v) {
 
   if (v.phase === 'elim') {
     elimBlock();
+    addRecap();
     root.appendChild(el('p', 'note', `Personne n'a encore gagné. Nouveau tour d'indices entre les ${v.players.filter(p => p.alive).length} survivants.`));
     if (host) root.appendChild(btn('primary lg', 'Tour suivant', () => act({ t: 'uc:continue' })));
     else root.appendChild(el('p', 'note', 'L\'hôte lance le tour suivant.'));
@@ -386,6 +408,7 @@ function renderUndercover(v) {
     root.appendChild(el('div', 'uc-verdict ' + r.winner, `<p class="uc-label">Fin de la manche</p><p class="uc-big">${title}</p>${v.whiteTry && v.whiteTry.word ? `<p class="fine">Mister White a proposé « ${esc(v.whiteTry.word)} » : ${v.whiteTry.ok ? 'bien joué' : 'raté'}.</p>` : ''}`));
     root.appendChild(el('div', 'uc-words', `<div><span class="uc-label">Civils</span><b>${esc(v.pair.civil)}</b></div><div><span class="uc-label">Undercover</span><b>${esc(v.pair.undercover)}</b></div>`));
     root.appendChild(roster(p => `<span class="uc-who">${esc(p.name)} ${roleTag(p.role)}</span><span>${p.gain ? '+' + p.gain : ''}</span>`));
+    addRecap();
   }
 
   if (['elim', 'result', 'white-guess'].includes(v.phase) || v.round > 1) {

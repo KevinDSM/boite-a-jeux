@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '24';
+const ASSET_V = '25';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -46,7 +46,7 @@ function show(id) {
     const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
   const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
@@ -86,8 +86,8 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 // ============================================================ moteur (hôte)
 class Game {
-  constructor(code, songs, songsE, songsJV) {
-    this.songs = songs; this.songsE = songsE; this.songsJV = songsJV || []; this.seq = 0;
+  constructor(code, songs, songsE, songsJV, songsAnime) {
+    this.songs = songs; this.songsE = songsE; this.songsJV = songsJV || []; this.songsAnime = songsAnime || []; this.seq = 0;
     this.state = {
       code, phase: 'lobby', pick: null, mode: 'timeline', players: [],
       // Décennies
@@ -123,8 +123,9 @@ class Game {
   poolE() {
     const d = this.s.decades;   // null = toutes les périodes ; [] = aucune (jeux vidéo seuls)
     const base = d === null ? this.songsE : this.songsE.filter(x => d.includes(Math.floor((+x.cat || x.year) / 10) * 10));
-    const jv = this.s.jv ? this.songsJV.map(x => ({ ...x, jv: true, title: x.game, artist: x.title, sub: x.artist })) : [];
-    const p = base.concat(jv);
+    const jv = this.s.jv ? this.songsJV.map(x => ({ ...x, jv: true, kind: 'jv', title: x.game, artist: x.title, sub: x.artist })) : [];
+    const anime = this.s.anime ? this.songsAnime.map(x => ({ ...x, jv: true, kind: 'anime', title: x.game, artist: x.title, sub: x.artist })) : [];
+    const p = base.concat(jv, anime);
     return p.length ? p : this.songsE;
   }
   draw() { if (!this.s.deck.length) this.s.deck = shuffle(this.s.mode === 'eclair' ? [...this.poolE()] : [...this.pool()]); return this.s.deck.pop(); }
@@ -243,7 +244,7 @@ class Game {
   // --- Éclair
   startEclair(o) {
     const s = this.s;
-    s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null; s.jv = !!o.jv;
+    s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null; s.jv = !!o.jv; s.anime = false;
     s.deck = shuffle([...this.poolE()]);
     s.players.forEach(p => { p.score = 0; });
     this.nextRound();
@@ -263,7 +264,7 @@ class Game {
     let ok;
     if (s.current.jv) {                               // musique de jeu vidéo : on attend le nom du jeu
       const r = this.jvResolve(title);
-      if (r.n > 1) return `${r.n} jeux correspondent, précise`;   // trop vague : n'use pas d'essai
+      if (r.n > 1) return `${r.n} titres correspondent, précise`;   // trop vague : n'use pas d'essai
       ok = r.n === 1 && norm(r.game) === norm(s.current.title);
     } else ok = norm(title) === norm(s.current.title) || (norm(title).length > 3 && norm(s.current.title).includes(norm(title)));
     e.tries.push({ title, ok });
@@ -284,7 +285,7 @@ class Game {
   startSprint(o) {
     const s = this.s;
     s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null;
-    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId; s.jv = !!o.jv;
+    s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId; s.jv = !!o.jv; s.anime = !!o.anime;
     s.deck = shuffle([...this.poolE()]);
     s.players.forEach(p => { p.score = 0; });
     this.nextSprintRound();
@@ -296,7 +297,7 @@ class Game {
     s.sprint = {}; s.players.forEach(p => { s.sprint[p.id] = { tries: 0, done: false, points: 0, rank: 0 }; });
     s.roundEnds = Date.now() + SP_ROUND_MS; s.phase = 's-play';
   }
-  jvNames() { return [...new Set(this.songsJV.map(x => x.game))]; }
+  jvNames() { const s = this.s, l = (s.anime && !s.jv ? [] : this.songsJV).concat(s.anime ? this.songsAnime : []); return [...new Set(l.map(x => x.game))]; }
   // « zelda » désigne plusieurs jeux : on demande de préciser au lieu de compter un raté
   jvResolve(text) {
     const t = norm(text); if (t.length < 2) return { n: 0 };
@@ -319,7 +320,7 @@ class Game {
     let good;
     if (s.current.jv) {                               // musique de jeu vidéo : on attend le nom du jeu
       const rr = this.jvResolve(text);
-      if (rr.n > 1) return `${rr.n} jeux correspondent, précise`;   // trop vague : n'use pas d'essai
+      if (rr.n > 1) return `${rr.n} titres correspondent, précise`;   // trop vague : n'use pas d'essai
       good = rr.n === 1 && norm(rr.game) === norm(s.current.title);
     } else good = this.spMatch(text, s.current);
     if (good) {
@@ -385,7 +386,7 @@ class Game {
     const s = this.s, hide = s.phase === 'listen' || s.phase === 'bet' || s.phase === 'e-play' || s.phase === 's-play';
     return {
       ...s, deck: undefined,
-      current: s.current ? (hide ? { preview: s.current.preview, jv: !!s.current.jv } : s.current) : null,
+      current: s.current ? (hide ? { preview: s.current.preview, jv: !!s.current.jv, kind: s.current.kind || null } : s.current) : null,
       betLeft: s.phase === 'bet' ? Math.max(0, Math.ceil((s.betEnds - Date.now()) / 1000)) : 0,
       solo: s.players.filter(p => p.online).length <= 1,
       spLeft: s.phase === 's-play' ? Math.max(0, Math.ceil((s.roundEnds - Date.now()) / 1000)) : 0,
@@ -395,10 +396,11 @@ class Game {
 
 // ============================================================ réseau
 const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game: null, me: uid(), name: '', code: '' };
-let view = null, songsCache = null, songsECache = null, songsJVCache = null;
+let view = null, songsCache = null, songsECache = null, songsJVCache = null, songsAnimeCache = null;
 
 async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=' + ASSET_V)).json(); return songsCache; }
 async function loadSongsE() { if (!songsECache) songsECache = await (await fetch('songs-eclair.json?v=' + ASSET_V)).json(); return songsECache; }
+async function loadSongsAnime() { if (!songsAnimeCache) { try { songsAnimeCache = await (await fetch('songs-anime.json?v=' + ASSET_V)).json(); } catch { songsAnimeCache = []; } } return songsAnimeCache; }
 async function loadSongsJV() { if (!songsJVCache) songsJVCache = await (await fetch('songs-jv.json?v=' + ASSET_V)).json(); return songsJVCache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net ' + (on ? 'on' : 'off'); n.textContent = label; }
 
@@ -411,11 +413,11 @@ function makePeer(id) {
 }
 
 async function hostGame() {
-  const [songs, songsE, songsJV] = await Promise.all([loadSongs(), loadSongsE(), loadSongsJV(), loadDecks()]);
+  const [songs, songsE, songsJV, , songsAnime] = await Promise.all([loadSongs(), loadSongsE(), loadSongsJV(), loadDecks(), loadSongsAnime()]);
   let code, peer;
   for (let i = 0; i < 5; i++) { code = genCode(); try { peer = await makePeer(ROOM_PREFIX + code); break; } catch (e) { if (e.message !== 'code-taken') throw e; } }
   if (!peer) throw new Error('Impossible de créer la salle');
-  net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE, songsJV);
+  net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE, songsJV, songsAnime);
   net.game.addPlayer(net.me, net.name, true);
   peer.on('connection', conn => {
     conn.on('data', m => handleClientMessage(conn, m));
@@ -686,7 +688,7 @@ function renderLobby(s) {
 }
 
 // ------------------------------------------------ Décennies
-let lastTurnKey = null, betArmed = false;
+let lastTurnKey = null, betArmed = false, lastTlKey = null;
 
 function renderGame(s) {
   const me = s.players.find(p => p.id === net.me);
@@ -745,10 +747,17 @@ function renderGame(s) {
   // frise
   const owner = s.phase === 'reveal' && r.betWon ? s.players.find(p => p.id === r.by) : active;
   $('#tl-owner').textContent = owner.id === net.me ? 'Ta frise' : `Frise de ${owner.name}`;
-  const tl = $('#timeline'); tl.innerHTML = '';
+  const tl = $('#timeline');
   const cards = owner.timeline;
   const canPlace = s.phase === 'listen' && isMe;
   const canBetPlace = s.phase === 'bet' && iAmBettor && s.bet.idx == null;
+  // La frise n'est reconstruite que si elle change. Avant, chaque diffusion (chrono du pari,
+  // saisie d'un autre joueur) la vidait : elle revenait au début et le « + » de droite fuyait.
+  const tlKey = [s.turn, owner.id, s.phase, cards.map(c => c.at).join('.'), s.placement, s.bet?.idx, canPlace, canBetPlace, r?.placement, r?.ok, r?.betWon].join('|');
+  if (tlKey !== lastTlKey) {
+  const sameTurn = !!lastTlKey && lastTlKey.split('|').slice(0, 2).join('|') === tlKey.split('|').slice(0, 2).join('|');
+  const keepScroll = tl.scrollLeft;
+  lastTlKey = tlKey; tl.innerHTML = '';
 
   if (s.phase === 'reveal') {                       // révélation : cartes seules, plus de « + »
     const ghostAt = r.ok || r.betWon ? -1 : r.placement;
@@ -773,7 +782,9 @@ function renderGame(s) {
       if (i < cards.length) { const c = el('div', 'tcard'); c.innerHTML = cardHTML(cards[i]); tl.appendChild(c); }
     }
   }
+  if (sameTurn) tl.scrollLeft = keepScroll;
   requestAnimationFrame(() => { const t = tl.querySelector('.pick,.new,.lost,.arm'); if (t) t.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); });
+  }
 
   // actions
   const ac = $('#actions'); ac.innerHTML = '';
@@ -820,6 +831,20 @@ function renderGame(s) {
 }
 const maxAt = cards => Math.max(...cards.map(c => c.at || 0));
 const cardHTML = c => `<img src="${c.art}" alt=""><b>${c.year}</b><small>${c.artist}<br>${c.title}</small>`;
+// Frise : la molette défile à l'horizontale et on peut la tirer à la souris,
+// sans que le glisser ne déclenche un « + » par erreur.
+(function timelineScroll() {
+  const tl = $('#timeline'); if (!tl) return;
+  tl.addEventListener('wheel', e => {
+    if (tl.scrollWidth <= tl.clientWidth + 2) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { tl.scrollLeft += e.deltaY; e.preventDefault(); }
+  }, { passive: false });
+  let down = null, dragged = false;
+  tl.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && tl.scrollWidth > tl.clientWidth + 2) { down = { x: e.clientX, left: tl.scrollLeft }; dragged = false; } });
+  window.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - down.x; if (Math.abs(dx) > 6) dragged = true; if (dragged) tl.scrollLeft = down.left - dx; });
+  window.addEventListener('pointerup', () => { down = null; });
+  tl.addEventListener('click', e => { if (dragged) { e.stopPropagation(); e.preventDefault(); dragged = false; } }, true);
+})();
 function ghostCard(r) { const g = el('div', 'tcard lost'); g.innerHTML = cardHTML({ ...r.song, year: r.year }); return g; }
 function tokenLine(n) {
   const d = el('div', 'tokline');
@@ -924,7 +949,7 @@ function renderEclair(s) {
     const submitE = input => { const t = input.value.trim(); if (!t) return; act({ t: 'e-guess', title: t }); input.value = ''; };
     const jvNow = !!s.current?.jv;
     ac.appendChild(makeGuessBox('e-input', jvNow ? 'Nom du jeu…' : 'Titre de la chanson…', submitE, q => {
-      const games = s.jv ? (jvCatalog || []).filter(x => norm(x.game).includes(q)).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : [];
+      const games = (s.jv ? (jvCatalog || []).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : []).concat(s.anime ? (animeCatalog || []).map(x => ({ label: x.game, sub: 'anime', fill: x.game })) : []).filter(x => norm(x.label).includes(q));
       const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: x.title }));
       return (jvNow ? games.concat(songs) : songs.concat(games)).slice(0, 6);
     }));
@@ -1014,7 +1039,7 @@ function renderSprint(s) {
     const left = SP_TRIES - e.tries;
     b.innerHTML = e.done
       ? `Manche ${s.round}/${s.rounds}${e.points ? ` · <span class="pts">+${e.points}</span>` : ''}<small>${e.points ? `${e.rank}${e.rank === 1 ? 'er' : 'e'} à trouver. On attend les autres.` : 'Manche finie pour toi, on attend les autres.'}</small>`
-      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>${s.current?.jv ? 'De quel jeu vient cette musique ?' : 'Artiste et titre, le plus vite possible.'} ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
+      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>${s.current?.kind === 'anime' ? 'De quel anime vient cette musique ?' : s.current?.jv ? 'De quel jeu vient cette musique ?' : 'Artiste et titre, le plus vite possible.'} ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
   } else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
 
   // audio : tout le monde en même temps, sauf si l'hôte fait enceinte
@@ -1042,7 +1067,7 @@ function renderSprint(s) {
   const pr = $('#sp-prog'); if (pr) pr.style.width = reveal ? '100%' : (100 - (s.spLeft / (SP_ROUND_MS / 1000)) * 100) + '%';
 
   const ac = $('#sp-actions');
-  const key = `${s.phase}|${s.round}|${e.done}|${e.tries}|${!!s.current?.jv}`;
+  const key = `${s.phase}|${s.round}|${e.done}|${e.tries}|${s.current?.kind || !!s.current?.jv}`;
   if (key === spActionsKey && ac.children.length) { renderSPOthers(s, reveal); return; }
   spActionsKey = key; ac.innerHTML = '';
 
@@ -1050,15 +1075,15 @@ function renderSprint(s) {
     const submit = input => { const t = input.value.trim(); if (!t) return; act({ t: 'sp-guess', text: t }); input.value = ''; };
     const jvNow = !!s.current?.jv;
     const source = q => {
-      const games = s.jv ? (jvCatalog || []).filter(x => norm(x.game).includes(q)).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : [];
+      const games = (s.jv ? (jvCatalog || []).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : []).concat(s.anime ? (animeCatalog || []).map(x => ({ label: x.game, sub: 'anime', fill: x.game })) : []).filter(x => norm(x.label).includes(q));
       const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
       return (jvNow ? games.concat(songs) : songs.concat(games)).slice(0, 6);
     };
-    ac.appendChild(makeGuessBox('sp-input', jvNow ? 'Nom du jeu…' : 'Titre et artiste…', submit, source));
+    ac.appendChild(makeGuessBox('sp-input', jvNow ? (s.current?.kind === 'anime' ? "Nom de l'anime…" : 'Nom du jeu…') : 'Titre et artiste…', submit, source));
     const row = el('div', 'row');
     row.innerHTML = `<button class="btn primary" id="sp-submit">Valider</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
     ac.appendChild(row);
-    ac.appendChild(el('div', 'note', jvNow ? 'Choisis dans la liste : les jeux y sont tous.' : 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
+    ac.appendChild(el('div', 'note', jvNow ? (s.current?.kind === 'anime' ? 'Choisis dans la liste : les animés y sont tous.' : 'Choisis dans la liste : les jeux y sont tous.') : 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
     $('#sp-submit').onclick = () => submit($('#sp-input'));
     $('#sp-pass').onclick = () => act({ t: 'sp-giveup' });
   }
@@ -1101,6 +1126,8 @@ function renderEOthers(s, reveal) {
 loadSongsE().then(l => { eCatalog = l; }).catch(() => { });
 let jvCatalog = null;
 loadSongsJV().then(l => { jvCatalog = l; }).catch(() => { });
+let animeCatalog = null;
+loadSongsAnime().then(l => { animeCatalog = l; }).catch(() => { });
 
 // ------------------------------------------------ fin
 function renderEnd(s) {
@@ -1154,7 +1181,8 @@ const HELP = {
       <li>La liste de suggestions remplit le titre et l'artiste d'un seul coup : sers-t'en, c'est plus rapide que de tout taper.</li>
       <li>La manche s'arrête quand l'extrait est fini ou que tout le monde a répondu.</li>
       <li>Avec la case <b>Jeux vidéo</b> cochée, des musiques de jeux se glissent parmi les chansons : pour celles-là, c'est le nom du jeu qu'il faut donner. Un nom trop vague ne coûte pas d'essai.</li>
-    </ul>`,
+    </ul>
+    <p><b>Animés :</b> case facultative dans les options. Pour une musique d'anime, on donne le nom de l'anime, pas le titre du morceau.</p>`,
   sablier: `<h3>Sablier</h3>
     <p>Par équipes. Chacun reçoit des cartes et en écarte quelques-unes ; le reste forme le paquet commun. Le but : faire deviner le plus de cartes à son équipe, en un temps limité, sur plusieurs manches avec les <b>mêmes cartes</b>.</p>
     <ul>
@@ -1178,7 +1206,7 @@ const HELP = {
   undercover: `<h3>Undercover</h3>
     <p>Tout le monde reçoit le même mot secret, sauf les <b>undercovers</b> qui ont un mot voisin, sans le savoir. Avec l'option <b>Mister White</b>, un joueur n'a aucun mot et le sait.</p>
     <ul>
-      <li><b>Indices :</b> chacun à son tour dit un mot ou une courte expression à voix haute, sans jamais dire son mot.</li>
+      <li><b>Indices :</b> chacun à son tour dit un mot ou une courte expression à voix haute, sans jamais dire son mot. Tu peux aussi l'écrire : tout ce qui a été dit est rappelé au moment du vote.</li>
       <li><b>Vote :</b> tout le monde vote sur son téléphone. Le plus désigné est éliminé et son rôle est révélé. En cas d'égalité, on revote entre les ex æquo.</li>
       <li><b>Mister White éliminé</b> tente de deviner le mot des civils. S'il trouve, il gagne seul.</li>
     </ul>
@@ -1259,9 +1287,9 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'eclair', decades, jv, rounds: +$('#opt-rounds').value } });
   } else if (pick === 'sprint') {
     const checked = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => i.value);
-    const decades = checked.filter(v => v !== 'jv').map(Number), jv = checked.includes('jv');
-    if (!decades.length && !jv) { toast('Choisis au moins une période ou les jeux vidéo'); return; }
-    act({ t: 'start', opts: { mode: 'sprint', decades, jv, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
+    const decades = checked.filter(v => v !== 'jv' && v !== 'anime').map(Number), jv = checked.includes('jv'), anime = checked.includes('anime');
+    if (!decades.length && !jv && !anime) { toast('Choisis au moins une période, les jeux vidéo ou les animés'); return; }
+    act({ t: 'start', opts: { mode: 'sprint', decades, jv, anime, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
   }
   if (pick === 'sablier') {
     if ((view?.players || []).filter(p => p.online).length < 2) { toast('Sablier se joue à deux minimum, par équipes'); return; }
