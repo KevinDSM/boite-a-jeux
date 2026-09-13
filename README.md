@@ -32,10 +32,11 @@ l'extrait est fini ou que tout le monde a répondu. Même base et même liste de
 qu'Éclair, choix des décennies, et la même case **Jeux vidéo** facultative.
 
 ### Sablier
-Le seul jeu sans musique : un Time's Up par équipes, porté depuis le projet d'origine
+Sans musique : un Time's Up par équipes, porté depuis le projet d'origine
 (le moteur de règles `src/game.js` est repris tel quel dans `sablier-engine.js`, le salon 3D
 et le mode Skribble sont laissés de côté). Chacun reçoit 12 cartes, en écarte 2, le reste forme
-le paquet commun rejoué à chaque manche : description libre, un seul mot, dessin. Trois secondes
+le paquet commun rejoué à chaque manche : description libre, un seul mot, mime (facultatif,
+pour jouer dans la même pièce), dessin. Trois secondes
 de préparation avant la carte, passer est libre, la carte en main au gong n'est jamais révélée et
 l'hôte peut la compter. Correction d'une carte comptée à tort entre deux tours. Manche dessin
 avec canevas partagé en direct, seau, gomme, galerie de fin. Réactions emoji pour le public,
@@ -47,6 +48,17 @@ Les cartes déjà vues ne reviennent pas d'une soirée à l'autre (mémoire du t
 
 Cartes : 953 dans `decks/*.json`, 5 decks, format `{ "n": nom, "c": catégorie, "d": 1|2|3 }`.
 Le deck privé « Entre nous » de l'original n'est volontairement pas publié.
+
+### Undercover
+Tout le monde reçoit le même mot secret, sauf un ou plusieurs undercovers qui ont un mot voisin
+sans le savoir. Option Mister White : un joueur sans mot, qui le sait. Indices à voix haute dans
+l'ordre affiché, vote sur le téléphone, revote entre ex æquo, rôle révélé à l'élimination.
+Mister White éliminé peut deviner le mot des civils et gagner seul. Les civils gagnent quand
+tous les intrus sont sortis, les intrus quand il ne reste qu'un civil. Points : civil 2,
+undercover 10, Mister White 6, sur 3, 5 ou 8 manches. Il reste toujours plus de civils que
+d'intrus. 175 paires de mots dans `undercover.js`, les paires déjà jouées sur le téléphone hôte
+ne reviennent pas tout de suite. Comme Sablier, chaque joueur reçoit une vue filtrée : son mot
+et rien d'autre.
 
 ### Éclair
 Tout le monde écoute la même chanson, il faut trouver le titre en un minimum de secondes.
@@ -66,6 +78,7 @@ faut donner le nom du jeu, et une réponse trop vague ne coûte pas d'essai.
 | `songs-jv.json`, `playlists-jv.txt`, `build_jv.py` | musiques de jeux vidéo pour l'option d'Éclair, format `Jeu \| recherche iTunes` |
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 | `sablier-engine.js`, `sablier-ui.js`, `decks/` | le jeu Sablier : règles pures, écrans et canevas, cartes |
+| `undercover.js` | le jeu Undercover : paires de mots, règles, écran |
 
 ## Ajouter un jeu
 

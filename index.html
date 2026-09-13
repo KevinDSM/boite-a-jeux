@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=22">
-<link rel="apple-touch-icon" href="icon-180.png?v=22">
+<link rel="manifest" href="manifest.json?v=23">
+<link rel="apple-touch-icon" href="icon-180.png?v=23">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=22">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -91,7 +91,7 @@
 
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
-    <p class="fine">4 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">5 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -133,6 +133,12 @@
         <span class="gname">Sablier</span>
         <span class="gdesc">Par équipes, fais deviner des cartes : d'abord librement, puis en un seul mot, puis en dessinant.</span>
         <span class="gmeta">4 à 24 joueurs · 45 min · sans musique</span>
+      </button>
+      <button class="gcard g-undercover" type="button" data-game="undercover">
+        <span class="gart" aria-hidden="true"><span class="dossier"></span></span>
+        <span class="gname">Undercover</span>
+        <span class="gdesc">Tout le monde a le même mot secret, sauf l'intrus. Donnez des indices, votez, démasquez-le.</span>
+        <span class="gmeta">3 à 20 joueurs · 20 min · sans musique</span>
       </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
@@ -189,12 +195,20 @@
         </select>
       </label>
     </div>
+    <div class="opts" id="opts-undercover" hidden>
+      <label class="field row"><span>Undercovers</span><select id="opt-uc-count"><option value="auto" selected>Selon le nombre</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+      <label class="field row"><span>Mister White, un joueur sans mot</span><input id="opt-uc-white" type="checkbox" class="tick"></label>
+      <label class="field row"><span>Nombre de manches</span><select id="opt-uc-rounds"><option>3</option><option selected>5</option><option>8</option></select></label>
+      <p class="fine">Il reste toujours plus de civils que d'intrus : si la table est trop petite, Mister White ou un undercover est retiré automatiquement.</p>
+    </div>
     <div class="opts" id="opts-sablier" hidden>
       <fieldset class="chips" id="opt-sab-rounds"><legend class="eyebrow">Manches, dans l'ordre</legend>
         <label><input type="checkbox" value="free" checked>Description libre</label>
         <label><input type="checkbox" value="word" checked>Un seul mot</label>
+        <label><input type="checkbox" value="mime">Mime</label>
         <label><input type="checkbox" value="draw" checked>Dessin</label>
       </fieldset>
+      <p class="fine">Tous ensemble dans la même pièce : coche Mime. À distance : garde Dessin.</p>
       <label class="field row"><span>Chrono par tour</span><input class="num" id="opt-sab-turn" type="number" min="15" max="120" value="30" inputmode="numeric"> s</label>
       <label class="field row"><span>Chrono en manche dessin</span><input class="num" id="opt-sab-draw" type="number" min="15" max="180" value="60" inputmode="numeric"> s</label>
       <label class="field row"><span>Cartes distribuées à chacun</span><input class="num" id="opt-sab-deal" type="number" min="4" max="20" value="12" inputmode="numeric"></label>
@@ -284,6 +298,11 @@
 <div class="react-layer" id="sab-react-layer" aria-hidden="true"></div>
 <div class="sab-react" id="sab-react" hidden></div>
 
+<!-- ====================== UNDERCOVER ====================== -->
+<section class="screen play uc" id="s-undercover" hidden>
+  <div class="stack" id="uc-main"></div>
+</section>
+
 <!-- ====================== FIN ====================== -->
 <section class="screen" id="s-end" hidden>
   <div class="endhero">
@@ -316,8 +335,9 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="sablier-engine.js?v=22"></script>
-<script src="app.js?v=22"></script>
-<script src="sablier-ui.js?v=22"></script>
+<script src="sablier-engine.js?v=23"></script>
+<script src="app.js?v=23"></script>
+<script src="sablier-ui.js?v=23"></script>
+<script src="undercover.js?v=23"></script>
 </body>
 </html>

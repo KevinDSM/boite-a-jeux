@@ -188,7 +188,7 @@ function sabLive(v, root, after, me, host) {
     }
     after.appendChild(el('div', 'found-strip', `<span class="tally ok"><strong>${t.guessedCount}</strong> trouvée${t.guessedCount > 1 ? 's' : ''}</span><span class="tally pass"><strong>${t.passedCount}</strong> passée${t.passedCount > 1 ? 's' : ''}</span><span class="tally"><strong>${v.cardsLeft}</strong> dans le paquet</span>`));
   } else {
-    root.appendChild(el('div', 'listen-card' + mini, `<p class="listen-who"><strong>${esc(t.playerName)}</strong> ${v.roundDraw ? 'dessine' : 'fait deviner'}</p><p class="listen-team" style="color:${t.teamColor}">Équipe ${esc(t.teamName)}</p><div class="pulse"></div><p class="listen-rule">${esc(v.roundRule)}</p>`));
+    root.appendChild(el('div', 'listen-card' + mini, `<p class="listen-who"><strong>${esc(t.playerName)}</strong> ${v.roundDraw ? 'dessine' : v.roundMime ? 'mime' : 'fait deviner'}</p><p class="listen-team" style="color:${t.teamColor}">Équipe ${esc(t.teamName)}</p><div class="pulse"></div><p class="listen-rule">${esc(v.roundRule)}</p>`));
     const foot = el('div', 'audience-foot', `<div class="found-strip"><span class="tally ok"><strong>${t.guessedCount}</strong> trouvée${t.guessedCount > 1 ? 's' : ''}</span><span class="tally pass${t.passedCount > sabLastPassed ? ' bump' : ''}"><strong>${t.passedCount}</strong> passée${t.passedCount > 1 ? 's' : ''}</span><span class="tally"><strong>${v.cardsLeft}</strong> dans le paquet</span></div>
       <ul class="found-list">${t.guessedNames.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`);
     after.appendChild(foot);

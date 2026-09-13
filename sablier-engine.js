@@ -23,6 +23,7 @@ window.Sablier = (() => {
   const ROUND_TYPES = {
     free: { title: 'Description libre', rule: "Tout est permis sauf prononcer un mot de la carte, sa traduction ou sa racine. Tu peux passer autant que tu veux." },
     word: { title: 'Un seul mot', rule: "Un seul mot par carte, prononcé une seule fois. Aucun geste, aucun bruit, aucune reformulation." },
+    mime: { title: 'Mime', rule: "Tu mimes, ils devinent à voix haute. Aucun mot, aucun son, aucune lettre tracée en l'air. Tu peux passer autant que tu veux.", mime: true },
     draw: { title: 'Dessin', rule: "Tu dessines, ils devinent à voix haute. Aucune lettre, aucun chiffre, aucun geste vers l'écran.", draw: true },
   };
 
@@ -154,7 +155,7 @@ window.Sablier = (() => {
   }
   function updateSettings(room, patch, availableCategories = null) {
     const s = room.settings;
-    if (Array.isArray(patch.roundTypes)) { const picked = []; patch.roundTypes.forEach(t => { if (ROUND_TYPES[t] && !picked.includes(t)) picked.push(t); }); if (picked.length >= 1 && picked.length <= 3) s.roundTypes = picked; }
+    if (Array.isArray(patch.roundTypes)) { const picked = []; patch.roundTypes.forEach(t => { if (ROUND_TYPES[t] && !picked.includes(t)) picked.push(t); }); if (picked.length >= 1 && picked.length <= Object.keys(ROUND_TYPES).length) s.roundTypes = picked; }
     if ('turnSeconds' in patch) s.turnSeconds = clamp(patch.turnSeconds, SETTINGS_BOUNDS.turnSeconds, s.turnSeconds);
     if ('drawSeconds' in patch) s.drawSeconds = clamp(patch.drawSeconds, SETTINGS_BOUNDS.drawSeconds, s.drawSeconds);
     if ('dealPerPlayer' in patch) s.dealPerPlayer = clamp(patch.dealPerPlayer, SETTINGS_BOUNDS.dealPerPlayer, s.dealPerPlayer);
@@ -416,7 +417,7 @@ window.Sablier = (() => {
       : null;
     return {
       phase: room.phase, round: room.round, roundCount: room.settings.roundTypes.length,
-      roundTitle: rinfo.title, roundRule: rinfo.rule, roundDraw: !!rinfo.draw,
+      roundTitle: rinfo.title, roundRule: rinfo.rule, roundDraw: !!rinfo.draw, roundMime: !!rinfo.mime,
       turnTotal: turnSecondsFor(room),
       nextRoundInfo: room.phase === 'round-end' ? { title: roundInfo(room, room.round).title, rule: roundInfo(room, room.round).rule, draw: !!roundInfo(room, room.round).draw } : null,
       settings: { ...room.settings }, hostId: room.hostId,

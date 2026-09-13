@@ -743,3 +743,109 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
 
 .chips label.chip-jv:has(:checked){background:color-mix(in oklab, oklch(0.85 0.2 142) 22%, var(--surface));border-color:oklch(0.85 0.2 142);color:oklch(0.9 0.14 130)}
 [data-theme="light"] .chips label.chip-jv:has(:checked){border-color:oklch(0.51 0.155 148);color:oklch(0.44 0.13 145);background:oklch(0.94 0.045 150)}
+
+/* ============================ jeu : Undercover ============================
+   Dossier confidentiel : encre bleu-noir, papier kraft, tampon rouge, machine à écrire. */
+[data-game="undercover"]{
+  --bg:        oklch(0.170 0.018 255);
+  --surface:   oklch(0.225 0.022 255);
+  --surface-2: oklch(0.275 0.026 255);
+  --line:      oklch(0.335 0.028 255);
+  --ink:       oklch(0.955 0.012 85);
+  --ink-2:     oklch(0.790 0.020 80);
+  --mute:      oklch(0.620 0.025 250);
+  --acc:       oklch(0.640 0.205 27);
+  --acc-soft:  oklch(0.780 0.130 35);
+  --on-acc:    oklch(0.985 0.010 80);
+  --pos:       oklch(0.820 0.130 160);
+  --neg:       oklch(0.680 0.200 27);
+  --gold:      oklch(0.840 0.110 80);
+  --glow: 0.12;
+  --r: 6px; --r-s: 5px; --r-pill: 999px;
+  --font-d: "Special Elite", "Courier New", monospace;
+  --track: 0;
+  --kraft: oklch(0.830 0.060 78);
+  --kraft-2: oklch(0.760 0.070 72);
+  --kraft-ink: oklch(0.250 0.030 60);
+}
+[data-theme="light"][data-game="undercover"]{
+  --bg:        oklch(0.950 0.012 85);
+  --surface:   oklch(0.990 0.006 85);
+  --surface-2: oklch(0.925 0.016 82);
+  --line:      oklch(0.850 0.020 80);
+  --ink:       oklch(0.220 0.025 255);
+  --ink-2:     oklch(0.420 0.025 255);
+  --mute:      oklch(0.560 0.025 250);
+  --acc:       oklch(0.540 0.200 27);
+  --acc-soft:  oklch(0.470 0.170 27);
+  --on-acc:    oklch(0.99 0.010 80);
+  --pos:       oklch(0.520 0.120 160);
+  --neg:       oklch(0.520 0.190 27);
+  --gold:      oklch(0.600 0.110 80);
+  --glow: 0.08;
+}
+[data-game="undercover"] .banner,[data-game="undercover"] h1{font-family:var(--font-d);font-weight:400}
+
+/* carte du salon */
+.g-undercover .gname{font-family:"Special Elite","Courier New",monospace;font-weight:400;letter-spacing:.02em;color:oklch(0.72 0.19 27)}
+[data-theme="light"] .g-undercover .gname{color:oklch(0.52 0.20 27)}
+.g-undercover{background:oklch(0.215 0.022 255);border-color:oklch(0.32 0.03 255)}
+.g-undercover[aria-pressed="true"]{border-color:oklch(0.64 0.2 27);background:oklch(0.26 0.03 255)}
+[data-theme="light"] .g-undercover{background:oklch(0.97 0.012 85);border-color:oklch(0.87 0.02 80)}
+[data-theme="light"] .g-undercover[aria-pressed="true"]{border-color:oklch(0.54 0.2 27);background:oklch(0.94 0.03 60)}
+.dossier{position:relative;width:48px;height:36px;border-radius:3px;background:oklch(0.80 0.065 78);display:block;margin-top:6px;box-shadow:0 6px 12px -6px oklch(0 0 0/.6)}
+.dossier::before{content:"";position:absolute;left:4px;top:-6px;width:18px;height:8px;border-radius:3px 3px 0 0;background:oklch(0.74 0.07 72)}
+.dossier::after{content:"TOP";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-14deg);font:10px/1 "Special Elite","Courier New",monospace;letter-spacing:.08em;color:oklch(0.55 0.2 27);border:1.5px solid oklch(0.55 0.2 27);padding:2px 4px;border-radius:2px}
+.gcard[aria-pressed="true"] .dossier{animation:stamp 2.8s var(--ease) infinite}
+@keyframes stamp{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-4deg) translateY(-2px)}86%{transform:rotate(2deg)}}
+.field.row input.tick{appearance:auto;width:22px;height:22px;min-height:0;padding:0;accent-color:var(--acc)}
+
+/* partie */
+.uc-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.uc-title{font-family:var(--font-d);font-weight:400;font-size:26px;line-height:1.15;margin:4px 0 0}
+.uc-label{font:600 11px/1 var(--font);letter-spacing:.16em;text-transform:uppercase;color:inherit;opacity:.7;margin:0}
+.uc-big{font-family:var(--font-d);font-size:34px;line-height:1.1;margin:0;word-break:break-word}
+.uc-file{position:relative;font:inherit;text-align:left;width:100%;background:var(--kraft);color:var(--kraft-ink);border:0;border-radius:4px 10px 10px 10px;padding:26px 20px 20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 18px 36px -22px oklch(0 0 0/.8), inset 0 0 0 1px oklch(0 0 0/.08)}
+.uc-file::before{content:"";position:absolute;left:0;top:-12px;width:96px;height:14px;border-radius:6px 6px 0 0;background:var(--kraft-2)}
+.uc-file .fine{color:oklch(0.38 0.035 60)}
+.uc-secret{cursor:pointer;min-height:170px;justify-content:center;transition:transform .15s var(--ease)}
+.uc-secret:active{transform:scale(.985)}
+.uc-secret.open{background:oklch(0.93 0.035 85)}
+.uc-secret.small{min-height:0;padding:18px 16px 14px}
+.uc-secret.small .uc-big{font-size:24px}
+.uc-stamp{display:inline-block;align-self:flex-start;font:15px/1 "Special Elite","Courier New",monospace;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border:2px solid currentColor;border-radius:3px;transform:rotate(-4deg)}
+.uc-stamp.uc-civil{color:oklch(0.52 0.11 160)}
+.uc-stamp.uc-undercover{color:oklch(0.56 0.21 27)}
+.uc-stamp.uc-white{color:oklch(0.50 0.03 255)}
+.uc-elim .uc-stamp{font-size:20px;margin-top:4px;animation:pop .45s var(--ease)}
+.uc-roster{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.uc-roster li{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:10px 14px;font-size:15px}
+.uc-roster li>span:last-child{color:var(--mute);font-variant-numeric:tabular-nums}
+.uc-roster li.out{opacity:.6}
+.uc-roster li.out .uc-who{color:var(--mute)}
+.uc-roster li.off{opacity:.45}
+.uc-roster .uc-who{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--ink)}
+.uc-roster .uc-stamp{font-size:11px;padding:3px 6px;transform:none}
+.uc-order{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;counter-reset:uc}
+.uc-order li{counter-increment:uc;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 12px 6px 8px;font-size:14px;color:var(--ink-2)}
+.uc-order li::before{content:counter(uc);display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--surface-2);font-size:11px;margin-right:6px}
+.uc-order li.done{opacity:.45}
+.uc-order li.now{border-color:var(--acc);color:var(--ink);background:color-mix(in oklab, var(--acc) 16%, var(--surface))}
+.uc-order li.now::before{background:var(--acc);color:var(--on-acc)}
+.uc-vote{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.uc-target{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:16px 12px;min-height:70px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;cursor:pointer;text-align:left;transition:transform .12s var(--ease)}
+.uc-target b{font-size:17px}
+.uc-target small{color:var(--mute);font-size:12px;min-height:14px}
+.uc-target:active{transform:scale(.97)}
+.uc-target.on{border-color:var(--acc);background:color-mix(in oklab, var(--acc) 20%, var(--surface));box-shadow:inset 0 0 0 1px var(--acc)}
+.uc-target:disabled{opacity:.3;cursor:default}
+.uc-guess{display:flex;gap:8px}
+.uc-guess input{flex:1;min-width:0}
+.uc-verdict{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:8px;text-align:center;align-items:center}
+.uc-verdict.civils{border-top-color:var(--pos)}
+.uc-words{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.uc-words>div{background:var(--kraft);color:var(--kraft-ink);border-radius:var(--r-s);padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.uc-words b{font-family:var(--font-d);font-weight:400;font-size:22px;line-height:1.1}
+.uc-scores{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:14px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:12px}
+.uc-scores .uc-label{width:100%;color:var(--mute)}
+.uc-scores b{color:var(--ink);font-variant-numeric:tabular-nums}

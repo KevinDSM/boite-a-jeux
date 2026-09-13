@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '22';
+const ASSET_V = '23';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -23,6 +23,7 @@ const GAMES = {
   eclair: { key: 'eclair', theme: 'eclair', name: 'Éclair' },
   sprint: { key: 'sprint', theme: 'sprint', name: 'Sprint' },
   sablier: { key: 'sablier', theme: 'sablier', name: 'Sablier' },
+  undercover: { key: 'undercover', theme: 'undercover', name: 'Undercover' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -41,12 +42,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -105,14 +106,15 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
+    if (this.uc) Undercover.join(this.uc, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -134,6 +136,7 @@ class Game {
     if (s.mode === 'eclair') return this.startEclair(o);
     if (s.mode === 'sprint') return this.startSprint(o);
     if (s.mode === 'sablier') return this.startSablier(o);
+    if (s.mode === 'undercover') return this.startUndercover(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -350,10 +353,17 @@ class Game {
     const room = this.sab, pool = this.sabPool(), seen = Sablier.history.set();
     return { problems: room.phase === 'teams' ? Sablier.teamProblems(room, pool) : [], poolSize: pool.length, freshCount: pool.filter(c => !seen.has(c.id)).length };
   }
-  viewFor(base, pid) { return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Undercover : la salle vit dans this.uc, les mots ne sortent que vers leur joueur =================
+  startUndercover(o) {
+    const s = this.s;
+    s.players.forEach(p => { p.score = 0; });
+    this.uc = Undercover.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rounds: o.rounds, undercovers: o.undercovers, white: o.white });
+    s.phase = 'uc';
+  }
+  viewFor(base, pid) { if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null;
+    this.sab = null; this.uc = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -418,6 +428,7 @@ function handleClientMessage(conn, m) {
 function applyAction(pid, m) {
   const g = net.game;
   if (typeof m.t === 'string' && m.t.startsWith('sab:')) return sabAction(pid, m);
+  if (typeof m.t === 'string' && m.t.startsWith('uc:')) return ucAction(pid, m);
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
@@ -470,6 +481,18 @@ function act(m) {
   else toast('Pas connecté à l\'hôte');
 }
 const isHostPlayer = () => net.isHost;
+
+// ============================================================ Undercover : côté hôte
+function ucAction(pid, m) {
+  const g = net.game; if (!g.uc) return "Pas de partie d'Undercover en cours";
+  const err = Undercover.act(g.uc, pid, m);
+  if (g.uc.phase === 'over') {           // fin de partie : les scores rejoignent le classement commun
+    g.uc.players.forEach(q => { const p = g.player(q.id); if (p) p.score = q.score; });
+    g.s.winner = [...g.s.players].sort((a, b) => b.score - a.score)[0]?.id || null;
+    g.s.rounds = g.uc.rounds; g.uc = null; g.s.phase = 'end';
+  }
+  return err;
+}
 
 // ============================================================ Sablier : orchestration côté hôte
 function sabWipe() { const r = net.game.sab; if (!r) return; Sablier.clearStrokes(r); sendAll({ t: 'sab-full', strokes: [] }); sabOnMessage({ t: 'sab-full', strokes: [] }); }
@@ -589,6 +612,7 @@ function render() {
   else if (s.phase === 'e-play' || s.phase === 'e-reveal') { show('s-eclair'); renderEclair(s); }
   else if (s.phase === 's-play' || s.phase === 's-reveal') { show('s-sprint'); renderSprint(s); }
   else if (s.phase === 'sab') { show('s-sablier'); renderSablier(s.sab); }
+  else if (s.phase === 'uc') { show('s-undercover'); renderUndercover(s.uc); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -621,6 +645,7 @@ function renderLobby(s) {
   $('#opts-eclair').hidden = s.pick !== 'eclair';
   $('#opts-sprint').hidden = s.pick !== 'sprint';
   $('#opts-sablier').hidden = s.pick !== 'sablier';
+  $('#opts-undercover').hidden = s.pick !== 'undercover';
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
     Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
     const refresh = () => {
@@ -1061,6 +1086,7 @@ function renderEnd(s) {
   $('#end-sub').textContent = solo
     ? (eclair ? `${w ? w.score : 0} points sur ${s.rounds} manches.` : `Frise complète : ${s.target} cartes bien placées.`)
     : s.mode === 'sprint' ? 'a été le plus rapide sur la gâchette.'
+      : s.mode === 'undercover' ? "a été l'agent le plus redoutable."
         : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
   const ol = $('#ranking'); ol.innerHTML = '';
   [...s.players]
@@ -1108,11 +1134,21 @@ const HELP = {
     <ul>
       <li><b>Description libre :</b> tout est permis sauf les mots de la carte.</li>
       <li><b>Un seul mot :</b> un mot, une seule fois. Comme les cartes sont déjà connues, ça suffit souvent.</li>
+      <li><b>Mime :</b> si vous êtes dans la même pièce. Aucun mot, aucun son, ton équipe devine à voix haute.</li>
       <li><b>Dessin :</b> tu dessines sur ton téléphone, ton équipe voit le dessin en direct.</li>
     </ul>
     <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
     <p>Pendant un tour, le public envoie des réactions emoji, et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran avec le crayon ✏️ (couleur de leur équipe, effacé au tour suivant).</p>
     <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
+  undercover: `<h3>Undercover</h3>
+    <p>Tout le monde reçoit le même mot secret, sauf les <b>undercovers</b> qui ont un mot voisin, sans le savoir. Avec l'option <b>Mister White</b>, un joueur n'a aucun mot et le sait.</p>
+    <ul>
+      <li><b>Indices :</b> chacun à son tour dit un mot ou une courte expression à voix haute, sans jamais dire son mot.</li>
+      <li><b>Vote :</b> tout le monde vote sur son téléphone. Le plus désigné est éliminé et son rôle est révélé. En cas d'égalité, on revote entre les ex æquo.</li>
+      <li><b>Mister White éliminé</b> tente de deviner le mot des civils. S'il trouve, il gagne seul.</li>
+    </ul>
+    <p><b>Fin de manche :</b> les civils gagnent quand tous les intrus sont éliminés. Les intrus gagnent s'il ne reste plus qu'un civil.</p>
+    <p><b>Points :</b> civil gagnant 2, undercover gagnant 10, Mister White gagnant 6. On joue plusieurs manches avec de nouveaux mots.</p>`,
   hub: `<h3>Boîte à jeux</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
 };
@@ -1200,6 +1236,10 @@ $('#btn-start').onclick = () => {
     if (!decks.length) { toast('Choisis au moins un deck'); return; }
     const settings = { roundTypes, turnSeconds: +$('#opt-sab-turn').value, drawSeconds: +$('#opt-sab-draw').value, dealPerPlayer: +$('#opt-sab-deal').value, discardPerPlayer: +$('#opt-sab-discard').value, teamMode: $('#opt-sab-teammode').value, decks, difficulties: [...$('#opt-sab-diff').querySelectorAll('input:checked')].map(i => +i.value) };
     act({ t: 'start', opts: { mode: 'sablier', decks, settings } });
+  }
+  if (pick === 'undercover') {
+    if ((view?.players || []).filter(p => p.online).length < 3) { toast('Undercover se joue à trois minimum'); return; }
+    act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked } });
   }
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });
