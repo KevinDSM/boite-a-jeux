@@ -943,9 +943,9 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
   #s-geo{max-width:1240px}
   .geo-stage{margin:0}
   #geo-pano{height:calc(100dvh - 210px);border-radius:var(--r)}
-  #geo-map{position:absolute;right:14px;bottom:14px;width:340px;height:230px;border-radius:var(--r-s);box-shadow:0 12px 30px oklch(0 0 0/.45);transition:width .25s var(--ease),height .25s var(--ease)}
+  #geo-map{position:absolute;left:14px;bottom:14px;width:340px;height:230px;border-radius:var(--r-s);box-shadow:0 12px 30px oklch(0 0 0/.45);transition:width .25s var(--ease),height .25s var(--ease)}
   #geo-map:hover,.geo-bigmap #geo-map{width:600px;height:440px}
   .geo-bigmap #geo-pano{height:calc(100dvh - 210px)}
-  .revealing #geo-map,.revealing #geo-map:hover{position:relative;right:auto;bottom:auto;width:100%;height:calc(100dvh - 330px);box-shadow:none;border-radius:var(--r)}
+  .revealing #geo-map,.revealing #geo-map:hover{position:relative;left:auto;right:auto;bottom:auto;width:100%;height:calc(100dvh - 330px);box-shadow:none;border-radius:var(--r)}
   #geo-bar{max-width:540px;margin:0 auto;width:100%}
 }

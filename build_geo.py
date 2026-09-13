@@ -1,33 +1,38 @@
 # -*- coding: utf-8 -*-
-"""Prépare la liste de lieux du jeu Boussole à partir de l'API Mapillary.
+"""Prépare la liste de lieux du jeu Boussole à partir de Mapillary.
 
-    python build_geo.py --check                  vérifie le jeton, sans rien écrire
+    python build_geo.py --check                  vérifie le jeton sur une vraie photo
     python build_geo.py                          construit les trois cartes
     python build_geo.py --maps france --target 200
 
-Le jeton est lu dans geo-config.js (window.MAPILLARY_TOKEN). Il n'est jamais affiché.
+Le jeton client est lu dans geo-config.js (window.MAPILLARY_TOKEN). Il n'est jamais affiché.
 
-Méthode : on tire des points au hasard dans des zones terrestres pondérées, on demande à
-Mapillary les panoramas 360° dans un petit carré autour (0,09° de côté, sous la limite de
-0,01 degré carré), on garde le meilleur, et on impose un écart minimal entre deux lieux
-pour que la carte reste variée. La vraie réponse du jeu est la position calculée de
-l'image, donc les zones n'ont pas besoin d'être précises.
+Méthode : la recherche d'images de l'API est lente et revient souvent vide, on passe donc
+par les tuiles de couverture. On tire un point au hasard dans une zone terrestre pondérée,
+on lit la tuile de niveau 10 qui le contient (un carré d'environ 25 à 40 km), elle liste
+chaque parcours photo avec son indicateur 360° et une photo représentative. On garde
+quelques parcours 360° récents, on demande la position exacte de leur photo, et on impose
+un écart minimal entre deux lieux pour que la carte reste variée.
 """
 import argparse
 import json
 import math
 import random
 import re
+import struct
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
-API = "https://graph.mapillary.com/images"
-HALF = 0.045                 # demi-côté du carré de recherche, en degrés
-MIN_DATE = "2016-01-01T00:00:00Z"
+TILE_Z = 10
+TILE_URL = "https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token={tok}"
+ENTITY_URL = "https://graph.mapillary.com/{id}?fields=id,computed_geometry,is_pano,captured_at,quality_score"
+MIN_CAPTURED_MS = 1451606400000      # 1er janvier 2016
+PER_TILE = 4                         # parcours 360° essayés par tuile
+UA = "boite-a-jeux/boussole (jeu entre amis)"
 
 # (lon min, lat min, lon max, lat max, poids)
 FRANCE = [
@@ -89,12 +94,13 @@ MONDE = [(a, b, c, d, w * 0.5) for a, b, c, d, w in EUROPE] + [
 ]
 
 MAPS = {
-    "france": {"zones": FRANCE, "target": 300, "spacing_km": 15},
-    "europe": {"zones": EUROPE, "target": 400, "spacing_km": 60},
-    "monde": {"zones": MONDE, "target": 500, "spacing_km": 150},
+    "france": {"zones": FRANCE, "target": 300, "spacing_km": 12},
+    "europe": {"zones": EUROPE, "target": 400, "spacing_km": 50},
+    "monde": {"zones": MONDE, "target": 500, "spacing_km": 120},
 }
 
 
+# ------------------------------------------------------------------ jeton
 def read_token():
     try:
         src = open("geo-config.js", encoding="utf-8").read()
@@ -105,6 +111,112 @@ def read_token():
     if not token:
         sys.exit("Aucun jeton dans geo-config.js : colle ton jeton client Mapillary entre les guillemets.")
     return token
+
+
+# ------------------------------------------------------------------ tuiles vectorielles (lecture minimale du format)
+def _varint(b, i):
+    r = s = 0
+    while True:
+        c = b[i]; i += 1; r |= (c & 0x7F) << s; s += 7
+        if c < 0x80:
+            return r, i
+
+
+def _fields(b):
+    i = 0
+    while i < len(b):
+        key, i = _varint(b, i)
+        f, wt = key >> 3, key & 7
+        if wt == 0:
+            v, i = _varint(b, i)
+        elif wt == 1:
+            v = b[i:i + 8]; i += 8
+        elif wt == 5:
+            v = b[i:i + 4]; i += 4
+        elif wt == 2:
+            n, i = _varint(b, i); v = b[i:i + n]; i += n
+        else:
+            raise ValueError(f"type de champ inattendu {wt}")
+        yield f, v
+
+
+def _packed(b):
+    i, out = 0, []
+    while i < len(b):
+        v, i = _varint(b, i); out.append(v)
+    return out
+
+
+def _zigzag(n):
+    return (n >> 1) ^ -(n & 1)
+
+
+def _value(b):
+    for f, v in _fields(b):
+        if f == 1: return v.decode("utf-8", "replace")
+        if f == 2: return struct.unpack("<f", v)[0]
+        if f == 3: return struct.unpack("<d", v)[0]
+        if f in (4, 5): return v
+        if f == 6: return _zigzag(v)
+        if f == 7: return bool(v)
+    return None
+
+
+def tile_sequences(data):
+    """Propriétés de chaque parcours de la couche « sequence » d'une tuile."""
+    for f, layer in _fields(data):
+        if f != 3:
+            continue
+        name, keys, vals, feats = None, [], [], []
+        for lf, lv in _fields(layer):
+            if lf == 1: name = lv.decode()
+            elif lf == 3: keys.append(lv.decode())
+            elif lf == 4: vals.append(_value(lv))
+            elif lf == 2: feats.append(lv)
+        if name != "sequence":
+            continue
+        for fb in feats:
+            tags = []
+            for ff, fv in _fields(fb):
+                if ff == 2:
+                    tags = _packed(fv)
+            yield {keys[tags[k]]: vals[tags[k + 1]] for k in range(0, len(tags) - 1, 2)}
+
+
+def tile_of(lat, lon, z=TILE_Z):
+    n = 2 ** z
+    x = int((lon + 180) / 360 * n)
+    y = int((1 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2 * n)
+    return x, y
+
+
+# ------------------------------------------------------------------ réseau
+def fetch(url, headers=None, tries=4, timeout=40):
+    req = urllib.request.Request(url, headers={"User-Agent": UA, **(headers or {})})
+    for attempt in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                raise SystemExit(f"Jeton refusé par Mapillary (HTTP {e.code}). Vérifie que c'est bien le « Client Token ».")
+            if e.code in (429, 500, 502, 503, 504):
+                time.sleep(1.5 * (attempt + 1)); continue
+            return None                      # 400 : photo supprimée ou inaccessible
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
+            time.sleep(1.5 * (attempt + 1))
+    return None
+
+
+def image_position(token, image_id):
+    body = fetch(ENTITY_URL.format(id=image_id), {"Authorization": "OAuth " + token}, tries=3, timeout=25)
+    if not body:
+        return None
+    d = json.loads(body)
+    coords = (d.get("computed_geometry") or {}).get("coordinates")
+    if not coords or not d.get("is_pano"):
+        return None
+    return str(d["id"]), round(coords[1], 5), round(coords[0], 5)
 
 
 def km(lat1, lon1, lat2, lon2):
@@ -124,67 +236,48 @@ def random_point(zones):
     return random.uniform(la1, la2), random.uniform(lo1, lo2)
 
 
-def search(token, lat, lon, tries=4):
-    params = {
-        "fields": "id,computed_geometry,captured_at,quality_score",
-        "bbox": f"{lon - HALF:.5f},{lat - HALF:.5f},{lon + HALF:.5f},{lat + HALF:.5f}",
-        "is_pano": "true",
-        "start_captured_at": MIN_DATE,
-        "limit": "50",
-    }
-    req = urllib.request.Request(API + "?" + urllib.parse.urlencode(params), headers={
-        "Authorization": "OAuth " + token, "User-Agent": "boite-a-jeux/boussole (jeu entre amis)",
-    })
-    for attempt in range(tries):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as r:
-                return json.load(r).get("data", [])
-        except urllib.error.HTTPError as e:
-            if e.code in (401, 403):
-                raise SystemExit(f"Jeton refusé par Mapillary (HTTP {e.code}). Vérifie que c'est bien le « Client Token ».")
-            if e.code in (429, 500, 502, 503, 504):
-                time.sleep(2 ** attempt)
-                continue
-            return []
-        except (urllib.error.URLError, TimeoutError):
-            time.sleep(2 ** attempt)
-    return []
-
-
-def best_image(images):
-    good = []
-    for im in images:
-        geo = im.get("computed_geometry") or {}
-        coords = geo.get("coordinates")
-        if not coords:
-            continue
-        q = im.get("quality_score")
-        q = 0.5 if q is None else float(q)
-        recent = min(1.0, max(0.0, ((im.get("captured_at") or 0) / 1000 - 1451606400) / (8 * 365 * 86400)))
-        good.append((q + 0.3 * recent, im["id"], coords[1], coords[0]))
-    return max(good) if good else None
+# ------------------------------------------------------------------ construction
+def candidates_from_tile(token, zones, seen_tiles):
+    """Tire une tuile jamais lue dans les zones, renvoie quelques photos de parcours 360°."""
+    for _ in range(20):
+        lat, lon = random_point(zones)
+        key = tile_of(lat, lon)
+        if key not in seen_tiles:
+            break
+    else:
+        return []
+    seen_tiles.add(key)
+    data = fetch(TILE_URL.format(z=TILE_Z, x=key[0], y=key[1], tok=token))
+    if not data:
+        return []
+    seqs = [s for s in tile_sequences(data)
+            if s.get("is_pano") and s.get("image_id") and (s.get("captured_at") or 0) >= MIN_CAPTURED_MS]
+    random.shuffle(seqs)
+    seqs.sort(key=lambda s: -(s.get("quality_score") or 0.5))
+    return [str(s["image_id"]) for s in seqs[:PER_TILE]]
 
 
 def build_map(token, name, cfg, target, workers=8):
-    kept, tries, t0 = [], 0, time.time()
+    kept, seen_tiles, tiles, lookups, t0 = [], set(), 0, 0, time.time()
     spacing = cfg["spacing_km"]
-    max_tries = target * 40
+    max_tiles = max(400, target * 12)
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        while len(kept) < target and tries < max_tries:
-            batch = [random_point(cfg["zones"]) for _ in range(workers * 4)]
-            tries += len(batch)
-            futures = [pool.submit(search, token, la, lo) for la, lo in batch]
-            for f in as_completed(futures):
-                pick = best_image(f.result())
-                if not pick:
+        while len(kept) < target and tiles < max_tiles:
+            batch = list(pool.map(lambda _: candidates_from_tile(token, cfg["zones"], seen_tiles), range(workers)))
+            tiles += workers
+            ids = [i for group in batch for i in group]
+            lookups += len(ids)
+            for pos in pool.map(lambda i: image_position(token, i), ids):
+                if not pos:
                     continue
-                _, iid, lat, lon = pick
+                iid, lat, lon = pos
                 if any(km(lat, lon, k[1], k[2]) < spacing for k in kept):
                     continue
-                kept.append([str(iid), round(lat, 5), round(lon, 5)])
+                kept.append([iid, lat, lon])
                 if len(kept) >= target:
                     break
-            print(f"  {name}: {len(kept)}/{target} lieux, {tries} recherches, {time.time() - t0:.0f} s", flush=True)
+            if tiles % (workers * 5) == 0 or len(kept) >= target:
+                print(f"  {name} : {len(kept)}/{target} lieux, {tiles} tuiles, {lookups} photos vérifiées, {time.time() - t0:.0f} s", flush=True)
     return kept
 
 
@@ -197,8 +290,15 @@ def main():
     token = read_token()
 
     if args.check:
-        res = search(token, 48.8566, 2.3522)
-        print(f"Jeton accepté : {len(res)} panoramas trouvés au centre de Paris.")
+        x, y = tile_of(48.8566, 2.3522)
+        data = fetch(TILE_URL.format(z=TILE_Z, x=x, y=y, tok=token))
+        seqs = [s for s in tile_sequences(data or b"") if s.get("is_pano") and s.get("image_id")]
+        if not seqs:
+            sys.exit("Tuile de Paris vide : jeton ou réseau à vérifier.")
+        pos = next((p for p in (image_position(token, str(s["image_id"])) for s in seqs[:10]) if p), None)
+        if not pos:
+            sys.exit("Les tuiles répondent, mais les photos sont refusées : ce n'est probablement pas le « Client Token ».")
+        print(f"Jeton accepté : {len(seqs)} parcours 360° autour de Paris, photo {pos[0]} lue à {pos[1]}, {pos[2]}.")
         return
 
     try:
