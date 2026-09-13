@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '23';
+const ASSET_V = '24';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -24,6 +24,7 @@ const GAMES = {
   sprint: { key: 'sprint', theme: 'sprint', name: 'Sprint' },
   sablier: { key: 'sablier', theme: 'sablier', name: 'Sablier' },
   undercover: { key: 'undercover', theme: 'undercover', name: 'Undercover' },
+  geo: { key: 'geo', theme: 'geo', name: 'Boussole' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -42,12 +43,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo') { stopSnippet(); audio.pause(); lastTurnKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -106,15 +107,16 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
     if (this.uc) Undercover.join(this.uc, id, name);
+    if (this.geo) Geo.join(this.geo, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -137,6 +139,7 @@ class Game {
     if (s.mode === 'sprint') return this.startSprint(o);
     if (s.mode === 'sablier') return this.startSablier(o);
     if (s.mode === 'undercover') return this.startUndercover(o);
+    if (s.mode === 'geo') return this.startGeo(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -360,10 +363,17 @@ class Game {
     this.uc = Undercover.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rounds: o.rounds, undercovers: o.undercovers, white: o.white });
     s.phase = 'uc';
   }
-  viewFor(base, pid) { if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Boussole : la salle vit dans this.geo, les coordonnées ne sortent qu'à la révélation =================
+  startGeo(o) {
+    const s = this.s;
+    s.players.forEach(p => { p.score = 0; });
+    this.geo = Geo.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), map: o.map, mode: o.geoMode, rounds: o.rounds, seconds: o.seconds });
+    s.phase = 'geo';
+  }
+  viewFor(base, pid) { if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null; this.uc = null;
+    this.sab = null; this.uc = null; this.geo = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -414,7 +424,7 @@ async function hostGame() {
   peer.on('disconnected', () => { setNet(false, 'reconnexion'); peer.reconnect(); });
   peer.on('open', () => setNet(true, 'hôte'));
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick(); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -429,6 +439,7 @@ function applyAction(pid, m) {
   const g = net.game;
   if (typeof m.t === 'string' && m.t.startsWith('sab:')) return sabAction(pid, m);
   if (typeof m.t === 'string' && m.t.startsWith('uc:')) return ucAction(pid, m);
+  if (typeof m.t === 'string' && m.t.startsWith('geo:')) return geoAction(pid, m);
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
@@ -481,6 +492,18 @@ function act(m) {
   else toast('Pas connecté à l\'hôte');
 }
 const isHostPlayer = () => net.isHost;
+
+// ============================================================ Boussole : côté hôte
+function geoAction(pid, m) {
+  const g = net.game; if (!g.geo) return 'Pas de partie de Boussole en cours';
+  const err = Geo.act(g.geo, pid, m);
+  if (g.geo.phase === 'over') {          // fin de partie : les scores rejoignent le classement commun
+    g.geo.players.forEach(q => { const p = g.player(q.id); if (p) p.score = q.score; });
+    g.s.winner = [...g.s.players].sort((a, b) => b.score - a.score)[0]?.id || null;
+    g.s.rounds = g.geo.rounds; g.geo = null; g.s.phase = 'end';
+  }
+  return err;
+}
 
 // ============================================================ Undercover : côté hôte
 function ucAction(pid, m) {
@@ -613,6 +636,7 @@ function render() {
   else if (s.phase === 's-play' || s.phase === 's-reveal') { show('s-sprint'); renderSprint(s); }
   else if (s.phase === 'sab') { show('s-sablier'); renderSablier(s.sab); }
   else if (s.phase === 'uc') { show('s-undercover'); renderUndercover(s.uc); }
+  else if (s.phase === 'geo') { show('s-geo'); renderGeo(s.geo); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -646,6 +670,7 @@ function renderLobby(s) {
   $('#opts-sprint').hidden = s.pick !== 'sprint';
   $('#opts-sablier').hidden = s.pick !== 'sablier';
   $('#opts-undercover').hidden = s.pick !== 'undercover';
+  $('#opts-geo').hidden = s.pick !== 'geo';
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
     Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
     const refresh = () => {
@@ -1087,6 +1112,7 @@ function renderEnd(s) {
     ? (eclair ? `${w ? w.score : 0} points sur ${s.rounds} manches.` : `Frise complète : ${s.target} cartes bien placées.`)
     : s.mode === 'sprint' ? 'a été le plus rapide sur la gâchette.'
       : s.mode === 'undercover' ? "a été l'agent le plus redoutable."
+      : s.mode === 'geo' ? 'a le meilleur sens de l\'orientation.'
         : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
   const ol = $('#ranking'); ol.innerHTML = '';
   [...s.players]
@@ -1140,6 +1166,15 @@ const HELP = {
     <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
     <p>Pendant un tour, le public envoie des réactions emoji, et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran avec le crayon ✏️ (couleur de leur équipe, effacé au tour suivant).</p>
     <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
+  geo: `<h3>Boussole</h3>
+    <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
+    <ul>
+      <li><b>Déplacement libre :</b> avance le long de la rue avec les flèches de l'image.</li>
+      <li><b>Sans bouger :</b> tu peux tourner et zoomer, mais pas avancer.</li>
+      <li><b>Ni bouger ni zoomer :</b> une seule vue fixe, pour les experts.</li>
+    </ul>
+    <p><b>Points :</b> jusqu'à 5 000 par manche selon la distance, rapportée à la taille de la carte. La manche se termine quand tout le monde a validé ou à la fin du chrono.</p>
+    <p class="fine">Images Mapillary, prises par des contributeurs. Carte OpenStreetMap.</p>`,
   undercover: `<h3>Undercover</h3>
     <p>Tout le monde reçoit le même mot secret, sauf les <b>undercovers</b> qui ont un mot voisin, sans le savoir. Avec l'option <b>Mister White</b>, un joueur n'a aucun mot et le sait.</p>
     <ul>
@@ -1240,6 +1275,15 @@ $('#btn-start').onclick = () => {
   if (pick === 'undercover') {
     if ((view?.players || []).filter(p => p.online).length < 3) { toast('Undercover se joue à trois minimum'); return; }
     act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked } });
+  }
+  if (pick === 'geo') {
+    (async () => {
+      if (!window.MAPILLARY_TOKEN) { toast('Jeton Mapillary manquant : il faut le coller dans geo-config.js'); return; }
+      const map = $('#opt-geo-map').value;
+      await Geo.loadPlaces();
+      if (!Geo.count(map)) { toast('Aucun lieu prêt pour cette carte'); return; }
+      act({ t: 'start', opts: { mode: 'geo', map, geoMode: $('#opt-geo-mode').value, rounds: +$('#opt-geo-rounds').value, seconds: +$('#opt-geo-seconds').value } });
+    })();
   }
 };
 $('#btn-again').onclick = () => act({ t: 'restart' });

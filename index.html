@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=23">
-<link rel="apple-touch-icon" href="icon-180.png?v=23">
+<link rel="manifest" href="manifest.json?v=24">
+<link rel="apple-touch-icon" href="icon-180.png?v=24">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=23">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -91,7 +91,7 @@
 
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
-    <p class="fine">5 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">6 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -139,6 +139,12 @@
         <span class="gname">Undercover</span>
         <span class="gdesc">Tout le monde a le même mot secret, sauf l'intrus. Donnez des indices, votez, démasquez-le.</span>
         <span class="gmeta">3 à 20 joueurs · 20 min · sans musique</span>
+      </button>
+      <button class="gcard g-geo" type="button" data-game="geo">
+        <span class="gart" aria-hidden="true"><span class="compass"></span></span>
+        <span class="gname">Boussole</span>
+        <span class="gdesc">Une photo de rue, quelque part dans le monde. Devine où tu es et pose ton épingle sur la carte.</span>
+        <span class="gmeta">1 à 20 joueurs · 15 min · sans musique</span>
       </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
@@ -194,6 +200,13 @@
           <option value="host">Ce téléphone (enceinte)</option>
         </select>
       </label>
+    </div>
+    <div class="opts" id="opts-geo" hidden>
+      <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
+      <label class="field row"><span>Mode</span><select id="opt-geo-mode"><option value="move" selected>Déplacement libre</option><option value="nomove">Sans bouger</option><option value="nmpz">Ni bouger ni zoomer</option></select></label>
+      <label class="field row"><span>Nombre de manches</span><select id="opt-geo-rounds"><option>3</option><option selected>5</option><option>10</option></select></label>
+      <label class="field row"><span>Chrono par manche</span><select id="opt-geo-seconds"><option value="60">1 min</option><option value="120" selected>2 min</option><option value="180">3 min</option><option value="300">5 min</option></select></label>
+      <p class="fine">Les images viennent de Mapillary : la qualité varie d'un lieu à l'autre.</p>
     </div>
     <div class="opts" id="opts-undercover" hidden>
       <label class="field row"><span>Undercovers</span><select id="opt-uc-count"><option value="auto" selected>Selon le nombre</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
@@ -298,6 +311,16 @@
 <div class="react-layer" id="sab-react-layer" aria-hidden="true"></div>
 <div class="sab-react" id="sab-react" hidden></div>
 
+<!-- ====================== BOUSSOLE ====================== -->
+<section class="screen play geo" id="s-geo" hidden>
+  <div class="geo-hud" id="geo-hud"></div>
+  <div class="geo-stage">
+    <div id="geo-pano"></div>
+    <div id="geo-map"></div>
+  </div>
+  <div id="geo-bar"></div>
+</section>
+
 <!-- ====================== UNDERCOVER ====================== -->
 <section class="screen play uc" id="s-undercover" hidden>
   <div class="stack" id="uc-main"></div>
@@ -335,9 +358,11 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="sablier-engine.js?v=23"></script>
-<script src="app.js?v=23"></script>
-<script src="sablier-ui.js?v=23"></script>
-<script src="undercover.js?v=23"></script>
+<script src="sablier-engine.js?v=24"></script>
+<script src="app.js?v=24"></script>
+<script src="sablier-ui.js?v=24"></script>
+<script src="undercover.js?v=24"></script>
+<script src="geo-config.js?v=24"></script>
+<script src="geo.js?v=24"></script>
 </body>
 </html>

@@ -849,3 +849,103 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
 .uc-scores{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:14px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:12px}
 .uc-scores .uc-label{width:100%;color:var(--mute)}
 .uc-scores b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ============================ jeu : Boussole ============================
+   Cartographie : bleu profond, turquoise de carte marine, repères orange. */
+[data-game="geo"]{
+  --bg:        oklch(0.180 0.030 225);
+  --surface:   oklch(0.235 0.036 225);
+  --surface-2: oklch(0.290 0.040 225);
+  --line:      oklch(0.350 0.042 225);
+  --ink:       oklch(0.960 0.012 200);
+  --ink-2:     oklch(0.800 0.030 205);
+  --mute:      oklch(0.630 0.035 215);
+  --acc:       oklch(0.800 0.135 190);
+  --acc-soft:  oklch(0.880 0.090 190);
+  --on-acc:    oklch(0.200 0.045 225);
+  --pos:       oklch(0.830 0.140 150);
+  --neg:       oklch(0.700 0.190 25);
+  --gold:      oklch(0.860 0.140 85);
+  --glow: 0.14;
+  --r: 14px; --r-s: 10px; --r-pill: 999px;
+  --font-d: "Space Grotesk", "Instrument Sans", sans-serif;
+  --track: -0.02em;
+}
+[data-theme="light"][data-game="geo"]{
+  --bg:        oklch(0.965 0.012 210);
+  --surface:   oklch(0.995 0.005 210);
+  --surface-2: oklch(0.930 0.020 210);
+  --line:      oklch(0.870 0.025 210);
+  --ink:       oklch(0.220 0.040 225);
+  --ink-2:     oklch(0.420 0.035 220);
+  --mute:      oklch(0.560 0.030 215);
+  --acc:       oklch(0.550 0.110 200);
+  --acc-soft:  oklch(0.450 0.100 205);
+  --on-acc:    oklch(0.990 0.010 210);
+  --pos:       oklch(0.520 0.120 155);
+  --neg:       oklch(0.540 0.190 25);
+  --gold:      oklch(0.620 0.120 80);
+  --glow: 0.08;
+}
+[data-game="geo"] h1,[data-game="geo"] .banner{font-family:var(--font-d);font-weight:700}
+
+/* carte du salon */
+.g-geo .gname{font-family:"Space Grotesk","Instrument Sans",sans-serif;font-weight:700;letter-spacing:-.03em;color:oklch(0.80 0.135 190)}
+[data-theme="light"] .g-geo .gname{color:oklch(0.50 0.11 200)}
+.g-geo{background:oklch(0.215 0.034 225);border-color:oklch(0.32 0.04 225)}
+.g-geo[aria-pressed="true"]{border-color:oklch(0.80 0.135 190);background:oklch(0.26 0.045 222)}
+[data-theme="light"] .g-geo{background:oklch(0.97 0.012 210);border-color:oklch(0.87 0.025 210)}
+[data-theme="light"] .g-geo[aria-pressed="true"]{border-color:oklch(0.55 0.11 200);background:oklch(0.94 0.03 200)}
+.compass{position:relative;display:block;width:46px;height:46px;border-radius:50%;border:3px solid oklch(0.80 0.135 190);box-shadow:inset 0 0 0 3px oklch(0 0 0/.18)}
+.compass::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:32px;transform:translate(-50%,-50%) rotate(35deg);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:linear-gradient(oklch(0.72 0.19 35) 0 50%, oklch(0.92 0.02 210) 50% 100%)}
+.compass::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;transform:translate(-50%,-50%);background:oklch(0.20 0.04 225)}
+[data-theme="light"] .compass{border-color:oklch(0.55 0.11 200)}
+.gcard[aria-pressed="true"] .compass::before{animation:needle 3.2s var(--ease) infinite}
+@keyframes needle{0%,100%{transform:translate(-50%,-50%) rotate(35deg)}40%{transform:translate(-50%,-50%) rotate(-25deg)}70%{transform:translate(-50%,-50%) rotate(12deg)}}
+
+/* partie */
+.screen.play.geo{gap:10px}
+.geo-hud{display:flex;flex-direction:column;gap:2px}
+.geo-hud-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.geo-total{font-family:var(--font-d);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;color:var(--acc)}
+.geo-timer{font-family:var(--font-d);font-weight:700;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.geo-timer.hot{color:var(--neg);animation:tick 1s steps(2) infinite}
+.geo-stage{position:relative;display:flex;flex-direction:column;gap:8px;margin:0 -20px}
+#geo-pano{position:relative;height:calc(100dvh - 350px);min-height:240px;background:oklch(0.12 0.02 225);overflow:hidden}
+#geo-pano .geo-missing{padding:40px 20px}
+#geo-map{position:relative;height:200px;background:var(--surface-2);z-index:1;overflow:hidden;isolation:isolate;transition:height .25s var(--ease)}
+.geo-bigmap #geo-pano{height:30dvh;min-height:160px}
+.geo-bigmap #geo-map{height:calc(100dvh - 30dvh - 290px);min-height:240px}
+.revealing #geo-map{height:calc(100dvh - 360px);min-height:300px}
+.geo-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.geo-actions .geo-toggle{font-size:14px}
+.geo-icon{background:none;border:0}
+.geo-me{display:block;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--acc);border:3px solid #fff;box-shadow:0 4px 10px oklch(0 0 0/.45)}
+.geo-truth{display:block;width:26px;height:26px;border-radius:50%;background:#fff;border:6px solid oklch(0.20 0.04 225);box-shadow:0 0 0 4px oklch(1 0 0/.55),0 4px 12px oklch(0 0 0/.5);animation:pulse-truth 1.6s ease-in-out infinite}
+@keyframes pulse-truth{50%{box-shadow:0 0 0 11px oklch(1 0 0/.2),0 4px 12px oklch(0 0 0/.5)}}
+.leaflet-tooltip.geo-tip{background:oklch(0.20 0.04 225);color:#fff;border:0;border-radius:6px;padding:2px 7px;font:600 12px/1.3 "Instrument Sans",system-ui,sans-serif;box-shadow:0 2px 8px oklch(0 0 0/.35)}
+.leaflet-tooltip.geo-tip::before{border-top-color:oklch(0.20 0.04 225)}
+.geo-results{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:geo}
+.geo-results li{counter-increment:geo;display:grid;grid-template-columns:22px 12px 1fr auto auto;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:10px 14px;font-size:15px}
+.geo-results li::before{content:counter(geo);font-family:var(--font-d);font-weight:700;color:var(--mute);font-size:14px}
+.geo-results li i{width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 2px #fff}
+.geo-results li span{color:var(--ink-2);font-variant-numeric:tabular-nums;font-size:14px}
+.geo-results li em{font-style:normal;font-family:var(--font-d);font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;min-width:56px;text-align:right}
+.geo-results li.none{opacity:.55}
+.geo-scores{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:14px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:12px}
+.geo-scores .eyebrow{width:100%}
+.geo-scores b{color:var(--ink);font-variant-numeric:tabular-nums}
+#geo-bar{display:flex;flex-direction:column;gap:10px}
+#geo-bar a{color:var(--acc)}
+
+/* sur ordinateur : image plein écran, carte en bas à droite qui grandit au survol, comme GeoGuessr */
+@media (min-width: 900px){
+  #s-geo{max-width:1240px}
+  .geo-stage{margin:0}
+  #geo-pano{height:calc(100dvh - 210px);border-radius:var(--r)}
+  #geo-map{position:absolute;right:14px;bottom:14px;width:340px;height:230px;border-radius:var(--r-s);box-shadow:0 12px 30px oklch(0 0 0/.45);transition:width .25s var(--ease),height .25s var(--ease)}
+  #geo-map:hover,.geo-bigmap #geo-map{width:600px;height:440px}
+  .geo-bigmap #geo-pano{height:calc(100dvh - 210px)}
+  .revealing #geo-map,.revealing #geo-map:hover{position:relative;right:auto;bottom:auto;width:100%;height:calc(100dvh - 330px);box-shadow:none;border-radius:var(--r)}
+  #geo-bar{max-width:540px;margin:0 auto;width:100%}
+}

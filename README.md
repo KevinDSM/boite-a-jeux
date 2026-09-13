@@ -49,6 +49,15 @@ Les cartes déjà vues ne reviennent pas d'une soirée à l'autre (mémoire du t
 Cartes : 953 dans `decks/*.json`, 5 decks, format `{ "n": nom, "c": catégorie, "d": 1|2|3 }`.
 Le deck privé « Entre nous » de l'original n'est volontairement pas publié.
 
+### Boussole
+L'équivalent de GeoGuessr, gratuit : une photo 360° de rue Mapillary, chacun pose son épingle sur
+une carte OpenStreetMap (Leaflet). Cartes Monde, Europe et France, trois modes (déplacement libre,
+sans bouger, ni bouger ni zoomer), chrono, barème de GeoGuessr (5 000 points au maximum, selon la
+distance rapportée à la taille de la carte), révélation avec un trait vers chaque épingle.
+Les bibliothèques ne se chargent que lorsqu'on lance ce jeu. Les lieux sont préparés à l'avance
+dans `geo-places.json` par `build_geo.py`, qui lit le jeton client Mapillary dans `geo-config.js`.
+Pendant la manche, les téléphones ne reçoivent que l'identifiant de l'image, pas ses coordonnées.
+
 ### Undercover
 Tout le monde reçoit le même mot secret, sauf un ou plusieurs undercovers qui ont un mot voisin
 sans le savoir. Option Mister White : un joueur sans mot, qui le sait. Indices à voix haute dans
@@ -79,6 +88,7 @@ faut donner le nom du jeu, et une réponse trop vague ne coûte pas d'essai.
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 | `sablier-engine.js`, `sablier-ui.js`, `decks/` | le jeu Sablier : règles pures, écrans et canevas, cartes |
 | `undercover.js` | le jeu Undercover : paires de mots, règles, écran |
+| `geo.js`, `geo-config.js`, `geo-places.json`, `build_geo.py` | le jeu Boussole : règles et écran, jeton Mapillary, lieux, script qui prépare les lieux |
 
 ## Ajouter un jeu
 
