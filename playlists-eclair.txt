@@ -532,7 +532,7 @@ Ray Parker Jr. | Ghostbusters
 Van Halen | Jump
 Kenny Loggins | Footloose
 Jean-Jacques Goldman | Envole-moi
-Tina Turner | What's Love Got to Do with It
+Wham! | Last Christmas
 # 1985
 USA for Africa | We Are the World
 Indochine | 3e sexe
@@ -777,5 +777,5 @@ Santa | Popcorn salé
 Benson Boone | Mystical Magical
 Ed Sheeran | Azizam
 sombr | back to friends
-HUNTR/X | Golden
+Ed Sheeran | Sapphire
 Justin Bieber | Daisies

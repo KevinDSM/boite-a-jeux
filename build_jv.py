@@ -38,7 +38,7 @@ def fetch(term, limit=12):
             time.sleep(45 if getattr(e, "code", 0) == 403 else 6)
     return []
 
-def pick(game, results):
+def pick(game, results, query=""):
     """Choisit le résultat le plus fidèle au jeu."""
     gw = words(game)
     best, best_score = None, -99
@@ -51,6 +51,8 @@ def pick(game, results):
         if GOOD.search(coll): score += 3
         if BAD.search(coll + " " + r["trackName"]): score -= 4
         if norm(game) in hay: score += 2
+        aw = [w for w in norm(r["artistName"]).split() if len(w) > 2][:2]
+        if aw and all(w in norm(query) for w in aw): score += 4   # artiste attendu : l'original plutot qu'une reprise
         if score > best_score: best, best_score = r, score
     return best
 
@@ -73,7 +75,7 @@ for line in open(SRC, encoding="utf-8"):
     if line in cache:
         s = cache[line]
     else:
-        r = pick(game, fetch(query))
+        r = pick(game, fetch(query), query)
         if not r:
             print("  KO  ", game); continue
         s = {"game": game, "artist": r["artistName"], "title": re.sub(r"\s*[\(\[].*", "", r["trackName"]).strip(),
