@@ -29,22 +29,31 @@ def lookup(q):
     return {"artist":pick["artistName"],"title":base(pick["trackName"]),"year":year,
             "preview":pick["previewUrl"],"art":pick["artworkUrl100"].replace("100x100","300x300")}
 import os
+FIXES={'Kool & The Gang | Celebration':1980,'Alliage | Baila':1997,'M. Pokora | Elle me contrôle':2008,'Las Ketchup | The Ketchup Song':2002,'O-Zone | Dragostea din tei':2003}   # annees fausses cote iTunes
 cache={}
 if os.path.exists(DST):
     for x in json.load(open(DST,encoding="utf-8")):
+        if x.get("_q"): cache[x["_q"]]=x
+if os.path.exists(DST+".cache.json"):   # reprise apres une coupure
+    for x in json.load(open(DST+".cache.json",encoding="utf-8")):
         if x.get("_q"): cache[x["_q"]]=x
 out=[]; seen=set(); cat=None
 for line in open(SRC,encoding="utf-8"):
     line=line.strip()
     if not line: continue
     if line.startswith("#"): cat=line[1:].strip(); continue
+    fresh=line not in cache
     s=cache.get(line) or lookup(line)
+    if s and fresh:
+        cache[line]=dict(s,_q=line); json.dump(list(cache.values()),open(DST+".cache.json","w",encoding="utf-8"),ensure_ascii=False)
     if not s: print("  KO  ",line); continue
     s["_q"]=line
+    if line in FIXES: s["year"]=FIXES[line]
+    elif cat and cat.isdigit(): s["year"]=int(cat)   # Eclair : la rubrique est l'annee du tube
     key=(s["artist"].lower(),s["title"].lower())
     if key in seen: continue
     seen.add(key); s["cat"]=cat; out.append(s)
     print(f'{s["year"]}  {s["artist"]} - {s["title"]}')
-    time.sleep(4 if line not in cache else 0)
+    time.sleep(4 if fresh else 0)
 json.dump(out,open(DST,"w",encoding="utf-8"),ensure_ascii=False,indent=0)
 print(len(out),"chansons")

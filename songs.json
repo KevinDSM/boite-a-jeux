@@ -506,7 +506,7 @@
 {
 "artist": "Kool & The Gang",
 "title": "Celebration",
-"year": 1969,
+"year": 1980,
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c7/67/13/c76713f1-ee29-0d7f-b7fb-110dca168698/mzaf_16538459703550386140.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music/58/2b/5c/mzi.jjnrpmmj.jpg/300x300bb.jpg",
 "_q": "Kool & The Gang | Celebration",
@@ -657,15 +657,6 @@
 "cat": "Années 90"
 },
 {
-"artist": "Justin Bieber & Mariah Carey",
-"title": "All I Want For Christmas Is You",
-"year": 2011,
-"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/11/19/1b/11191b22-a331-cd5e-317d-6f188fdd393e/mzaf_14274943041412205516.plus.aac.p.m4a",
-"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/c8/5f/cc/c85fccdc-dfd4-53bf-7d1b-2a283bef0361/11UMGIM34123.rgb.jpg/300x300bb.jpg",
-"_q": "Mariah Carey | All I Want for Christmas Is You",
-"cat": "Années 90"
-},
-{
 "artist": "Haddaway",
 "title": "What Is Love",
 "year": 1992,
@@ -767,7 +758,7 @@
 {
 "artist": "Alliage",
 "title": "Baila",
-"year": 2017,
+"year": 1997,
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/75/a7/7b/75a77b6c-c842-0000-b234-9542aaf2a277/mzaf_17295150531195342557.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/fe/05/58/fe05588f-945b-8e9e-c1df-8f2c60af7db3/Alliage.jpg/300x300bb.jpg",
 "_q": "Alliage | Baila",
@@ -1010,7 +1001,7 @@
 {
 "artist": "M. Pokora",
 "title": "Elle me contrôle",
-"year": 2015,
+"year": 2008,
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9b/27/6d/9b276d26-d1a2-fe10-9688-55bcddd14fef/mzaf_17841753224814995833.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/e2/ac/22/e2ac2245-0e3e-be08-e132-6fbffca875cd/00602498278482.rgb.jpg/300x300bb.jpg",
 "_q": "M. Pokora | Elle me contrôle",
@@ -1617,6 +1608,798 @@
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/44/b3/03/44b30336-3a22-74b7-ae9c-c04c1b6a4a54/mzaf_4295127268197707699.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/a4/0c/bd/a40cbd9d-bb38-8164-cd30-e107c8c7bb0e/22UMGIM83430.rgb.jpg/300x300bb.jpg",
 "_q": "Sam Smith | Unholy",
+"cat": "Années 2020"
+},
+{
+"artist": "Jacques Dutronc",
+"title": "Et moi, et moi, et moi",
+"year": 1966,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f8/b9/12/f8b91206-af3a-7619-facb-1f67962da128/mzaf_3186316710153254978.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/98/54/63/985463ca-6f3f-11a7-2116-bcd03d00a633/888880430328.jpg/300x300bb.jpg",
+"_q": "Jacques Dutronc | Et moi, et moi, et moi",
+"cat": "Classiques"
+},
+{
+"artist": "Françoise Hardy",
+"title": "Tous les garçons et les filles",
+"year": 1962,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ff/b1/f9/ffb1f90a-db2f-5e22-4454-87c155199598/mzaf_15084049972070381408.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/7f/7b/dc/7f7bdc20-f53f-44d4-07fa-e6585ec60aa3/888880377333.jpg/300x300bb.jpg",
+"_q": "Françoise Hardy | Tous les garçons et les filles",
+"cat": "Classiques"
+},
+{
+"artist": "Sheila",
+"title": "L'école Est Finie",
+"year": 1963,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/49/5a/25/495a2522-7ab0-c400-e424-cf280c47c0f2/mzaf_169621533954347690.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/81/a3/44/mzi.bykbajrr.jpg/300x300bb.jpg",
+"_q": "Sheila | L'école est finie",
+"cat": "Classiques"
+},
+{
+"artist": "Sylvie Vartan",
+"title": "La plus belle pour aller danser",
+"year": 1964,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/cd/7b/23/cd7b23ec-637e-8fd3-05a1-a107b47e9b37/mzaf_16842880360243325570.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/7e/fe/31/7efe3179-8260-f099-250b-8a9dfbd65957/00731453611627.rgb.jpg/300x300bb.jpg",
+"_q": "Sylvie Vartan | La plus belle pour aller danser",
+"cat": "Classiques"
+},
+{
+"artist": "Gilbert Bécaud",
+"title": "Nathalie",
+"year": 1964,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/52/50/8c/52508c9e-d622-bbae-38ba-5adfc357a1c2/mzaf_16177108871463418172.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/5e/87/bb/5e87bb94-46c2-2882-c40b-1d544757d689/0724349651357_1500x1500_300dpi.jpg/300x300bb.jpg",
+"_q": "Gilbert Bécaud | Nathalie",
+"cat": "Classiques"
+},
+{
+"artist": "Charles Aznavour",
+"title": "La bohème",
+"year": 1965,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a5/28/fe/a528fee5-a1d9-5548-2952-f1db1a6a78e6/mzaf_5789416891080022070.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/88/2d/1d/882d1d8c-e06b-04c3-44e4-5d939e832d6f/13UAAIM43821.rgb.jpg/300x300bb.jpg",
+"_q": "Charles Aznavour | La bohème",
+"cat": "Classiques"
+},
+{
+"artist": "Marvin Gaye",
+"title": "I Heard It Through the Grapevine",
+"year": 1968,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/87/8c/ef/878cefad-12ce-69e0-8551-b0aec462f266/mzaf_6893042827099943735.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/d9/95/96/d9959694-4a83-4cf4-63bf-f174faac4df5/14UMGIM55417.rgb.jpg/300x300bb.jpg",
+"_q": "Marvin Gaye | I Heard It Through the Grapevine",
+"cat": "Classiques"
+},
+{
+"artist": "Aretha Franklin",
+"title": "Respect",
+"year": 1967,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/db/e2/93/dbe2937a-f85b-ee1d-9a29-db95be5498f3/mzaf_13347005897562275360.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/47/0d/c0/470dc076-70e9-be30-07e5-ecee641a7604/603497902460.jpg/300x300bb.jpg",
+"_q": "Aretha Franklin | Respect",
+"cat": "Classiques"
+},
+{
+"artist": "The Doors",
+"title": "Light My Fire",
+"year": 1967,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dd/61/8b/dd618b9b-c388-7ebc-458e-d2c214f196e5/mzaf_10866651626943461182.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/97/e2/ce/97e2ce16-02e1-54f6-3896-dcc55249ff7d/603497838738.jpg/300x300bb.jpg",
+"_q": "The Doors | Light My Fire",
+"cat": "Classiques"
+},
+{
+"artist": "Led Zeppelin",
+"title": "Stairway to Heaven",
+"year": 1971,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a2/e9/c8/a2e9c8fb-e282-9e9d-b5f9-d44fadb07e1e/mzaf_13939222705716798166.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/5c/15/9b/5c159b27-95ca-b9a7-84e3-28e795fffd39/dj.kvkrpptq.jpg/300x300bb.jpg",
+"_q": "Led Zeppelin | Stairway to Heaven",
+"cat": "Classiques"
+},
+{
+"artist": "David Bowie",
+"title": "Space Oddity",
+"year": 1967,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/da/d1/ee/dad1eeb5-7678-c349-9a14-9811495cb4d2/mzaf_10140316768785473353.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/1f/d7/ac/1fd7ac86-48f1-b786-9d7e-2fa6da5825e1/190295994068.jpg/300x300bb.jpg",
+"_q": "David Bowie | Space Oddity",
+"cat": "Classiques"
+},
+{
+"artist": "Gloria Gaynor",
+"title": "I Will Survive",
+"year": 1977,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e7/40/66/e74066a0-d000-1896-cd2e-7b2bc97393ad/mzaf_6935563640938257821.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/33/12/df/3312dfbf-2cd2-e149-1ccb-9688e2a60980/00731454913720.rgb.jpg/300x300bb.jpg",
+"_q": "Gloria Gaynor | I Will Survive",
+"cat": "Classiques"
+},
+{
+"artist": "Donna Summer",
+"title": "I Feel Love",
+"year": 1977,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f6/f2/f0/f6f2f08a-a788-a354-b5ed-b4a71f8a58da/mzaf_11155681679719877923.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/82/13/19/8213190b-60a9-95cd-9cc0-0948e08a085a/06UMGIM05259.rgb.jpg/300x300bb.jpg",
+"_q": "Donna Summer | I Feel Love",
+"cat": "Classiques"
+},
+{
+"artist": "Stevie Wonder",
+"title": "Superstition",
+"year": 1972,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/59/4b/88/594b880c-4744-0510-775c-73d8b06567e8/mzaf_14855748840810986812.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/62/61/61/626161c0-f4d7-e6ff-8586-768340ef278f/00602537002382.rgb.jpg/300x300bb.jpg",
+"_q": "Stevie Wonder | Superstition",
+"cat": "Classiques"
+},
+{
+"artist": "Eagles",
+"title": "Hotel California",
+"year": 1976,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/17/30/06/1730066d-13fb-6803-0e52-46d4762b94e0/mzaf_8068080726527063383.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/88/16/2c/88162c3d-46db-8321-61f3-3a47404cfe76/075596050920.jpg/300x300bb.jpg",
+"_q": "Eagles | Hotel California",
+"cat": "Classiques"
+},
+{
+"artist": "Duran Duran",
+"title": "Hungry Like the Wolf",
+"year": 1982,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/3d/89/37/3d8937c0-0af8-8e56-7a05-84eb313bebf1/mzaf_6649517434617225776.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/4c/28/ba/4c28ba7a-8e8d-cf8c-3081-c7a9faf67520/5099996563359.jpg/300x300bb.jpg",
+"_q": "Duran Duran | Hungry Like the Wolf",
+"cat": "Années 80"
+},
+{
+"artist": "Dire Straits",
+"title": "Walk of Life",
+"year": 1985,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c0/20/82/c0208274-a259-b0f2-aa38-e34b08186cca/mzaf_3842832333440863070.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/e5/2e/58/e52e5826-29dc-0a9f-12b1-fafadb0b34ad/06UMGIM33900.rgb.jpg/300x300bb.jpg",
+"_q": "Dire Straits | Walk of Life",
+"cat": "Années 80"
+},
+{
+"artist": "Tears for Fears",
+"title": "Shout",
+"year": 1984,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d8/dc/a2/d8dca290-f445-0f78-f9d9-12104cf4ec3e/mzaf_6118928587616054721.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/74/41/43/744143ae-afad-8380-106e-1c1bc48922e4/14UMGIM34762.rgb.jpg/300x300bb.jpg",
+"_q": "Tears for Fears | Shout",
+"cat": "Années 80"
+},
+{
+"artist": "Pet Shop Boys",
+"title": "West End Girls",
+"year": 1984,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cd/0b/b4/cd0bb488-99d4-8269-6fbd-1381ef24af63/mzaf_587830891277239252.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3f/cb/87/3fcb8754-e772-7fcf-c54f-fbcb8976aff5/5054197358463.jpg/300x300bb.jpg",
+"_q": "Pet Shop Boys | West End Girls",
+"cat": "Années 80"
+},
+{
+"artist": "Wham!",
+"title": "Last Christmas",
+"year": 1984,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/db/62/36/db6236c2-8c76-9386-67d9-b131d03caeb0/mzaf_14164361553653082537.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/eb/d5/d4/ebd5d482-07c4-fdc6-a419-3bf2f7a891a0/886446132501.jpg/300x300bb.jpg",
+"_q": "Wham! | Last Christmas",
+"cat": "Années 80"
+},
+{
+"artist": "Starship",
+"title": "We Built This City",
+"year": 1985,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/52/68/61/52686112-174d-f297-950f-2b28604ff749/mzaf_5707194825155857116.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/38/ac/b8/38acb848-5fb4-7db8-fa9f-4a9f6795c298/603497853977.jpg/300x300bb.jpg",
+"_q": "Starship | We Built This City",
+"cat": "Années 80"
+},
+{
+"artist": "Europe",
+"title": "The Final Countdown",
+"year": 1986,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d3/5b/d9/d35bd9a3-d105-95d8-ba29-0f5c6b8e764b/mzaf_7609183394807520180.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/00/4d/a9/004da9d2-9b4f-99f4-d396-72ec786fb88c/696998575721.jpg/300x300bb.jpg",
+"_q": "Europe | The Final Countdown",
+"cat": "Années 80"
+},
+{
+"artist": "Survivor",
+"title": "Eye of the Tiger",
+"year": 1981,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/fe/fa/9e/fefa9edd-c023-4d1c-1012-08bfb0ec69e6/mzaf_4651653238471209843.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/f9/02/8f/f9028f63-7a55-235e-f789-1e8946430fa2/614223201122.jpg/300x300bb.jpg",
+"_q": "Survivor | Eye of the Tiger",
+"cat": "Années 80"
+},
+{
+"artist": "Bonnie Tyler",
+"title": "Total Eclipse of the Heart",
+"year": 1982,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/47/3d/35/473d35b3-b379-12d9-8fbf-88299e3cad7e/mzaf_5191559564499798673.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/20/74/b8/2074b81d-d546-b0c2-d85b-dda3a5e17661/886448236856.jpg/300x300bb.jpg",
+"_q": "Bonnie Tyler | Total Eclipse of the Heart",
+"cat": "Années 80"
+},
+{
+"artist": "Jeanne Mas",
+"title": "Toute première fois",
+"year": 1985,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ec/bb/a5/ecbba5c6-b658-bacf-ea10-4efdf3dbeccb/mzaf_17371327699451003295.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/36/8b/95/368b95a9-3939-958c-316f-273c39a9804f/5099962955553.jpg/300x300bb.jpg",
+"_q": "Jeanne Mas | Toute première fois",
+"cat": "Années 80"
+},
+{
+"artist": "Patrick Bruel",
+"title": "Casser la voix",
+"year": 1989,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1c/69/cb/1c69cb87-3da1-5d15-6c8f-69df7124f11f/mzaf_15651179770658142054.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/87/c9/47/87c947e2-27da-0c35-6024-86ca66ad806a/mzi.xdrcjkfg.jpg/300x300bb.jpg",
+"_q": "Patrick Bruel | Casser la voix",
+"cat": "Années 80"
+},
+{
+"artist": "Vanessa Paradis",
+"title": "Joe Le Taxi",
+"year": 1987,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/65/91/0b/65910b93-8dae-5828-77e8-b924133aff72/mzaf_17325635157831933688.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/1c/c6/1f/1cc61fd5-fe1d-a9f0-e45b-f90efa0360d8/00042283594920.rgb.jpg/300x300bb.jpg",
+"_q": "Vanessa Paradis | Joe le taxi",
+"cat": "Années 80"
+},
+{
+"artist": "Guns N' Roses",
+"title": "Sweet Child O' Mine",
+"year": 1987,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0d/cb/f3/0dcbf381-7cbf-78b8-7f74-d5789adf65a1/mzaf_17081805577020235844.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/56/47/b7/5647b700-6b9d-9e72-ec9f-51140b6d4492/00602567673781.rgb.jpg/300x300bb.jpg",
+"_q": "Guns N' Roses | Sweet Child o' Mine",
+"cat": "Années 80"
+},
+{
+"artist": "Kaoma",
+"title": "Lambada",
+"year": 1989,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8b/83/21/8b8321b1-b9c7-48e3-3a0d-0af52e26ed70/mzaf_12220572086153356239.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/93/dc/4c/93dc4c19-8abd-3f5e-ade3-0cbbf5d7a4a5/mzi.jhacztdu.jpg/300x300bb.jpg",
+"_q": "Kaoma | Lambada",
+"cat": "Années 80"
+},
+{
+"artist": "U2",
+"title": "With or Without You",
+"year": 1987,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b6/1f/0b/b61f0be5-94e7-0487-6507-38f9c9c71ab7/mzaf_4732149650781342076.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/1a/ba/3e/1aba3e49-70e9-7443-4c00-32364a9205b7/17UMGIM81723.rgb.jpg/300x300bb.jpg",
+"_q": "U2 | With or Without You",
+"cat": "Années 80"
+},
+{
+"artist": "Mylène Farmer",
+"title": "XXL",
+"year": 1995,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0a/27/b2/0a27b26f-b437-7056-7b55-a8e8ef846620/mzaf_11138094544286061833.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/aa/8b/8e/aa8b8e76-a45f-1abc-3163-c1f53e1b48f3/00731452926029.rgb.jpg/300x300bb.jpg",
+"_q": "Mylène Farmer | XXL",
+"cat": "Années 90"
+},
+{
+"artist": "Robert Miles",
+"title": "Children",
+"year": 1995,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/30/11/47/301147fa-fa68-0e80-5a57-ad5857185c49/mzaf_3733444377323604412.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/3c/89/0a/mzi.hcvikzyu.jpg/300x300bb.jpg",
+"_q": "Robert Miles | Children",
+"cat": "Années 90"
+},
+{
+"artist": "Coolio",
+"title": "Gangsta's Paradise",
+"year": 1995,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/91/8f/60/918f605a-f8a9-e976-f43a-1bb5f0a8199d/mzaf_11718273018999451377.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/92/f7/88/92f7884b-d115-5d5f-1eb5-85128af2d58f/081227882365.png/300x300bb.jpg",
+"_q": "Coolio | Gangsta's Paradise",
+"cat": "Années 90"
+},
+{
+"artist": "Eiffel 65",
+"title": "Blue",
+"year": 1998,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b0/8c/ce/b08cceb6-f52e-180d-f62a-a64e0ee99b56/mzaf_3747109934227670407.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/30/b6/d2/30b6d240-8d50-4089-39ac-ce01998639dd/mzi.muhdnqdk.jpg/300x300bb.jpg",
+"_q": "Eiffel 65 | Blue",
+"cat": "Années 90"
+},
+{
+"artist": "Lou Bega",
+"title": "Mambo No. 5",
+"year": 1999,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/95/12/14/951214ff-a3f2-7b9c-094c-385b382b5a14/mzaf_6010878480642586774.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/68/59/96/68599610-92f1-4400-8db3-4e794e2f2757/886446819020.jpg/300x300bb.jpg",
+"_q": "Lou Bega | Mambo No. 5",
+"cat": "Années 90"
+},
+{
+"artist": "Aqua",
+"title": "Barbie Girl",
+"year": 1997,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3d/b7/7d/3db77df0-d9a3-b60e-0714-41fd79b9ebff/mzaf_3692738463507322199.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/77/57/ba/7757ba77-0163-a195-950b-95786aa7a90e/17UMGIM98492.rgb.jpg/300x300bb.jpg",
+"_q": "Aqua | Barbie Girl",
+"cat": "Années 90"
+},
+{
+"artist": "Céline Dion",
+"title": "My Heart Will Go On",
+"year": 1997,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f4/e9/69/f4e9695a-ab90-1946-abe0-77e8fa96ccfc/mzaf_10170763914731960323.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e3/35/d0/e335d074-3d62-f1ca-0ebd-dbc79f7eb477/886447917251.jpg/300x300bb.jpg",
+"_q": "Céline Dion | My Heart Will Go On",
+"cat": "Années 90"
+},
+{
+"artist": "Los del Río",
+"title": "Macarena",
+"year": 1993,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/87/de/8d/87de8d4c-5420-73f9-4ea4-86b8db743958/mzaf_5563419343591496736.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/d8/7c/38/d87c3806-5453-c1dc-2db2-275f526fb37f/mzi.wmrxtfgq.jpg/300x300bb.jpg",
+"_q": "Los del Río | Macarena",
+"cat": "Années 90"
+},
+{
+"artist": "Cher",
+"title": "Believe",
+"year": 1998,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9c/52/d8/9c52d83d-242e-abc4-68fc-273eeb8f0358/mzaf_10714034642820090237.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/bb/90/f3/bb90f392-b78d-f180-ba6b-f04d2d1e62fd/s05.kfnyrece.jpg/300x300bb.jpg",
+"_q": "Cher | Believe",
+"cat": "Années 90"
+},
+{
+"artist": "Khaled & Faudel",
+"title": "Aicha",
+"year": 1996,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4b/6b/f4/4b6bf402-7bc2-6189-f992-b39e33f33230/mzaf_14983232148314791603.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/ce/ad/35/cead35dc-ce5e-a2cf-2e21-be197f66e84c/00731454719124.rgb.jpg/300x300bb.jpg",
+"_q": "Khaled | Aïcha",
+"cat": "Années 90"
+},
+{
+"artist": "Daniel Lavoie, Garou & Patrick Fiori",
+"title": "Belle",
+"year": 1997,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2b/68/05/2b6805a6-000e-11a0-15e4-a24fdecfef63/mzaf_311536280010861208.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/92/e8/f9/92e8f9e5-9dba-1243-8a12-ec3d13ef98c2/contsched.vlaptrqr.jpg/300x300bb.jpg",
+"_q": "Garou | Belle",
+"cat": "Années 90"
+},
+{
+"artist": "Lara Fabian",
+"title": "Je t’aime",
+"year": 1997,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8e/fd/d3/8efdd390-d40a-1761-72dd-4738ec3154c7/mzaf_1282717893982327279.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f0/bd/fd/f0bdfd22-7f93-09b5-fcd8-d9126cbe9996/859712856890_cover.jpg/300x300bb.jpg",
+"_q": "Lara Fabian | Je t'aime",
+"cat": "Années 90"
+},
+{
+"artist": "TLC",
+"title": "No Scrubs",
+"year": 1998,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c9/64/38/c964385e-f18a-fd99-638c-76d4f9bdd4e2/mzaf_4744709234124158764.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/2d/19/0c/2d190ce6-a157-6364-b5b4-e9b00265d313/mzi.ucefobwj.jpg/300x300bb.jpg",
+"_q": "TLC | No Scrubs",
+"cat": "Années 90"
+},
+{
+"artist": "Fugees",
+"title": "Killing Me Softly with His Song",
+"year": 1996,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/88/40/26/88402662-329d-8c34-ef72-863f9f2926bf/mzaf_3130005416732108579.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/0e/d1/5b/0ed15b14-271c-35d5-5909-49f18fbfb32b/886445600605.jpg/300x300bb.jpg",
+"_q": "Fugees | Killing Me Softly",
+"cat": "Années 90"
+},
+{
+"artist": "R.E.M.",
+"title": "Losing My Religion",
+"year": 1991,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8d/e5/e1/8de5e164-6ca5-196a-01aa-9df15db2983d/mzaf_5664795847327332256.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/8b/7e/73/8b7e73c2-d4d1-14b1-1df1-04e65861dde9/00888072013698.rgb.jpg/300x300bb.jpg",
+"_q": "R.E.M. | Losing My Religion",
+"cat": "Années 90"
+},
+{
+"artist": "Alizée",
+"title": "Moi... Lolita",
+"year": 2000,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/34/73/b7/3473b7da-9986-d5f0-b2af-b936fad2d293/mzaf_1119262600276621424.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fc/f3/81/fcf38156-2ee4-0f55-e15f-6c22700d211e/cover.jpg/300x300bb.jpg",
+"_q": "Alizée | Moi... Lolita",
+"cat": "Années 2000"
+},
+{
+"artist": "Modjo",
+"title": "Lady",
+"year": 2000,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/39/a0/2a/39a02a04-7e77-c309-9128-02e61098a7b7/mzaf_7220909039799435982.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/f5/25/2b/f5252b6e-0659-890b-7e9d-0e691944b95b/cover.jpg/300x300bb.jpg",
+"_q": "Modjo | Lady",
+"cat": "Années 2000"
+},
+{
+"artist": "Shaggy",
+"title": "It Wasn't Me",
+"year": 2000,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9e/66/d3/9e66d3fe-c395-edac-968e-61618aa4e498/mzaf_4801976080046705094.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/5b/78/c0/5b78c053-c5d5-5414-6d95-2a9ab3d3c7a6/06UMGIM55575.rgb.jpg/300x300bb.jpg",
+"_q": "Shaggy | It Wasn't Me",
+"cat": "Années 2000"
+},
+{
+"artist": "Las Ketchup",
+"title": "The Ketchup Song",
+"year": 2002,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f8/ef/14/f8ef149c-2b3e-2226-139f-ceb17737af77/mzaf_5510953676040455687.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music62/v4/05/56/27/05562700-1d3a-0f27-9fa3-1fd9cdd05f9f/192562272527.jpg/300x300bb.jpg",
+"_q": "Las Ketchup | The Ketchup Song",
+"cat": "Années 2000"
+},
+{
+"artist": "O-Zone",
+"title": "Dragostea din tei",
+"year": 2003,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/27/81/0e/27810e79-954c-247c-10cf-7b7fa3d9df1f/mzaf_14313478240804377750.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/bc/4c/9b/bc4c9ba4-e437-2e28-bcc6-154d489b3ac2/6420565323569.jpg/300x300bb.jpg",
+"_q": "O-Zone | Dragostea din tei",
+"cat": "Années 2000"
+},
+{
+"artist": "Kylie Minogue",
+"title": "Can't Get You Out of My Head",
+"year": 2001,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e2/92/9f/e2929f4e-f5bd-7c08-ac9f-d255349728f9/mzaf_1163655921309760137.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/db/f6/de/dbf6ded5-6f84-5084-237f-78dfb5b69a0b/724387986459.jpg/300x300bb.jpg",
+"_q": "Kylie Minogue | Can't Get You Out of My Head",
+"cat": "Années 2000"
+},
+{
+"artist": "Gorillaz",
+"title": "Clint Eastwood",
+"year": 2001,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/4c/df/e1/4cdfe199-3059-2c03-0c22-09ea1bd3a6fb/mzaf_13267119398234715369.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music3/v4/ca/55/e6/ca55e6b7-d8b3-a2ce-8009-e5232a30fb3f/825646177608.jpg/300x300bb.jpg",
+"_q": "Gorillaz | Clint Eastwood",
+"cat": "Années 2000"
+},
+{
+"artist": "Evanescence",
+"title": "Bring Me To Life",
+"year": 2003,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dd/fe/35/ddfe35a4-491e-cf31-658c-d0a146402b29/mzaf_1325478918326867414.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/52/49/1a/52491ac9-cef8-4a6a-1a16-a1c01ad44abc/14CMGIM00930.rgb.jpg/300x300bb.jpg",
+"_q": "Evanescence | Bring Me to Life",
+"cat": "Années 2000"
+},
+{
+"artist": "USHER",
+"title": "Yeah!",
+"year": 2004,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/94/52/3c/94523c88-f5f9-16f4-dbd7-f284ca168048/mzaf_7184891920196479048.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/02/c6/e1/02c6e1cd-8d57-97b4-6ef1-77d2be004509/mzi.sjrqsmrq.jpg/300x300bb.jpg",
+"_q": "Usher | Yeah!",
+"cat": "Années 2000"
+},
+{
+"artist": "MIKA",
+"title": "Relax, Take It Easy",
+"year": 2000,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/62/bb/03/62bb03db-d2b0-f030-1c5c-be6661f62e86/mzaf_1883580310672484228.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e2/f0/c5/e2f0c5ea-5ce9-7e52-8abd-fe17e5ed61c6/07UMGIM00357.rgb.jpg/300x300bb.jpg",
+"_q": "Mika | Relax, Take It Easy",
+"cat": "Années 2000"
+},
+{
+"artist": "Christophe Willem",
+"title": "Double je",
+"year": 2007,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2a/22/c5/2a22c570-e5b6-ecf6-424e-e3dbc9c89b93/mzaf_10659992952684439316.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/7f/99/2a/7f992a39-4caf-d905-3a1c-5c59da7cf9b4/mzi.mtdhugwj.jpg/300x300bb.jpg",
+"_q": "Christophe Willem | Double je",
+"cat": "Années 2000"
+},
+{
+"artist": "Fatal Bazooka",
+"title": "Fous ta cagoule",
+"year": 2006,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cb/b0/d0/cbb0d000-08e9-7088-f6c1-7978831f5fe5/mzaf_12203902155962264397.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f8/dc/eb/f8dceb15-5239-7c50-fde9-ad5d5623b9db/825646987528_cover.jpg/300x300bb.jpg",
+"_q": "Fatal Bazooka | Fous ta cagoule",
+"cat": "Années 2000"
+},
+{
+"artist": "Amel Bent",
+"title": "Ma Philosophie",
+"year": 2004,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/31/e3/d5/31e3d58c-bca1-39f8-89a4-3566f393510c/mzaf_3651206398904476894.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/e1/f0/f8/e1f0f8ea-67f3-a601-c3ca-d75f88dd1169/mzi.jghklsmd.jpg/300x300bb.jpg",
+"_q": "Amel Bent | Ma philosophie",
+"cat": "Années 2000"
+},
+{
+"artist": "Gnarls Barkley",
+"title": "Crazy",
+"year": 2005,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6a/6e/02/6a6e02dd-b9b0-07c0-68d5-cdaf5fd27080/mzaf_17486322274825047048.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/bc/b5/83/bcb58364-63af-af35-989a-6c339f700f65/mzi.vobztbfe.jpg/300x300bb.jpg",
+"_q": "Gnarls Barkley | Crazy",
+"cat": "Années 2000"
+},
+{
+"artist": "Gotye",
+"title": "Somebody That I Used to Know",
+"year": 2011,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/71/42/87/71428762-0574-9d80-0394-b92d16e03923/mzaf_1498996239017656014.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/6a/a0/82/6aa0822e-f9d1-1181-5bce-6c7cedbf91f5/11UMGIM40069.rgb.jpg/300x300bb.jpg",
+"_q": "Gotye | Somebody That I Used to Know",
+"cat": "Années 2010"
+},
+{
+"artist": "Carly Rae Jepsen",
+"title": "Call Me Maybe",
+"year": 2011,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/51/a6/66/51a6662d-6376-9edf-2e40-288d34368531/mzaf_1830159222496682754.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/28/60/82/28608207-9b1e-958b-2fed-e3c07c6b279f/12UMGIM48508.rgb.jpg/300x300bb.jpg",
+"_q": "Carly Rae Jepsen | Call Me Maybe",
+"cat": "Années 2010"
+},
+{
+"artist": "LMFAO",
+"title": "Party Rock Anthem",
+"year": 2011,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7f/35/e7/7f35e7f7-d797-6a4c-32ad-45f3b90c148a/mzaf_12957456960111168910.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e1/91/b0/e191b01e-4c62-ff1a-9813-08c858008aa1/11UMGIM14032.rgb.jpg/300x300bb.jpg",
+"_q": "LMFAO | Party Rock Anthem",
+"cat": "Années 2010"
+},
+{
+"artist": "Maroon 5",
+"title": "Moves Like Jagger",
+"year": 2010,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5d/bc/67/5dbc67a6-22d1-f351-81a3-80fa70d20ef5/mzaf_6624753133102855648.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/e3/89/dd/e389ddf4-ac74-590a-85d4-88aee5b3bf57/12UMGIM20010.rgb.jpg/300x300bb.jpg",
+"_q": "Maroon 5 | Moves Like Jagger",
+"cat": "Années 2010"
+},
+{
+"artist": "Bruno Mars",
+"title": "Just the Way You Are",
+"year": 2010,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/71/d9/eb/71d9eb43-8703-1858-c7a7-7c979d57520a/mzaf_5795521111340765219.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/25/6d/95/256d95ea-c58c-074d-b6f1-18f5cb4e6b96/075679956293.jpg/300x300bb.jpg",
+"_q": "Bruno Mars | Just the Way You Are",
+"cat": "Années 2010"
+},
+{
+"artist": "Shakira",
+"title": "Waka Waka",
+"year": 2010,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c1/72/b5/c172b57b-0476-aeed-94d2-32d1a83562d1/mzaf_841448688891614243.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/c4/6e/63/c46e6321-2a8a-dfaa-2c0f-21d4b62450b3/884977620108.jpg/300x300bb.jpg",
+"_q": "Shakira | Waka Waka",
+"cat": "Années 2010"
+},
+{
+"artist": "Major Lazer, MØ & DJ Snake",
+"title": "Lean On",
+"year": 2015,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1a/ae/34/1aae34ef-82e4-defa-626c-41def8be9f90/mzaf_17579690887450399528.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/38/3d/90/383d906a-2d08-0abf-c29d-46c30ca88110/5060525439629_cover.jpg/300x300bb.jpg",
+"_q": "Major Lazer | Lean On",
+"cat": "Années 2010"
+},
+{
+"artist": "Drake",
+"title": "One Dance",
+"year": 2016,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cb/ee/e3/cbeee354-21e5-2c44-daeb-bcd95e26fe6a/mzaf_5204581280747289469.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/f2/0d/8b/f20d8bff-a927-ae98-6784-20a1f51cb23e/16UMGIM27642.rgb.jpg/300x300bb.jpg",
+"_q": "Drake | One Dance",
+"cat": "Années 2010"
+},
+{
+"artist": "Camila Cabello",
+"title": "Havana",
+"year": 2017,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/7d/42/fe/7d42fe40-78b9-c546-861e-bda5788bba4e/mzaf_7434858341023410545.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/85/28/70/85287029-19b9-cbe3-d1ab-300781875bf4/886446870298.jpg/300x300bb.jpg",
+"_q": "Camila Cabello | Havana",
+"cat": "Années 2010"
+},
+{
+"artist": "Billie Eilish",
+"title": "bad guy",
+"year": 2019,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c3/87/1f/c3871f7e-3260-d615-1c66-5fdca2c3a48f/mzaf_10721331211699880949.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/1a/37/d1/1a37d1b1-8508-54f2-f541-bf4e437dda76/19UMGIM05028.rgb.jpg/300x300bb.jpg",
+"_q": "Billie Eilish | bad guy",
+"cat": "Années 2010"
+},
+{
+"artist": "Lil Nas X",
+"title": "Old Town Road",
+"year": 2018,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/47/7d/fd/477dfdf3-9261-cb11-d14f-b7eb454d2c5d/mzaf_4800633009593423692.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/71/3f/d3/713fd3d1-7ffc-ba46-73bf-aa577309ca52/886447622827.jpg/300x300bb.jpg",
+"_q": "Lil Nas X | Old Town Road",
+"cat": "Années 2010"
+},
+{
+"artist": "Orelsan",
+"title": "Basique",
+"year": 2017,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/af/25/93/af2593fa-f4ca-73d5-bc0a-b36c36719497/mzaf_5677389276593843455.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/b4/3a/b3/b43ab341-83c5-0cd8-9493-d2149122b763/3596973519320.jpg/300x300bb.jpg",
+"_q": "Orelsan | Basique",
+"cat": "Années 2010"
+},
+{
+"artist": "Clara Luciani",
+"title": "La grenade",
+"year": 2017,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/bc/da/56/bcda56cf-7d77-1191-88ba-a6fd3382382b/mzaf_2530572806117341994.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/42/ac/d7/42acd7e0-3811-45f0-4c18-12f4bfb6ab5d/18UMGIM13762.rgb.jpg/300x300bb.jpg",
+"_q": "Clara Luciani | La grenade",
+"cat": "Années 2010"
+},
+{
+"artist": "Amir",
+"title": "J'ai cherché",
+"year": 2016,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f2/b4/18/f2b418d4-827b-d754-8128-4efa3516e149/mzaf_7408154927376094478.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/3a/fd/29/3afd2907-acb5-1d73-ec1a-bec9f57d1add/190295903718.jpg/300x300bb.jpg",
+"_q": "Amir | J'ai cherché",
+"cat": "Années 2010"
+},
+{
+"artist": "Wiz Khalifa",
+"title": "See You Again",
+"year": 2015,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ef/54/3d/ef543d55-58cb-320e-8dc7-084336d961d0/mzaf_15679467696516524072.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/e6/8a/68/e68a688e-129e-cb9d-938f-bc3ee37059ae/075679930910.jpg/300x300bb.jpg",
+"_q": "Wiz Khalifa | See You Again",
+"cat": "Années 2010"
+},
+{
+"artist": "Tones And I",
+"title": "Dance Monkey",
+"year": 2019,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ec/f5/e1/ecf5e124-0b56-e11b-078d-e21d85abf79d/mzaf_14396866678275226571.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/2a/62/0a/2a620a1e-3e10-2886-2b8e-7a4f3ddfc6bf/075679775092.jpg/300x300bb.jpg",
+"_q": "Tones and I | Dance Monkey",
+"cat": "Années 2020"
+},
+{
+"artist": "Vitaa & Slimane",
+"title": "Ça va ça vient",
+"year": 2019,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/62/7a/19/627a19e6-d668-c7bb-a7ea-f6805923d3a7/mzaf_5524555830526516731.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/00/0b/18/000b18fc-0d70-e296-4cbe-29cbaae39563/19UMGIM65282.rgb.jpg/300x300bb.jpg",
+"_q": "Vitaa & Slimane | Ça va ça vient",
+"cat": "Années 2020"
+},
+{
+"artist": "Måneskin",
+"title": "Beggin'",
+"year": 2017,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/76/5f/db/765fdb18-6421-bf37-813d-fd00f14fbfd4/mzaf_5193356525080895049.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/67/08/e0/6708e014-c1be-76b1-c520-a6567bf946a2/886446867755.jpg/300x300bb.jpg",
+"_q": "Måneskin | Beggin'",
+"cat": "Années 2020"
+},
+{
+"artist": "Stromae",
+"title": "L’enfer",
+"year": 2022,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a4/b6/ee/a4b6eee2-b403-002e-affd-49601fc154f0/mzaf_9340144696045593467.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/03/65/5e/03655ec7-a022-f61f-1e24-34008b990e8d/21UM1IM50758.rgb.jpg/300x300bb.jpg",
+"_q": "Stromae | L'enfer",
+"cat": "Années 2020"
+},
+{
+"artist": "Tiakola",
+"title": "Si j'savais",
+"year": 2022,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d5/c6/a5/d5c6a594-040f-882a-eda2-0af4fb31ad1b/mzaf_10610317017846914764.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/4d/83/55/4d835585-8eb5-d3cf-341a-1266a5cd0b55/196589070982.jpg/300x300bb.jpg",
+"_q": "Tiakola | Si j'savais",
+"cat": "Années 2020"
+},
+{
+"artist": "Benson Boone",
+"title": "Beautiful Things",
+"year": 2024,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4d/d5/00/4dd5006f-ee02-c3f1-94db-0ed4b8dd68f1/mzaf_14250561294796027079.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/54/f4/92/54f49210-e260-b519-ebbd-f4f40ee710cd/054391342751.jpg/300x300bb.jpg",
+"_q": "Benson Boone | Beautiful Things",
+"cat": "Années 2020"
+},
+{
+"artist": "Chappell Roan",
+"title": "Good Luck, Babe!",
+"year": 2024,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c3/6d/4f/c36d4f23-b87f-046d-7a0e-e3e05d180b2a/mzaf_17235999651335214399.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/29/a7/c4/29a7c478-351d-25eb-a116-3e68118cdab8/24UMGIM31246.rgb.jpg/300x300bb.jpg",
+"_q": "Chappell Roan | Good Luck, Babe!",
+"cat": "Années 2020"
+},
+{
+"artist": "Lady Gaga & Bruno Mars",
+"title": "Die With A Smile",
+"year": 2024,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/07/6a/99/076a99ed-b946-431b-6f1f-54fa187ca5bd/mzaf_8102882277995122875.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/11/ae/f2/11aef294-f57c-bab9-c9fc-529162984e62/24UMGIM85348.rgb.jpg/300x300bb.jpg",
+"_q": "Lady Gaga | Die with a Smile",
+"cat": "Années 2020"
+},
+{
+"artist": "ROSÉ & Bruno Mars",
+"title": "APT.",
+"year": 2024,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/70/41/42/70414259-14f5-245e-bd79-93c80401d556/mzaf_8687698460653166345.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/2d/14/66/2d14661b-345b-d0f3-4e86-56ef626e68aa/075679629203.jpg/300x300bb.jpg",
+"_q": "ROSÉ | APT.",
+"cat": "Années 2020"
+},
+{
+"artist": "Kendrick Lamar",
+"title": "Not Like Us",
+"year": 2024,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2d/e0/e8/2de0e874-cd0b-e9a9-e876-76be13a86662/mzaf_12385336780649591409.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/31/3a/3f/313a3fbc-bb8f-80c7-b5a2-e226869a38cd/24UMGIM51924.rgb.jpg/300x300bb.jpg",
+"_q": "Kendrick Lamar | Not Like Us",
+"cat": "Années 2020"
+},
+{
+"artist": "Slimane",
+"title": "Mon amour",
+"year": 2023,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b4/1d/df/b41ddf07-da9e-c4e2-6c5e-43acdfa7e33d/mzaf_2188303256535107230.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/6c/69/f5/6c69f5e4-a420-f252-d802-314e6fb1bbe4/23UM1IM48466.rgb.jpg/300x300bb.jpg",
+"_q": "Slimane | Mon amour",
+"cat": "Années 2020"
+},
+{
+"artist": "Tate McRae",
+"title": "greedy",
+"year": 2023,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8d/e0/e2/8de0e2ae-f88c-5056-c07d-fe04acbc1d58/mzaf_1974309867621262359.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/21/4a/c2/214ac20c-a66c-84a1-e357-f7e60b1932ca/196871542661.jpg/300x300bb.jpg",
+"_q": "Tate McRae | greedy",
+"cat": "Années 2020"
+},
+{
+"artist": "Doja Cat",
+"title": "Paint The Town Red",
+"year": 2023,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d5/3e/52/d53e52e6-8b99-ed81-59f4-7496f18e80cb/mzaf_16754470647437213840.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/05/a1/62/05a162ca-d0f8-462a-a033-474a019e506f/196871274111.jpg/300x300bb.jpg",
+"_q": "Doja Cat | Paint the Town Red",
+"cat": "Années 2020"
+},
+{
+"artist": "Hatik",
+"title": "Angela",
+"year": 2019,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e8/4e/1a/e84e1af7-3bdf-adf3-497c-dd16e9a9c5c4/mzaf_18354168431867514997.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/50/ed/9250ed6f-81c0-1929-80af-cd1260c9ab35/4679.jpg/300x300bb.jpg",
+"_q": "Hatik | Angela",
 "cat": "Années 2020"
 }
 ]

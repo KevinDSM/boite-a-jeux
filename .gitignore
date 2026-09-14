@@ -4,3 +4,4 @@ __pycache__/
 geo-build.log
 build-jv.log
 build-anime.log
+*.cache.json

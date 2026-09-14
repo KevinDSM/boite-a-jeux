@@ -59,6 +59,10 @@ if os.path.exists(DST):
     for x in json.load(open(DST, encoding="utf-8")):
         if x.get("_q"): cache[x["_q"]] = x
 
+if os.path.exists(DST + ".cache.json"):   # reprise après une coupure
+    for x in json.load(open(DST + ".cache.json", encoding="utf-8")):
+        if x.get("_q"): cache[x["_q"]] = x
+
 out, seen, cat = [], set(), None
 for line in open(SRC, encoding="utf-8"):
     line = line.strip()
@@ -75,6 +79,8 @@ for line in open(SRC, encoding="utf-8"):
         s = {"game": game, "artist": r["artistName"], "title": re.sub(r"\s*[\(\[].*", "", r["trackName"]).strip(),
              "preview": r["previewUrl"], "art": r["artworkUrl100"].replace("100x100", "300x300"), "_q": line}
         time.sleep(3)
+        cache[line] = s
+        json.dump(list(cache.values()), open(DST + ".cache.json", "w", encoding="utf-8"), ensure_ascii=False)
     if norm(s["game"]) in seen: continue
     seen.add(norm(s["game"]))
     s["cat"] = cat
