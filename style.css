@@ -969,3 +969,140 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
 .uc-recap-row{display:grid;grid-template-columns:minmax(72px,auto) 1fr;gap:12px;align-items:baseline;font-size:14px}
 .uc-recap-row span{font-family:var(--font-d);color:var(--ink);word-break:break-word}
 .uc-recap-row.out{opacity:.55}
+
+/* ============================ jeu : Chromo ============================
+   Tapis de jeu vert profond, cartes bien vives, jaune d'accent, police ronde Lilita One. */
+[data-game="chromo"]{
+  --bg:        oklch(0.215 0.045 162);
+  --surface:   oklch(0.265 0.050 162);
+  --surface-2: oklch(0.315 0.055 162);
+  --line:      oklch(0.380 0.055 162);
+  --ink:       oklch(0.970 0.012 110);
+  --ink-2:     oklch(0.830 0.030 140);
+  --mute:      oklch(0.680 0.040 150);
+  --acc:       oklch(0.860 0.170 92);
+  --acc-soft:  oklch(0.920 0.100 95);
+  --on-acc:    oklch(0.230 0.050 80);
+  --pos:       oklch(0.830 0.140 150);
+  --neg:       oklch(0.660 0.210 27);
+  --gold:      oklch(0.860 0.170 92);
+  --glow: 0.14;
+  --r: 16px; --r-s: 12px; --r-pill: 999px;
+  --font-d: "Lilita One", "Bricolage Grotesque", sans-serif;
+  --track: 0;
+}
+[data-theme="light"][data-game="chromo"]{
+  --bg:        oklch(0.955 0.025 150);
+  --surface:   oklch(0.990 0.010 150);
+  --surface-2: oklch(0.925 0.030 150);
+  --line:      oklch(0.860 0.035 150);
+  --ink:       oklch(0.240 0.040 160);
+  --ink-2:     oklch(0.420 0.040 160);
+  --mute:      oklch(0.560 0.035 160);
+  --acc:       oklch(0.600 0.140 75);
+  --acc-soft:  oklch(0.500 0.120 70);
+  --on-acc:    oklch(0.990 0.010 90);
+  --neg:       oklch(0.550 0.200 27);
+  --glow: 0.08;
+}
+[data-game="chromo"] h1,[data-game="chromo"] .banner{font-family:var(--font-d);font-weight:400}
+
+/* carte du salon */
+.g-chromo .gname{font-family:"Lilita One","Bricolage Grotesque",sans-serif;font-weight:400;letter-spacing:.01em;color:oklch(0.86 0.17 92)}
+[data-theme="light"] .g-chromo .gname{color:oklch(0.58 0.14 70)}
+.g-chromo{background:oklch(0.235 0.05 162);border-color:oklch(0.34 0.055 162)}
+.g-chromo[aria-pressed="true"]{border-color:oklch(0.86 0.17 92);background:oklch(0.28 0.06 160)}
+[data-theme="light"] .g-chromo{background:oklch(0.97 0.02 150);border-color:oklch(0.87 0.03 150)}
+[data-theme="light"] .g-chromo[aria-pressed="true"]{border-color:oklch(0.6 0.14 75);background:oklch(0.94 0.04 120)}
+.fan{position:relative;display:block;width:54px;height:50px}
+.fan i{position:absolute;left:14px;top:4px;width:26px;height:38px;border-radius:5px;border:2px solid #fff;box-shadow:0 2px 6px oklch(0 0 0/.4);transition:transform .4s var(--ease)}
+.fan i:nth-child(1){background:oklch(0.56 0.16 255);transform:rotate(-22deg) translateX(-9px)}
+.fan i:nth-child(2){background:oklch(0.84 0.17 90)}
+.fan i:nth-child(3){background:oklch(0.60 0.22 27);transform:rotate(22deg) translateX(9px)}
+.gcard[aria-pressed="true"] .fan i:nth-child(1){transform:rotate(-32deg) translateX(-13px)}
+.gcard[aria-pressed="true"] .fan i:nth-child(3){transform:rotate(32deg) translateX(13px)}
+
+/* les cartes */
+.col-r{--cc:oklch(0.60 0.22 27)} .col-y{--cc:oklch(0.82 0.17 88)} .col-g{--cc:oklch(0.63 0.17 150)} .col-b{--cc:oklch(0.55 0.16 258)} .col-w{--cc:oklch(0.20 0.012 260)}
+.ch-card{position:relative;width:60px;aspect-ratio:5/7.4;border-radius:9px;background:var(--cc);border:3px solid #fff;box-shadow:0 5px 12px oklch(0 0 0/.35);display:block;color:#fff;font-family:"Lilita One","Bricolage Grotesque",sans-serif;padding:0;cursor:pointer;overflow:hidden;transition:transform .16s var(--ease),opacity .2s,filter .2s,box-shadow .2s;flex:0 0 auto}
+.ch-oval{position:absolute;inset:15% 9%;border-radius:50%;background:#fff;transform:rotate(-28deg);display:grid;place-items:center}
+.ch-oval b{transform:rotate(28deg);color:var(--cc);font-size:25px;line-height:1;font-weight:400;position:relative;z-index:1;text-shadow:1px 1px 0 oklch(0 0 0/.18)}
+.col-w .ch-oval b{color:oklch(0.2 0.01 260)}
+.ch-corner{position:absolute;top:3px;left:5px;font-size:12px;line-height:1;color:#fff;text-shadow:0 1px 0 oklch(0 0 0/.35)}
+.ch-corner.bottom{top:auto;left:auto;bottom:3px;right:5px;transform:rotate(180deg)}
+.ch-wheel{width:72%;aspect-ratio:1;border-radius:50%;transform:rotate(28deg);background:conic-gradient(oklch(0.60 0.22 27) 0 25%, oklch(0.82 0.17 88) 0 50%, oklch(0.63 0.17 150) 0 75%, oklch(0.55 0.16 258) 0)}
+.ch-wheel.small{position:absolute;width:50%;opacity:.95}
+.ch-card.big{width:92px;border-width:4px;border-radius:12px}
+.ch-card.big .ch-oval b{font-size:38px}
+.ch-card.big .ch-corner{font-size:16px;top:5px;left:7px}
+.ch-card.big .ch-corner.bottom{top:auto;left:auto;bottom:5px;right:7px}
+.ch-back{--cc:oklch(0.19 0.015 260)}
+.ch-back .ch-oval{background:oklch(0.60 0.22 27)}
+.ch-back .ch-oval b{transform:none;color:oklch(0.86 0.17 92);font-size:19px;text-shadow:2px 2px 0 oklch(0.2 0.02 260)}
+.ch-back.can{box-shadow:0 0 0 3px var(--acc),0 5px 12px oklch(0 0 0/.35);animation:ch-breathe 1.6s ease-in-out infinite}
+@keyframes ch-breathe{50%{transform:translateY(-3px)}}
+.ch-card.pop{animation:ch-pop .38s var(--ease)}
+@keyframes ch-pop{from{transform:translateY(-34px) rotate(-14deg) scale(.82);opacity:0}}
+
+/* table et joueurs */
+.ch-head{display:flex;justify-content:space-between;align-items:center}
+.ch-dir{font-size:22px;color:var(--acc);line-height:1}
+.ch-players{display:flex;gap:6px;overflow-x:auto;margin:0 -20px;padding:10px 20px 4px;scrollbar-width:none}
+.ch-players::-webkit-scrollbar{display:none}
+.ch-seat{position:relative;flex:0 0 auto;min-width:86px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:7px 11px;display:flex;flex-direction:column;gap:2px;transition:border-color .2s,box-shadow .2s}
+.ch-seat.now{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.ch-seat.me .ch-seat-name::after{content:" (toi)";color:var(--mute);font-weight:400}
+.ch-seat.off{opacity:.45}
+.ch-seat-name{font-size:13px;font-weight:600;white-space:nowrap}
+.ch-seat-name small{color:var(--mute);font-weight:400}
+.ch-seat-count{font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ch-mini{display:inline-block;width:9px;height:13px;border-radius:2px;background:oklch(0.60 0.22 27);border:1.5px solid #fff;margin-right:5px;vertical-align:-2px}
+.ch-flag{position:absolute;top:-9px;right:-4px;background:var(--acc);color:var(--on-acc);font:12px/1 "Lilita One",sans-serif;padding:3px 7px;border-radius:999px}
+.ch-flag.warn{background:var(--neg);color:#fff}
+.ch-table{--cc:var(--line);position:relative;display:flex;align-items:center;justify-content:center;gap:26px;padding:22px 18px 34px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(ellipse at 50% 45%, color-mix(in oklab, var(--cc) 34%, var(--surface)), var(--surface) 72%);transition:background .3s}
+.ch-color{position:absolute;left:0;right:0;bottom:9px;text-align:center;font:15px/1 "Lilita One",sans-serif;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:7px}
+.ch-dot{display:inline-block;width:13px;height:13px;border-radius:50%;background:var(--cc);box-shadow:0 0 0 2px #fff}
+.ch-pending{background:var(--neg);color:#fff;border-radius:999px;padding:3px 9px;font-weight:400;animation:pop .35s var(--ease)}
+.ch-status{text-align:center;font:20px/1.2 "Lilita One",sans-serif;margin:0;color:var(--ink-2)}
+.ch-status.mine{color:var(--acc)}
+.ch-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.ch-actions .btn{font-family:"Lilita One",sans-serif;font-weight:400;font-size:17px}
+.btn.danger{background:var(--neg);border-color:var(--neg);color:#fff;animation:ch-breathe 1s ease-in-out infinite}
+.ch-hand-title{text-align:center}
+.ch-hand{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:6px 0 4px}
+.ch-hand .ch-card.ok{transform:translateY(-7px);box-shadow:0 0 0 3px var(--acc),0 8px 16px oklch(0 0 0/.4)}
+.ch-hand .ch-card.ok:active{transform:translateY(-2px) scale(.96)}
+.ch-hand .ch-card.no{opacity:.42;filter:saturate(.55)}
+.ch-hand .ch-card.drawn{outline:3px dashed var(--acc);outline-offset:2px}
+.ch-hand.mini{justify-content:flex-start;gap:4px;padding:0}
+.ch-hand.mini .ch-card{width:30px;border-width:2px;border-radius:5px;cursor:default;box-shadow:none}
+.ch-hand.mini .ch-oval b{font-size:12px}
+.ch-hand.mini .ch-corner{display:none}
+.ch-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mute);text-align:center}
+.ch-log li:first-child{color:var(--ink);font-size:14px}
+.ch-picker{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:16px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -14px 34px oklch(0 0 0/.4);display:flex;flex-direction:column;gap:10px;align-items:center;animation:sheet-in .3s var(--ease)}
+.ch-picker-title{font:20px/1 "Lilita One",sans-serif;margin:0}
+.ch-picker-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:500px}
+.ch-swatch{min-height:68px;border-radius:14px;border:3px solid #fff;background:var(--cc);color:#fff;font:17px/1 "Lilita One",sans-serif;text-shadow:0 1px 3px oklch(0 0 0/.45);cursor:pointer;transition:transform .12s var(--ease)}
+.ch-swatch:active{transform:scale(.94)}
+
+/* fin de manche */
+.ch-verdict{text-align:center;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:var(--r);padding:16px}
+.ch-big{font:34px/1.1 "Lilita One",sans-serif;margin:6px 0 2px;color:var(--acc)}
+.ch-hands{display:flex;flex-direction:column;gap:8px}
+.ch-hand-row{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ch-hand-row-head{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}
+.ch-hand-row-head span{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ch-scores{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:15px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:12px}
+.ch-scores .eyebrow{width:100%}
+.ch-scores b{color:var(--ink);font-variant-numeric:tabular-nums}
+.ch-scores .lead{color:var(--acc)}
+.ch-scores .lead b{color:var(--acc)}
+.screen.play.chromo{padding-bottom:40px}
+@media (min-width: 700px){ .ch-card{width:70px} .ch-card.big{width:110px} .ch-card.big .ch-oval b{font-size:46px} }
+
+/* Chromo : retouches */
+.ch-back .ch-oval b{font-size:13px;letter-spacing:.02em}
+.ch-card.big.ch-back .ch-oval b{font-size:17px}
+@media (min-width: 700px){ .ch-card.big.ch-back .ch-oval b{font-size:20px} }
+.ch-oval.u b,.ch-corner.u{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px}

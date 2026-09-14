@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=25">
-<link rel="apple-touch-icon" href="icon-180.png?v=25">
+<link rel="manifest" href="manifest.json?v=26">
+<link rel="apple-touch-icon" href="icon-180.png?v=26">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=25">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -91,7 +91,7 @@
 
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
-    <p class="fine">6 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">7 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -145,6 +145,12 @@
         <span class="gname">Boussole</span>
         <span class="gdesc">Une photo de rue, quelque part dans le monde. Devine où tu es et pose ton épingle sur la carte.</span>
         <span class="gmeta">1 à 20 joueurs · 15 min · sans musique</span>
+      </button>
+      <button class="gcard g-chromo" type="button" data-game="chromo">
+        <span class="gart" aria-hidden="true"><span class="fan"><i></i><i></i><i></i></span></span>
+        <span class="gname">Chromo</span>
+        <span class="gdesc">Débarrasse-toi de toutes tes cartes : même couleur ou même symbole, et des +2, +4 et jokers pour piéger les autres.</span>
+        <span class="gmeta">2 à 10 joueurs · 20 min · robots possibles</span>
       </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
@@ -201,6 +207,12 @@
           <option value="host">Ce téléphone (enceinte)</option>
         </select>
       </label>
+    </div>
+    <div class="opts" id="opts-chromo" hidden>
+      <label class="field row"><span>Nombre de manches</span><select id="opt-ch-rounds"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label>
+      <label class="field row"><span>Cumul des +2 et +4</span><input id="opt-ch-stack" type="checkbox" class="tick" checked></label>
+      <label class="field row"><span>Robots à la table</span><select id="opt-ch-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+      <p class="fine">Les robots jouent tout seuls : pratique pour tester seul ou compléter une petite table.</p>
     </div>
     <div class="opts" id="opts-geo" hidden>
       <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
@@ -312,6 +324,11 @@
 <div class="react-layer" id="sab-react-layer" aria-hidden="true"></div>
 <div class="sab-react" id="sab-react" hidden></div>
 
+<!-- ====================== CHROMO ====================== -->
+<section class="screen play chromo" id="s-chromo" hidden>
+  <div class="stack" id="ch-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -359,11 +376,12 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
-<script src="sablier-engine.js?v=25"></script>
-<script src="app.js?v=25"></script>
-<script src="sablier-ui.js?v=25"></script>
-<script src="undercover.js?v=25"></script>
-<script src="geo-config.js?v=25"></script>
-<script src="geo.js?v=25"></script>
+<script src="sablier-engine.js?v=26"></script>
+<script src="app.js?v=26"></script>
+<script src="sablier-ui.js?v=26"></script>
+<script src="undercover.js?v=26"></script>
+<script src="geo-config.js?v=26"></script>
+<script src="geo.js?v=26"></script>
+<script src="chromo.js?v=26"></script>
 </body>
 </html>

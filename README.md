@@ -49,6 +49,13 @@ Les cartes déjà vues ne reviennent pas d'une soirée à l'autre (mémoire du t
 Cartes : 953 dans `decks/*.json`, 5 decks, format `{ "n": nom, "c": catégorie, "d": 1|2|3 }`.
 Le deck privé « Entre nous » de l'original n'est volontairement pas publié.
 
+### Chromo
+L'équivalent maison d'un jeu de cartes de couleurs, cartes dessinées en CSS : 108 cartes
+(chiffres, Passe, Sens, +2, jokers et jokers +4), se débarrasser de sa main en suivant la couleur
+ou le symbole. Bouton « Chromo ! » à une carte, sinon on peut se faire attraper (+2). Options :
+nombre de manches, cumul des +2 et +4, robots (jouent et attrapent tout seuls, dans le tick de
+l'hôte). Chaque téléphone ne reçoit que sa propre main. Points : valeur des mains adverses.
+
 ### Boussole
 L'équivalent de GeoGuessr, gratuit : une photo 360° de rue Mapillary, chacun pose son épingle sur
 une carte OpenStreetMap (Leaflet). Cartes Monde, Europe et France, trois modes (déplacement libre,
@@ -88,6 +95,7 @@ faut donner le nom du jeu, et une réponse trop vague ne coûte pas d'essai.
 | `build_songs.py` | régénère une base depuis une liste via l'API iTunes |
 | `sablier-engine.js`, `sablier-ui.js`, `decks/` | le jeu Sablier : règles pures, écrans et canevas, cartes |
 | `undercover.js` | le jeu Undercover : paires de mots, règles, écran |
+| `chromo.js` | le jeu Chromo : paquet, règles, robots, écran et cartes |
 | `geo.js`, `geo-config.js`, `geo-places.json`, `build_geo.py` | le jeu Boussole : règles et écran, jeton Mapillary, lieux, script qui prépare les lieux |
 
 ## Ajouter un jeu

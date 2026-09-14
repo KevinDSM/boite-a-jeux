@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '25';
+const ASSET_V = '26';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -25,6 +25,7 @@ const GAMES = {
   sablier: { key: 'sablier', theme: 'sablier', name: 'Sablier' },
   undercover: { key: 'undercover', theme: 'undercover', name: 'Undercover' },
   geo: { key: 'geo', theme: 'geo', name: 'Boussole' },
+  chromo: { key: 'chromo', theme: 'chromo', name: 'Chromo' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -43,12 +44,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -107,16 +108,17 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
     if (this.uc) Undercover.join(this.uc, id, name);
     if (this.geo) Geo.join(this.geo, id, name);
+    if (this.chromo) Chromo.join(this.chromo, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -141,6 +143,7 @@ class Game {
     if (s.mode === 'sablier') return this.startSablier(o);
     if (s.mode === 'undercover') return this.startUndercover(o);
     if (s.mode === 'geo') return this.startGeo(o);
+    if (s.mode === 'chromo') return this.startChromo(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -371,10 +374,16 @@ class Game {
     this.geo = Geo.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), map: o.map, mode: o.geoMode, rounds: o.rounds, seconds: o.seconds });
     s.phase = 'geo';
   }
-  viewFor(base, pid) { if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Chromo : la salle vit dans this.chromo, chaque main ne sort que vers son joueur =================
+  startChromo(o) {
+    const s = this.s;
+    this.chromo = Chromo.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rounds: o.rounds, stack: o.stack, bots: o.bots });
+    s.phase = 'ch';
+  }
+  viewFor(base, pid) { if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null; this.uc = null; this.geo = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -426,7 +435,7 @@ async function hostGame() {
   peer.on('disconnected', () => { setNet(false, 'reconnexion'); peer.reconnect(); });
   peer.on('open', () => setNet(true, 'hôte'));
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -442,6 +451,7 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('sab:')) return sabAction(pid, m);
   if (typeof m.t === 'string' && m.t.startsWith('uc:')) return ucAction(pid, m);
   if (typeof m.t === 'string' && m.t.startsWith('geo:')) return geoAction(pid, m);
+  if (typeof m.t === 'string' && m.t.startsWith('ch:')) return net.game.chromo ? Chromo.act(net.game.chromo, pid, m) : 'Pas de partie de Chromo en cours';
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
@@ -639,6 +649,7 @@ function render() {
   else if (s.phase === 'sab') { show('s-sablier'); renderSablier(s.sab); }
   else if (s.phase === 'uc') { show('s-undercover'); renderUndercover(s.uc); }
   else if (s.phase === 'geo') { show('s-geo'); renderGeo(s.geo); }
+  else if (s.phase === 'ch') { show('s-chromo'); renderChromo(s.chromo); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -673,6 +684,7 @@ function renderLobby(s) {
   $('#opts-sablier').hidden = s.pick !== 'sablier';
   $('#opts-undercover').hidden = s.pick !== 'undercover';
   $('#opts-geo').hidden = s.pick !== 'geo';
+  $('#opts-chromo').hidden = s.pick !== 'chromo';
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
     Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
     const refresh = () => {
@@ -1194,6 +1206,17 @@ const HELP = {
     <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
     <p>Pendant un tour, le public envoie des réactions emoji, et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran avec le crayon ✏️ (couleur de leur équipe, effacé au tour suivant).</p>
     <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
+  chromo: `<h3>Chromo</h3>
+    <p><b>But :</b> être le premier à ne plus avoir de cartes.</p>
+    <ul>
+      <li><b>À ton tour :</b> pose une carte de la même couleur ou du même symbole que celle du dessus. Sinon, pioche : si la carte piochée va, tu peux la jouer tout de suite.</li>
+      <li><b>Passe :</b> le suivant saute son tour. <b>Sens :</b> on tourne dans l'autre sens, et à deux joueurs ça fait passer. <b>+2 :</b> le suivant pioche deux cartes et passe.</li>
+      <li><b>Joker :</b> se pose sur tout, tu choisis la couleur. <b>Joker +4 :</b> pareil, et le suivant pioche quatre cartes.</li>
+      <li><b>Cumul :</b> avec l'option, on répond à un +2 par un +2 ou un +4, et à un +4 par un +4. Le premier qui ne peut pas contrer pioche le total.</li>
+      <li><b>« Chromo ! » :</b> quand il ne te reste qu'une ou deux cartes, touche le bouton. Si tu tombes à une carte sans l'avoir crié, n'importe qui peut t'attraper avant que le suivant ne joue : deux cartes de pénalité.</li>
+    </ul>
+    <p><b>Points :</b> le gagnant d'une manche marque la valeur des cartes restées chez les autres : le chiffre pour un nombre, 20 pour Passe, Sens et +2, 50 pour les jokers.</p>
+    <p class="fine">Les robots jouent tout seuls et attrapent ceux qui oublient de crier.</p>`,
   geo: `<h3>Boussole</h3>
     <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
     <ul>
@@ -1303,6 +1326,12 @@ $('#btn-start').onclick = () => {
   if (pick === 'undercover') {
     if ((view?.players || []).filter(p => p.online).length < 3) { toast('Undercover se joue à trois minimum'); return; }
     act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked } });
+  }
+  if (pick === 'chromo') {
+    const humans = (view?.players || []).filter(p => p.online).length, bots = +$('#opt-ch-bots').value;
+    if (humans + bots < 2) { toast('Chromo se joue à deux minimum : ajoute un robot ou invite un ami'); return; }
+    if (humans + bots > 10) { toast('Dix joueurs au maximum, robots compris'); return; }
+    act({ t: 'start', opts: { mode: 'chromo', rounds: +$('#opt-ch-rounds').value, stack: $('#opt-ch-stack').checked, bots } });
   }
   if (pick === 'geo') {
     (async () => {
