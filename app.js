@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '29';
+const ASSET_V = '30';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -1318,6 +1318,77 @@ const HELP = {
   hub: `<h3>Boîte à jeux</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
     <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
 };
+
+// ============================================================ diagnostic réseau
+// Sert quand ça marche sur un téléphone et pas sur un autre : dit ce qui est bloqué.
+async function runDiag() {
+  const body = $('#help-body');
+  const lines = [];
+  const draw = () => { body.innerHTML = '<h3>Diagnostic réseau</h3>' + lines.map(l => `<p class="diag-line">${l}</p>`).join('') + '<p class="fine">Touche « Copier » puis envoie-moi le texte.</p>'; };
+  const add = (label, ok, detail) => { lines.push(`${ok === null ? '⏳' : ok ? '✅' : '❌'} <b>${label}</b>${detail ? ` : ${esc(String(detail)).slice(0, 120)}` : ''}`); draw(); };
+  lines.push(`Navigateur : ${esc(navigator.userAgent).slice(0, 110)}`);
+  lines.push(`Page sécurisée : ${window.isSecureContext ? 'oui' : 'non'} · en ligne : ${navigator.onLine ? 'oui' : 'non'} · version ${ASSET_V}`);
+  draw();
+
+  add('Bibliothèque réseau chargée', typeof Peer !== 'undefined', typeof Peer === 'undefined' ? 'bloquée par un bloqueur de contenu ?' : 'ok');
+
+  try {
+    const r = await fetch('https://0.peerjs.com/peerjs/id?ts=' + Date.now(), { cache: 'no-store' });
+    add('Serveur de mise en relation joignable', r.ok, 'réponse ' + r.status);
+  } catch (e) { add('Serveur de mise en relation joignable', false, e.message || e); }
+
+  await new Promise(res => {
+    let done = false;
+    try {
+      const ws = new WebSocket('wss://0.peerjs.com/peerjs?key=peerjs&id=diag' + Math.random().toString(36).slice(2, 8) + '&token=' + Math.random().toString(36).slice(2, 8) + '&version=1.5.4');
+      const fin = (ok, d) => { if (done) return; done = true; try { ws.close(); } catch { } add('Connexion permanente au serveur', ok, d); res(); };
+      ws.onopen = () => fin(true, 'ouverte');
+      ws.onerror = () => fin(false, 'refusée (réseau, VPN ou bloqueur)');
+      setTimeout(() => fin(false, 'aucune réponse en 8 s'), 8000);
+    } catch (e) { add('Connexion permanente au serveur', false, e.message || e); res(); }
+  });
+
+  add('Connexion directe entre téléphones possible', typeof RTCPeerConnection !== 'undefined', typeof RTCPeerConnection === 'undefined' ? 'non supportée' : 'supportée');
+  if (typeof RTCPeerConnection !== 'undefined') {
+    await new Promise(res => {
+      const types = new Set();
+      let pc;
+      const fin = () => { try { pc.close(); } catch { } add('Adresses de connexion trouvées', types.size > 0, [...types].join(', ') || 'aucune : relais privé iCloud ou VPN ?'); res(); };
+      try {
+        pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        pc.createDataChannel('diag');
+        pc.onicecandidate = e => { if (e.candidate) types.add(e.candidate.type || 'inconnu'); };
+        pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => { });
+        setTimeout(fin, 6000);
+      } catch (e) { add('Adresses de connexion trouvées', false, e.message || e); res(); }
+    });
+  }
+
+  await new Promise(res => {
+    if (typeof Peer === 'undefined') { add('Création d\'une partie de test', false, 'bibliothèque absente'); return res(); }
+    let done = false;
+    const p = new Peer(undefined, { debug: 0 });
+    const fin = (ok, d) => { if (done) return; done = true; try { p.destroy(); } catch { } add('Création d\'une partie de test', ok, d); res(); };
+    p.on('open', id => fin(true, 'identifiant obtenu'));
+    p.on('error', e => fin(false, e.type + ' · ' + (e.message || '').slice(0, 60)));
+    setTimeout(() => fin(false, 'aucune réponse en 12 s'), 12000);
+  });
+
+  let stockage = 'ok';
+  try { localStorage.setItem('diag', '1'); localStorage.removeItem('diag'); } catch (e) { stockage = 'bloqué (navigation privée ?)'; }
+  add('Mémoire du téléphone', stockage === 'ok', stockage);
+
+  const texte = lines.map(l => l.replace(/<[^>]+>/g, '')).join('\n');
+  const copier = el('button', 'btn small', 'Copier le résultat');
+  copier.onclick = async () => {
+    try { await navigator.clipboard.writeText(texte); toast('Résultat copié'); }
+    catch { const t = document.createElement('textarea'); t.value = texte; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); toast('Résultat copié'); }
+  };
+  body.appendChild(copier);
+}
+$('#btn-diag').onclick = () => { $('#help').hidden = false; runDiag(); };
+$('#btn-diag-home').onclick = () => { $('#help').hidden = false; runDiag(); };
+
 $('#btn-help').onclick = () => { $('#help-body').innerHTML = HELP[view?.mode && view.phase !== 'lobby' ? view.mode : (view?.pick || 'hub')] || HELP.hub; $('#help').hidden = false; };
 $('#help-close').onclick = () => $('#help').hidden = true;
 $('#help').onclick = e => { if (e.target.id === 'help') $('#help').hidden = true; };
@@ -1362,7 +1433,7 @@ $('#f-home').addEventListener('submit', async e => {
   if (!name) { err.textContent = 'Il faut un prénom.'; return; }
   try { localStorage.setItem('dc-name', name); } catch { }
   net.name = name;
-  if (typeof Peer === 'undefined') { err.textContent = 'Le module réseau n\'a pas chargé. Vérifie ta connexion.'; return; }
+  if (typeof Peer === 'undefined') { err.textContent = 'Le module réseau est bloqué. Sur iPhone : Réglages, Safari, désactive les bloqueurs de contenu pour ce site, ou passe par Chrome.'; return; }
   e.submitter.disabled = true;
   try {
     if (mode === 'create') { await hostGame(); keepAwake(); }

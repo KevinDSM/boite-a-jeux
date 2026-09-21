@@ -1106,3 +1106,7 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
 .ch-card.big.ch-back .ch-oval b{font-size:17px}
 @media (min-width: 700px){ .ch-card.big.ch-back .ch-oval b{font-size:20px} }
 .ch-oval.u b,.ch-corner.u{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px}
+
+/* diagnostic réseau */
+.diag-line{font-size:14px;line-height:1.5;margin:4px 0;word-break:break-word}
+#btn-diag{margin-top:8px;align-self:flex-start}
