@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '26';
+const ASSET_V = '29';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -413,11 +413,85 @@ async function loadSongsAnime() { if (!songsAnimeCache) { try { songsAnimeCache 
 async function loadSongsJV() { if (!songsJVCache) songsJVCache = await (await fetch('songs-jv.json?v=' + ASSET_V)).json(); return songsJVCache; }
 function setNet(on, label) { const n = $('#net'); n.className = 'net ' + (on ? 'on' : 'off'); n.textContent = label; }
 
-function makePeer(id) {
+// L'hôte garde son code même après une coupure : sur iPhone, verrouiller l'écran ou changer
+// d'application ferme la connexion et libérait le code, plus personne ne pouvait rejoindre.
+function attachHost(peer) {
+  peer.on('connection', conn => {
+    conn.on('data', m => handleClientMessage(conn, m));
+    conn.on('close', () => { const pid = conn.metadata?.pid; if (!pid || net.conns.get(pid) !== conn) return; net.conns.delete(pid); net.game.setOffline(pid); sabOffline(pid); broadcast(); });
+  });
+  peer.on('open', () => setNet(true, 'hôte'));
+  peer.on('disconnected', () => { setNet(false, 'reconnexion'); try { peer.reconnect(); } catch { reviveHost(); } });
+  peer.on('close', () => reviveHost());
+  peer.on('error', e => { if (['network', 'server-error', 'socket-error', 'socket-closed'].includes(e.type)) reviveHost(); });
+}
+
+let reviving = false;
+const waitOpen = (peer, ms) => new Promise((resolve, reject) => {
+  const t = setTimeout(() => reject(new Error('timeout')), ms);
+  peer.once('open', () => { clearTimeout(t); resolve(peer); });
+  peer.once('error', e => { clearTimeout(t); reject(e); });
+});
+
+async function reviveHost() {
+  if (!net.isHost || !net.code || reviving) return;
+  const first = net.peer;
+  if (first && !first.destroyed && !first.disconnected) return;     // toujours vivant : rien à faire
+  reviving = true;
+  try {
+    // 1. simple pause (écran verrouillé, autre application) : on reprend la même connexion
+    if (first && !first.destroyed && first.disconnected) {
+      setNet(false, 'reconnexion');
+      try { first.reconnect(); await waitOpen(first, 8000); setNet(true, 'hôte'); broadcast(); return; } catch { }
+    }
+    // 2. connexion perdue : on reprend le même code dès que le serveur le libère
+    try { net.peer?.destroy(); } catch { }
+    net.conns.clear();
+    net.game.s.players.forEach(p => { if (p.id !== net.me) { net.game.setOffline(p.id); sabOffline(p.id); } });
+    const waits = [1500, 3000, 5000, 8000, 12000];
+    for (let i = 0; i < waits.length; i++) {
+      setNet(false, `reconnexion ${i + 1}`);
+      try {
+        const peer = await makePeer(ROOM_PREFIX + net.code, 9000);
+        net.peer = peer; attachHost(peer); setNet(true, 'hôte'); broadcast();
+        return;
+      } catch { await new Promise(r => setTimeout(r, waits[i])); }
+    }
+    // le serveur garde l'ancien code réservé un long moment : la partie repart sous un nouveau code,
+    // avec les mêmes joueurs, les mêmes scores et la même manche en cours
+    for (let i = 0; i < 5; i++) {
+      const fresh = genCode();
+      try {
+        const peer = await makePeer(ROOM_PREFIX + fresh, 9000);
+        net.peer = peer; net.code = fresh; net.game.s.code = fresh;
+        attachHost(peer); setNet(true, 'hôte'); broadcast();
+        toast(`Connexion rétablie sous un nouveau code : ${fresh} — repartage-le`, 8000);
+        return;
+      } catch { await new Promise(r => setTimeout(r, 2000)); }
+    }
+    setNet(false, 'hors ligne');
+    toast('Pas de réseau : la partie reprendra quand la connexion reviendra', 6000);
+    setTimeout(() => { reviving = false; reviveHost(); }, 10000);
+  } finally { reviving = false; }
+}
+// retour sur la page : on vérifie tout de suite que la partie est encore joignable
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (net.isHost) reviveHost();
+  else if (net.code && !net.hostConn?.open) joinGame(net.code).catch(() => { });
+});
+
+function makePeer(id, timeoutMs = 12000) {
   return new Promise((resolve, reject) => {
     const peer = new Peer(id, { debug: 0 });
-    peer.on('open', () => resolve(peer));
-    peer.on('error', e => { if (e.type === 'unavailable-id') reject(new Error('code-taken')); else if (e.type === 'peer-unavailable') reject(new Error('no-room')); else reject(e); });
+    const timer = setTimeout(() => { try { peer.destroy(); } catch { } reject(new Error('timeout')); }, timeoutMs);
+    peer.on('open', () => { clearTimeout(timer); resolve(peer); });
+    peer.on('error', e => {
+      clearTimeout(timer);
+      if (e.type === 'unavailable-id') reject(new Error('code-taken'));
+      else if (e.type === 'peer-unavailable') reject(new Error('no-room'));
+      else reject(e);
+    });
   });
 }
 
@@ -428,12 +502,7 @@ async function hostGame() {
   if (!peer) throw new Error('Impossible de créer la salle');
   net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE, songsJV, songsAnime);
   net.game.addPlayer(net.me, net.name, true);
-  peer.on('connection', conn => {
-    conn.on('data', m => handleClientMessage(conn, m));
-    conn.on('close', () => { const pid = conn.metadata?.pid; if (!pid || net.conns.get(pid) !== conn) return; net.conns.delete(pid); net.game.setOffline(pid); sabOffline(pid); broadcast(); });
-  });
-  peer.on('disconnected', () => { setNet(false, 'reconnexion'); peer.reconnect(); });
-  peer.on('open', () => setNet(true, 'hôte'));
+  attachHost(peer);
   setNet(true, 'hôte');
   setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
@@ -485,17 +554,28 @@ function sendAll(m, exceptPid = null) {
   for (const [pid, c] of net.conns) { if (pid !== exceptPid) { try { c.send(m); } catch { } } }
 }
 
-async function joinGame(code) {
+async function joinGame(code, tries = 3) {
+  try { if (net.peer && !net.isHost) net.peer.destroy(); } catch { }
   const peer = await makePeer(undefined);
   net.peer = peer; net.isHost = false; net.code = code;
-  await new Promise((resolve, reject) => {
-    const conn = peer.connect(ROOM_PREFIX + code, { reliable: true });
-    const timer = setTimeout(() => reject(new Error('no-room')), 8000);
-    conn.on('open', () => { clearTimeout(timer); net.hostConn = conn; conn.send({ t: 'hello', pid: net.me, name: net.name }); setNet(true, 'connecté'); resolve(); });
-    conn.on('data', m => { if (m.t === 'state') { view = m.s; render(); } else if (m.t === 'err') toast(m.msg); else sabOnMessage(m); });
-    conn.on('close', () => { setNet(false, 'reconnexion'); setTimeout(() => joinGame(code).catch(() => { }), 2500); });
-    peer.on('error', e => { clearTimeout(timer); reject(e); });
-  });
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    try {
+      await new Promise((resolve, reject) => {
+        const conn = peer.connect(ROOM_PREFIX + code, { reliable: true });
+        const timer = setTimeout(() => reject(new Error('no-room')), 9000);
+        conn.on('open', () => { clearTimeout(timer); net.hostConn = conn; conn.send({ t: 'hello', pid: net.me, name: net.name }); setNet(true, 'connecté'); resolve(); });
+        conn.on('data', m => { if (m.t === 'state') { view = m.s; render(); } else if (m.t === 'err') toast(m.msg); else sabOnMessage(m); });
+        conn.on('close', () => { setNet(false, 'reconnexion'); setTimeout(() => joinGame(code).catch(() => { }), 2500); });
+        peer.on('error', e => { clearTimeout(timer); reject(e.type === 'peer-unavailable' ? new Error('no-room') : e); });
+      });
+      return;
+    } catch (e) {
+      // l'hôte est peut-être en train de revenir (téléphone déverrouillé) : on laisse une chance
+      if (attempt >= tries) { try { peer.destroy(); } catch { } throw new Error('no-room'); }
+      setNet(false, `tentative ${attempt + 1}/${tries}`);
+      await new Promise(r => setTimeout(r, 2500));
+    }
+  }
 }
 
 function act(m) {
@@ -1288,7 +1368,9 @@ $('#f-home').addEventListener('submit', async e => {
     if (mode === 'create') { await hostGame(); keepAwake(); }
     else { if (code.length !== 4) { err.textContent = 'Le code fait 4 lettres.'; return; } await joinGame(code); keepAwake(); }
   } catch (ex) {
-    err.textContent = ex.message === 'no-room' ? 'Aucune partie avec ce code.' : 'Connexion impossible : ' + (ex.message || ex.type || ex);
+    err.textContent = ex.message === 'no-room' || ex.type === 'peer-unavailable'
+      ? 'Aucune partie avec ce code. Vérifie les 4 lettres, et demande à l\'hôte de rouvrir la page du jeu sur son téléphone.'
+      : 'Connexion impossible : ' + (ex.message || ex.type || ex);
   } finally { e.submitter.disabled = false; }
 });
 $('#btn-solo').onclick = async () => {
