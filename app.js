@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '31';
+const ASSET_V = '32';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -27,6 +27,7 @@ const GAMES = {
   geo: { key: 'geo', theme: 'geo', name: 'Boussole' },
   chromo: { key: 'chromo', theme: 'chromo', name: 'Chromo' },
   kems: { key: 'kems', theme: 'kems', name: 'Kems' },
+  camembert: { key: 'camembert', theme: 'camembert', name: 'Camembert' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -45,12 +46,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -109,7 +110,7 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
@@ -117,10 +118,11 @@ class Game {
     if (this.geo) Geo.join(this.geo, id, name);
     if (this.chromo) Chromo.join(this.chromo, id, name);
     if (this.kems) Kems.join(this.kems, id, name);
+    if (this.cm) Camembert.join(this.cm, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -147,6 +149,7 @@ class Game {
     if (s.mode === 'geo') return this.startGeo(o);
     if (s.mode === 'chromo') return this.startChromo(o);
     if (s.mode === 'kems') return this.startKems(o);
+    if (s.mode === 'camembert') return this.startCamembert(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -389,10 +392,16 @@ class Game {
     this.kems = Kems.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, teams: o.teams, bots: o.bots });
     s.phase = 'km';
   }
-  viewFor(base, pid) { if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Camembert : la salle vit dans this.cm, la bonne réponse ne sort qu'à la révélation =================
+  startCamembert(o) {
+    const s = this.s;
+    this.cm = Camembert.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, diff: o.diff });
+    s.phase = 'cm';
+  }
+  viewFor(base, pid) { if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -513,7 +522,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   attachHost(peer);
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -531,6 +540,7 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('geo:')) return geoAction(pid, m);
   if (typeof m.t === 'string' && m.t.startsWith('ch:')) return net.game.chromo ? Chromo.act(net.game.chromo, pid, m) : 'Pas de partie de Chromo en cours';
   if (typeof m.t === 'string' && m.t.startsWith('km:')) return net.game.kems ? Kems.act(net.game.kems, pid, m) : 'Pas de partie de Kems en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('cm:')) return net.game.cm ? Camembert.act(net.game.cm, pid, m) : 'Pas de partie de Camembert en cours';
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
@@ -741,6 +751,7 @@ function render() {
   else if (s.phase === 'geo') { show('s-geo'); renderGeo(s.geo); }
   else if (s.phase === 'ch') { show('s-chromo'); renderChromo(s.chromo); }
   else if (s.phase === 'km') { show('s-kems'); renderKems(s.kems); }
+  else if (s.phase === 'cm') { show('s-camembert'); renderCamembert(s.cm); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -777,6 +788,8 @@ function renderLobby(s) {
   $('#opts-geo').hidden = s.pick !== 'geo';
   $('#opts-chromo').hidden = s.pick !== 'chromo';
   $('#opts-kems').hidden = s.pick !== 'kems';
+  $('#opts-camembert').hidden = s.pick !== 'camembert';
+  if (isHostPlayer() && s.pick === 'camembert') Camembert.load(ASSET_V).then(() => { const n = Camembert.count(); $('#opt-cm-count').textContent = n ? `${n} questions dans la boîte, réparties en six couleurs.` : 'Questions introuvables.'; });
   if (isHostPlayer() && s.pick === 'kems') renderKemsOpts(s);
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
     Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
@@ -1321,6 +1334,17 @@ const HELP = {
     </ul>
     <p>Une erreur coûte un point, alors les deux boutons demandent un second toucher pour confirmer. La partie se joue en 5 points par défaut. Les signaux ne passent pas par l'application : Kems se joue autour d'une table, ou en visio.</p>
     <p class="fine">Les robots complètent une table. Un robot avec un carré fait un signal que seul son partenaire voit apparaître sur son écran ; il remarque aussi le tien au bout d'un moment.</p>`,
+  camembert: `<h3>Camembert</h3>
+    <p><b>But :</b> compléter ton fromage avec les six parts de couleur, puis réussir la question finale.</p>
+    <ul>
+      <li><b>À ton tour :</b> lance le dé, puis choisis de quel côté avancer : les deux cases possibles s'allument sur le plateau. La couleur de la case donne la couleur de la question, à choix multiples, 30 secondes.</li>
+      <li><b>Bonne réponse :</b> tu rejoues. Mauvaise réponse, ou temps écoulé : au suivant.</li>
+      <li><b>Les six grosses cases</b> sont les camemberts : une bonne réponse dessus rapporte la part de cette couleur. Les cases ↻ font relancer le dé.</li>
+      <li><b>Fromage complet :</b> à ton tour suivant, les autres joueurs choisissent la couleur de ta question finale, ou une question de culture générale. Bonne réponse, tu gagnes ; sinon tu retentes au tour d'après.</li>
+      <li><b>Les autres jouent aussi :</b> pendant chaque question, chacun peut donner son avis. Ça ne rapporte rien, mais on voit qui aurait trouvé.</li>
+    </ul>
+    <p>Les six couleurs : Géographie, Divertissement (ciné, séries, musique, jeux vidéo), Histoire, Arts &amp; Littérature, Sciences &amp; Nature, Sports &amp; Loisirs. Une question déjà posée ne revient pas d'une soirée à l'autre tant qu'il en reste. Si une question est fausse, l'hôte peut compter la réponse comme juste.</p>
+    <p class="fine">Partie courte : dans le salon, choisis 3 ou 4 parts au lieu de 6.</p>`,
   geo: `<h3>Boussole</h3>
     <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
     <ul>
@@ -1517,6 +1541,13 @@ $('#btn-start').onclick = () => {
     if (t.extra.length) toast(`${t.extra.map(p => p.name).join(', ')} regarder${t.extra.length > 1 ? 'ont' : 'a'} cette partie`);
     const teams = {}; online.forEach(p => { if (kmTeamPick[p.id] === 0 || kmTeamPick[p.id] === 1) teams[p.id] = kmTeamPick[p.id]; });
     act({ t: 'start', opts: { mode: 'kems', target: +$('#opt-km-target').value, teams, bots } });
+  }
+  if (pick === 'camembert') {
+    (async () => {
+      await Camembert.load(ASSET_V);
+      if (!Camembert.count()) { toast('Questions introuvables : quiz.json manque'); return; }
+      act({ t: 'start', opts: { mode: 'camembert', target: +$('#opt-cm-target').value, diff: $('#opt-cm-diff').value } });
+    })();
   }
   if (pick === 'geo') {
     (async () => {

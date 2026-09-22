@@ -1,0 +1,2563 @@
+[
+{
+"id": "x000",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quelle est la capitale de l'Australie ?",
+"a": "Canberra",
+"bad": [
+"Sydney",
+"Melbourne",
+"Perth"
+]
+},
+{
+"id": "x001",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quel est le plus long fleuve de France ?",
+"a": "La Loire",
+"bad": [
+"La Seine",
+"Le Rhône",
+"La Garonne"
+]
+},
+{
+"id": "x002",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Dans quel pays se trouve le Machu Picchu ?",
+"a": "Le Pérou",
+"bad": [
+"Le Chili",
+"La Bolivie",
+"Le Mexique"
+]
+},
+{
+"id": "x003",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quel océan borde la côte ouest des États-Unis ?",
+"a": "L'océan Pacifique",
+"bad": [
+"L'océan Atlantique",
+"L'océan Indien",
+"L'océan Arctique"
+]
+},
+{
+"id": "x004",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quelle est la capitale du Canada ?",
+"a": "Ottawa",
+"bad": [
+"Toronto",
+"Montréal",
+"Vancouver"
+]
+},
+{
+"id": "x005",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quel est le plus grand désert chaud du monde ?",
+"a": "Le Sahara",
+"bad": [
+"Le Gobi",
+"Le Kalahari",
+"L'Atacama"
+]
+},
+{
+"id": "x006",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Dans quel pays se trouve la ville de Marrakech ?",
+"a": "Le Maroc",
+"bad": [
+"L'Algérie",
+"La Tunisie",
+"L'Égypte"
+]
+},
+{
+"id": "x007",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quel est le plus haut sommet d'Europe occidentale ?",
+"a": "Le mont Blanc",
+"bad": [
+"Le Cervin",
+"Le mont Rose",
+"Le Grand Paradis"
+]
+},
+{
+"id": "x008",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quelle mer sépare la France de l'Angleterre ?",
+"a": "La Manche",
+"bad": [
+"La mer du Nord",
+"La mer d'Irlande",
+"La mer Celtique"
+]
+},
+{
+"id": "x009",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quel pays a la forme d'une botte ?",
+"a": "L'Italie",
+"bad": [
+"La Grèce",
+"Le Portugal",
+"La Croatie"
+]
+},
+{
+"id": "x010",
+"cat": "geo",
+"src": "maison",
+"d": 1,
+"q": "Quelle est la capitale du Japon ?",
+"a": "Tokyo",
+"bad": [
+"Kyoto",
+"Osaka",
+"Séoul"
+]
+},
+{
+"id": "x011",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel est le plus grand pays du monde par la superficie ?",
+"a": "La Russie",
+"bad": [
+"Le Canada",
+"La Chine",
+"Les États-Unis"
+]
+},
+{
+"id": "x012",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel fleuve traverse Vienne, Budapest et Belgrade ?",
+"a": "Le Danube",
+"bad": [
+"Le Rhin",
+"La Vistule",
+"L'Elbe"
+]
+},
+{
+"id": "x013",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quelle est la capitale de la Nouvelle-Zélande ?",
+"a": "Wellington",
+"bad": [
+"Auckland",
+"Christchurch",
+"Queenstown"
+]
+},
+{
+"id": "x014",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Dans quel pays se trouve le lac Titicaca ?",
+"a": "Le Pérou et la Bolivie",
+"bad": [
+"Le Chili et l'Argentine",
+"L'Équateur",
+"La Colombie"
+]
+},
+{
+"id": "x015",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quelle île française se trouve dans l'océan Indien ?",
+"a": "La Réunion",
+"bad": [
+"La Martinique",
+"La Guadeloupe",
+"Saint-Pierre-et-Miquelon"
+]
+},
+{
+"id": "x016",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel détroit sépare l'Europe de l'Afrique ?",
+"a": "Le détroit de Gibraltar",
+"bad": [
+"Le Bosphore",
+"Le détroit de Messine",
+"Le détroit de Béring"
+]
+},
+{
+"id": "x017",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quelle est la plus grande île de la Méditerranée ?",
+"a": "La Sicile",
+"bad": [
+"La Sardaigne",
+"Chypre",
+"La Corse"
+]
+},
+{
+"id": "x018",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel pays compte le plus d'habitants en Afrique ?",
+"a": "Le Nigeria",
+"bad": [
+"L'Éthiopie",
+"L'Égypte",
+"La RD Congo"
+]
+},
+{
+"id": "x019",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Dans quel département se trouve le Mont-Saint-Michel ?",
+"a": "La Manche",
+"bad": [
+"Le Calvados",
+"L'Ille-et-Vilaine",
+"Les Côtes-d'Armor"
+]
+},
+{
+"id": "x020",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quelle est la capitale de la Suisse ?",
+"a": "Berne",
+"bad": [
+"Zurich",
+"Genève",
+"Lausanne"
+]
+},
+{
+"id": "x021",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel est le plus grand lac d'Afrique ?",
+"a": "Le lac Victoria",
+"bad": [
+"Le lac Tanganyika",
+"Le lac Malawi",
+"Le lac Tchad"
+]
+},
+{
+"id": "x022",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel pays est bordé à la fois par la mer Noire et la mer Méditerranée ?",
+"a": "La Turquie",
+"bad": [
+"La Bulgarie",
+"La Grèce",
+"La Roumanie"
+]
+},
+{
+"id": "x023",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quelle chaîne de montagnes sépare l'Europe de l'Asie ?",
+"a": "L'Oural",
+"bad": [
+"Le Caucase",
+"Les Carpates",
+"L'Altaï"
+]
+},
+{
+"id": "x024",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quelle ville est la capitale de la Catalogne ?",
+"a": "Barcelone",
+"bad": [
+"Valence",
+"Séville",
+"Bilbao"
+]
+},
+{
+"id": "x025",
+"cat": "geo",
+"src": "maison",
+"d": 2,
+"q": "Quel est le plus petit État du monde ?",
+"a": "Le Vatican",
+"bad": [
+"Monaco",
+"Saint-Marin",
+"Nauru"
+]
+},
+{
+"id": "x026",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quelle est la capitale du Kazakhstan ?",
+"a": "Astana",
+"bad": [
+"Almaty",
+"Tachkent",
+"Bichkek"
+]
+},
+{
+"id": "x027",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quel fleuve forme la frontière entre les États-Unis et le Mexique sur une grande partie de sa longueur ?",
+"a": "Le Rio Grande",
+"bad": [
+"Le Colorado",
+"Le Mississippi",
+"Le Missouri"
+]
+},
+{
+"id": "x028",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quel pays d'Amérique du Sud n'a pas d'accès à la mer, comme la Bolivie ?",
+"a": "Le Paraguay",
+"bad": [
+"L'Uruguay",
+"L'Équateur",
+"Le Suriname"
+]
+},
+{
+"id": "x029",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quelle est la capitale de la Birmanie (Myanmar) depuis 2005 ?",
+"a": "Naypyidaw",
+"bad": [
+"Rangoun",
+"Mandalay",
+"Bagan"
+]
+},
+{
+"id": "x030",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Combien de pays ont une frontière terrestre avec la France métropolitaine ?",
+"a": "8",
+"bad": [
+"6",
+"7",
+"9"
+]
+},
+{
+"id": "x031",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quel archipel portugais se trouve au large du Maroc ?",
+"a": "Madère",
+"bad": [
+"Les Açores",
+"Les Canaries",
+"Le Cap-Vert"
+]
+},
+{
+"id": "x032",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quel est le plus long fleuve d'Europe ?",
+"a": "La Volga",
+"bad": [
+"Le Danube",
+"Le Dniepr",
+"Le Rhin"
+]
+},
+{
+"id": "x033",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Dans quel pays se trouve le mont Kilimandjaro ?",
+"a": "La Tanzanie",
+"bad": [
+"Le Kenya",
+"L'Ouganda",
+"L'Éthiopie"
+]
+},
+{
+"id": "x034",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quelle ville française est surnommée « la Venise du Nord » ?",
+"a": "Amiens",
+"bad": [
+"Lille",
+"Strasbourg",
+"Annecy"
+]
+},
+{
+"id": "x035",
+"cat": "geo",
+"src": "maison",
+"d": 3,
+"q": "Quel pays a pour capitale Oulan-Bator ?",
+"a": "La Mongolie",
+"bad": [
+"Le Népal",
+"Le Kirghizistan",
+"Le Bhoutan"
+]
+},
+{
+"id": "x036",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Dans « Star Wars », qui est le père de Luke Skywalker ?",
+"a": "Dark Vador",
+"bad": [
+"Obi-Wan Kenobi",
+"L'Empereur",
+"Han Solo"
+]
+},
+{
+"id": "x037",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Quel groupe a chanté « Bohemian Rhapsody » ?",
+"a": "Queen",
+"bad": [
+"The Beatles",
+"Led Zeppelin",
+"Pink Floyd"
+]
+},
+{
+"id": "x038",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Quel est le nom du petit poisson-clown perdu dans le film Pixar ?",
+"a": "Nemo",
+"bad": [
+"Dory",
+"Marin",
+"Bruce"
+]
+},
+{
+"id": "x039",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Dans « Harry Potter », comment s'appelle l'école de sorcellerie ?",
+"a": "Poudlard",
+"bad": [
+"Durmstrang",
+"Beauxbâtons",
+"Ilvermorny"
+]
+},
+{
+"id": "x040",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Quel chanteur belge interprète « Formidable » et « Papaoutai » ?",
+"a": "Stromae",
+"bad": [
+"Angèle",
+"Jacques Brel",
+"Roméo Elvis"
+]
+},
+{
+"id": "x041",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Quel plombier moustachu est la mascotte de Nintendo ?",
+"a": "Mario",
+"bad": [
+"Luigi",
+"Wario",
+"Sonic"
+]
+},
+{
+"id": "x042",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Dans « Les Simpson », comment s'appelle le père de famille ?",
+"a": "Homer",
+"bad": [
+"Bart",
+"Ned",
+"Moe"
+]
+},
+{
+"id": "x043",
+"cat": "fun",
+"src": "maison",
+"d": 1,
+"q": "Quelle série suit les habitants de Kaamelott, autour du roi Arthur ?",
+"a": "Kaamelott",
+"bad": [
+"Merlin",
+"Bref",
+"Hero Corp"
+]
+},
+{
+"id": "x044",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Qui a réalisé « Titanic » et « Avatar » ?",
+"a": "James Cameron",
+"bad": [
+"Steven Spielberg",
+"Ridley Scott",
+"Peter Jackson"
+]
+},
+{
+"id": "x045",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel film a remporté l'Oscar du meilleur film en 2020, une première pour un film en langue étrangère ?",
+"a": "Parasite",
+"bad": [
+"1917",
+"Joker",
+"Roma"
+]
+},
+{
+"id": "x046",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel chanteur français a interprété « Les Copains d'abord » ?",
+"a": "Georges Brassens",
+"bad": [
+"Jacques Brel",
+"Léo Ferré",
+"Serge Gainsbourg"
+]
+},
+{
+"id": "x047",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Dans « Friends », quel est le métier de Chandler, longtemps mystérieux pour ses amis ?",
+"a": "Il travaille dans les statistiques et l'informatique",
+"bad": [
+"Avocat",
+"Chef cuisinier",
+"Paléontologue"
+]
+},
+{
+"id": "x048",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel jeu vidéo suédois consiste à construire avec des blocs dans un monde ouvert ?",
+"a": "Minecraft",
+"bad": [
+"Roblox",
+"Terraria",
+"Fortnite"
+]
+},
+{
+"id": "x049",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel groupe français de musique électronique portait des casques de robots ?",
+"a": "Daft Punk",
+"bad": [
+"Justice",
+"Air",
+"Cassius"
+]
+},
+{
+"id": "x050",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel acteur incarne Iron Man dans les films Marvel ?",
+"a": "Robert Downey Jr.",
+"bad": [
+"Chris Evans",
+"Chris Hemsworth",
+"Mark Ruffalo"
+]
+},
+{
+"id": "x051",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Dans « Le Seigneur des anneaux », comment s'appelle le cousin de Frodon qui l'accompagne avec Pippin ?",
+"a": "Merry",
+"bad": [
+"Sam",
+"Bilbon",
+"Boromir"
+]
+},
+{
+"id": "x052",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quelle chanteuse a sorti l'album « 1989 » puis « Midnights » ?",
+"a": "Taylor Swift",
+"bad": [
+"Adele",
+"Billie Eilish",
+"Dua Lipa"
+]
+},
+{
+"id": "x053",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel personnage de jeu vidéo est une chasseuse de trésors nommée Lara ?",
+"a": "Lara Croft",
+"bad": [
+"Samus Aran",
+"Aloy",
+"Ellie"
+]
+},
+{
+"id": "x054",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Dans la série « Breaking Bad », quel est le métier initial de Walter White ?",
+"a": "Professeur de chimie",
+"bad": [
+"Pharmacien",
+"Policier",
+"Avocat"
+]
+},
+{
+"id": "x055",
+"cat": "fun",
+"src": "maison",
+"d": 2,
+"q": "Quel humoriste français a créé le personnage de Jean-Claude Duss dans « Les Bronzés » ?",
+"a": "Michel Blanc",
+"bad": [
+"Gérard Jugnot",
+"Thierry Lhermitte",
+"Christian Clavier"
+]
+},
+{
+"id": "x056",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Quel compositeur a écrit la musique de « Star Wars », « Indiana Jones » et « Jurassic Park » ?",
+"a": "John Williams",
+"bad": [
+"Hans Zimmer",
+"Ennio Morricone",
+"Danny Elfman"
+]
+},
+{
+"id": "x057",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Quelle console Nintendo est sortie en 2017, jouable en salon comme en portable ?",
+"a": "La Switch",
+"bad": [
+"La Wii U",
+"La 3DS",
+"La GameCube"
+]
+},
+{
+"id": "x058",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Quel film de 1994 de Quentin Tarantino met en scène Vincent Vega et Jules Winnfield ?",
+"a": "Pulp Fiction",
+"bad": [
+"Reservoir Dogs",
+"Jackie Brown",
+"Kill Bill"
+]
+},
+{
+"id": "x059",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Dans « Game of Thrones », comment s'appelle l'épée de Jon Snow ?",
+"a": "Grand-Griffe (Longclaw)",
+"bad": [
+"Aiguille",
+"Glace",
+"Feu-Vif"
+]
+},
+{
+"id": "x060",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Quel groupe britannique a sorti l'album « The Dark Side of the Moon » ?",
+"a": "Pink Floyd",
+"bad": [
+"Genesis",
+"The Who",
+"Radiohead"
+]
+},
+{
+"id": "x061",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Quel studio a créé « The Legend of Zelda: Breath of the Wild » ?",
+"a": "Nintendo",
+"bad": [
+"Square Enix",
+"Capcom",
+"Sega"
+]
+},
+{
+"id": "x062",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Quel réalisateur français a signé « Le Fabuleux Destin d'Amélie Poulain » ?",
+"a": "Jean-Pierre Jeunet",
+"bad": [
+"Luc Besson",
+"Michel Gondry",
+"Cédric Klapisch"
+]
+},
+{
+"id": "x063",
+"cat": "fun",
+"src": "maison",
+"d": 3,
+"q": "Dans quel jeu affronte-t-on des « Colosses » dans un monde vide et silencieux ?",
+"a": "Shadow of the Colossus",
+"bad": [
+"Dark Souls",
+"Ico",
+"Journey"
+]
+},
+{
+"id": "x064",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "En quelle année a eu lieu la prise de la Bastille ?",
+"a": "1789",
+"bad": [
+"1792",
+"1799",
+"1804"
+]
+},
+{
+"id": "x065",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "Qui était le premier président des États-Unis ?",
+"a": "George Washington",
+"bad": [
+"Thomas Jefferson",
+"Abraham Lincoln",
+"Benjamin Franklin"
+]
+},
+{
+"id": "x066",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "Quel roi de France était surnommé le Roi-Soleil ?",
+"a": "Louis XIV",
+"bad": [
+"Louis XVI",
+"François Ier",
+"Henri IV"
+]
+},
+{
+"id": "x067",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "En quelle année s'est terminée la Seconde Guerre mondiale ?",
+"a": "1945",
+"bad": [
+"1944",
+"1946",
+"1918"
+]
+},
+{
+"id": "x068",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "Quel navigateur a atteint l'Amérique en 1492 ?",
+"a": "Christophe Colomb",
+"bad": [
+"Vasco de Gama",
+"Magellan",
+"Jacques Cartier"
+]
+},
+{
+"id": "x069",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "Qui a été le premier homme à marcher sur la Lune ?",
+"a": "Neil Armstrong",
+"bad": [
+"Buzz Aldrin",
+"Youri Gagarine",
+"Michael Collins"
+]
+},
+{
+"id": "x070",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "Quelle reine d'Égypte a séduit Jules César puis Marc Antoine ?",
+"a": "Cléopâtre",
+"bad": [
+"Néfertiti",
+"Hatchepsout",
+"Théodora"
+]
+},
+{
+"id": "x071",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "En quelle année le mur de Berlin est-il tombé ?",
+"a": "1989",
+"bad": [
+"1991",
+"1985",
+"1979"
+]
+},
+{
+"id": "x072",
+"cat": "hist",
+"src": "maison",
+"d": 1,
+"q": "Qui a été sacré empereur des Français en 1804 ?",
+"a": "Napoléon Bonaparte",
+"bad": [
+"Louis-Philippe",
+"Charles X",
+"Napoléon III"
+]
+},
+{
+"id": "x073",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quel événement déclenche la Première Guerre mondiale en 1914 ?",
+"a": "L'assassinat de l'archiduc François-Ferdinand",
+"bad": [
+"L'invasion de la Pologne",
+"Le naufrage du Lusitania",
+"La révolution russe"
+]
+},
+{
+"id": "x074",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quelle bataille de 1815 marque la défaite finale de Napoléon ?",
+"a": "Waterloo",
+"bad": [
+"Austerlitz",
+"Leipzig",
+"Trafalgar"
+]
+},
+{
+"id": "x075",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Qui a dirigé la France libre depuis Londres pendant la Seconde Guerre mondiale ?",
+"a": "Charles de Gaulle",
+"bad": [
+"Jean Moulin",
+"Philippe Pétain",
+"Georges Clemenceau"
+]
+},
+{
+"id": "x076",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quel peuple a construit les pyramides de Chichén Itzá ?",
+"a": "Les Mayas",
+"bad": [
+"Les Aztèques",
+"Les Incas",
+"Les Olmèques"
+]
+},
+{
+"id": "x077",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "En quelle année les femmes ont-elles voté pour la première fois en France ?",
+"a": "1945",
+"bad": [
+"1936",
+"1919",
+"1958"
+]
+},
+{
+"id": "x078",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quel roi d'Angleterre a eu six épouses ?",
+"a": "Henri VIII",
+"bad": [
+"Richard III",
+"Édouard VI",
+"Georges III"
+]
+},
+{
+"id": "x079",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quelle ville romaine a été ensevelie par l'éruption du Vésuve en 79 ?",
+"a": "Pompéi",
+"bad": [
+"Ostie",
+"Capoue",
+"Naples"
+]
+},
+{
+"id": "x080",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quel traité met fin à la Première Guerre mondiale en 1919 ?",
+"a": "Le traité de Versailles",
+"bad": [
+"Le traité de Vienne",
+"Le traité de Rome",
+"Le traité de Paris"
+]
+},
+{
+"id": "x081",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Qui a rédigé les « 95 thèses » à l'origine de la Réforme protestante ?",
+"a": "Martin Luther",
+"bad": [
+"Jean Calvin",
+"Érasme",
+"Thomas More"
+]
+},
+{
+"id": "x082",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quelle dynastie chinoise a fait construire la Cité interdite ?",
+"a": "Les Ming",
+"bad": [
+"Les Qing",
+"Les Tang",
+"Les Han"
+]
+},
+{
+"id": "x083",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "En quelle année la France a-t-elle adopté l'euro en pièces et billets ?",
+"a": "2002",
+"bad": [
+"1999",
+"2000",
+"2004"
+]
+},
+{
+"id": "x084",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quel président français a fait abolir la peine de mort en 1981 ?",
+"a": "François Mitterrand",
+"bad": [
+"Valéry Giscard d'Estaing",
+"Jacques Chirac",
+"Georges Pompidou"
+]
+},
+{
+"id": "x085",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Quel empire avait pour capitale Constantinople ?",
+"a": "L'Empire byzantin",
+"bad": [
+"L'Empire perse",
+"L'Empire mongol",
+"L'Empire carolingien"
+]
+},
+{
+"id": "x086",
+"cat": "hist",
+"src": "maison",
+"d": 2,
+"q": "Qui a été guillotinée en 1793, après son mari Louis XVI ?",
+"a": "Marie-Antoinette",
+"bad": [
+"Madame de Pompadour",
+"Charlotte Corday",
+"Olympe de Gouges"
+]
+},
+{
+"id": "x087",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "En quelle année Jeanne d'Arc a-t-elle été brûlée à Rouen ?",
+"a": "1431",
+"bad": [
+"1429",
+"1453",
+"1415"
+]
+},
+{
+"id": "x088",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quel pharaon a fait construire la grande pyramide de Gizeh ?",
+"a": "Khéops",
+"bad": [
+"Ramsès II",
+"Toutânkhamon",
+"Akhenaton"
+]
+},
+{
+"id": "x089",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quel traité de 843 partage l'empire de Charlemagne entre ses petits-fils ?",
+"a": "Le traité de Verdun",
+"bad": [
+"Le traité de Meerssen",
+"Le traité de Saint-Clair-sur-Epte",
+"Le traité de Troyes"
+]
+},
+{
+"id": "x090",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quel dirigeant soviétique a lancé la perestroïka ?",
+"a": "Mikhaïl Gorbatchev",
+"bad": [
+"Leonid Brejnev",
+"Nikita Khrouchtchev",
+"Boris Eltsine"
+]
+},
+{
+"id": "x091",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "En quelle année a eu lieu la bataille d'Alésia entre César et Vercingétorix ?",
+"a": "52 av. J.-C.",
+"bad": [
+"31 av. J.-C.",
+"100 av. J.-C.",
+"9 ap. J.-C."
+]
+},
+{
+"id": "x092",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quelle épidémie a tué environ un tiers des Européens au milieu du XIVe siècle ?",
+"a": "La peste noire",
+"bad": [
+"Le choléra",
+"La variole",
+"La grippe espagnole"
+]
+},
+{
+"id": "x093",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Qui a été le premier ministre britannique pendant la majeure partie de la Seconde Guerre mondiale ?",
+"a": "Winston Churchill",
+"bad": [
+"Neville Chamberlain",
+"Clement Attlee",
+"Anthony Eden"
+]
+},
+{
+"id": "x094",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quel explorateur portugais a été le premier à contourner le cap de Bonne-Espérance en 1488 ?",
+"a": "Bartolomeu Dias",
+"bad": [
+"Vasco de Gama",
+"Henri le Navigateur",
+"Pedro Álvares Cabral"
+]
+},
+{
+"id": "x095",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quel accord de 1998 a mis fin au conflit en Irlande du Nord ?",
+"a": "L'accord du Vendredi saint",
+"bad": [
+"L'accord de Dayton",
+"L'accord d'Oslo",
+"L'accord de Camp David"
+]
+},
+{
+"id": "x096",
+"cat": "hist",
+"src": "maison",
+"d": 3,
+"q": "Quelle république a précédé la Ve République française, proclamée en 1958 ?",
+"a": "La IVe République",
+"bad": [
+"La IIIe République",
+"La IIe République",
+"L'État français"
+]
+},
+{
+"id": "x097",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Qui a peint « La Joconde » ?",
+"a": "Léonard de Vinci",
+"bad": [
+"Michel-Ange",
+"Raphaël",
+"Botticelli"
+]
+},
+{
+"id": "x098",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Qui a écrit « Les Misérables » ?",
+"a": "Victor Hugo",
+"bad": [
+"Émile Zola",
+"Alexandre Dumas",
+"Honoré de Balzac"
+]
+},
+{
+"id": "x099",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Quel peintre s'est coupé une partie de l'oreille ?",
+"a": "Vincent van Gogh",
+"bad": [
+"Paul Gauguin",
+"Claude Monet",
+"Pablo Picasso"
+]
+},
+{
+"id": "x100",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Qui a écrit « Le Petit Prince » ?",
+"a": "Antoine de Saint-Exupéry",
+"bad": [
+"Jules Verne",
+"Marcel Pagnol",
+"Albert Camus"
+]
+},
+{
+"id": "x101",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Quel auteur a créé le détective Sherlock Holmes ?",
+"a": "Arthur Conan Doyle",
+"bad": [
+"Agatha Christie",
+"Edgar Allan Poe",
+"Charles Dickens"
+]
+},
+{
+"id": "x102",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Quel musée parisien abrite « La Joconde » ?",
+"a": "Le Louvre",
+"bad": [
+"Le musée d'Orsay",
+"Le Centre Pompidou",
+"Le Grand Palais"
+]
+},
+{
+"id": "x103",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Quel peintre espagnol a réalisé « Guernica » ?",
+"a": "Pablo Picasso",
+"bad": [
+"Salvador Dalí",
+"Joan Miró",
+"Francisco de Goya"
+]
+},
+{
+"id": "x104",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Qui a écrit « Roméo et Juliette » ?",
+"a": "William Shakespeare",
+"bad": [
+"Molière",
+"Oscar Wilde",
+"Jane Austen"
+]
+},
+{
+"id": "x105",
+"cat": "art",
+"src": "maison",
+"d": 1,
+"q": "Quel auteur de BD a créé Astérix avec Albert Uderzo ?",
+"a": "René Goscinny",
+"bad": [
+"Hergé",
+"Franquin",
+"Morris"
+]
+},
+{
+"id": "x106",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel sculpteur a réalisé « Le Penseur » ?",
+"a": "Auguste Rodin",
+"bad": [
+"Camille Claudel",
+"Antoine Bourdelle",
+"Constantin Brancusi"
+]
+},
+{
+"id": "x107",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel peintre est connu pour ses « Nymphéas » peints à Giverny ?",
+"a": "Claude Monet",
+"bad": [
+"Édouard Manet",
+"Auguste Renoir",
+"Paul Cézanne"
+]
+},
+{
+"id": "x108",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Qui a écrit « Madame Bovary » ?",
+"a": "Gustave Flaubert",
+"bad": [
+"Stendhal",
+"Guy de Maupassant",
+"Émile Zola"
+]
+},
+{
+"id": "x109",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel compositeur, devenu sourd, a écrit la Neuvième Symphonie et son « Hymne à la joie » ?",
+"a": "Ludwig van Beethoven",
+"bad": [
+"Mozart",
+"Bach",
+"Schubert"
+]
+},
+{
+"id": "x110",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel roman de George Orwell décrit un État totalitaire dirigé par Big Brother ?",
+"a": "1984",
+"bad": [
+"La Ferme des animaux",
+"Le Meilleur des mondes",
+"Fahrenheit 451"
+]
+},
+{
+"id": "x111",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Qui a peint le plafond de la chapelle Sixtine ?",
+"a": "Michel-Ange",
+"bad": [
+"Léonard de Vinci",
+"Raphaël",
+"Le Caravage"
+]
+},
+{
+"id": "x112",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel écrivain a créé le commissaire Maigret ?",
+"a": "Georges Simenon",
+"bad": [
+"Maurice Leblanc",
+"Gaston Leroux",
+"Fred Vargas"
+]
+},
+{
+"id": "x113",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel mouvement artistique est associé à Salvador Dalí et René Magritte ?",
+"a": "Le surréalisme",
+"bad": [
+"L'impressionnisme",
+"Le cubisme",
+"Le fauvisme"
+]
+},
+{
+"id": "x114",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Qui a écrit « L'Étranger » et « La Peste » ?",
+"a": "Albert Camus",
+"bad": [
+"Jean-Paul Sartre",
+"André Malraux",
+"Simone de Beauvoir"
+]
+},
+{
+"id": "x115",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quelle pièce de Molière met en scène Harpagon ?",
+"a": "L'Avare",
+"bad": [
+"Tartuffe",
+"Le Malade imaginaire",
+"Les Fourberies de Scapin"
+]
+},
+{
+"id": "x116",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel peintre norvégien a réalisé « Le Cri » ?",
+"a": "Edvard Munch",
+"bad": [
+"Gustav Klimt",
+"Egon Schiele",
+"Wassily Kandinsky"
+]
+},
+{
+"id": "x117",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Qui a écrit « Vingt Mille Lieues sous les mers » ?",
+"a": "Jules Verne",
+"bad": [
+"Alexandre Dumas",
+"H. G. Wells",
+"Jack London"
+]
+},
+{
+"id": "x118",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel auteur a écrit la saga « Le Trône de fer » ?",
+"a": "George R. R. Martin",
+"bad": [
+"J. R. R. Tolkien",
+"Terry Pratchett",
+"Robin Hobb"
+]
+},
+{
+"id": "x119",
+"cat": "art",
+"src": "maison",
+"d": 2,
+"q": "Quel architecte a conçu la tour de 324 mètres inaugurée à Paris en 1889 ?",
+"a": "Gustave Eiffel",
+"bad": [
+"Le Corbusier",
+"Baron Haussmann",
+"Jean Nouvel"
+]
+},
+{
+"id": "x120",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel peintre hollandais a réalisé « La Jeune Fille à la perle » ?",
+"a": "Johannes Vermeer",
+"bad": [
+"Rembrandt",
+"Frans Hals",
+"Jan Steen"
+]
+},
+{
+"id": "x121",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Qui a écrit « À la recherche du temps perdu » ?",
+"a": "Marcel Proust",
+"bad": [
+"André Gide",
+"Louis-Ferdinand Céline",
+"Paul Valéry"
+]
+},
+{
+"id": "x122",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel compositeur a écrit « Le Boléro » ?",
+"a": "Maurice Ravel",
+"bad": [
+"Claude Debussy",
+"Erik Satie",
+"Camille Saint-Saëns"
+]
+},
+{
+"id": "x123",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel écrivain russe a écrit « Crime et Châtiment » ?",
+"a": "Fiodor Dostoïevski",
+"bad": [
+"Léon Tolstoï",
+"Anton Tchekhov",
+"Nicolas Gogol"
+]
+},
+{
+"id": "x124",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel peintre autrichien a réalisé « Le Baiser », tableau doré de 1908 ?",
+"a": "Gustav Klimt",
+"bad": [
+"Edvard Munch",
+"Egon Schiele",
+"Oskar Kokoschka"
+]
+},
+{
+"id": "x125",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quelle romancière a écrit « Orgueil et Préjugés » ?",
+"a": "Jane Austen",
+"bad": [
+"Charlotte Brontë",
+"Mary Shelley",
+"Virginia Woolf"
+]
+},
+{
+"id": "x126",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel poète a écrit « Les Fleurs du mal » ?",
+"a": "Charles Baudelaire",
+"bad": [
+"Arthur Rimbaud",
+"Paul Verlaine",
+"Stéphane Mallarmé"
+]
+},
+{
+"id": "x127",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel artiste américain est célèbre pour ses boîtes de soupe Campbell ?",
+"a": "Andy Warhol",
+"bad": [
+"Roy Lichtenstein",
+"Jackson Pollock",
+"Keith Haring"
+]
+},
+{
+"id": "x128",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel auteur colombien a écrit « Cent ans de solitude » ?",
+"a": "Gabriel García Márquez",
+"bad": [
+"Mario Vargas Llosa",
+"Jorge Luis Borges",
+"Pablo Neruda"
+]
+},
+{
+"id": "x129",
+"cat": "art",
+"src": "maison",
+"d": 3,
+"q": "Quel opéra de Bizet se déroule à Séville, avec une cigarière et un toréador ?",
+"a": "Carmen",
+"bad": [
+"La Traviata",
+"Tosca",
+"Les Pêcheurs de perles"
+]
+},
+{
+"id": "x130",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Quelle planète est la plus proche du Soleil ?",
+"a": "Mercure",
+"bad": [
+"Vénus",
+"Mars",
+"La Terre"
+]
+},
+{
+"id": "x131",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Quel gaz les plantes absorbent-elles pour la photosynthèse ?",
+"a": "Le dioxyde de carbone",
+"bad": [
+"L'oxygène",
+"L'azote",
+"L'hydrogène"
+]
+},
+{
+"id": "x132",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Combien d'os compte le squelette d'un adulte, environ ?",
+"a": "206",
+"bad": [
+"106",
+"306",
+"412"
+]
+},
+{
+"id": "x133",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Quel est le plus grand animal vivant sur Terre ?",
+"a": "La baleine bleue",
+"bad": [
+"L'éléphant d'Afrique",
+"Le requin-baleine",
+"La girafe"
+]
+},
+{
+"id": "x134",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Quel est le symbole chimique de l'or ?",
+"a": "Au",
+"bad": [
+"Or",
+"Ag",
+"Go"
+]
+},
+{
+"id": "x135",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "À quelle température l'eau bout-elle au niveau de la mer ?",
+"a": "100 °C",
+"bad": [
+"90 °C",
+"110 °C",
+"120 °C"
+]
+},
+{
+"id": "x136",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Quel organe pompe le sang dans le corps ?",
+"a": "Le cœur",
+"bad": [
+"Le foie",
+"Les poumons",
+"Les reins"
+]
+},
+{
+"id": "x137",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Combien de pattes a une araignée ?",
+"a": "8",
+"bad": [
+"6",
+"10",
+"12"
+]
+},
+{
+"id": "x138",
+"cat": "sci",
+"src": "maison",
+"d": 1,
+"q": "Quelle planète est surnommée la planète rouge ?",
+"a": "Mars",
+"bad": [
+"Jupiter",
+"Vénus",
+"Saturne"
+]
+},
+{
+"id": "x139",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel scientifique a formulé la théorie de la relativité ?",
+"a": "Albert Einstein",
+"bad": [
+"Isaac Newton",
+"Galilée",
+"Niels Bohr"
+]
+},
+{
+"id": "x140",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel est l'élément chimique le plus abondant dans l'univers ?",
+"a": "L'hydrogène",
+"bad": [
+"L'hélium",
+"L'oxygène",
+"Le carbone"
+]
+},
+{
+"id": "x141",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quelle est la vitesse de la lumière dans le vide, environ ?",
+"a": "300 000 km/s",
+"bad": [
+"30 000 km/s",
+"3 000 000 km/s",
+"150 000 km/s"
+]
+},
+{
+"id": "x142",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quelle molécule porte l'information génétique ?",
+"a": "L'ADN",
+"bad": [
+"L'ATP",
+"Le glucose",
+"L'hémoglobine"
+]
+},
+{
+"id": "x143",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Qui a découvert la pénicilline en 1928 ?",
+"a": "Alexander Fleming",
+"bad": [
+"Louis Pasteur",
+"Marie Curie",
+"Robert Koch"
+]
+},
+{
+"id": "x144",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quelle est la plus grande planète du système solaire ?",
+"a": "Jupiter",
+"bad": [
+"Saturne",
+"Neptune",
+"Uranus"
+]
+},
+{
+"id": "x145",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Combien de chromosomes possède une cellule humaine ?",
+"a": "46",
+"bad": [
+"23",
+"48",
+"64"
+]
+},
+{
+"id": "x146",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel métal est liquide à température ambiante ?",
+"a": "Le mercure",
+"bad": [
+"Le plomb",
+"L'étain",
+"Le sodium"
+]
+},
+{
+"id": "x147",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quelle est l'unité de mesure de la force ?",
+"a": "Le newton",
+"bad": [
+"Le joule",
+"Le watt",
+"Le pascal"
+]
+},
+{
+"id": "x148",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel animal a le cœur le plus gros au monde ?",
+"a": "La baleine bleue",
+"bad": [
+"L'éléphant",
+"La girafe",
+"Le grand requin blanc"
+]
+},
+{
+"id": "x149",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quelle partie du cerveau contrôle l'équilibre et la coordination ?",
+"a": "Le cervelet",
+"bad": [
+"L'hippocampe",
+"Le cortex frontal",
+"L'hypothalamus"
+]
+},
+{
+"id": "x150",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel est le pH d'une solution neutre ?",
+"a": "7",
+"bad": [
+"0",
+"14",
+"5"
+]
+},
+{
+"id": "x151",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel os est le plus long du corps humain ?",
+"a": "Le fémur",
+"bad": [
+"Le tibia",
+"L'humérus",
+"La colonne vertébrale"
+]
+},
+{
+"id": "x152",
+"cat": "sci",
+"src": "maison",
+"d": 2,
+"q": "Quel phénomène explique que le ciel est bleu ?",
+"a": "La diffusion de la lumière par l'atmosphère",
+"bad": [
+"Le reflet des océans",
+"L'ozone",
+"La réfraction par les nuages"
+]
+},
+{
+"id": "x153",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quelle est la formule chimique de l'eau oxygénée ?",
+"a": "H2O2",
+"bad": [
+"H2O",
+"HO2",
+"O3"
+]
+},
+{
+"id": "x154",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quel physicien a énoncé le principe d'incertitude ?",
+"a": "Werner Heisenberg",
+"bad": [
+"Erwin Schrödinger",
+"Max Planck",
+"Paul Dirac"
+]
+},
+{
+"id": "x155",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quel est le nom de la plus grande lune de Saturne ?",
+"a": "Titan",
+"bad": [
+"Europe",
+"Ganymède",
+"Encelade"
+]
+},
+{
+"id": "x156",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Combien de temps la lumière du Soleil met-elle pour atteindre la Terre, environ ?",
+"a": "8 minutes",
+"bad": [
+"8 secondes",
+"8 heures",
+"1 minute"
+]
+},
+{
+"id": "x157",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quel savant a proposé la classification périodique des éléments en 1869 ?",
+"a": "Dmitri Mendeleïev",
+"bad": [
+"Antoine Lavoisier",
+"John Dalton",
+"Marie Curie"
+]
+},
+{
+"id": "x158",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quelle est la particule de charge positive du noyau atomique ?",
+"a": "Le proton",
+"bad": [
+"L'électron",
+"Le neutron",
+"Le photon"
+]
+},
+{
+"id": "x159",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quel est le seul mammifère capable de voler véritablement ?",
+"a": "La chauve-souris",
+"bad": [
+"L'écureuil volant",
+"Le colugo",
+"Le phalanger"
+]
+},
+{
+"id": "x160",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Combien de cœurs possède une pieuvre ?",
+"a": "3",
+"bad": [
+"1",
+"2",
+"4"
+]
+},
+{
+"id": "x161",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quelle échelle mesure la magnitude des séismes ?",
+"a": "L'échelle de Richter",
+"bad": [
+"L'échelle de Beaufort",
+"L'échelle de Mohs",
+"L'échelle de Kelvin"
+]
+},
+{
+"id": "x162",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quel élément chimique a pour numéro atomique 6 ?",
+"a": "Le carbone",
+"bad": [
+"L'oxygène",
+"L'azote",
+"Le bore"
+]
+},
+{
+"id": "x163",
+"cat": "sci",
+"src": "maison",
+"d": 3,
+"q": "Quel naturaliste a publié « De l'origine des espèces » en 1859 ?",
+"a": "Charles Darwin",
+"bad": [
+"Jean-Baptiste de Lamarck",
+"Gregor Mendel",
+"Alfred Wallace"
+]
+},
+{
+"id": "x164",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Combien de joueurs compte une équipe de football sur le terrain ?",
+"a": "11",
+"bad": [
+"10",
+"12",
+"9"
+]
+},
+{
+"id": "x165",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Dans quel sport utilise-t-on un volant ?",
+"a": "Le badminton",
+"bad": [
+"Le squash",
+"Le tennis de table",
+"Le padel"
+]
+},
+{
+"id": "x166",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Quel pays a remporté la Coupe du monde de football 2018 ?",
+"a": "La France",
+"bad": [
+"La Croatie",
+"La Belgique",
+"L'Allemagne"
+]
+},
+{
+"id": "x167",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Combien de points vaut un essai au rugby à XV ?",
+"a": "5",
+"bad": [
+"3",
+"4",
+"7"
+]
+},
+{
+"id": "x168",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Dans quelle ville se sont déroulés les Jeux olympiques d'été 2024 ?",
+"a": "Paris",
+"bad": [
+"Los Angeles",
+"Tokyo",
+"Londres"
+]
+},
+{
+"id": "x169",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Quel sport se pratique à Roland-Garros ?",
+"a": "Le tennis",
+"bad": [
+"Le golf",
+"Le polo",
+"L'équitation"
+]
+},
+{
+"id": "x170",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Quelle est la couleur du maillot du leader du Tour de France ?",
+"a": "Jaune",
+"bad": [
+"Vert",
+"Blanc",
+"À pois rouges"
+]
+},
+{
+"id": "x171",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Combien de cases compte un échiquier ?",
+"a": "64",
+"bad": [
+"32",
+"81",
+"100"
+]
+},
+{
+"id": "x172",
+"cat": "sport",
+"src": "maison",
+"d": 1,
+"q": "Quel nageur américain détient le record de médailles d'or olympiques ?",
+"a": "Michael Phelps",
+"bad": [
+"Mark Spitz",
+"Ryan Lochte",
+"Ian Thorpe"
+]
+},
+{
+"id": "x173",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel joueur a remporté le plus de titres à Roland-Garros ?",
+"a": "Rafael Nadal",
+"bad": [
+"Björn Borg",
+"Roger Federer",
+"Novak Djokovic"
+]
+},
+{
+"id": "x174",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel pays a inventé le judo ?",
+"a": "Le Japon",
+"bad": [
+"La Chine",
+"La Corée",
+"Le Brésil"
+]
+},
+{
+"id": "x175",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Combien de temps dure un match de rugby à XV, hors arrêts de jeu ?",
+"a": "80 minutes",
+"bad": [
+"90 minutes",
+"60 minutes",
+"70 minutes"
+]
+},
+{
+"id": "x176",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel club français a remporté la Ligue des champions en 1993 ?",
+"a": "L'Olympique de Marseille",
+"bad": [
+"Le Paris Saint-Germain",
+"L'AS Monaco",
+"L'Olympique lyonnais"
+]
+},
+{
+"id": "x177",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quelle distance parcourt-on lors d'un marathon ?",
+"a": "42,195 km",
+"bad": [
+"40 km",
+"45 km",
+"21,1 km"
+]
+},
+{
+"id": "x178",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel sprinteur jamaïcain détient le record du monde du 100 m ?",
+"a": "Usain Bolt",
+"bad": [
+"Carl Lewis",
+"Yohan Blake",
+"Asafa Powell"
+]
+},
+{
+"id": "x179",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Dans quel sport parle-t-on de « birdie » et de « bogey » ?",
+"a": "Le golf",
+"bad": [
+"Le bowling",
+"Le curling",
+"Le cricket"
+]
+},
+{
+"id": "x180",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quelle équipe de NBA compte Michael Jordan parmi ses légendes ?",
+"a": "Les Chicago Bulls",
+"bad": [
+"Les Los Angeles Lakers",
+"Les Boston Celtics",
+"Les Miami Heat"
+]
+},
+{
+"id": "x181",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel pilote a remporté sept titres de champion du monde de Formule 1, comme Michael Schumacher ?",
+"a": "Lewis Hamilton",
+"bad": [
+"Sebastian Vettel",
+"Max Verstappen",
+"Ayrton Senna"
+]
+},
+{
+"id": "x182",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Combien de joueurs compte une équipe de basket sur le terrain ?",
+"a": "5",
+"bad": [
+"6",
+"7",
+"4"
+]
+},
+{
+"id": "x183",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel pays a remporté le plus de Coupes du monde de football ?",
+"a": "Le Brésil",
+"bad": [
+"L'Allemagne",
+"L'Italie",
+"L'Argentine"
+]
+},
+{
+"id": "x184",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel gardien de handball français était surnommé « le Chat » ?",
+"a": "Thierry Omeyer",
+"bad": [
+"Nikola Karabatic",
+"Luc Abalo",
+"Daniel Narcisse"
+]
+},
+{
+"id": "x185",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quelle nageuse française a été championne olympique du 400 m nage libre à Londres en 2012 ?",
+"a": "Camille Muffat",
+"bad": [
+"Laure Manaudou",
+"Charlotte Bonnet",
+"Coralie Balmy"
+]
+},
+{
+"id": "x186",
+"cat": "sport",
+"src": "maison",
+"d": 2,
+"q": "Quel jeu de société se joue avec des lettres et un plateau de cases à bonus ?",
+"a": "Le Scrabble",
+"bad": [
+"Le Monopoly",
+"Le Cluedo",
+"Le Risk"
+]
+},
+{
+"id": "x187",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "En quelle année la France a-t-elle remporté sa première Coupe du monde de football ?",
+"a": "1998",
+"bad": [
+"1984",
+"2000",
+"2006"
+]
+},
+{
+"id": "x188",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Quel cycliste a remporté cinq Tours de France dans les années 1990 avant d'être déchu ?",
+"a": "Lance Armstrong",
+"bad": [
+"Miguel Indurain",
+"Jan Ullrich",
+"Marco Pantani"
+]
+},
+{
+"id": "x189",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Quelle ville a accueilli les premiers Jeux olympiques modernes en 1896 ?",
+"a": "Athènes",
+"bad": [
+"Paris",
+"Londres",
+"Rome"
+]
+},
+{
+"id": "x190",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Combien de Grands Chelems compte le tennis chaque année ?",
+"a": "4",
+"bad": [
+"3",
+"5",
+"6"
+]
+},
+{
+"id": "x191",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Quel boxeur, né Cassius Clay, a été champion du monde des poids lourds ?",
+"a": "Mohamed Ali",
+"bad": [
+"Joe Frazier",
+"George Foreman",
+"Mike Tyson"
+]
+},
+{
+"id": "x192",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Dans quel sport s'illustre Teddy Riner ?",
+"a": "Le judo",
+"bad": [
+"La lutte",
+"Le karaté",
+"Le taekwondo"
+]
+},
+{
+"id": "x193",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Quel pays a remporté la Coupe du monde de rugby 2023 ?",
+"a": "L'Afrique du Sud",
+"bad": [
+"La Nouvelle-Zélande",
+"La France",
+"L'Irlande"
+]
+},
+{
+"id": "x194",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Combien de points vaut la bille noire au snooker ?",
+"a": "7",
+"bad": [
+"5",
+"6",
+"8"
+]
+},
+{
+"id": "x195",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Quel footballeur a marqué de la main lors du quart de finale Argentine-Angleterre en 1986 ?",
+"a": "Diego Maradona",
+"bad": [
+"Gabriel Batistuta",
+"Mario Kempes",
+"Jorge Valdano"
+]
+},
+{
+"id": "x196",
+"cat": "sport",
+"src": "maison",
+"d": 3,
+"q": "Quel pays a remporté le premier Championnat d'Europe de football, en 1960 ?",
+"a": "L'URSS",
+"bad": [
+"La Yougoslavie",
+"L'Espagne",
+"La France"
+]
+}
+]
