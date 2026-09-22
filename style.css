@@ -1777,3 +1777,130 @@ button.pb-ans:active{transform:scale(.985)}
 @media (min-width: 700px){ .pb-board{display:grid;grid-template-columns:1fr 1fr;align-items:start} .pb-form{max-width:560px;width:100%;margin:0 auto} }
 
 .pb-ans.empty .pb-word{text-decoration:none}
+
+
+/* ============================================================ Loup-Garou : nuit d'encre, lune pâle, rouge sang */
+[data-game="loupgarou"]{
+  --bg:        oklch(0.165 0.030 275);
+  --surface:   oklch(0.220 0.034 275);
+  --surface-2: oklch(0.270 0.036 275);
+  --line:      oklch(0.340 0.040 275);
+  --ink:       oklch(0.950 0.015 90);
+  --ink-2:     oklch(0.810 0.020 270);
+  --mute:      oklch(0.650 0.030 270);
+  --acc:       oklch(0.880 0.070 90);
+  --acc-soft:  oklch(0.930 0.050 90);
+  --on-acc:    oklch(0.200 0.040 275);
+  --pos:       oklch(0.820 0.130 150);
+  --neg:       oklch(0.620 0.200 25);
+  --gold:      oklch(0.870 0.110 85);
+  --glow: 0.12;
+  --r: 14px; --r-s: 10px; --r-pill: 999px;
+  --font-d: "Grenze Gotisch", Georgia, serif;
+  --track: 0;
+  --blood: oklch(0.56 0.20 25);
+}
+[data-theme="light"][data-game="loupgarou"]{
+  --bg:        oklch(0.950 0.015 80);
+  --surface:   oklch(0.985 0.008 80);
+  --surface-2: oklch(0.915 0.018 80);
+  --line:      oklch(0.850 0.022 80);
+  --ink:       oklch(0.220 0.040 275);
+  --ink-2:     oklch(0.400 0.040 275);
+  --mute:      oklch(0.540 0.030 275);
+  --acc:       oklch(0.450 0.120 275);
+  --acc-soft:  oklch(0.400 0.110 275);
+  --on-acc:    oklch(0.985 0.008 80);
+  --neg:       oklch(0.520 0.200 25);
+  --glow: 0.07;
+}
+[data-game="loupgarou"] h1,[data-game="loupgarou"] .banner{font-family:var(--font-d);font-weight:700}
+.g-loupgarou .gname{font-family:"Grenze Gotisch",Georgia,serif;font-weight:700;font-size:28px;letter-spacing:0;color:oklch(0.88 0.07 90)}
+[data-theme="light"] .g-loupgarou .gname{color:oklch(0.45 0.12 275)}
+.g-loupgarou{background:oklch(0.2 0.034 275);border-color:oklch(0.31 0.04 275)}
+.g-loupgarou[aria-pressed="true"]{border-color:oklch(0.88 0.07 90);background:oklch(0.24 0.04 275)}
+[data-theme="light"] .g-loupgarou{background:oklch(0.965 0.012 80);border-color:oklch(0.86 0.02 275)}
+[data-theme="light"] .g-loupgarou[aria-pressed="true"]{border-color:oklch(0.45 0.12 275);background:oklch(0.93 0.025 275)}
+.lwart{position:relative;display:block;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 50% 110%, oklch(0.3 0.06 275), oklch(0.16 0.03 275));overflow:hidden;box-shadow:0 2px 6px oklch(0 0 0/.4)}
+.lwart-moon{position:absolute;right:9px;top:8px;width:15px;height:15px;border-radius:50%;background:oklch(0.93 0.06 90);box-shadow:0 0 10px oklch(0.93 0.06 90/.6);transition:transform .5s var(--ease)}
+.lwart svg{position:absolute;left:4px;bottom:-2px;width:40px;height:40px;color:oklch(0.08 0.02 275)}
+.gcard[aria-pressed="true"] .lwart-moon{transform:translate(-4px,2px) scale(1.15)}
+
+.lw{--scene:var(--surface)}
+.lw-head{display:flex;align-items:center;justify-content:center;gap:10px}
+.lw-title{margin:0;font:700 30px/1 var(--font-d)}
+.lw-moon{width:22px;height:22px;border-radius:50%;background:oklch(0.93 0.06 90);box-shadow:0 0 14px oklch(0.93 0.06 90/.55),inset -6px -2px 0 oklch(0.8 0.05 90)}
+.lw-moon.sun{background:oklch(0.86 0.15 80);box-shadow:0 0 16px oklch(0.86 0.15 80/.6)}
+.lw-ico{width:26px;height:26px;flex:0 0 auto}
+.lw-ico.big{width:64px;height:64px}
+.lw-ico.q{display:grid;place-items:center;font:700 16px var(--font-d);color:var(--mute);border:1.5px dashed var(--line);border-radius:50%;width:26px;height:26px}
+.lw-face{display:none}
+.lw-peek .lw-face.back,.lw-card .lw-face.back{display:contents}
+.lw-peek.open .lw-face.back,.lw-card.open .lw-face.back{display:none}
+.lw-peek.open .lw-face.front,.lw-card.open .lw-face.front{display:contents}
+.lw-peek{display:flex;align-items:center;justify-content:center;gap:12px;min-height:58px;padding:10px 14px;border-radius:var(--r);border:1px dashed var(--line);background:var(--surface);color:var(--mute);font:inherit;font-size:14px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+.lw-peek.open{border-style:solid;border-color:var(--acc);color:var(--ink)}
+.lw-peek.open b{font:700 20px var(--font-d);display:block}
+.lw-peek small{display:block;font-size:12.5px;color:var(--ink-2)}
+.lw-peek .lw-face.front>span{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+.lw-card{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:30px 22px;min-height:340px;justify-content:center;border-radius:20px;border:2px solid oklch(0.88 0.07 90/.5);background:radial-gradient(ellipse at 50% 0%, oklch(0.32 0.06 275), oklch(0.17 0.03 275) 75%);color:oklch(0.95 0.015 90);font:inherit;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;box-shadow:0 18px 40px oklch(0 0 0/.45)}
+.lw-card.open{border-color:var(--gold)}
+.lw-card-back{opacity:.35}
+.lw-card-name{font:700 36px/1.05 var(--font-d);color:oklch(0.93 0.06 90)}
+.lw-card-text{font-size:15.5px;line-height:1.5;max-width:320px;color:oklch(0.85 0.02 270)}
+.lw-card-pack{font-size:14px;color:oklch(0.8 0.14 25)}
+.lw-card.open .lw-ico{color:oklch(0.93 0.06 90)}
+.lw-ghost{text-align:center;margin:0;font-size:13.5px;color:var(--mute);font-style:italic}
+.lw-step{text-align:center;margin:0;font:500 20px/1.25 var(--font-d);color:var(--acc)}
+.lw-sleep{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px 16px;border-radius:var(--r);background:radial-gradient(ellipse at 50% 30%, oklch(0.24 0.04 275), oklch(0.14 0.025 275));color:oklch(0.78 0.03 270);text-align:center}
+.lw-zz{font:700 44px var(--font-d);color:oklch(0.9 0.05 90/.7);letter-spacing:.04em}
+.lw-act{text-align:center;margin:0;font-size:16px;color:var(--ink)}
+.lw-act.small{font-size:14px;color:var(--ink-2)}
+.lw-wait{text-align:center;margin:0;font-size:14.5px;color:var(--ink-2)}
+.lw-warn{text-align:center;margin:0;color:var(--neg);font-weight:600}
+.lw-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lw-opt{min-height:52px;font-size:16px;font-weight:600;background:var(--surface);border-color:var(--line);color:var(--ink);white-space:normal}
+.lw-opt.on{background:var(--blood);border-color:var(--blood);color:#fff}
+.lw-opt.blocked{opacity:.4;text-decoration:line-through}
+.lw-pack{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:var(--r-s);background:color-mix(in oklab, var(--blood) 14%, var(--surface));border:1px solid color-mix(in oklab, var(--blood) 40%, var(--line))}
+.lw-pack span{display:flex;align-items:center;gap:8px;font-size:14.5px;color:var(--ink-2)}
+.lw-pack span.me{color:var(--ink)}
+.lw-pack .lw-ico{width:20px;height:20px;color:var(--blood)}
+.lw-reveal-card{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:22px 16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--acc)}
+.lw-reveal-card b{font:700 26px/1.1 var(--font-d)}
+.lw-reveal-card span{font-size:14.5px;color:var(--ink-2);max-width:340px}
+.lw-reveal-card.love{border-color:oklch(0.7 0.17 0)}
+.lw-reveal-card.love .lw-ico{color:oklch(0.72 0.17 0)}
+.lw-potions{display:flex;flex-direction:column;gap:8px}
+.lw-potion.life{min-height:54px;background:color-mix(in oklab, var(--pos) 20%, var(--surface));border-color:var(--pos);color:var(--ink);white-space:normal}
+.lw-potion.life.on{background:var(--pos);color:oklch(0.2 0.05 150)}
+.lw-announce{display:flex;flex-direction:column;gap:12px;align-items:center;padding:18px 14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);text-align:center}
+.lw-announce-title{margin:0;font:700 26px/1.15 var(--font-d);color:var(--acc)}
+.lw-announce-empty{margin:0;font-size:16px;color:var(--ink-2)}
+.lw-dead{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 18px;border-radius:var(--r-s);background:color-mix(in oklab, var(--blood) 16%, var(--surface-2));width:100%;animation:pop .4s var(--ease)}
+.lw-dead .lw-ico{color:var(--blood)}
+.lw-dead b{font:700 26px var(--font-d)}
+.lw-dead span{font-size:14.5px;color:var(--ink-2)}
+.lw-votes{margin:0;font-size:13px;color:var(--mute);text-align:center;line-height:1.6}
+.lw-timer{height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+.lw-timer i{display:block;height:100%;background:var(--acc);transition:width .2s linear}
+.lw-over{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px;border-radius:var(--r);background:var(--surface);border:2px solid var(--gold);text-align:center}
+.lw-over p{margin:0;font:700 34px/1.1 var(--font-d);color:var(--gold)}
+.lw-over.wolves{border-color:var(--blood)} .lw-over.wolves p,.lw-over.wolves .lw-ico{color:var(--blood)}
+.lw-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.lw-village{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px;margin-top:6px}
+.lw-p{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 6px;border-radius:var(--r-s);background:var(--surface);border:1px solid var(--line);text-align:center;min-width:0}
+.lw-p .lw-ico{color:var(--ink-2)}
+.lw-p.me{border-color:var(--acc)}
+.lw-p.dead{opacity:.5}
+.lw-p.dead .lw-p-name{text-decoration:line-through}
+.lw-p.win{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.lw-p.off{border-style:dashed}
+.lw-p-name{font-size:13.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lw-p-role{font-size:11.5px;color:var(--mute);min-height:1em}
+.lw-heart{color:oklch(0.7 0.18 0);font-style:normal}
+.lw-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mute);text-align:center}
+.lw-log-seer{text-align:center;margin:0}
+:root:not([data-theme="light"]) .lw-night .lw-p{background:oklch(0.19 0.03 275)}
+.screen.play.loupgarou{padding-bottom:40px}
+@media (min-width: 700px){ .lw-pick{grid-template-columns:repeat(3,1fr)} .lw-card{max-width:420px;margin:0 auto;width:100%} }

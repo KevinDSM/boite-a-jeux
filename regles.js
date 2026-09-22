@@ -185,6 +185,35 @@ const RULES = [
     ['Fin de partie', `<p>Après le nombre de manches choisi, le plus grand total gagne.</p>`],
     ['Astuce', `<p>Les réponses évidentes rapportent souvent 5 : un mot un peu moins attendu, mais incontestable, vaut le double.</p>`],
   ] },
+  { key: 'loupgarou', parts: [
+    ['Le principe', `<p>Des loups-garous se cachent parmi les villageois. Chaque nuit ils dévorent quelqu'un ; chaque jour le village vote pour éliminer un suspect. Pas besoin de meneur : l'application réveille les rôles, annonce les morts et compte les votes. Le téléphone de l'hôte peut même faire la voix du narrateur.</p>`],
+    ['Mise en place', `<ul>
+      <li>De 5 à 20 joueurs. Le nombre de loups est automatique (1 jusqu'à 6 joueurs, 2 jusqu'à 11, 3 au-delà) ou choisi par l'hôte, et les rôles spéciaux se cochent dans le salon.</li>
+      <li>Chacun découvre son rôle en maintenant sa carte appuyée, à l'abri des regards, puis touche « J'ai vu mon rôle ». Les loups voient qui sont leurs complices.</li></ul>`],
+    ['Les rôles', `<ul>
+      <li><b>Loup-Garou :</b> chaque nuit, les loups se mettent d'accord sur une victime. Le jour, ils se font passer pour des villageois.</li>
+      <li><b>Villageois :</b> aucun pouvoir, seulement son flair et sa voix.</li>
+      <li><b>Voyante :</b> chaque nuit, elle découvre le vrai rôle d'un joueur.</li>
+      <li><b>Sorcière :</b> elle apprend qui les loups ont choisi. Elle a une potion de vie pour le sauver et une potion de mort pour empoisonner n'importe qui, une seule fois chacune pour toute la partie.</li>
+      <li><b>Chasseur :</b> quand il meurt, de nuit comme de jour, il tire une dernière balle sur le joueur de son choix.</li>
+      <li><b>Cupidon :</b> la première nuit, il désigne deux amoureux, qui se reconnaissent. Si l'un meurt, l'autre meurt de chagrin.</li>
+      <li><b>Salvateur :</b> chaque nuit, il protège un joueur des loups, jamais le même deux nuits de suite. Il peut se protéger lui-même.</li></ul>`],
+    ['La nuit', `<ul>
+      <li>Tout le monde ferme les yeux. Les rôles se réveillent dans l'ordre : Cupidon et les amoureux (première nuit), Salvateur, Loups-Garous, Voyante, Sorcière.</li>
+      <li>Quand c'est ton tour, ton téléphone vibre (sur Android) et affiche ton action. Les autres voient un écran de nuit.</li>
+      <li>Chaque étape dure un moment, même si le rôle est mort ou absent de la partie : personne ne peut deviner qui agit.</li>
+      <li>Les loups doivent être d'accord sur leur victime. À défaut, à la fin du temps, c'est la victime la plus choisie.</li></ul>`],
+    ['Le jour', `<ul>
+      <li>Les morts de la nuit sont annoncés et leur rôle révélé.</li>
+      <li>Le village débat de vive voix, puis chacun vote sur son téléphone pour un suspect. On peut changer d'avis jusqu'à la fin : quand tout le monde a voté, il reste 5 secondes. L'hôte peut aussi clore le vote.</li>
+      <li>Le plus désigné est éliminé et son rôle révélé. En cas d'égalité, on revote entre les ex æquo ; nouvelle égalité, personne n'est éliminé.</li></ul>`],
+    ['Les morts', `<p>Un joueur mort garde le silence jusqu'à la fin. Avec l'option du salon, il voit tous les rôles et profite du spectacle.</p>`],
+    ['Fin de partie', `<ul>
+      <li>Le village gagne quand tous les loups sont morts.</li>
+      <li>Les loups gagnent quand il ne reste plus que des loups.</li>
+      <li>Deux amoureux de camps différents (un loup et un villageois) gagnent ensemble s'ils sont les deux derniers en vie.</li></ul>
+      <p>À la fin, tous les rôles sont révélés ; l'hôte peut relancer une partie avec de nouveaux rôles.</p>`],
+  ] },
 ];
 
 let rulesBuilt = false;

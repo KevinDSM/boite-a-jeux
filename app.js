@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '36';
+const ASSET_V = '37';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -31,6 +31,7 @@ const GAMES = {
   mirage: { key: 'mirage', theme: 'mirage', name: 'Mirage' },
   douze: { key: 'douze', theme: 'douze', name: 'Douze' },
   petitbac: { key: 'petitbac', theme: 'petitbac', name: 'Petit Bac' },
+  loupgarou: { key: 'loupgarou', theme: 'loupgarou', name: 'Loup-Garou' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -49,12 +50,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -113,7 +114,7 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
@@ -125,10 +126,11 @@ class Game {
     if (this.mi) Mirage.join(this.mi, id, name);
     if (this.dz) Douze.join(this.dz, id, name);
     if (this.pb) PetitBac.join(this.pb, id, name);
+    if (this.lw) LoupGarou.join(this.lw, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -159,6 +161,7 @@ class Game {
     if (s.mode === 'mirage') return this.startMirage(o);
     if (s.mode === 'douze') return this.startDouze(o);
     if (s.mode === 'petitbac') return this.startPetitBac(o);
+    if (s.mode === 'loupgarou') return this.startLoupGarou(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -425,10 +428,16 @@ class Game {
     this.pb = PetitBac.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), cats: o.cats, rounds: o.rounds, seconds: o.seconds, hard: o.hard });
     s.phase = 'pb';
   }
-  viewFor(base, pid) { if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Loup-Garou : la salle vit dans this.lw, chaque rôle ne sort que vers son joueur =================
+  startLoupGarou(o) {
+    const s = this.s;
+    this.lw = LoupGarou.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), wolves: o.wolves, roles: o.roles, deadSee: o.deadSee });
+    s.phase = 'lw';
+  }
+  viewFor(base, pid) { if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -549,7 +558,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   attachHost(peer);
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -570,6 +579,7 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('cm:')) return net.game.cm ? Camembert.act(net.game.cm, pid, m) : 'Pas de partie de Camembert en cours';
   if (typeof m.t === 'string' && m.t.startsWith('mi:')) return net.game.mi ? Mirage.act(net.game.mi, pid, m) : 'Pas de partie de Mirage en cours';
   if (typeof m.t === 'string' && m.t.startsWith('dz:')) return net.game.dz ? Douze.act(net.game.dz, pid, m) : 'Pas de partie de Douze en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('lw:')) return net.game.lw ? LoupGarou.act(net.game.lw, pid, m) : 'Pas de partie de Loup-Garou en cours';
   if (typeof m.t === 'string' && m.t.startsWith('pb:')) return net.game.pb ? PetitBac.act(net.game.pb, pid, m) : 'silent';
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
@@ -785,6 +795,7 @@ function render() {
   else if (s.phase === 'mi') { show('s-mirage'); renderMirage(s.mi); }
   else if (s.phase === 'dz') { show('s-douze'); renderDouze(s.dz); }
   else if (s.phase === 'pb') { show('s-petitbac'); renderPetitBac(s.pb); }
+  else if (s.phase === 'lw') { show('s-loupgarou'); renderLoupGarou(s.lw); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -825,6 +836,8 @@ function renderLobby(s) {
   $('#opts-mirage').hidden = s.pick !== 'mirage';
   $('#opts-douze').hidden = s.pick !== 'douze';
   $('#opts-petitbac').hidden = s.pick !== 'petitbac';
+  $('#opts-loupgarou').hidden = s.pick !== 'loupgarou';
+  if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length; $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''} : il en faut au moins 5.` : `${n} joueurs : ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
   if (isHostPlayer() && s.pick === 'mirage') Mirage.load(ASSET_V).then(() => { const n = Mirage.count(); $('#opt-mi-count').textContent = n ? `${n} cartes, des œuvres du domaine public (Met, Cleveland Museum of Art).` : 'Cartes introuvables.'; });
   if (isHostPlayer() && s.pick === 'camembert') Camembert.load(ASSET_V).then(() => { const n = Camembert.count(); $('#opt-cm-count').textContent = n ? `${n} questions dans la boîte, réparties en six couleurs.` : 'Questions introuvables.'; });
@@ -1411,6 +1424,15 @@ const HELP = {
       <li><b>Vérifier :</b> toutes les réponses s'affichent. Touche une réponse douteuse pour la contester : elle est refusée si la moitié des autres joueurs la conteste. L'hôte peut trancher.</li>
       <li><b>Points :</b> 10 pour une réponse que personne d'autre n'a, 5 si quelqu'un a la même, 0 si elle est vide, refusée ou ne commence pas par la bonne lettre.</li>
     </ul>`,
+  loupgarou: `<h3>Loup-Garou</h3>
+    <p>Le village contre les loups-garous cachés parmi vous. L'application fait le meneur : elle réveille chaque rôle à son tour, annonce les morts et compte les votes.</p>
+    <ul>
+      <li><b>Ton rôle :</b> maintiens la carte appuyée pour le voir, relâche pour le cacher. Ne le montre à personne.</li>
+      <li><b>La nuit :</b> tout le monde ferme les yeux. Ton téléphone vibre quand c'est à ton rôle d'agir ; les autres voient un écran de nuit. Chaque étape dure un moment, même si le rôle est mort : sa durée ne trahit rien.</li>
+      <li><b>Le jour :</b> les morts de la nuit sont annoncés avec leur rôle. Débattez de vive voix, puis votez sur votre téléphone. Le plus désigné est éliminé ; en cas d'égalité, on revote entre les ex æquo, puis personne.</li>
+      <li><b>Victoire :</b> le village quand tous les loups sont morts, les loups quand il ne reste que des loups, un couple d'amoureux de camps différents s'il reste seul.</li>
+    </ul>
+    <p class="fine">Les morts gardent le silence. Les rôles de chacun sont détaillés dans la page Règles des jeux.</p>`,
   geo: `<h3>Boussole</h3>
     <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
     <ul>
@@ -1629,6 +1651,13 @@ $('#btn-start').onclick = () => {
     if (humans + bots < 2) { toast('Douze se joue à deux minimum : ajoute un robot ou invite un ami'); return; }
     if (humans + bots > 8) { toast('Huit joueurs au maximum, robots compris'); return; }
     act({ t: 'start', opts: { mode: 'douze', target: +$('#opt-dz-target').value, bots } });
+  }
+  if (pick === 'loupgarou') {
+    if ((view?.players || []).filter(p => p.online).length < 5) { toast('Loup-Garou se joue à cinq minimum'); return; }
+    const roles = {}; LoupGarou.SPECIALS.forEach(r => { roles[r] = !!$('#opt-lw-' + r)?.checked; });
+    try { localStorage.setItem('lw-voice', $('#opt-lw-voice').checked ? '1' : '0'); } catch { }
+    if ($('#opt-lw-voice').checked && window.speechSynthesis) { try { speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch { } }   // débloque la voix sur iPhone
+    act({ t: 'start', opts: { mode: 'loupgarou', wolves: $('#opt-lw-wolves').value, roles, deadSee: $('#opt-lw-dead').checked } });
   }
   if (pick === 'petitbac') {
     const cats = [...$('#opt-pb-cats').querySelectorAll('input:checked')].map(i => i.value);
