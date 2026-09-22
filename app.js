@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '34';
+const ASSET_V = '35';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -56,10 +56,10 @@ function show(id) {
   const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
-  $('#btn-help').hidden = id === 's-home';
+  $('#btn-help').hidden = id === 's-home' || id === 's-rules';
   $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair' || id === 's-sprint');
   if ($('#btn-vol').hidden) $('#vol-bar').hidden = true;
-  $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux'
+  $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux' : id === 's-rules' ? 'Règles des jeux'
     : id === 's-lobby' ? 'Salon' + (net.code ? ' · ' + net.code : '')
       : id === 's-end' ? 'Classement' : (GAMES[view?.mode]?.name || 'Boîte à jeux');
   syncThemeColor();
@@ -1496,6 +1496,7 @@ $('#confirm').onclick = e => { if (e.target.id === 'confirm') $('#confirm-close'
 $('#confirm-ok').onclick = () => { const f = confirmFn; $('#confirm').hidden = true; confirmFn = null; f?.(); };
 
 $('#btn-back').onclick = () => {
+  if (shownId === 's-rules') { closeRules(); return; }
   const inGame = view && !['lobby'].includes(view.phase);
   if (!inGame) { askConfirm('Quitter', 'Tu quittes la partie et reviens à l\'accueil.', 'Quitter', () => location.reload()); return; }
   if (isHostPlayer()) askConfirm('Retour au salon', 'La partie en cours s\'arrête pour tout le monde et vous revenez au choix du jeu.', 'Revenir au salon', () => act({ t: 'restart' }));
