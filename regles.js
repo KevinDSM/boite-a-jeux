@@ -168,6 +168,23 @@ const RULES = [
     ['Fin de partie', `<p>Dès qu'un joueur atteint le seuil fixé (50, 100 ou 150 points), la partie s'arrête : le plus petit total gagne.</p>`],
     ['Astuces', `<p>Les négatifs sont précieux, les cartes rouges (9 à 12) à fuir. Fermer vite met la pression, mais un score doublé fait mal. Jusqu'à trois robots peuvent compléter la table.</p>`],
   ] },
+  { key: 'petitbac', parts: [
+    ['Le principe', `<p>Une lettre est tirée au sort. Pour chaque catégorie (un prénom, un pays, un animal…), il faut trouver un mot qui commence par cette lettre, plus vite et plus original que les autres.</p>`],
+    ['Mise en place', `<p>L'hôte choisit les catégories dans une liste ou en invente, jusqu'à 14. Il règle aussi le nombre de manches, le temps d'écriture et les lettres difficiles (K, Q, W, X, Y, Z), exclues par défaut. Une lettre ne revient pas tant que les autres n'ont pas été tirées.</p>`],
+    ['Écrire', `<ul>
+      <li>Chacun remplit ses catégories sur son téléphone, sans voir celles des autres.</li>
+      <li>Les articles ne comptent pas : « La Rochelle » vaut pour R, « L'Oréal » pour O. Une réponse qui ne commence pas par la bonne lettre s'affiche en rouge.</li>
+      <li>La touche Entrée passe à la catégorie suivante.</li></ul>`],
+    ['« Stop ! »', `<p>Le bouton Stop s'active quand toutes tes catégories sont remplies. Dès qu'un joueur le touche, les autres ont encore trois secondes, puis tout le monde pose son stylo. Sans Stop, la manche s'arrête à la fin du chrono.</p>`],
+    ['La vérification', `<ul>
+      <li>Toutes les réponses s'affichent, catégorie par catégorie, avec les points provisoires.</li>
+      <li>Touche une réponse douteuse pour la contester, touche-la encore pour annuler. Elle est refusée si au moins la moitié des autres joueurs la conteste.</li>
+      <li>L'hôte peut trancher une réponse, dans un sens ou dans l'autre, même si elle ne commence pas par la bonne lettre.</li>
+      <li>Quand tout le monde a touché « J'ai vérifié », ou quand l'hôte le décide, les points sont comptés.</li></ul>`],
+    ['Points', `<p>10 points pour une réponse que personne d'autre n'a donnée, 5 si au moins un autre joueur a la même, 0 pour une case vide, refusée ou qui ne commence pas par la bonne lettre. Les pluriels et les accents ne comptent pas pour repérer les doublons.</p>`],
+    ['Fin de partie', `<p>Après le nombre de manches choisi, le plus grand total gagne.</p>`],
+    ['Astuce', `<p>Les réponses évidentes rapportent souvent 5 : un mot un peu moins attendu, mais incontestable, vaut le double.</p>`],
+  ] },
 ];
 
 let rulesBuilt = false;

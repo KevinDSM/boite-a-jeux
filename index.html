@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=35">
-<link rel="apple-touch-icon" href="icon-180.png?v=35">
+<link rel="manifest" href="manifest.json?v=36">
+<link rel="apple-touch-icon" href="icon-180.png?v=36">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=35">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=36">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -98,7 +98,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne marche pas ? Diagnostic réseau</button>
-    <p class="fine">11 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">12 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -192,6 +192,12 @@
         <span class="gdesc">Douze cartes cachées, un total à faire baisser : échange, retourne, vide tes colonnes, et ferme au bon moment.</span>
         <span class="gmeta">2 à 8 joueurs · 25 min · robots possibles</span>
       </button>
+      <button class="gcard g-petitbac" type="button" data-game="petitbac">
+        <span class="gart" aria-hidden="true"><span class="bac"><b>B</b><i></i><i></i><i></i></span></span>
+        <span class="gname">Petit Bac</span>
+        <span class="gdesc">Une lettre, des catégories : un prénom, un pays, un animal… Le premier qui a tout rempli crie stop.</span>
+        <span class="gmeta">1 à 20 joueurs · 20 min · sans musique</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -274,6 +280,14 @@
       <label class="field row"><span>Fin de partie à</span><select id="opt-dz-target"><option value="50">50 points, courte</option><option value="100" selected>100 points</option><option value="150">150 points, longue</option></select></label>
       <label class="field row"><span>Robots à la table</span><select id="opt-dz-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
       <p class="fine">Le plus bas total gagne. Une manche dure une dizaine de minutes.</p>
+    </div>
+    <div class="opts" id="opts-petitbac" hidden>
+      <fieldset class="chips" id="opt-pb-cats"><legend class="eyebrow">Catégories</legend></fieldset>
+      <div class="pb-custom"><input id="opt-pb-custom" maxlength="40" placeholder="Ajouter une catégorie" autocomplete="off"><button class="btn small" id="opt-pb-add" type="button">Ajouter</button></div>
+      <p class="fine" id="opt-pb-count"></p>
+      <label class="field row"><span>Nombre de manches</span><select id="opt-pb-rounds"><option>3</option><option selected>5</option><option>8</option><option>10</option></select></label>
+      <label class="field row"><span>Temps pour écrire</span><select id="opt-pb-seconds"><option value="60">1 min</option><option value="90">1 min 30</option><option value="120" selected>2 min</option><option value="180">3 min</option><option value="300">5 min</option></select></label>
+      <label class="field row"><span>Lettres difficiles (K, Q, W, X, Y, Z)</span><input id="opt-pb-hard" type="checkbox" class="tick"></label>
     </div>
     <div class="opts" id="opts-geo" hidden>
       <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
@@ -410,6 +424,11 @@
   <div class="stack" id="dz-main"></div>
 </section>
 
+<!-- ====================== PETIT BAC ====================== -->
+<section class="screen play petitbac" id="s-petitbac" hidden>
+  <div class="stack" id="pb-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -465,17 +484,18 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=35"></script>
-<script src="app.js?v=35"></script>
-<script src="sablier-ui.js?v=35"></script>
-<script src="undercover.js?v=35"></script>
-<script src="geo-config.js?v=35"></script>
-<script src="geo.js?v=35"></script>
-<script src="chromo.js?v=35"></script>
-<script src="kems.js?v=35"></script>
-<script src="camembert.js?v=35"></script>
-<script src="mirage.js?v=35"></script>
-<script src="douze.js?v=35"></script>
-<script src="regles.js?v=35"></script>
+<script src="sablier-engine.js?v=36"></script>
+<script src="app.js?v=36"></script>
+<script src="sablier-ui.js?v=36"></script>
+<script src="undercover.js?v=36"></script>
+<script src="geo-config.js?v=36"></script>
+<script src="geo.js?v=36"></script>
+<script src="chromo.js?v=36"></script>
+<script src="kems.js?v=36"></script>
+<script src="camembert.js?v=36"></script>
+<script src="mirage.js?v=36"></script>
+<script src="douze.js?v=36"></script>
+<script src="petitbac.js?v=36"></script>
+<script src="regles.js?v=36"></script>
 </body>
 </html>
