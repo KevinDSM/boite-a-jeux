@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=32">
-<link rel="apple-touch-icon" href="icon-180.png?v=32">
+<link rel="manifest" href="manifest.json?v=33">
+<link rel="apple-touch-icon" href="icon-180.png?v=33">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=32">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -165,6 +165,12 @@
         <span class="gdesc">Un dé, un plateau, des questions dans six couleurs : complète ton fromage avant les autres.</span>
         <span class="gmeta">2 à 8 joueurs · 30 min · questions à choix multiples</span>
       </button>
+      <button class="gcard g-mirage" type="button" data-game="mirage">
+        <span class="gart" aria-hidden="true"><span class="dream"><i></i><i></i><i></i></span></span>
+        <span class="gname">Mirage</span>
+        <span class="gdesc">Un indice, des images qui se ressemblent : fais deviner ta carte à certains, pas à tous.</span>
+        <span class="gmeta">3 à 8 joueurs · 30 min · tableaux du domaine public</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -237,6 +243,11 @@
       <label class="field row"><span>Parts à réunir</span><select id="opt-cm-target"><option value="6" selected>6, la partie complète</option><option value="4">4, partie moyenne</option><option value="3">3, partie courte</option></select></label>
       <label class="field row"><span>Difficulté</span><select id="opt-cm-diff"><option value="facile">Plutôt facile</option><option value="mix" selected>Mélangée</option><option value="dur">Plutôt difficile</option></select></label>
       <p class="fine" id="opt-cm-count">Chargement des questions…</p>
+    </div>
+    <div class="opts" id="opts-mirage" hidden>
+      <label class="field row"><span>Partie en</span><select id="opt-mi-target"><option value="15">15 points, courte</option><option value="30" selected>30 points</option><option value="45">45 points, longue</option></select></label>
+      <p class="fine" id="opt-mi-count">Chargement des cartes…</p>
+      <p class="fine">Convenez avant de commencer : indices tapés dans l'app, ou dits à voix haute.</p>
     </div>
     <div class="opts" id="opts-geo" hidden>
       <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
@@ -363,6 +374,11 @@
   <div class="stack" id="cm-main"></div>
 </section>
 
+<!-- ====================== MIRAGE ====================== -->
+<section class="screen play mirage" id="s-mirage" hidden>
+  <div class="stack" id="mi-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -418,14 +434,15 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=32"></script>
-<script src="app.js?v=32"></script>
-<script src="sablier-ui.js?v=32"></script>
-<script src="undercover.js?v=32"></script>
-<script src="geo-config.js?v=32"></script>
-<script src="geo.js?v=32"></script>
-<script src="chromo.js?v=32"></script>
-<script src="kems.js?v=32"></script>
-<script src="camembert.js?v=32"></script>
+<script src="sablier-engine.js?v=33"></script>
+<script src="app.js?v=33"></script>
+<script src="sablier-ui.js?v=33"></script>
+<script src="undercover.js?v=33"></script>
+<script src="geo-config.js?v=33"></script>
+<script src="geo.js?v=33"></script>
+<script src="chromo.js?v=33"></script>
+<script src="kems.js?v=33"></script>
+<script src="camembert.js?v=33"></script>
+<script src="mirage.js?v=33"></script>
 </body>
 </html>
