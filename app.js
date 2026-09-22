@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '30';
+const ASSET_V = '31';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -26,6 +26,7 @@ const GAMES = {
   undercover: { key: 'undercover', theme: 'undercover', name: 'Undercover' },
   geo: { key: 'geo', theme: 'geo', name: 'Boussole' },
   chromo: { key: 'chromo', theme: 'chromo', name: 'Chromo' },
+  kems: { key: 'kems', theme: 'kems', name: 'Kems' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -44,12 +45,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home';
@@ -108,17 +109,18 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
     if (this.uc) Undercover.join(this.uc, id, name);
     if (this.geo) Geo.join(this.geo, id, name);
     if (this.chromo) Chromo.join(this.chromo, id, name);
+    if (this.kems) Kems.join(this.kems, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -144,6 +146,7 @@ class Game {
     if (s.mode === 'undercover') return this.startUndercover(o);
     if (s.mode === 'geo') return this.startGeo(o);
     if (s.mode === 'chromo') return this.startChromo(o);
+    if (s.mode === 'kems') return this.startKems(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -380,10 +383,16 @@ class Game {
     this.chromo = Chromo.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rounds: o.rounds, stack: o.stack, bots: o.bots });
     s.phase = 'ch';
   }
-  viewFor(base, pid) { if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Kems : la salle vit dans this.kems, les mains ne sont révélées qu'en fin de donne =================
+  startKems(o) {
+    const s = this.s;
+    this.kems = Kems.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, teams: o.teams, bots: o.bots });
+    s.phase = 'km';
+  }
+  viewFor(base, pid) { if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null; this.uc = null; this.geo = null; this.chromo = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -504,7 +513,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   attachHost(peer);
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -521,6 +530,7 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('uc:')) return ucAction(pid, m);
   if (typeof m.t === 'string' && m.t.startsWith('geo:')) return geoAction(pid, m);
   if (typeof m.t === 'string' && m.t.startsWith('ch:')) return net.game.chromo ? Chromo.act(net.game.chromo, pid, m) : 'Pas de partie de Chromo en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('km:')) return net.game.kems ? Kems.act(net.game.kems, pid, m) : 'Pas de partie de Kems en cours';
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
@@ -730,6 +740,7 @@ function render() {
   else if (s.phase === 'uc') { show('s-undercover'); renderUndercover(s.uc); }
   else if (s.phase === 'geo') { show('s-geo'); renderGeo(s.geo); }
   else if (s.phase === 'ch') { show('s-chromo'); renderChromo(s.chromo); }
+  else if (s.phase === 'km') { show('s-kems'); renderKems(s.kems); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -765,6 +776,8 @@ function renderLobby(s) {
   $('#opts-undercover').hidden = s.pick !== 'undercover';
   $('#opts-geo').hidden = s.pick !== 'geo';
   $('#opts-chromo').hidden = s.pick !== 'chromo';
+  $('#opts-kems').hidden = s.pick !== 'kems';
+  if (isHostPlayer() && s.pick === 'kems') renderKemsOpts(s);
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
     Sablier.summary().forEach(d => { const l = el('label'); l.innerHTML = `<input type="checkbox" value="${d.id}" checked>${d.name} <small>${d.count}</small>`; $('#opt-sab-decks').appendChild(l); });
     const refresh = () => {
@@ -1297,6 +1310,17 @@ const HELP = {
     </ul>
     <p><b>Points :</b> le gagnant d'une manche marque la valeur des cartes restées chez les autres : le chiffre pour un nombre, 20 pour Passe, Sens et +2, 50 pour les jokers.</p>
     <p class="fine">Les robots jouent tout seuls et attrapent ceux qui oublient de crier.</p>`,
+  kems: `<h3>Kems</h3>
+    <p><b>But :</b> réunir quatre cartes de même valeur, un carré, et le faire savoir à ton partenaire sans que les adversaires s'en aperçoivent.</p>
+    <ul>
+      <li><b>Deux équipes de deux</b>, partenaires face à face. Avant de commencer, chaque équipe convient d'un signal discret : un clin d'œil, une main dans les cheveux, un mot glissé dans la conversation.</li>
+      <li><b>Pas de tour de jeu :</b> tout le monde échange en même temps. Touche une carte de ta main puis une carte du milieu, elle est à toi si personne ne l'a prise avant. Tu peux échanger autant de fois que tu veux.</li>
+      <li><b>Je passe :</b> quand tu ne veux plus rien. Dès que les quatre passent, les cartes du milieu sont remplacées. L'hôte peut aussi renouveler le milieu si plus rien ne bouge.</li>
+      <li><b>« Kems ! » :</b> quand tu crois avoir vu le signal de ton partenaire. S'il a bien un carré, <b>1 point</b> pour vous, 2 si tu en avais un aussi. Sinon, 1 point pour les adversaires.</li>
+      <li><b>« Contre-Kems ! » :</b> quand tu penses qu'un adversaire a un carré. Vrai : 1 point pour vous. Faux : 1 point pour eux.</li>
+    </ul>
+    <p>Une erreur coûte un point, alors les deux boutons demandent un second toucher pour confirmer. La partie se joue en 5 points par défaut. Les signaux ne passent pas par l'application : Kems se joue autour d'une table, ou en visio.</p>
+    <p class="fine">Les robots complètent une table. Un robot avec un carré fait un signal que seul son partenaire voit apparaître sur son écran ; il remarque aussi le tien au bout d'un moment.</p>`,
   geo: `<h3>Boussole</h3>
     <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
     <ul>
@@ -1485,6 +1509,14 @@ $('#btn-start').onclick = () => {
     if (humans + bots < 2) { toast('Chromo se joue à deux minimum : ajoute un robot ou invite un ami'); return; }
     if (humans + bots > 10) { toast('Dix joueurs au maximum, robots compris'); return; }
     act({ t: 'start', opts: { mode: 'chromo', rounds: +$('#opt-ch-rounds').value, stack: $('#opt-ch-stack').checked, bots } });
+  }
+  if (pick === 'kems') {
+    const online = (view?.players || []).filter(p => p.online), bots = $('#opt-km-bots').checked;
+    const t = Kems.split(online, kmTeamPick);
+    if (!bots && (t[0].length < 2 || t[1].length < 2)) { toast('Kems se joue à quatre, deux par équipe : invite des amis ou complète avec des robots'); return; }
+    if (t.extra.length) toast(`${t.extra.map(p => p.name).join(', ')} regarder${t.extra.length > 1 ? 'ont' : 'a'} cette partie`);
+    const teams = {}; online.forEach(p => { if (kmTeamPick[p.id] === 0 || kmTeamPick[p.id] === 1) teams[p.id] = kmTeamPick[p.id]; });
+    act({ t: 'start', opts: { mode: 'kems', target: +$('#opt-km-target').value, teams, bots } });
   }
   if (pick === 'geo') {
     (async () => {
