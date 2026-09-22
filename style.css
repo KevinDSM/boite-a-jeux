@@ -1527,3 +1527,114 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .screen.play.mirage{padding-bottom:40px}
 @media (min-width: 700px){ .mi-grid{grid-template-columns:repeat(3,1fr)} .mi-grid.table{grid-template-columns:repeat(4,1fr)} .mi-light img{max-height:74vh} }
+
+
+/* ============================================================ Douze : ardoise neutre, cartes de couleur, Rubik */
+[data-game="douze"]{
+  --bg:        oklch(0.205 0.012 250);
+  --surface:   oklch(0.260 0.014 250);
+  --surface-2: oklch(0.310 0.016 250);
+  --line:      oklch(0.380 0.018 250);
+  --ink:       oklch(0.965 0.008 250);
+  --ink-2:     oklch(0.830 0.015 250);
+  --mute:      oklch(0.680 0.020 250);
+  --acc:       oklch(0.850 0.120 210);
+  --acc-soft:  oklch(0.900 0.080 210);
+  --on-acc:    oklch(0.220 0.040 220);
+  --pos:       oklch(0.830 0.140 150);
+  --neg:       oklch(0.700 0.190 25);
+  --gold:      oklch(0.860 0.140 90);
+  --glow: 0.12;
+  --r: 14px; --r-s: 10px; --r-pill: 999px;
+  --font-d: "Rubik", "Bricolage Grotesque", sans-serif;
+  --track: -0.01em;
+  --c-n: oklch(0.45 0.16 265); --c-z: oklch(0.72 0.12 225); --c-g: oklch(0.66 0.17 150); --c-y: oklch(0.85 0.17 95); --c-r: oklch(0.60 0.21 27);
+}
+[data-theme="light"][data-game="douze"]{
+  --bg:        oklch(0.955 0.008 250);
+  --surface:   oklch(0.990 0.004 250);
+  --surface-2: oklch(0.925 0.010 250);
+  --line:      oklch(0.860 0.012 250);
+  --ink:       oklch(0.240 0.020 250);
+  --ink-2:     oklch(0.420 0.020 250);
+  --mute:      oklch(0.560 0.020 250);
+  --acc:       oklch(0.550 0.120 220);
+  --acc-soft:  oklch(0.480 0.110 220);
+  --on-acc:    oklch(0.990 0.005 220);
+  --neg:       oklch(0.560 0.200 25);
+  --glow: 0.07;
+}
+[data-game="douze"] h1,[data-game="douze"] .banner{font-family:var(--font-d);font-weight:800}
+.g-douze .gname{font-family:"Rubik","Bricolage Grotesque",sans-serif;font-weight:800;letter-spacing:-.01em;color:oklch(0.85 0.12 210)}
+[data-theme="light"] .g-douze .gname{color:oklch(0.52 0.12 220)}
+.g-douze{background:oklch(0.24 0.014 250);border-color:oklch(0.34 0.018 250)}
+.g-douze[aria-pressed="true"]{border-color:oklch(0.85 0.12 210);background:oklch(0.28 0.02 240)}
+[data-theme="light"] .g-douze{background:oklch(0.975 0.006 250);border-color:oklch(0.87 0.012 250)}
+[data-theme="light"] .g-douze[aria-pressed="true"]{border-color:oklch(0.55 0.12 220);background:oklch(0.94 0.02 220)}
+.dzgrid{display:grid;grid-template-columns:repeat(3,15px);gap:3px;width:51px}
+.dzgrid i{height:20px;border-radius:3px;font:800 10px/20px "Rubik",sans-serif;text-align:center;color:#fff;font-style:normal;background:oklch(0.35 0.03 250);box-shadow:0 1px 3px oklch(0 0 0/.4);transition:transform .35s var(--ease)}
+.dzgrid i:nth-child(1){background:oklch(0.45 0.16 265)} .dzgrid i:nth-child(3){background:oklch(0.85 0.17 95);color:oklch(0.25 0.05 90)} .dzgrid i:nth-child(5){background:oklch(0.60 0.21 27)}
+.gcard[aria-pressed="true"] .dzgrid i:nth-child(2n){transform:rotateY(180deg)}
+
+/* cartes */
+.dz-card{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:5/7;border-radius:8px;font-family:"Rubik",sans-serif;font-weight:800;box-shadow:0 3px 8px oklch(0 0 0/.35)}
+.dz-card b{font-size:26px;line-height:1;color:#fff;text-shadow:0 1px 2px oklch(0 0 0/.3)}
+.dz-card.t-n{background:var(--c-n)} .dz-card.t-z{background:var(--c-z)} .dz-card.t-g{background:var(--c-g)} .dz-card.t-y{background:var(--c-y)} .dz-card.t-r{background:var(--c-r)}
+.dz-card.t-y b{color:oklch(0.25 0.05 90);text-shadow:none}
+.dz-card.back{background:repeating-linear-gradient(135deg, oklch(0.40 0.04 240) 0 6px, oklch(0.33 0.035 240) 6px 12px);border:2px solid oklch(0.55 0.04 240)}
+.dz-card.back i{width:46%;aspect-ratio:1;border-radius:50%;border:3px solid oklch(0.85 0.12 210/.8)}
+.dz-card.gone{background:transparent;box-shadow:none;border:2px dashed var(--line)}
+.dz-card.slot{background:transparent;box-shadow:none;border:2px dashed var(--line)}
+.dz-card.big{width:52px}
+.dz-card.mini{width:100%;border-radius:3px;box-shadow:none}
+.dz-card.mini b{font-size:11px}
+.dz-card.mini.back{border-width:1px} .dz-card.mini.back i{border-width:1.5px;width:40%}
+.dz-card.mini.gone{border-width:1px}
+.dz-card.pop{animation:dz-pop .3s var(--ease)}
+@keyframes dz-pop{from{transform:translateY(-8px) scale(.85);opacity:0}to{transform:none;opacity:1}}
+
+.dz-head{display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
+.dz-last{font:700 14px var(--font-d);color:var(--gold)}
+.dz-players{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:6px 20px 4px;scrollbar-width:none}
+.dz-players::-webkit-scrollbar{display:none}
+.dz-seat{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:7px 8px;display:flex;flex-direction:column;gap:5px;transition:border-color .2s,box-shadow .2s}
+.dz-seat.now{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.dz-seat.off{opacity:.45}
+.dz-seat-name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dz-seat.me .dz-seat-name::after{content:" (toi)";color:var(--mute);font-weight:400}
+.dz-seat-name small{color:var(--mute);font-weight:400}
+.dz-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.dz-seat-sum{font-size:11.5px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dz-table{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start;padding:10px 12px 8px;border-radius:var(--r);border:1px solid var(--line);background:radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--acc) 10%, var(--surface)), var(--surface) 75%)}
+.dz-pile,.dz-taken{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:default}
+.dz-pile.can{cursor:pointer}
+.dz-pile.can .dz-card{box-shadow:0 0 0 3px var(--acc),0 3px 8px oklch(0 0 0/.35);animation:ch-breathe 1.6s ease-in-out infinite}
+.dz-pile-label{font-size:12px;color:var(--mute);white-space:nowrap}
+.dz-taken.has .dz-pile-label{color:var(--acc);font-weight:600}
+.dz-status{text-align:center;margin:0;font:700 18px/1.2 var(--font-d);color:var(--ink-2)}
+.dz-status.mine{color:var(--acc)}
+.dz-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:300px;margin:0 auto;width:100%}
+.dz-cell{padding:0;border:0;background:none;cursor:pointer;border-radius:8px;transition:transform .12s var(--ease)}
+.dz-cell:active{transform:scale(.95)}
+.dz-cell.ok .dz-card{box-shadow:0 0 0 3px var(--acc),0 3px 8px oklch(0 0 0/.35)}
+.dz-cell.ok .dz-card.gone{box-shadow:none}
+.dz-sum{text-align:center;margin:0}
+.dz-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.dz-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mute);text-align:center}
+.dz-log li:first-child{color:var(--ink-2);font-size:14px}
+.dz-verdict{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.dz-verdict-sub{margin:0;color:var(--ink-2);font-size:14.5px}
+.dz-rows{display:flex;flex-direction:column;gap:8px}
+.dz-row{background:var(--surface-2);border-radius:var(--r-s);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dz-row.doubled{box-shadow:inset 0 0 0 1px var(--neg)}
+.dz-row-head{display:flex;flex-direction:column;gap:2px;font-size:15px;min-width:0}
+.dz-row-head span{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.dz-row-head strong{color:var(--ink);font-size:18px}
+.dz-row.doubled .dz-row-head strong{color:var(--neg)}
+.dz-row .dz-mini-grid{width:112px;flex:0 0 auto}
+.dz-scores{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:15px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:12px}
+.dz-scores .eyebrow{width:100%}
+.dz-scores b{color:var(--ink);font-variant-numeric:tabular-nums}
+.dz-scores .lead,.dz-scores .lead b{color:var(--acc)}
+.screen.play.douze{padding-bottom:40px}
+@media (min-width: 700px){ .dz-grid{max-width:400px;gap:10px} .dz-card.big{width:72px} .dz-card b{font-size:30px} .dz-seat{width:130px} .dz-row .dz-mini-grid{width:140px} }

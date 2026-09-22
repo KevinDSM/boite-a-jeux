@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=33">
-<link rel="apple-touch-icon" href="icon-180.png?v=33">
+<link rel="manifest" href="manifest.json?v=34">
+<link rel="apple-touch-icon" href="icon-180.png?v=34">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=33">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=34">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -171,6 +171,12 @@
         <span class="gdesc">Un indice, des images qui se ressemblent : fais deviner ta carte à certains, pas à tous.</span>
         <span class="gmeta">3 à 8 joueurs · 30 min · tableaux du domaine public</span>
       </button>
+      <button class="gcard g-douze" type="button" data-game="douze">
+        <span class="gart" aria-hidden="true"><span class="dzgrid"><i>-2</i><i></i><i>7</i><i></i><i>12</i><i></i></span></span>
+        <span class="gname">Douze</span>
+        <span class="gdesc">Douze cartes cachées, un total à faire baisser : échange, retourne, vide tes colonnes, et ferme au bon moment.</span>
+        <span class="gmeta">2 à 8 joueurs · 25 min · robots possibles</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -248,6 +254,11 @@
       <label class="field row"><span>Partie en</span><select id="opt-mi-target"><option value="15">15 points, courte</option><option value="30" selected>30 points</option><option value="45">45 points, longue</option></select></label>
       <p class="fine" id="opt-mi-count">Chargement des cartes…</p>
       <p class="fine">Convenez avant de commencer : indices tapés dans l'app, ou dits à voix haute.</p>
+    </div>
+    <div class="opts" id="opts-douze" hidden>
+      <label class="field row"><span>Fin de partie à</span><select id="opt-dz-target"><option value="50">50 points, courte</option><option value="100" selected>100 points</option><option value="150">150 points, longue</option></select></label>
+      <label class="field row"><span>Robots à la table</span><select id="opt-dz-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+      <p class="fine">Le plus bas total gagne. Une manche dure une dizaine de minutes.</p>
     </div>
     <div class="opts" id="opts-geo" hidden>
       <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
@@ -379,6 +390,11 @@
   <div class="stack" id="mi-main"></div>
 </section>
 
+<!-- ====================== DOUZE ====================== -->
+<section class="screen play douze" id="s-douze" hidden>
+  <div class="stack" id="dz-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -434,15 +450,16 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=33"></script>
-<script src="app.js?v=33"></script>
-<script src="sablier-ui.js?v=33"></script>
-<script src="undercover.js?v=33"></script>
-<script src="geo-config.js?v=33"></script>
-<script src="geo.js?v=33"></script>
-<script src="chromo.js?v=33"></script>
-<script src="kems.js?v=33"></script>
-<script src="camembert.js?v=33"></script>
-<script src="mirage.js?v=33"></script>
+<script src="sablier-engine.js?v=34"></script>
+<script src="app.js?v=34"></script>
+<script src="sablier-ui.js?v=34"></script>
+<script src="undercover.js?v=34"></script>
+<script src="geo-config.js?v=34"></script>
+<script src="geo.js?v=34"></script>
+<script src="chromo.js?v=34"></script>
+<script src="kems.js?v=34"></script>
+<script src="camembert.js?v=34"></script>
+<script src="mirage.js?v=34"></script>
+<script src="douze.js?v=34"></script>
 </body>
 </html>
