@@ -133,12 +133,13 @@ const RULES = [
     ['À ton tour', `<ul>
       <li>Lance le dé, puis choisis de quel côté avancer : les deux cases possibles s'allument sur le plateau.</li>
       <li>La couleur de la case donne celle de la question : quatre réponses, 30 secondes.</li>
-      <li>Bonne réponse : tu rejoues. Mauvaise réponse ou temps écoulé : au suivant.</li>
+      <li>Bonne réponse : tu rejoues, jusqu'à 3 questions d'affilée par tour, puis la main passe. Mauvaise réponse ou temps écoulé : au suivant.</li>
+      <li>Seules les grosses cases rapportent une part : quand tu rejoues, vise-les.</li>
       <li>Les cases ↻ font relancer le dé.</li></ul>`],
     ['Les parts', `<p>Les six grosses cases du plateau sont les camemberts. Une bonne réponse sur l'une d'elles rapporte la part de sa couleur, si tu ne l'as pas déjà.</p>`],
     ['La question finale', `<p>Fromage complet : à ton tour suivant, les autres joueurs votent la couleur de ta question finale, ou une question de culture générale. Elle est plus difficile. Bonne réponse, tu gagnes ; sinon tu retentes au tour d'après.</p>`],
     ['Les autres jouent aussi', `<p>Pendant chaque question, chacun peut donner son avis en secret. Ça ne rapporte rien, mais la révélation montre qui aurait trouvé.</p>`],
-    ['Réglages dans le salon', `<p>Nombre de parts à réunir (6, 4 ou 3 pour une partie courte) et difficulté des questions. Si une question est fausse, l'hôte peut compter la réponse comme juste. Une question déjà posée ne revient pas d'une soirée à l'autre tant qu'il en reste.</p>`],
+    ['Réglages dans le salon', `<p>Nombre de parts à réunir (6, 4 ou 3 pour une partie courte), difficulté des questions, et ce qui se passe après une bonne réponse : rejouer jusqu'à 3 fois, rejouer sans limite comme dans le jeu d'origine, ou passer la main à chaque question. Si une question est fausse, l'hôte peut compter la réponse comme juste. Une question déjà posée ne revient pas d'une soirée à l'autre tant qu'il en reste.</p>`],
   ] },
   { key: 'mirage', parts: [
     ['Le principe', `<p>Des images évocatrices et des indices. Le conteur doit faire deviner sa carte à certains joueurs, mais pas à tous : son indice ne doit être ni trop clair, ni trop obscur.</p>`],

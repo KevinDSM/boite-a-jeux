@@ -74,22 +74,23 @@ const Camembert = (() => {
   const full = (room, p) => p.wedges.filter(Boolean).length >= room.target;
   const log = (room, t) => { room.log.push(t); if (room.log.length > 30) room.log.splice(0, room.log.length - 30); };
 
-  function create({ hostId, players, target, diff }) {
+  const MAX_STREAK = 3;                          // bonnes réponses d'affilée avant de passer la main, en mode « limite »
+  function create({ hostId, players, target, diff, replay }) {
     const room = {
-      hostId, phase: 'roll', target: clamp(target, 1, 6, 6), diff: ['facile', 'mix', 'dur'].includes(diff) ? diff : 'mix',
+      hostId, phase: 'roll', target: clamp(target, 1, 6, 6), diff: ['facile', 'mix', 'dur'].includes(diff) ? diff : 'mix', replay: ['limit', 'always', 'never'].includes(replay) ? replay : 'limit', streak: 0,
       players: players.map((p, i) => ({ id: p.id, name: p.name, online: p.online !== false, pos: (i % 6) * 7, wedges: [false, false, false, false, false, false], answered: 0, right: 0 })),
       order: [], turn: 0, die: null, options: null, q: null, answer: null, guesses: {}, votes: {}, ends: 0, turnAt: Date.now(),
       result: null, winnerId: null, log: [], seen: new Set(), seq: 0,
     };
     room.order = shuffle(room.players.filter(p => p.online).map(p => p.id));
-    log(room, 'Chacun part de son camembert. Bonne réponse : tu rejoues.');
+    log(room, room.replay === 'never' ? 'Chacun part de son camembert. Un seul essai par tour.' : room.replay === 'limit' ? `Chacun part de son camembert. Bonne réponse : tu rejoues, ${MAX_STREAK} questions par tour au maximum.` : 'Chacun part de son camembert. Bonne réponse : tu rejoues.');
     beginTurn(room, false);
     return room;
   }
 
   function beginTurn(room, advance = true) {
     const n = room.order.length;
-    if (advance) room.turn = (room.turn + 1) % n;
+    if (advance) { room.turn = (room.turn + 1) % n; room.streak = 0; }
     let guard = 0;
     while (guard++ < n && !active(room)?.online) room.turn = (room.turn + 1) % n;
     const p = active(room);
@@ -145,7 +146,8 @@ const Camembert = (() => {
     const right = Object.entries(room.guesses).filter(([, i]) => i === q.correct).map(([id]) => pl(room, id)?.name).filter(Boolean);
     const wrong = Object.entries(room.guesses).filter(([, i]) => i !== q.correct).map(([id]) => pl(room, id)?.name).filter(Boolean);
     room.answer = chosen;
-    room.result = { ok, chosen, correct: q.correct, wedge, right, wrong, final: q.final, timeout: chosen === -1 };
+    if (ok) room.streak += 1;
+    room.result = { ok, chosen, correct: q.correct, wedge, right, wrong, final: q.final, timeout: chosen === -1, again: ok && canReplay(room), streak: room.streak, max: room.replay === 'limit' ? MAX_STREAK : null };
     const col = COLORS[q.c].name;
     if (q.final) log(room, ok ? `${p.name} répond juste à la question finale (${col}) et gagne !` : `${p.name} rate la question finale (${col}).`);
     else log(room, ok ? `${p.name} : bonne réponse en ${col}${wedge ? ', part gagnée !' : ''}` : chosen === -1 ? `${p.name} n'a pas répondu à temps (${col}).` : `${p.name} se trompe en ${col}.`);
@@ -154,10 +156,13 @@ const Camembert = (() => {
     return null;
   }
 
+  // rejouer après une bonne réponse, selon la règle choisie dans le salon
+  const canReplay = room => room.replay === 'always' || (room.replay === 'limit' && room.streak < MAX_STREAK);
+
   function next(room, pid) {
     if (room.phase !== 'reveal') return null;
     if (pid !== active(room)?.id && pid !== room.hostId) return null;
-    beginTurn(room, !room.result.ok);                              // bonne réponse : le même joueur rejoue
+    beginTurn(room, !room.result.again);                           // bonne réponse : le même joueur rejoue, dans la limite fixée
     return null;
   }
 
@@ -165,7 +170,8 @@ const Camembert = (() => {
     if (room.phase !== 'reveal' || pid !== room.hostId || room.result.ok) return null;
     const p = active(room), q = room.q;
     room.result.ok = true; room.result.overridden = true;
-    p.right += 1;
+    p.right += 1; room.streak += 1;
+    room.result.again = canReplay(room); room.result.streak = room.streak;
     if (q.hq && !p.wedges[q.c]) { p.wedges[q.c] = true; room.result.wedge = true; }
     log(room, `L'hôte compte la réponse de ${p.name} comme juste.`);
     if (q.final) { room.phase = 'over'; room.winnerId = p.id; }
@@ -216,7 +222,7 @@ const Camembert = (() => {
   function tick(room) {
     const now = Date.now();
     if (room.phase === 'ask' && now >= room.ends) { reveal(room, -1); return true; }
-    if (room.phase === 'reveal' && now >= room.ends) { beginTurn(room, !room.result.ok); return true; }
+    if (room.phase === 'reveal' && now >= room.ends) { beginTurn(room, !room.result.again); return true; }
     if (room.phase === 'vote' && now >= room.ends) { resolveVote(room); return true; }
     return false;
   }
@@ -241,7 +247,7 @@ const Camembert = (() => {
       activeId: a?.id || null, activeName: a?.name || '', isActive: a?.id === pid, seated: !!me,
       players: room.order.map(id => { const p = pl(room, id); return { id, name: p.name, online: p.online, pos: p.pos, wedges: p.wedges, count: p.wedges.filter(Boolean).length, me: id === pid, active: id === a?.id, answered: p.answered, right: p.right }; }),
       die: room.die, options: room.options,
-      q: showQ ? { text: q.text, choices: q.choices, c: q.c, hq: q.hq, final: q.final, d: q.d, correct: room.phase === 'ask' ? null : q.correct } : null,
+      q: showQ ? { text: q.text, choices: q.choices, c: q.c, hq: q.hq, owned: !!(q.hq && a?.wedges[q.c]), final: q.final, d: q.d, correct: room.phase === 'ask' ? null : q.correct } : null,
       left: room.phase === 'ask' || room.phase === 'vote' || room.phase === 'reveal' ? Math.max(0, room.ends - now) : 0,
       total: room.phase === 'ask' ? QUESTION_MS : room.phase === 'vote' ? VOTE_MS : REVEAL_MS,
       myGuess: room.guesses[pid] ?? null, guessCount: Object.keys(room.guesses).length,
@@ -358,7 +364,7 @@ function renderCamembert(v) {
   if (inQuestion && v.q) {
     const q = v.q, col = C[q.c];
     const card = el('div', `cm-q c-${col.key}`);
-    card.innerHTML = `<div class="cm-q-head"><span class="cm-q-cat">${esc(col.name)}</span><span class="cm-q-meta">${q.final ? 'Question finale' : q.hq ? 'Case camembert : la part est en jeu' : ''}${q.d === 3 ? ' · difficile' : q.d === 1 ? ' · facile' : ''}</span></div>`
+    card.innerHTML = `<div class="cm-q-head"><span class="cm-q-cat">${esc(col.name)}</span><span class="cm-q-meta">${q.final ? 'Question finale' : q.hq ? (q.owned ? 'Case camembert : part déjà gagnée' : 'Case camembert : la part est en jeu') : 'Case simple : pas de part en jeu'}${q.d === 3 ? ' · difficile' : q.d === 1 ? ' · facile' : ''}</span></div>`
       + `<p class="cm-q-text">${esc(q.text)}</p>`;
     zone.appendChild(card);
     if (v.phase === 'ask') zone.appendChild(cmTimerBar(v));
@@ -387,7 +393,7 @@ function renderCamembert(v) {
       const r = v.result;
       const verdict = el('div', 'cm-verdict' + (r.ok ? ' ok' : ' ko'));
       verdict.innerHTML = `<p class="cm-verdict-big">${r.ok ? (r.wedge ? 'Bonne réponse, part gagnée !' : 'Bonne réponse !') : r.timeout ? 'Temps écoulé' : 'Raté !'}</p>`
-        + `<p class="cm-verdict-sub">${r.ok ? `${esc(v.activeName)} rejoue.` : `La bonne réponse était « ${esc(q.choices[q.correct])} ». Au suivant.`}</p>`
+        + `<p class="cm-verdict-sub">${r.ok ? (r.again ? `${esc(v.activeName)} rejoue${r.max ? ` (question ${r.streak + 1} sur ${r.max} maximum)` : ''} : vise une grosse case pour gagner une part.` : r.max && r.streak >= r.max ? `${r.max} bonnes réponses d’affilée : au tour du suivant.` : 'Au tour du suivant.') : `La bonne réponse était « ${esc(q.choices[q.correct])} ». Au suivant.`}</p>`
         + (r.right.length || r.wrong.length ? `<p class="cm-verdict-guess">${r.right.length ? `Avaient trouvé : ${r.right.map(esc).join(', ')}.` : ''} ${r.wrong.length ? `À côté : ${r.wrong.map(esc).join(', ')}.` : ''}</p>` : '');
       zone.appendChild(verdict);
       const row = el('div', 'cm-actions');

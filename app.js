@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '37';
+const ASSET_V = '38';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -407,7 +407,7 @@ class Game {
   // ================= Camembert : la salle vit dans this.cm, la bonne réponse ne sort qu'à la révélation =================
   startCamembert(o) {
     const s = this.s;
-    this.cm = Camembert.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, diff: o.diff });
+    this.cm = Camembert.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, diff: o.diff, replay: o.replay });
     s.phase = 'cm';
   }
   // ================= Mirage : la salle vit dans this.mi, chaque main ne sort que vers son joueur =================
@@ -1389,7 +1389,7 @@ const HELP = {
     <p><b>But :</b> compléter ton fromage avec les six parts de couleur, puis réussir la question finale.</p>
     <ul>
       <li><b>À ton tour :</b> lance le dé, puis choisis de quel côté avancer : les deux cases possibles s'allument sur le plateau. La couleur de la case donne la couleur de la question, à choix multiples, 30 secondes.</li>
-      <li><b>Bonne réponse :</b> tu rejoues. Mauvaise réponse, ou temps écoulé : au suivant.</li>
+      <li><b>Bonne réponse :</b> tu rejoues, jusqu'à 3 questions par tour (réglable dans le salon). Mauvaise réponse, ou temps écoulé : au suivant.</li>
       <li><b>Les six grosses cases</b> sont les camemberts : une bonne réponse dessus rapporte la part de cette couleur. Les cases ↻ font relancer le dé.</li>
       <li><b>Fromage complet :</b> à ton tour suivant, les autres joueurs choisissent la couleur de ta question finale, ou une question de culture générale. Bonne réponse, tu gagnes ; sinon tu retentes au tour d'après.</li>
       <li><b>Les autres jouent aussi :</b> pendant chaque question, chacun peut donner son avis. Ça ne rapporte rien, mais on voit qui aurait trouvé.</li>
@@ -1635,7 +1635,7 @@ $('#btn-start').onclick = () => {
     (async () => {
       await Camembert.load(ASSET_V);
       if (!Camembert.count()) { toast('Questions introuvables : quiz.json manque'); return; }
-      act({ t: 'start', opts: { mode: 'camembert', target: +$('#opt-cm-target').value, diff: $('#opt-cm-diff').value } });
+      act({ t: 'start', opts: { mode: 'camembert', target: +$('#opt-cm-target').value, diff: $('#opt-cm-diff').value, replay: $('#opt-cm-replay').value } });
     })();
   }
   if (pick === 'mirage') {
