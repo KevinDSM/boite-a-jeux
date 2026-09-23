@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=38">
-<link rel="apple-touch-icon" href="icon-180.png?v=38">
+<link rel="manifest" href="manifest.json?v=39">
+<link rel="apple-touch-icon" href="icon-180.png?v=39">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=38">
+<link rel="stylesheet" href="style.css?v=39">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -113,16 +113,6 @@
 
 <!-- ====================== SALON ====================== -->
 <section class="screen" id="s-lobby" hidden>
-  <div class="code-strip">
-    <div>
-      <span class="eyebrow">Code</span>
-      <div class="code" id="lobby-code">····</div>
-    </div>
-    <p class="fine">Tes amis ouvrent la même adresse<br>et tapent ce code.<br><b>Garde cette page ouverte</b> : c'est ton téléphone qui fait tourner la partie.</p>
-  </div>
-
-  <div class="players" id="lobby-players"></div>
-
   <section class="picker">
     <h2 class="section-title">Choisir un jeu</h2>
     <div class="games" id="games">
@@ -208,6 +198,16 @@
     </div>
   </section>
 
+  <aside class="lobby-side">
+  <div class="code-strip">
+    <div>
+      <span class="eyebrow">Code</span>
+      <div class="code" id="lobby-code">····</div>
+    </div>
+    <p class="fine">Tes amis ouvrent la même adresse <br>et tapent ce code. <br><b>Garde cette page ouverte</b> : c'est ton téléphone qui fait tourner la partie.</p>
+  </div>
+
+  <div class="players" id="lobby-players"></div>
   <div id="lobby-opts" hidden>
     <div class="opts" id="opts-timeline" hidden>
       <fieldset class="chips" id="opt-cats"><legend class="eyebrow">Playlists</legend></fieldset>
@@ -347,6 +347,7 @@
     <button class="btn primary lg" id="btn-start">Lancer la partie</button>
   </div>
   <p class="fine" id="lobby-wait">L'hôte choisit le jeu…</p>
+  </aside>
 </section>
 
 <!-- ====================== DÉCENNIES ====================== -->
@@ -510,19 +511,20 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=38"></script>
-<script src="app.js?v=38"></script>
-<script src="sablier-ui.js?v=38"></script>
-<script src="undercover.js?v=38"></script>
-<script src="geo-config.js?v=38"></script>
-<script src="geo.js?v=38"></script>
-<script src="chromo.js?v=38"></script>
-<script src="kems.js?v=38"></script>
-<script src="camembert.js?v=38"></script>
-<script src="mirage.js?v=38"></script>
-<script src="douze.js?v=38"></script>
-<script src="petitbac.js?v=38"></script>
-<script src="loupgarou.js?v=38"></script>
-<script src="regles.js?v=38"></script>
+<script src="sablier-engine.js?v=39"></script>
+<script src="app.js?v=39"></script>
+<script src="sablier-ui.js?v=39"></script>
+<script src="undercover.js?v=39"></script>
+<script src="geo-config.js?v=39"></script>
+<script src="geo.js?v=39"></script>
+<script src="chromo.js?v=39"></script>
+<script src="kems.js?v=39"></script>
+<script src="camembert.js?v=39"></script>
+<script src="mirage.js?v=39"></script>
+<script src="douze.js?v=39"></script>
+<script src="petitbac.js?v=39"></script>
+<script src="loupgarou.js?v=39"></script>
+<script src="desk.js?v=39"></script>
+<script src="regles.js?v=39"></script>
 </body>
 </html>

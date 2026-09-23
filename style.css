@@ -1904,3 +1904,75 @@ button.pb-ans:active{transform:scale(.985)}
 :root:not([data-theme="light"]) .lw-night .lw-p{background:oklch(0.19 0.03 275)}
 .screen.play.loupgarou{padding-bottom:40px}
 @media (min-width: 700px){ .lw-pick{grid-template-columns:repeat(3,1fr)} .lw-card{max-width:420px;margin:0 auto;width:100%} }
+
+
+/* ============ PC : moins de défilement, plus de place utilisée ============ */
+/* salon : l'ordre du téléphone reste code, joueurs, jeux, réglages */
+.lobby-side{display:contents}
+#s-lobby .code-strip{order:1} #s-lobby .players{order:2} #s-lobby .picker{order:3} #lobby-opts{order:4} #lobby-wait{order:5}
+
+@media (min-width: 760px){
+  #s-lobby{max-width:900px}
+  .games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .gcard{align-content:start}
+  .gsoon{grid-column:1/-1}
+  #s-rules{max-width:900px}
+}
+
+@media (min-width: 1100px){
+  /* salon en deux colonnes : les jeux à gauche, tout le reste à droite, toujours visible */
+  #s-lobby{max-width:1320px;display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:32px;align-items:start;padding-left:32px;padding-right:32px}
+  #s-lobby .picker{grid-column:1;grid-row:1}
+  .lobby-side{display:flex;flex-direction:column;gap:16px;grid-column:2;grid-row:1;position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top) + 12px);max-height:calc(100dvh - var(--bar-h) - 30px);overflow-y:auto;overscroll-behavior:contain;padding:2px 4px 16px 2px;scrollbar-width:thin}
+  .lobby-side .code-strip{flex-direction:column;align-items:flex-start;gap:8px}
+  .lobby-side .code-strip br{display:none}
+  .lobby-side #lobby-opts{margin-top:4px}
+  .lobby-side #btn-start{position:sticky;bottom:0;z-index:1;width:100%;box-shadow:0 0 0 14px var(--bg),0 -22px 18px 6px var(--bg)}
+
+  /* accueil en deux colonnes : la boîte à gauche, l'entrée à droite */
+  #s-home{max-width:1080px;display:grid;grid-template-columns:minmax(0,1fr) 420px;grid-template-rows:auto auto auto;column-gap:80px;row-gap:18px;align-content:center;padding-left:40px;padding-right:40px}
+  #s-home .hub-hero{grid-column:1;grid-row:1/4;align-self:center;text-align:left;align-items:flex-start}
+  #s-home .hub-hero h1{font-size:64px;line-height:1}
+  #s-home .hub-hero .lede{font-size:20px;max-width:28ch}
+  #s-home .gamebox{transform:scale(1.35);transform-origin:left center;margin-bottom:22px}
+  #s-home #f-home{grid-column:2;grid-row:1;align-self:end}
+  #s-home .rules-entry{grid-column:2;grid-row:2;margin-top:0}
+  #s-home .hub-foot{grid-column:2;grid-row:3;margin-top:0;align-self:start}
+
+  /* règles : sommaire fixe à gauche, texte à droite */
+  #s-rules{max-width:1180px;padding-left:32px;padding-right:32px}
+  #rules-main{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;align-items:start}
+  .rules-toc .rules-chip{padding:5px 10px;gap:8px}
+  .rules-toc .gart{width:28px;height:28px;transform:scale(.5)}
+  .rules-toc .gname{font-size:15px}
+  .rules-toc{grid-template-columns:1fr;position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top) + 12px);margin:0;max-height:calc(100dvh - var(--bar-h) - 30px);overflow-y:auto;gap:6px}
+  .rules-list{max-width:760px}
+  .rules-intro{max-width:760px;margin-left:290px}
+
+  /* écrans de jeu : conçus pour le téléphone, on les agrandit plutôt que de les étirer */
+  .screen.play:not(#s-geo){max-width:640px}
+  .screen.play:not(#s-geo):has(.desk-split){max-width:1120px;padding-left:28px;padding-right:28px}
+  #s-end{max-width:640px}
+
+  /* deux colonnes dans les jeux : le cœur à gauche, joueurs et journal à droite (desk.js) */
+  .desk-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;column-gap:28px;align-items:start}
+  .desk-main,.desk-side{display:flex;flex-direction:column;gap:15px;min-width:0}
+  .desk-side{position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top) + 12px)}
+  .desk-side .ch-players,.desk-side .cm-players,.desk-side .mi-players,.desk-side .dz-players{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
+  .desk-side .km-seats{grid-template-columns:1fr 1fr}
+  .desk-side .lw-village{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:0}
+  .desk-side .ch-log,.desk-side .km-log,.desk-side .cm-log,.desk-side .mi-log,.desk-side .dz-log,.desk-side .lw-log,.desk-side .pb-log{text-align:left}
+  .desk-side .dz-seat{width:calc(50% - 4px)}
+  #cm-main.desk-split{grid-template-columns:minmax(0,1fr) 380px}
+  #cm-main.desk-split .cm-board{max-width:520px}
+  #pb-main.desk-split .pb-board{grid-template-columns:1fr 1fr}
+}
+/* écrans de jeu : un zoom léger, seulement si la hauteur le permet */
+/* min-height est lui aussi agrandi par le zoom : on le divise d'autant pour ne pas forcer le défilement */
+.screen.play:not(#s-geo),#s-end{min-height:calc(100dvh / var(--z, 1))}
+@media (min-width: 1100px) and (min-height: 760px){ .screen.play:not(#s-geo),#s-end{--z:1.08;zoom:var(--z)} }
+@media (min-width: 1400px) and (min-height: 880px){
+  .screen.play:not(#s-geo),#s-end{--z:1.18}
+  .games{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (min-width: 1800px) and (min-height: 1040px){ .screen.play:not(#s-geo),#s-end{--z:1.28} }
