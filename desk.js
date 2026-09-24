@@ -29,6 +29,8 @@ function deskSplit(root, side, needs) {
   ['renderLoupGarou', '#lw-main', '.lw-village, .lw-log'],
   ['renderPetitBac', '#pb-main', '.pb-totals, .pb-scores, .pb-actions, .pb-log, .pb-winner', '.pb-board'],
   ['renderUndercover', '#uc-main', '.uc-roster, .uc-order, .uc-scores, .uc-recap'],
+  ['renderNaufrages', '#nf-main', '.nf-camp, .nf-people, .nf-log, .nf-items, .nf-peek'],
+  ['renderMemes', '#mm-main', '.mm-players, .mm-log'],
 ].forEach(([name, rootSel, side, needs]) => {
   const orig = window[name];
   if (typeof orig !== 'function') return;

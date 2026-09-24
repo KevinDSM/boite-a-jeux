@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=42">
-<link rel="apple-touch-icon" href="icon-180.png?v=42">
+<link rel="manifest" href="manifest.json?v=43">
+<link rel="apple-touch-icon" href="icon-180.png?v=43">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=42">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=43">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -98,7 +98,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne marche pas ? Diagnostic réseau</button>
-    <p class="fine">13 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">14 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -164,12 +164,6 @@
         <span class="gdesc">Réunis un carré, fais ton signal en douce à ton partenaire, et crie Kems avant que les adversaires ne flairent le coup.</span>
         <span class="gmeta">4 joueurs, 2 équipes · 15 min · robots possibles</span>
       </button>
-      <button class="gcard g-camembert" type="button" data-game="camembert">
-        <span class="gart" aria-hidden="true"><span class="cheese"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
-        <span class="gname">Camembert</span>
-        <span class="gdesc">Un dé, un plateau, des questions dans six couleurs : complète ton fromage avant les autres.</span>
-        <span class="gmeta">2 à 8 joueurs · 30 min · questions à choix multiples</span>
-      </button>
       <button class="gcard g-mirage" type="button" data-game="mirage">
         <span class="gart" aria-hidden="true"><span class="dream"><i></i><i></i><i></i></span></span>
         <span class="gname">Mirage</span>
@@ -193,6 +187,18 @@
         <span class="gname">Loup-Garou</span>
         <span class="gdesc">Des loups se cachent parmi vous. La nuit ils dévorent, le jour le village vote. L'application fait le meneur.</span>
         <span class="gmeta">5 à 20 joueurs · 30 min · de vive voix</span>
+      </button>
+      <button class="gcard g-naufrages" type="button" data-game="naufrages">
+        <span class="gart" aria-hidden="true"><span class="island"><i class="island-sun"></i><i class="island-palm">🌴</i><i class="island-raft"></i></span></span>
+        <span class="gname">Naufragés</span>
+        <span class="gdesc">Échoués sur une île, construisez un radeau avant l'ouragan. Mais s'il n'y a pas assez à manger, le camp vote…</span>
+        <span class="gmeta">3 à 12 joueurs · 30 min · coopération et trahison</span>
+      </button>
+      <button class="gcard g-memes" type="button" data-game="memes">
+        <span class="gart" aria-hidden="true"><span class="memeart"><b>QUAND</b><i>😂</i></span></span>
+        <span class="gname">Mème pas vrai</span>
+        <span class="gdesc">Une situation, et chacun pose le mème ou le GIF de sa main qui y répond le mieux. Le plus drôle marque.</span>
+        <span class="gmeta">3 à 12 joueurs · 20 min · mèmes et GIF</span>
       </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
@@ -272,12 +278,6 @@
       <label class="field row"><span>Compléter la table avec des robots</span><input id="opt-km-bots" type="checkbox" class="tick"></label>
       <p class="fine">Convenez d'un signal discret par équipe avant de commencer : il ne passe pas par le téléphone.</p>
     </div>
-    <div class="opts" id="opts-camembert" hidden>
-      <label class="field row"><span>Parts à réunir</span><select id="opt-cm-target"><option value="6" selected>6, la partie complète</option><option value="4">4, partie moyenne</option><option value="3">3, partie courte</option></select></label>
-      <label class="field row"><span>Après une bonne réponse</span><select id="opt-cm-replay"><option value="limit" selected>On rejoue, 3 fois maximum</option><option value="always">On rejoue sans limite</option><option value="never">On passe la main</option></select></label>
-      <label class="field row"><span>Difficulté</span><select id="opt-cm-diff"><option value="facile">Plutôt facile</option><option value="mix" selected>Mélangée</option><option value="dur">Plutôt difficile</option></select></label>
-      <p class="fine" id="opt-cm-count">Chargement des questions…</p>
-    </div>
     <div class="opts" id="opts-mirage" hidden>
       <label class="field row"><span>Jokers par joueur</span><select id="opt-mi-jokers"><option value="0">Aucun</option><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label>
       <label class="field row"><span>Partie en</span><select id="opt-mi-target"><option value="15">15 points, courte</option><option value="30" selected>30 points</option><option value="45">45 points, longue</option></select></label>
@@ -312,6 +312,16 @@
       <label class="field row"><span>Voix du narrateur sur ce téléphone</span><input id="opt-lw-voice" type="checkbox" class="tick" checked></label>
       <p class="fine" id="opt-lw-count"></p>
       <p class="fine">Posez ce téléphone au milieu, volume monté : il annonce la nuit, les réveils et les morts. Les autres rôles sont complétés par des villageois.</p>
+    </div>
+    <div class="opts" id="opts-naufrages" hidden>
+      <label class="field row"><span>Durée</span><select id="opt-nf-length"><option value="court">Courte, l'ouragan arrive tôt</option><option value="normal" selected>Normale</option><option value="long">Longue</option></select></label>
+      <p class="fine">L'hôte lance les soirées et le départ du radeau : parlez-en avant de décider.</p>
+    </div>
+    <div class="opts" id="opts-memes" hidden>
+      <label class="field row"><span>Qui choisit le meilleur mème</span><select id="opt-mm-mode"><option value="judge" selected>Un juge, à tour de rôle</option><option value="vote">Tout le monde vote</option></select></label>
+      <label class="field row"><span>Cartes</span><select id="opt-mm-kinds"><option value="mix" selected>Images et GIF</option><option value="img">Images seulement</option><option value="gif">GIF seulement</option></select></label>
+      <label class="field row"><span>Partie en</span><select id="opt-mm-target"><option value="5">5 points</option><option value="7" selected>7 points</option><option value="10">10 points</option></select></label>
+      <p class="fine" id="opt-mm-count">Chargement des mèmes…</p>
     </div>
     <div class="opts" id="opts-geo" hidden>
       <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
@@ -435,11 +445,6 @@
   <div class="stack" id="km-main"></div>
 </section>
 
-<!-- ====================== CAMEMBERT ====================== -->
-<section class="screen play camembert" id="s-camembert" hidden>
-  <div class="stack" id="cm-main"></div>
-</section>
-
 <!-- ====================== MIRAGE ====================== -->
 <section class="screen play mirage" id="s-mirage" hidden>
   <div class="stack" id="mi-main"></div>
@@ -458,6 +463,16 @@
 <!-- ====================== LOUP-GAROU ====================== -->
 <section class="screen play loupgarou" id="s-loupgarou" hidden>
   <div class="stack lw" id="lw-main"></div>
+</section>
+
+<!-- ====================== NAUFRAGÉS ====================== -->
+<section class="screen play naufrages" id="s-naufrages" hidden>
+  <div class="stack" id="nf-main"></div>
+</section>
+
+<!-- ====================== MÈME PAS VRAI ====================== -->
+<section class="screen play memes" id="s-memes" hidden>
+  <div class="stack" id="mm-main"></div>
 </section>
 
 <!-- ====================== BOUSSOLE ====================== -->
@@ -515,20 +530,21 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=42"></script>
-<script src="app.js?v=42"></script>
-<script src="sablier-ui.js?v=42"></script>
-<script src="undercover.js?v=42"></script>
-<script src="geo-config.js?v=42"></script>
-<script src="geo.js?v=42"></script>
-<script src="chromo.js?v=42"></script>
-<script src="kems.js?v=42"></script>
-<script src="camembert.js?v=42"></script>
-<script src="mirage.js?v=42"></script>
-<script src="douze.js?v=42"></script>
-<script src="petitbac.js?v=42"></script>
-<script src="loupgarou.js?v=42"></script>
-<script src="desk.js?v=42"></script>
-<script src="regles.js?v=42"></script>
+<script src="sablier-engine.js?v=43"></script>
+<script src="app.js?v=43"></script>
+<script src="sablier-ui.js?v=43"></script>
+<script src="undercover.js?v=43"></script>
+<script src="geo-config.js?v=43"></script>
+<script src="geo.js?v=43"></script>
+<script src="chromo.js?v=43"></script>
+<script src="kems.js?v=43"></script>
+<script src="mirage.js?v=43"></script>
+<script src="douze.js?v=43"></script>
+<script src="petitbac.js?v=43"></script>
+<script src="loupgarou.js?v=43"></script>
+<script src="naufrages.js?v=43"></script>
+<script src="memes.js?v=43"></script>
+<script src="desk.js?v=43"></script>
+<script src="regles.js?v=43"></script>
 </body>
 </html>

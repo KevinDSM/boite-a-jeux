@@ -216,6 +216,38 @@ const RULES = [
       <li>Deux amoureux de camps différents (un loup et un villageois) gagnent ensemble s'ils sont les deux derniers en vie.</li></ul>
       <p>À la fin, tous les rôles sont révélés ; l'hôte peut relancer une partie avec de nouveaux rôles.</p>`],
   ] },
+  { key: 'naufrages', parts: [
+    ['Le principe', `<p>Le bateau a coulé, vous êtes échoués sur une île. Pour vous en sortir, il faut construire un radeau et partir avant l'ouragan, sans mourir de faim ni de soif. Tout le monde coopère… tant qu'il y a assez pour tout le monde. Ceux qui embarquent gagnent, les autres restent sur l'île.</p>`],
+    ['La réserve du camp', `<p>Poissons, eau et bois sont mis en commun et affichés en haut de l'écran, avec le nombre de places sur le radeau : 4 morceaux de bois par place. On commence avec un peu de vivres rescapés du naufrage.</p>`],
+    ['Chaque jour', `<ul>
+      <li>La météo du jour s'affiche : elle fixe la quantité d'eau récoltée, de 1 ration (grand soleil) à 4 (pluie battante).</li>
+      <li>Chacun choisit en secret une action, qu'il peut changer jusqu'à ce que tout le monde ait choisi :
+        <b>pêcher</b> (1 à 4 poissons), <b>chercher de l'eau</b> (selon la météo), <b>couper du bois</b> (1 morceau, et tu peux tenter jusqu'à 5 morceaux de plus : à chaque morceau tenté, une chance sur six d'être mordu par un serpent, auquel cas tu ne rapportes rien et tu es malade deux jours), ou <b>fouiller l'épave</b> (un objet, que toi seul connais).</li>
+      <li>Le compte rendu de la journée s'affiche ensuite pour tout le monde.</li></ul>`],
+    ['Le soir', `<ul>
+      <li>Chaque survivant mange un poisson et boit une ration d'eau.</li>
+      <li>S'il n'y a pas assez pour tout le monde, le camp vote : le plus désigné est sacrifié, et on recommence jusqu'à ce que les réserves suffisent. À égalité, le hasard tranche. Le vote dure 45 secondes au plus, discutez vite !</li>
+      <li>Les affaires d'un disparu retournent dans l'épave.</li></ul>`],
+    ['Le départ', `<ul>
+      <li>Dès qu'il y a une place et de quoi manger et boire pour chacun pendant la traversée, l'hôte peut lancer le départ, ou décider de rester un jour de plus pour faire des réserves.</li>
+      <li>L'ouragan arrive un soir, sans prévenir (vers le jour 8 à 11 en partie normale). Il force le départ : s'il manque des places ou des vivres, le camp vote pour savoir qui reste sur l'île.</li></ul>`],
+    ['Les objets de l\u2019épave', `<ul>
+      <li><b>Conserve</b> et <b>gourde</b> : +3 poissons ou +3 rations dans la réserve.</li>
+      <li><b>Hache</b> : ta prochaine coupe rapporte 3 morceaux de plus. <b>Canne à pêche</b> : ta prochaine pêche rapporte 2 poissons de plus.</li>
+      <li><b>Corde</b> : +1 place sur le radeau. <b>Antidote</b> : soigne un malade. <b>Longue-vue</b> : tu vois en secret la météo des 3 prochains jours.</li>
+      <li><b>Pistolet</b> : pendant un vote, abat directement le joueur de ton choix. <b>Talisman</b> : si tu es désigné au vote, tu survis et on revote sans toi.</li>
+      <li>Personne ne sait ce que tu as trouvé : à toi de décider quand t'en servir… ou de le garder pour toi.</li></ul>`],
+    ['Réglages', `<p>Partie courte, normale ou longue : l'ouragan arrive plus ou moins tôt. De 3 à 12 joueurs.</p>`],
+  ] },
+  { key: 'memes', parts: [
+    ['Le principe', `<p>Une situation s'affiche, par exemple « Quand le wifi coupe en pleine partie ». Chacun pose en secret le mème ou le GIF de sa main qui y répond le mieux. Le plus drôle marque.</p>`],
+    ['Les cartes', `<p>Chacun a 7 cartes en main : des modèles de mèmes et de GIF de la bibliothèque publique d'Imgflip (les GIF tournent en boucle, sans le son). Touche une carte pour la voir en grand avec la phrase. Après chaque manche, les mains sont complétées. Les cartes et les phrases déjà vues lors des soirées précédentes sortent en dernier.</p>`],
+    ['Qui décide', `<ul>
+      <li><b>Avec un juge</b> (par défaut) : à chaque manche, un joueur différent ne pose pas de carte. Il voit les mèmes, mélangés et anonymes, et choisit son préféré : 1 point pour son auteur.</li>
+      <li><b>Tout le monde vote</b> : chacun vote pour le meilleur mème, jamais pour le sien. Chaque vote reçu vaut 1 point.</li></ul>`],
+    ['Changer sa main', `<p>Rien ne colle ? Une fois par manche, tu peux échanger toute ta main contre 1 point.</p>`],
+    ['Fin de partie', `<p>Le premier qui atteint le score fixé (5, 7 ou 10 points) gagne. On peut jouer avec des images seulement, des GIF seulement, ou les deux.</p>`],
+  ] },
 ];
 
 let rulesBuilt = false;

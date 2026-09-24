@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '42';
+const ASSET_V = '43';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -32,6 +32,8 @@ const GAMES = {
   douze: { key: 'douze', theme: 'douze', name: 'Douze' },
   petitbac: { key: 'petitbac', theme: 'petitbac', name: 'Petit Brevet' },
   loupgarou: { key: 'loupgarou', theme: 'loupgarou', name: 'Loup-Garou' },
+  naufrages: { key: 'naufrages', theme: 'naufrages', name: 'Naufragés' },
+  memes: { key: 'memes', theme: 'memes', name: 'Mème pas vrai' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -50,12 +52,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -114,7 +116,7 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
@@ -127,10 +129,12 @@ class Game {
     if (this.dz) Douze.join(this.dz, id, name);
     if (this.pb) PetitBac.join(this.pb, id, name);
     if (this.lw) LoupGarou.join(this.lw, id, name);
+    if (this.nf) Naufrages.join(this.nf, id, name);
+    if (this.mm) Memes.join(this.mm, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -168,6 +172,8 @@ class Game {
     if (s.mode === 'douze') return this.startDouze(o);
     if (s.mode === 'petitbac') return this.startPetitBac(o);
     if (s.mode === 'loupgarou') return this.startLoupGarou(o);
+    if (s.mode === 'naufrages') return this.startNaufrages(o);
+    if (s.mode === 'memes') return this.startMemes(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -440,10 +446,22 @@ class Game {
     this.lw = LoupGarou.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), wolves: o.wolves, roles: o.roles, deadSee: o.deadSee });
     s.phase = 'lw';
   }
-  viewFor(base, pid) { if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  // ================= Naufragés : la salle vit dans this.nf, les objets ne sortent que vers leur propriétaire =================
+  startNaufrages(o) {
+    const s = this.s;
+    this.nf = Naufrages.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), length: o.length });
+    s.phase = 'nf';
+  }
+  // ================= Mème pas vrai : la salle vit dans this.mm, chaque main ne sort que vers son joueur =================
+  startMemes(o) {
+    const s = this.s;
+    this.mm = Memes.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, mode: o.judge, kinds: o.kinds });
+    s.phase = 'mm';
+  }
+  viewFor(base, pid) { if (this.nf) return { ...base, nf: Naufrages.view(this.nf, pid) }; if (this.mm) return { ...base, mm: Memes.view(this.mm, pid) }; if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   restart() {
-    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null; this.nf = null; this.mm = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -564,7 +582,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   attachHost(peer);
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -585,6 +603,8 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('cm:')) return net.game.cm ? Camembert.act(net.game.cm, pid, m) : 'Pas de partie de Camembert en cours';
   if (typeof m.t === 'string' && m.t.startsWith('mi:')) return net.game.mi ? Mirage.act(net.game.mi, pid, m) : 'Pas de partie de Mirage en cours';
   if (typeof m.t === 'string' && m.t.startsWith('dz:')) return net.game.dz ? Douze.act(net.game.dz, pid, m) : 'Pas de partie de Douze en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('nf:')) return net.game.nf ? Naufrages.act(net.game.nf, pid, m) : 'Pas de partie de Naufragés en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('mm:')) return net.game.mm ? Memes.act(net.game.mm, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('lw:')) return net.game.lw ? LoupGarou.act(net.game.lw, pid, m) : 'Pas de partie de Loup-Garou en cours';
   if (typeof m.t === 'string' && m.t.startsWith('pb:')) return net.game.pb ? PetitBac.act(net.game.pb, pid, m) : 'silent';
   switch (m.t) {
@@ -803,6 +823,8 @@ function render() {
   else if (s.phase === 'dz') { show('s-douze'); renderDouze(s.dz); }
   else if (s.phase === 'pb') { show('s-petitbac'); renderPetitBac(s.pb); }
   else if (s.phase === 'lw') { show('s-loupgarou'); renderLoupGarou(s.lw); }
+  else if (s.phase === 'nf') { show('s-naufrages'); renderNaufrages(s.nf); }
+  else if (s.phase === 'mm') { show('s-memes'); renderMemes(s.mm); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -888,11 +910,13 @@ function renderLobby(s) {
   $('#opts-geo').hidden = s.pick !== 'geo';
   $('#opts-chromo').hidden = s.pick !== 'chromo';
   $('#opts-kems').hidden = s.pick !== 'kems';
-  $('#opts-camembert').hidden = s.pick !== 'camembert';
   $('#opts-mirage').hidden = s.pick !== 'mirage';
   $('#opts-douze').hidden = s.pick !== 'douze';
   $('#opts-petitbac').hidden = s.pick !== 'petitbac';
   $('#opts-loupgarou').hidden = s.pick !== 'loupgarou';
+  $('#opts-naufrages').hidden = s.pick !== 'naufrages';
+  $('#opts-memes').hidden = s.pick !== 'memes';
+  if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
   if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length; $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''} : il en faut au moins 5.` : `${n} joueurs : ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
   if (isHostPlayer() && s.pick === 'mirage') Mirage.load(ASSET_V).then(() => { const n = Mirage.count(); $('#opt-mi-count').textContent = n ? `${n} cartes, des œuvres du domaine public (Met, Cleveland Museum of Art).` : 'Cartes introuvables.'; });
@@ -1492,6 +1516,21 @@ const HELP = {
       <li><b>Victoire :</b> le village quand tous les loups sont morts, les loups quand il ne reste que des loups, un couple d'amoureux de camps différents s'il reste seul.</li>
     </ul>
     <p class="fine">Les morts gardent le silence. Les rôles de chacun sont détaillés dans la page Règles des jeux.</p>`,
+  naufrages: `<h3>Naufragés</h3>
+    <p>Échoués sur une île, il faut construire un radeau et partir avant l'ouragan. Chaque soir, chacun mange un poisson et boit une ration d'eau.</p>
+    <ul>
+      <li><b>Chaque jour :</b> choisis en secret pêcher, chercher de l'eau (selon la météo), couper du bois (et tenter ta chance pour en couper plus, au risque d'une morsure de serpent), ou fouiller l'épave (un objet secret).</li>
+      <li><b>Le soir :</b> s'il manque de quoi manger ou boire, le camp vote pour sacrifier quelqu'un, jusqu'à ce que les réserves suffisent.</li>
+      <li><b>Le radeau :</b> 4 morceaux de bois par place. Quand il y a une place et des vivres pour chacun, l'hôte peut lancer le départ. L'ouragan force le départ : ceux qui n'ont pas de place restent.</li>
+    </ul>
+    <p>Ceux qui embarquent gagnent. Les objets de l'épave sont secrets : conserve, gourde, hache, pistolet, talisman…</p>`,
+  memes: `<h3>Mème pas vrai</h3>
+    <p>Une situation s'affiche. Chacun pose le mème ou le GIF de sa main qui y répond le mieux.</p>
+    <ul>
+      <li><b>Avec un juge :</b> à tour de rôle, un joueur ne joue pas et choisit son mème préféré, qui marque 1 point.</li>
+      <li><b>Tout le monde vote :</b> chacun vote pour le meilleur mème, jamais le sien ; chaque vote reçu vaut 1 point.</li>
+      <li>Touche un mème pour le voir en grand avec la phrase. Rien ne va dans ta main ? Échange-la toute entière contre 1 point.</li>
+    </ul>`,
   geo: `<h3>Boussole</h3>
     <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
     <ul>
@@ -1710,6 +1749,18 @@ $('#btn-start').onclick = () => {
     if (humans + bots < 2) { toast('Douze se joue à deux minimum : ajoute un robot ou invite un ami'); return; }
     if (humans + bots > 8) { toast('Huit joueurs au maximum, robots compris'); return; }
     act({ t: 'start', opts: { mode: 'douze', target: +$('#opt-dz-target').value, bots } });
+  }
+  if (pick === 'naufrages') {
+    if ((view?.players || []).filter(p => p.online).length < 3) { toast('Naufragés se joue à trois minimum'); return; }
+    act({ t: 'start', opts: { mode: 'naufrages', length: $('#opt-nf-length').value } });
+  }
+  if (pick === 'memes') {
+    (async () => {
+      if ((view?.players || []).filter(p => p.online).length < 3) { toast('Mème pas vrai se joue à trois minimum'); return; }
+      await Memes.load(ASSET_V);
+      if (Memes.count() < 60) { toast('Mèmes introuvables : memes.json manque'); return; }
+      act({ t: 'start', opts: { mode: 'memes', target: +$('#opt-mm-target').value, judge: $('#opt-mm-mode').value, kinds: $('#opt-mm-kinds').value } });
+    })();
   }
   if (pick === 'loupgarou') {
     if ((view?.players || []).filter(p => p.online).length < 5) { toast('Loup-Garou se joue à cinq minimum'); return; }
