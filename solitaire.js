@@ -156,6 +156,7 @@ function renderSolitaire(v) {
 let soV = null, soClock = null;
 function soRender() {
   const v = soV; if (!v) return;
+  if (soDrag?.on) { soDirty = true; return; }                  // pas de reconstruction pendant qu'une carte est tenue
   const root = $('#so-main'); root.innerHTML = ''; clearInterval(soClock);
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
   const me = v.players.find(p => p.me);
@@ -197,12 +198,14 @@ function soRender() {
     });
     board.appendChild(tab);
     board.onclick = e => {
+      if (soSwallow) { soSwallow = false; return; }              // fin d'un glisser : ce n'est pas un toucher
       if (v.phase !== 'play') return;
       const card = e.target.closest('[data-src]'), drop = e.target.closest('[data-drop]');
       if (card) { const src = { from: card.dataset.src, i: +card.dataset.i, k: +card.dataset.k }; soTap(src); return; }
       if (drop && soSel) { soTap({ from: drop.dataset.drop, i: +drop.dataset.i }); return; }
       if (soSel) { soSel = null; soRender(); }
     };
+    board.onpointerdown = e => { if (v.phase === 'play') soDragStart(e); };
     root.appendChild(board);
     const tools = el('div', 'so-tools');
     if (v.phase === 'play') {
@@ -221,3 +224,49 @@ function soRender() {
     if (v.isHost) { const r = el('div', 'so-tools'); r.append(btn('primary', 'Nouvelle donne', () => act({ t: 'so:again' })), btn('ghost', 'Retour au salon', () => act({ t: 'restart' }))); root.appendChild(r); }
   } else if (v.isHost) root.appendChild(btn('ghost small so-end', 'Arrêter la course et classer', () => askConfirm('Arrêter la course', 'Le classement se fait sur les cartes montées à cet instant.', 'Arrêter', () => act({ t: 'so:end' }))));
 }
+
+// ============================================================ glisser-déposer
+// On peut aussi prendre une carte (ou une suite de la colonne) et la lâcher où l'on veut. Un petit
+// déplacement reste un toucher ; au-delà de 8 px, la pile suit le doigt et la cible s'allume si le coup est permis.
+let soDrag = null, soDirty = false, soSwallow = false;
+function soDragStart(e) {
+  soSwallow = false;                                          // un nouvel appui : le clic d'un glisser précédent est passé
+  if (e.button > 0) return;
+  const card = e.target.closest('[data-src]'); if (!card) return;
+  const src = { from: card.dataset.src, i: +card.dataset.i, k: +card.dataset.k };
+  const pile = soPile(src); if (!pile.length || !pile[0].up) return;
+  const els = src.from === 'tab' ? [...card.parentElement.querySelectorAll('[data-src]')].filter(n => +n.dataset.k >= src.k) : [card];
+  soDrag = { src, els, x0: e.clientX, y0: e.clientY, on: false, id: e.pointerId, over: null };
+}
+function soDropAt(x, y) {
+  const drop = document.elementFromPoint(x, y)?.closest('#so-main [data-drop]');
+  if (!drop) return null;
+  const to = drop.dataset.drop, i = +drop.dataset.i;
+  const ok = soTargets(soDrag.src).find(t => t.to === to && t.i === i);
+  return ok ? { el: drop, t: ok } : null;
+}
+function soDragEnd(cancel) {
+  const d = soDrag; soDrag = null;
+  if (!d) return;
+  soSwallow = true;                                            // le clic éventuel qui suit est déjà traité ici
+  if (!d.on) { if (!cancel) soTap(d.src); return; }            // simple toucher : on n'attend pas le clic (pas toujours émis au doigt)
+  if (!cancel && d.over) { soMove(d.src, d.over.t); soDirty = false; return; }
+  soDirty = false; soRender();                                    // lâchée ailleurs : la pile revient à sa place
+}
+document.addEventListener('pointermove', e => {
+  const d = soDrag; if (!d || e.pointerId !== d.id) return;
+  const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+  if (!d.on) {
+    if (Math.hypot(dx, dy) < 8) return;
+    d.on = true; soSel = null;
+    document.querySelectorAll('#so-main .hot, #so-main .sel').forEach(n => n.classList.remove('hot', 'sel'));
+    d.els.forEach(n => n.classList.add('dragging'));
+  }
+  e.preventDefault();
+  d.els.forEach(n => { n.style.transform = `translate(${dx}px, ${dy}px)`; });
+  const over = soDropAt(e.clientX, e.clientY);
+  if (d.over?.el !== over?.el) { d.over?.el.classList.remove('hot'); over?.el.classList.add('hot'); }
+  d.over = over;
+}, { passive: false });
+document.addEventListener('pointerup', e => { if (soDrag && e.pointerId === soDrag.id) soDragEnd(false); });
+document.addEventListener('pointercancel', e => { if (soDrag && e.pointerId === soDrag.id) soDragEnd(true); });

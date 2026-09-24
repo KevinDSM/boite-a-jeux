@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '46';
+const ASSET_V = '47';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -972,6 +972,7 @@ function renderLobby(s) {
     b.disabled = !isHostPlayer();
     b.style.opacity = !isHostPlayer() && s.pick && s.pick !== b.dataset.game ? '.5' : '';
   });
+  famApply();
   if (isHostPlayer() && !$('#opt-cats').querySelector('label') && songsCache) {
     [...new Set(songsCache.map(x => x.cat))].forEach(c => {
       const l = el('label'); l.innerHTML = `<input type="checkbox" value="${c}" checked>${c}`; $('#opt-cats').appendChild(l);
@@ -1608,6 +1609,7 @@ const HELP = {
     <p>La patience classique, en course : tout le monde reçoit exactement la même donne et joue sur son écran. Le premier qui monte les 52 cartes sur les fondations gagne.</p>
     <ul>
       <li><b>Toucher une carte</b> l'envoie au meilleur endroit, la fondation d'abord. S'il y a plusieurs colonnes possibles, elles s'allument : touche celle que tu veux.</li>
+      <li><b>Ou fais-la glisser</b> toi-même : prends une carte (ou une suite de la colonne) et lâche-la sur la colonne ou la fondation de ton choix.</li>
       <li>Dans les colonnes, on descend en alternant rouge et noir. Seul un roi va sur une colonne vide.</li>
       <li>La pioche en haut à gauche : touche-la pour tourner une ou trois cartes. Vide, elle se recharge avec le talon.</li>
       <li>Annuler est illimité ou presque. Au bout du temps, le classement se fait sur les cartes montées.</li>
@@ -1753,13 +1755,39 @@ function syncThemeColor() {
   const bg = getComputedStyle(document.body).backgroundColor;
   const m = $('meta[name=theme-color]'); if (m && bg) m.content = bg;
 }
-function applyTheme(t) {
-  document.documentElement.dataset.theme = t;
-  $('#btn-theme').textContent = t === 'light' ? '☾' : '☀';
-  try { localStorage.setItem('dc-theme', t); } catch { }
+// Quatre thèmes : deux sombres, deux clairs. Le thème habille l'accueil, le salon et les règles ;
+// chaque jeu garde ses propres couleurs, dans sa version sombre ou claire selon le thème choisi.
+const THEMES = [
+  { id: 'dark', name: 'Ambre', desc: 'sombre et chaleureux', mode: 'dark', skin: '', sw: ['oklch(0.17 0.018 62)', 'oklch(0.78 0.155 68)'] },
+  { id: 'nuit', name: 'Minuit', desc: 'bleu nuit et menthe', mode: 'dark', skin: 'nuit', sw: ['oklch(0.17 0.035 255)', 'oklch(0.82 0.13 175)'] },
+  { id: 'light', name: 'Crème', desc: 'clair et chaleureux', mode: 'light', skin: '', sw: ['oklch(0.96 0.014 78)', 'oklch(0.62 0.170 52)'] },
+  { id: 'lavande', name: 'Lavande', desc: 'clair et pastel', mode: 'light', skin: 'lavande', sw: ['oklch(0.955 0.022 300)', 'oklch(0.56 0.19 320)'] },
+];
+let themeCur = 'dark';
+function applyTheme(id) {
+  const t = THEMES.find(x => x.id === id) || THEMES[0];
+  themeCur = t.id;
+  document.documentElement.dataset.theme = t.mode;
+  if (t.skin) document.documentElement.dataset.skin = t.skin; else delete document.documentElement.dataset.skin;
+  $('#btn-theme').textContent = t.mode === 'light' ? '☀' : '☾';
+  try { localStorage.setItem('dc-theme', t.id); } catch { }
+  document.querySelectorAll('#theme-pop button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === t.id)));
   requestAnimationFrame(syncThemeColor);
 }
-$('#btn-theme').onclick = () => applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+(function buildThemePop() {
+  const pop = el('div', 'theme-pop'); pop.id = 'theme-pop'; pop.hidden = true; pop.setAttribute('role', 'menu');
+  pop.appendChild(el('p', 'theme-pop-title', 'Thème'));
+  THEMES.forEach(t => {
+    const b = el('button', 'theme-opt', `<span class="theme-sw" style="background:${t.sw[0]}"><i style="background:${t.sw[1]}"></i></span><span><b>${t.name}</b><small>${t.desc}</small></span>`);
+    b.type = 'button'; b.dataset.theme = t.id; b.setAttribute('role', 'menuitemradio');
+    b.onclick = () => { applyTheme(t.id); pop.hidden = true; };
+    pop.appendChild(b);
+  });
+  document.body.appendChild(pop);
+  $('#btn-theme').onclick = e => { e.stopPropagation(); pop.hidden = !pop.hidden; };
+  document.addEventListener('click', e => { if (!pop.hidden && !pop.contains(e.target)) pop.hidden = true; });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') pop.hidden = true; });
+})();
 let savedTheme = null; try { savedTheme = localStorage.getItem('dc-theme'); } catch { }
 applyTheme(savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 
@@ -1795,6 +1823,39 @@ $('#btn-solo').onclick = async () => {
   try { await hostGame(); keepAwake(); } catch (ex) { $('#home-err').textContent = 'Connexion impossible : ' + (ex.message || ex); }
 };
 document.querySelectorAll('.gcard').forEach(b => b.onclick = () => act({ t: 'pick', key: b.dataset.game }));
+
+// ============================================================ familles de jeux
+// Les jeux sont rangés par famille, avec un intitulé, et des pastilles pour n'afficher qu'une famille.
+const FAMILIES = [
+  { id: 'musique', icon: '🎵', name: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
+  { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'poker', 'solitaire'] },
+  { id: 'rire', icon: '😂', name: 'Humour et imagination', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['mirage', 'memes', 'limite'] },
+  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', desc: 'Faire deviner, écrire vite, situer une photo sur la carte.', games: ['sablier', 'petitbac', 'geo'] },
+  { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages'] },
+];
+let famCur = 'all'; try { famCur = localStorage.getItem('dc-fam') || 'all'; } catch { }
+function famApply() {
+  if (!FAMILIES.some(f => f.id === famCur)) famCur = 'all';
+  document.querySelectorAll('#games > [data-fam]').forEach(n => { n.hidden = famCur !== 'all' && n.dataset.fam !== famCur && n.getAttribute('aria-pressed') !== 'true'; });
+  document.querySelectorAll('#gfilters button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.fam === famCur)));
+}
+(function buildFamilies() {
+  const grid = $('#games'), soon = grid.querySelector('.gsoon');
+  const bar = el('div', 'gfilters'); bar.id = 'gfilters'; bar.setAttribute('role', 'toolbar'); bar.setAttribute('aria-label', 'Familles de jeux');
+  const chip = (id, label, n) => { const b = el('button', 'gfilter', `${label}${n ? ` <small>${n}</small>` : ''}`); b.type = 'button'; b.dataset.fam = id; b.onclick = () => { famCur = id; try { localStorage.setItem('dc-fam', id); } catch { } famApply(); }; bar.appendChild(b); };
+  chip('all', 'Tous', grid.querySelectorAll('.gcard').length);
+  FAMILIES.forEach(f => {
+    const cards = f.games.map(g => grid.querySelector(`.gcard[data-game="${g}"]`)).filter(Boolean);
+    if (!cards.length) return;
+    chip(f.id, `${f.icon} ${f.name}`, cards.length);
+    const head = el('div', 'gfam', `<span class="gfam-name"><span aria-hidden="true">${f.icon}</span> ${f.name}</span><span class="gfam-desc">${f.desc}</span>`);
+    head.dataset.fam = f.id;
+    grid.insertBefore(head, soon);
+    cards.forEach(c => { c.dataset.fam = f.id; grid.insertBefore(c, soon); });
+  });
+  grid.parentNode.insertBefore(bar, grid);
+  famApply();
+})();
 $('#btn-start').onclick = () => {
   const pick = view?.pick; if (!pick) { toast('Choisis un jeu'); return; }
   if (pick === 'timeline') {

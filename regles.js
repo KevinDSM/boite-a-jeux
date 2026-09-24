@@ -265,7 +265,8 @@ const RULES = [
       <li>Dans les sept colonnes, on pose une carte sur une carte de valeur juste au-dessus et de couleur opposée : un 6 noir sur un 7 rouge.</li>
       <li>On peut déplacer une suite entière de cartes visibles. Seul un roi (ou une suite qui commence par un roi) va sur une colonne vide.</li>
       <li>Une carte cachée se retourne dès qu'elle est découverte.</li>
-      <li>Touche une carte : elle part au meilleur endroit, la fondation d'abord. S'il y a plusieurs colonnes possibles, elles s'allument et tu touches celle que tu veux.</li></ul>`],
+      <li>Touche une carte : elle part au meilleur endroit, la fondation d'abord. S'il y a plusieurs colonnes possibles, elles s'allument et tu touches celle que tu veux.</li>
+      <li>Tu préfères faire toi-même ? Fais glisser la carte, ou la suite à partir de cette carte, jusqu'à la colonne ou la fondation voulue. Lâchée à un endroit interdit, elle revient à sa place.</li></ul>`],
     ['La pioche', `<p>Touche la pioche pour retourner une carte (ou trois, selon le réglage) sur le talon. Seule la carte du dessus du talon se joue. Pioche vide : touche-la pour recycler le talon, sans limite.</p>`],
     ['Fin de partie', `<p>Le premier qui termine gagne. Au bout du temps choisi, ou quand l'hôte arrête la course, le classement se fait au nombre de cartes montées, puis au nombre de coups. Quand toutes les cartes sont visibles, un bouton termine la patience automatiquement.</p>`],
     ['Réglages dans le salon', `<p>Pioche d'une ou trois cartes, et durée de la course : 5, 10, 15 minutes ou sans limite.</p>`],
@@ -295,7 +296,9 @@ function buildRules() {
   const root = $('#rules-main');
   const toc = el('nav', 'rules-toc'); toc.setAttribute('aria-label', 'Sommaire des jeux');
   const list = el('div', 'rules-list');
-  RULES.forEach(g => {
+  const famOrder = FAMILIES.flatMap(f => f.games);
+  const ordered = [...RULES].sort((x, y) => (famOrder.indexOf(x.key) + 1 || 99) - (famOrder.indexOf(y.key) + 1 || 99));
+  ordered.forEach(g => {
     const card = document.querySelector(`.gcard[data-game="${g.key}"]`);
     if (!card) return;
     const art = card.querySelector('.gart')?.innerHTML || '';

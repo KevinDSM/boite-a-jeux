@@ -286,22 +286,25 @@ function renderPoker(v) {
   root.appendChild(el('div', 'pk-head', `<span class="eyebrow">Main ${v.hand} · blindes ${v.sb} / ${v.bb}</span>${v.phase === 'hand' ? `<span class="pk-street">${{ preflop: 'Avant le flop', flop: 'Flop', turn: 'Turn', river: 'River' }[v.street]}</span>` : ''}`));
 
   // la table
-  const ring = el('div', 'pk-ring');
+  const ring = el('div', 'pk-ring' + (v.players.length >= 6 ? ' many' : ''));
   const list = v.players, n = list.length, meIdx = Math.max(0, list.findIndex(p => p.me));
   list.forEach((p, i) => {
-    const k = (i - meIdx + n) % n, ang = Math.PI / 2 + k * 2 * Math.PI / n;
+    // les sièges suivent la table dans le sens horaire, mais évitent la bande du milieu où sont les cartes
+    // communes : on saute ±25° autour de la gauche et de la droite (arcs utiles 25-155° et 205-335°)
+    const k = (i - meIdx + n) % n, t = k * 260 / n;
+    const deg = t < 65 ? 90 + t : t < 195 ? 205 + (t - 65) : 25 + (t - 195), ang = deg * Math.PI / 180;
     const d = el('div', `pk-seat${p.turn ? ' turn' : ''}${p.folded ? ' folded' : ''}${p.out ? ' out' : ''}${p.me ? ' me' : ''}${p.won ? ' won' : ''}${p.online ? '' : ' off'}`,
-      `<span class="pk-name">${p.bot ? '🤖 ' : ''}${esc(p.name)}</span><span class="pk-stack">${p.out ? 'éliminé' : p.stack + ' 🪙'}</span>`
+      `<span class="pk-name">${p.bot ? '🤖 ' + esc(p.name.replace(/^Robot /, '')) : esc(p.name)}</span><span class="pk-stack">${p.out ? 'éliminé' : p.stack + ' 🪙'}</span>`
       + (p.hole.length && !p.me ? `<span class="pk-hole">${p.hole.map(c => pkCard(c, 'mini')).join('')}</span>` : '')
       + (p.bet ? `<span class="pk-bet">${p.bet}</span>` : '') + (p.dealer ? '<span class="pk-btn">D</span>' : '')
       + (p.allin && !p.out ? '<span class="pk-tag">tapis</span>' : p.folded && !p.out ? '<span class="pk-tag">couché</span>' : '') + (p.won ? `<span class="pk-tag win">+${p.won}</span>` : ''));
-    d.style.left = Math.min(84, Math.max(16, 50 + 40 * Math.cos(ang))).toFixed(2) + '%';
-    d.style.top = (50 + 43 * Math.sin(ang)).toFixed(2) + '%';
+    d.style.left = Math.min(85, Math.max(15, 50 + 41 * Math.cos(ang))).toFixed(2) + '%';
+    d.style.top = (50 + 45 * Math.sin(ang)).toFixed(2) + '%';
     ring.appendChild(d);
   });
   const felt = el('div', 'pk-felt');
   const board = [...v.board]; while (board.length < 5) board.push(undefined);
-  felt.innerHTML = `<div class="pk-board">${board.map(c => c ? pkCard(c) : '<div class="pk-card slot"></div>').join('')}</div><div class="pk-pot">Pot <b>${v.pot}</b></div>`;
+  felt.innerHTML = `<div class="pk-board">${board.map(c => c ? pkCard(c) : '<div class="pk-card pk-empty"></div>').join('')}</div><div class="pk-pot">Pot <b>${v.pot}</b></div>`;
   ring.appendChild(felt);
   root.appendChild(ring);
 
