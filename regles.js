@@ -108,6 +108,7 @@ const RULES = [
       <li><b>+2 :</b> le suivant pioche deux cartes et passe son tour.</li>
       <li><b>Joker :</b> se pose sur tout, tu choisis la nouvelle couleur.</li>
       <li><b>Joker +4 :</b> pareil, et le suivant pioche quatre cartes.</li>
+      <li><b>Règle du zéro</b> (option) : quand un 0 est posé, chacun passe toute sa main à son voisin, dans le sens du jeu.</li>
       <li><b>Cumul</b> (option) : on répond à un +2 par un +2 ou un +4, à un +4 par un +4. Le premier qui ne peut pas contrer pioche le total.</li></ul>`],
     ['« Chromo ! »', `<p>Quand il ne te reste qu'une ou deux cartes, touche le bouton « Chromo ! ». Si tu tombes à une carte sans l'avoir crié, n'importe qui peut t'attraper jusqu'à ce que le joueur suivant joue : deux cartes de pénalité.</p>`],
     ['Points', `<p>Le gagnant d'une manche marque la valeur des cartes restées chez les autres : le chiffre pour une carte numérotée, 20 pour Passe, Sens et +2, 50 pour les jokers. Le plus grand total après 1, 3 ou 5 manches gagne.</p>`],
@@ -237,7 +238,7 @@ const RULES = [
       <li><b>Corde</b> : +1 place sur le radeau. <b>Antidote</b> : soigne un malade. <b>Longue-vue</b> : tu vois en secret la météo des 3 prochains jours.</li>
       <li><b>Pistolet</b> : pendant un vote, abat directement le joueur de ton choix. <b>Talisman</b> : si tu es désigné au vote, tu survis et on revote sans toi.</li>
       <li>Personne ne sait ce que tu as trouvé : à toi de décider quand t'en servir… ou de le garder pour toi.</li></ul>`],
-    ['Réglages', `<p>Partie courte, normale ou longue : l'ouragan arrive plus ou moins tôt. De 3 à 12 joueurs.</p>`],
+    ['Réglages', `<p>Partie courte, normale ou longue : l'ouragan arrive plus ou moins tôt. De 3 à 12 joueurs, robots compris : jusqu'à 6 robots peuvent compléter le camp. Ils font leur part du travail, votent souvent avec la majorité, et il arrive qu'un robot armé sorte son pistolet.</p>`],
   ] },
   { key: 'memes', parts: [
     ['Le principe', `<p>Une situation s'affiche, par exemple « Quand le wifi coupe en pleine partie ». Chacun pose en secret le mème ou le GIF de sa main qui y répond le mieux. Le plus drôle marque.</p>`],
@@ -256,6 +257,35 @@ const RULES = [
       <li><b>Tout le monde vote</b> : chacun vote pour la meilleure phrase, jamais pour la sienne. Chaque vote reçu vaut 1 point.</li></ul>`],
     ['Changer sa main', `<p>Une fois par manche, tu peux échanger toute ta main contre 1 point.</p>`],
     ['Réglages', `<p>Partie en 5, 7 ou 10 points. Le mode soft retire les cartes les plus crues, pour jouer en famille élargie.</p>`],
+  ] },
+  { key: 'solitaire', parts: [
+    ['Le principe', `<p>La patience classique (Klondike), jouée en course. Tout le monde reçoit exactement la même donne et joue sur son propre écran ; une barre montre en direct combien de cartes chacun a monté.</p>`],
+    ['Le but', `<p>Monter les 52 cartes sur les quatre fondations, une par couleur, de l'as au roi.</p>`],
+    ['Déplacer les cartes', `<ul>
+      <li>Dans les sept colonnes, on pose une carte sur une carte de valeur juste au-dessus et de couleur opposée : un 6 noir sur un 7 rouge.</li>
+      <li>On peut déplacer une suite entière de cartes visibles. Seul un roi (ou une suite qui commence par un roi) va sur une colonne vide.</li>
+      <li>Une carte cachée se retourne dès qu'elle est découverte.</li>
+      <li>Touche une carte : elle part au meilleur endroit, la fondation d'abord. S'il y a plusieurs colonnes possibles, elles s'allument et tu touches celle que tu veux.</li></ul>`],
+    ['La pioche', `<p>Touche la pioche pour retourner une carte (ou trois, selon le réglage) sur le talon. Seule la carte du dessus du talon se joue. Pioche vide : touche-la pour recycler le talon, sans limite.</p>`],
+    ['Fin de partie', `<p>Le premier qui termine gagne. Au bout du temps choisi, ou quand l'hôte arrête la course, le classement se fait au nombre de cartes montées, puis au nombre de coups. Quand toutes les cartes sont visibles, un bouton termine la patience automatiquement.</p>`],
+    ['Réglages dans le salon', `<p>Pioche d'une ou trois cartes, et durée de la course : 5, 10, 15 minutes ou sans limite.</p>`],
+  ] },
+  { key: 'poker', parts: [
+    ['Le principe', `<p>Texas Hold'em avec des jetons fictifs. Chacun reçoit deux cartes cachées ; cinq cartes communes arrivent au milieu de la table. La meilleure main de cinq cartes, prises parmi tes deux cartes et les cinq communes, gagne le pot.</p>`],
+    ['Une main', `<ul>
+      <li>Le bouton D tourne à chaque main. Les deux joueurs suivants posent la petite et la grosse blinde, des mises forcées.</li>
+      <li><b>Avant le flop</b>, chacun parle à son tour à partir du joueur après la grosse blinde.</li>
+      <li><b>Flop</b> : trois cartes communes, nouveau tour d'enchères. <b>Turn</b> : une quatrième carte. <b>River</b> : la cinquième.</li>
+      <li>À l'abattage, les mains encore en jeu sont montrées et la meilleure ramasse le pot. Si tout le monde se couche, le dernier restant ramasse sans montrer.</li></ul>`],
+    ['À ton tour', `<ul>
+      <li><b>Se coucher</b> : tu abandonnes la main et ce que tu as misé.</li>
+      <li><b>Parole</b> : tu ne mises rien, possible seulement si personne n'a misé.</li>
+      <li><b>Suivre</b> : tu égalises la mise en cours.</li>
+      <li><b>Relancer</b> : au moins le montant de la dernière relance en plus. Le curseur et les boutons ½ pot, pot et tapis règlent la somme.</li>
+      <li><b>Tapis</b> : tu mises tout. Tu ne peux alors gagner que ce que tu as pu couvrir chez chacun ; le reste forme un pot annexe entre les autres.</li></ul>`],
+    ['Les mains', `<p>De la plus faible à la plus forte : carte haute, paire, double paire, brelan, quinte (cinq cartes qui se suivent, l'as compte aussi pour 1), couleur (cinq cartes de la même couleur), full (brelan et paire), carré, quinte flush. À égalité de combinaison, les cartes les plus hautes départagent ; sinon le pot est partagé.</p>`],
+    ['Fin de partie', `<p>Un joueur sans jetons est éliminé. Le dernier à en avoir gagne. Les blindes doublent régulièrement pour que la partie finisse.</p>`],
+    ['Réglages dans le salon', `<p>Robots à la table (jusqu'à 5), jetons au départ (500, 1 000 ou 2 000) et rythme des blindes (doublées toutes les 5 ou 10 mains, ou jamais). Si un joueur ne répond plus, l'hôte peut passer sa main au bout de 30 secondes ; un joueur déconnecté parle ou se couche automatiquement.</p>`],
   ] },
 ];
 

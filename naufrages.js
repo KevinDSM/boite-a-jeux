@@ -52,7 +52,8 @@ const Naufrages = (() => {
     return days;
   }
 
-  function create({ hostId, players, length }) {
+  const BOT_NAMES = ['Robot Crusoé', 'Robot Vendredi', 'Robot Nemo', 'Robot Wilson', 'Robot Moana', 'Robot Popeye'];
+  function create({ hostId, players, length, bots }) {
     const [hmin, hmax] = length === 'court' ? [6, 8] : length === 'long' ? [10, 14] : [8, 11];
     const room = {
       hostId, phase: 'day', day: 0, length: length || 'normal',
@@ -60,6 +61,7 @@ const Naufrages = (() => {
       food: 0, water: 0, wood: 0, bonusSeats: 0, weather: buildWeather(hmin, hmax), wreck: buildWreck(),
       choices: {}, report: [], vote: null, need: 0, winners: [], outcome: null, log: [], seq: 0, turnAt: Date.now(), peeks: {},
     };
+    for (let i = 0; i < clamp(bots, 0, 6, 0); i++) room.players.push({ id: 'bot' + i, name: BOT_NAMES[i], online: true, inGame: true, alive: true, sick: 0, items: [], boost: {}, fate: null, bot: true });
     const n = alive(room).length;
     room.food = Math.max(4, Math.round(n * 1.5)); room.water = Math.max(4, Math.round(n * 1.5));
     log(room, `Le bateau a coulé. ${n} survivants sur la plage, quelques vivres rescapés.`);
@@ -260,8 +262,39 @@ const Naufrages = (() => {
     return null;
   }
 
+  // ------------------------------------------------------------ robots : ils font leur part, votent, et gardent parfois un objet pour eux
+  function botDay(room, b) {
+    ['conserve', 'gourde', 'corde'].forEach(k => { if (b.items.includes(k)) useItem(room, b.id, { item: k }); });
+    if (b.items.includes('antidote')) { const sick = alive(room).find(p => p.sick); if (sick) useItem(room, b.id, { item: 'antidote', target: sick.id }); }
+    const n = alive(room).length, w = todayWeather(room), water = (w === 'ouragan' ? 2 : w) + 1;
+    const planned = Object.values(room.choices);
+    const food = room.food + planned.filter(c => c.action === 'fish').length * 2.4, drink = room.water + planned.filter(c => c.action === 'water').length * water;
+    const wood = room.wood + planned.filter(c => c.action === 'wood').length * 1.5, seatsLeft = n * WOOD_PER_SEAT - wood - room.bonusSeats * WOOD_PER_SEAT;
+    let action = 'wood';
+    if (food < n + 1 && food <= drink) action = 'fish'; else if (drink < n + 1) action = 'water'; else if (seatsLeft <= 0) action = Math.random() < .5 ? 'fish' : 'water'; else if (Math.random() < .12) action = 'wreck';
+    choose(room, b.id, { action, risk: action === 'wood' ? (Math.random() < .5 ? 1 : 0) : 0 });
+  }
+  function botVote(room, b) {
+    const v = room.vote; if (!v || v.votes[b.id]) return;
+    if (b.items.includes('pistolet') && Math.random() < .15) {                  // rarement, un robot sort son arme
+      const t = shuffle(alive(room).filter(p => p.id !== b.id && !v.protected.includes(p.id)))[0];
+      if (t) { useItem(room, b.id, { item: 'pistolet', target: t.id }); return; }
+    }
+    // il vote comme la majorité s'il y en a une, sinon pour un autre au hasard
+    const counts = {}; Object.values(v.votes).forEach(t => counts[t] = (counts[t] || 0) + 1);
+    const lead = Object.keys(counts).sort((a, c) => counts[c] - counts[a])[0];
+    const pool = alive(room).filter(p => p.id !== b.id && !v.protected.includes(p.id));
+    const target = lead && lead !== b.id && pool.some(p => p.id === lead) ? lead : shuffle(pool)[0]?.id;
+    if (target) castVote(room, b.id, target);
+  }
+
   function tick(room) {
     const now = Date.now();
+    const bots = alive(room).filter(p => p.bot);
+    if (bots.length && now - room.turnAt > 1800) {
+      if (room.phase === 'day') { const b = bots.find(p => canAct(p) && !room.choices[p.id]); if (b) { botDay(room, b); return true; } }
+      if (room.phase === 'vote') { const b = bots.find(p => !room.vote.votes[p.id]); if (b) { botVote(room, b); return true; } }
+    }
     if (room.phase === 'vote' && room.vote && now >= room.vote.ends) { resolveVote(room); return true; }
     if (room.phase === 'dusk' && now - room.turnAt >= REVEAL_MS * 3) { room.flash = null; evening(room); return true; }
     return false;
@@ -287,7 +320,7 @@ const Naufrages = (() => {
       weather: w, history: room.weather.slice(0, room.day), food: room.food, water: room.water, wood: room.wood, seats: seats(room), woodPerSeat: WOOD_PER_SEAT, woodToNext: WOOD_PER_SEAT - room.wood % WOOD_PER_SEAT,
       alive: n, canLeave: canLeave(room),
       me: me?.inGame ? { alive: me.alive, sick: me.sick, canAct: canAct(me), choice: room.choices[pid] || null, items: me.items.map(k => ({ key: k, ...ITEMS[k] })), boost: me.boost, peek: room.peeks[pid] || null, fate: me.fate, won: room.winners.includes(pid) } : null,
-      players: room.players.filter(p => p.inGame).map(p => ({ id: p.id, name: p.name, alive: p.alive, sick: p.sick, online: p.online, me: p.id === pid, done: room.phase === 'day' ? !!room.choices[p.id] : room.phase === 'vote' ? !!room.vote?.votes[p.id] : false, items: p.items.length, fate: p.fate, winner: room.winners.includes(p.id), canAct: canAct(p) })),
+      players: room.players.filter(p => p.inGame).map(p => ({ id: p.id, name: p.name, bot: !!p.bot, alive: p.alive, sick: p.sick, online: p.online, me: p.id === pid, done: room.phase === 'day' ? !!room.choices[p.id] : room.phase === 'vote' ? !!room.vote?.votes[p.id] : false, items: p.items.length, fate: p.fate, winner: room.winners.includes(p.id), canAct: canAct(p) })),
       report: room.phase === 'dusk' ? room.report.map(l => ({ name: l.name, text: l.text, item: l.secret && l.name === me?.name ? (l.secret === 'rien' ? 'rien' : ITEMS[l.secret].name) : null })) : [],
       vote: room.phase === 'vote' ? { reason: room.vote.reason, count: room.vote.count, mine: room.vote.votes[pid] || null, done: Object.keys(room.vote.votes).length, left: Math.max(0, room.vote.ends - Date.now()), protected: room.vote.protected } : null,
       flash: room.flash || null, outcome: room.outcome, quiet: Date.now() - room.turnAt,
@@ -368,7 +401,7 @@ function nfPersonCard(p, v) {
   const state = p.winner ? { k: 'win', t: '⛵ sur le radeau' } : !p.alive ? { k: 'dead', t: '✝ ' + (p.fate || 'hors jeu') } : p.sick ? { k: 'sick', t: `🤒 malade ${p.sick} j` } : v.phase === 'day' ? { k: p.done ? 'done' : 'wait', t: p.done ? '✓ a choisi' : '… réfléchit' } : v.phase === 'vote' ? { k: p.done ? 'done' : 'wait', t: p.done ? '✓ a voté' : '… hésite' } : { k: 'ok', t: 'en forme' };
   const hue = [...p.name].reduce((a, c) => a + c.charCodeAt(0), 0) * 47 % 360;
   return `<div class="nf-card ${state.k}${p.me ? ' me' : ''}${p.online ? '' : ' off'}"><span class="nf-avatar" style="--h:${hue}">${esc((p.name[0] || '?').toUpperCase())}</span>`
-    + `<span class="nf-card-name">${esc(p.name)}${p.me ? ' <small>(toi)</small>' : ''}</span><span class="nf-card-state">${esc(state.t)}</span>`
+    + `<span class="nf-card-name">${p.bot ? '🤖 ' : ''}${esc(p.name)}${p.me ? ' <small>(toi)</small>' : ''}</span><span class="nf-card-state">${esc(state.t)}</span>`
     + `<span class="nf-card-items">${'<i></i>'.repeat(Math.min(p.items, 5))}${p.items ? `<small>${p.items} objet${p.items > 1 ? 's' : ''}</small>` : ''}</span></div>`;
 }
 

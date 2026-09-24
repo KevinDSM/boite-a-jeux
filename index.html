@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=45">
-<link rel="apple-touch-icon" href="icon-180.png?v=45">
+<link rel="manifest" href="manifest.json?v=46">
+<link rel="apple-touch-icon" href="icon-180.png?v=46">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&family=Archivo+Black&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=45">
+<link rel="stylesheet" href="style.css?v=46">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -98,7 +98,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne marche pas ? Diagnostic réseau</button>
-    <p class="fine">15 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">17 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -206,6 +206,18 @@
         <span class="gdesc">Une phrase à trous, et ta main de cartes pour la compléter. Le plus drôle, ou le plus limite, marque le point.</span>
         <span class="gmeta">3 à 12 joueurs · 20 min · humour pour adultes</span>
       </button>
+      <button class="gcard g-solitaire" type="button" data-game="solitaire">
+        <span class="gart" aria-hidden="true"><span class="soart"><i>A</i><i>2</i><i>3</i></span></span>
+        <span class="gname">Solitaire</span>
+        <span class="gdesc">La patience classique, mais en course : même donne pour tout le monde, le premier qui monte ses 52 cartes gagne.</span>
+        <span class="gmeta">1 à 12 joueurs · 5 à 15 min · réflexion</span>
+      </button>
+      <button class="gcard g-poker" type="button" data-game="poker">
+        <span class="gart" aria-hidden="true"><span class="pkart"><i></i><i></i><i></i></span></span>
+        <span class="gname">Poker</span>
+        <span class="gdesc">Texas Hold'em entre amis avec des jetons fictifs : blindes, relances, tapis et abattage. Des robots complètent la table.</span>
+        <span class="gmeta">2 à 9 joueurs · 30 min · bluff</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -220,6 +232,7 @@
   </div>
 
   <div class="players" id="lobby-players"></div>
+  <section class="lobby-history" id="lobby-history" hidden></section>
   <div id="lobby-opts" hidden>
     <div class="opts" id="opts-timeline" hidden>
       <fieldset class="chips" id="opt-cats"><legend class="eyebrow">Playlists</legend></fieldset>
@@ -275,6 +288,7 @@
     <div class="opts" id="opts-chromo" hidden>
       <label class="field row"><span>Nombre de manches</span><select id="opt-ch-rounds"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label>
       <label class="field row"><span>Cumul des +2 et +4</span><input id="opt-ch-stack" type="checkbox" class="tick" checked></label>
+      <label class="field row"><span>Règle du zéro : un 0 fait passer toutes les mains au voisin</span><input id="opt-ch-zero" type="checkbox" class="tick"></label>
       <label class="field row"><span>Robots à la table</span><select id="opt-ch-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
       <p class="fine">Les robots jouent tout seuls : pratique pour tester seul ou compléter une petite table.</p>
     </div>
@@ -327,6 +341,7 @@
       <p class="fine">Humour grinçant pour adultes, toutes les cartes sont écrites pour la Boîte à jeux.</p>
     </div>
     <div class="opts" id="opts-naufrages" hidden>
+      <label class="field row"><span>Robots naufragés</span><select id="opt-nf-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="6">6</option></select></label>
       <label class="field row"><span>Durée</span><select id="opt-nf-length"><option value="court">Courte, l'ouragan arrive tôt</option><option value="normal" selected>Normale</option><option value="long">Longue</option></select></label>
       <p class="fine">L'hôte lance les soirées et le départ du radeau : parlez-en avant de décider.</p>
     </div>
@@ -335,6 +350,17 @@
       <label class="field row"><span>Cartes</span><select id="opt-mm-kinds"><option value="mix" selected>Images et GIF</option><option value="img">Images seulement</option><option value="gif">GIF seulement</option></select></label>
       <label class="field row"><span>Partie en</span><select id="opt-mm-target"><option value="5">5 points</option><option value="7" selected>7 points</option><option value="10">10 points</option></select></label>
       <p class="fine" id="opt-mm-count">Chargement des mèmes…</p>
+    </div>
+    <div class="opts" id="opts-solitaire" hidden>
+      <label class="field row"><span>Pioche</span><select id="opt-so-draw"><option value="1" selected>Une carte à la fois</option><option value="3">Trois cartes, plus corsé</option></select></label>
+      <label class="field row"><span>Temps de la course</span><select id="opt-so-minutes"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="15">15 minutes</option><option value="0">Sans limite</option></select></label>
+      <p class="fine">Tout le monde reçoit exactement la même donne. Ça se joue aussi tout seul.</p>
+    </div>
+    <div class="opts" id="opts-poker" hidden>
+      <label class="field row"><span>Robots à la table</span><select id="opt-pk-bots"><option value="0">Aucun</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+      <label class="field row"><span>Jetons au départ</span><select id="opt-pk-stack"><option value="500">500, partie rapide</option><option value="1000" selected>1 000</option><option value="2000">2 000, partie longue</option></select></label>
+      <label class="field row"><span>Les blindes doublent</span><select id="opt-pk-blinds"><option value="5">toutes les 5 mains</option><option value="10" selected>toutes les 10 mains</option><option value="0">jamais</option></select></label>
+      <p class="fine">Jetons fictifs, rien à miser pour de vrai. Blindes de départ 10 / 20.</p>
     </div>
     <div class="opts" id="opts-geo" hidden>
       <label class="field row"><span>Carte</span><select id="opt-geo-map"><option value="monde" selected>Monde</option><option value="europe">Europe</option><option value="france">France</option></select></label>
@@ -493,6 +519,16 @@
   <div class="stack" id="hl-main"></div>
 </section>
 
+<!-- ====================== SOLITAIRE ====================== -->
+<section class="screen play solitaire" id="s-solitaire" hidden>
+  <div class="stack" id="so-main"></div>
+</section>
+
+<!-- ====================== POKER ====================== -->
+<section class="screen play poker" id="s-poker" hidden>
+  <div class="stack" id="pk-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -548,23 +584,25 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=45"></script>
-<script src="app.js?v=45"></script>
-<script src="sablier-ui.js?v=45"></script>
-<script src="undercover.js?v=45"></script>
-<script src="geo-config.js?v=45"></script>
-<script src="geo.js?v=45"></script>
-<script src="chromo.js?v=45"></script>
-<script src="kems.js?v=45"></script>
-<script src="mirage.js?v=45"></script>
-<script src="douze.js?v=45"></script>
-<script src="petitbac.js?v=45"></script>
-<script src="loupgarou.js?v=45"></script>
-<script src="naufrages.js?v=45"></script>
-<script src="memes.js?v=45"></script>
-<script src="limite-cartes.js?v=45"></script>
-<script src="limite.js?v=45"></script>
-<script src="desk.js?v=45"></script>
-<script src="regles.js?v=45"></script>
+<script src="sablier-engine.js?v=46"></script>
+<script src="app.js?v=46"></script>
+<script src="sablier-ui.js?v=46"></script>
+<script src="undercover.js?v=46"></script>
+<script src="geo-config.js?v=46"></script>
+<script src="geo.js?v=46"></script>
+<script src="chromo.js?v=46"></script>
+<script src="kems.js?v=46"></script>
+<script src="mirage.js?v=46"></script>
+<script src="douze.js?v=46"></script>
+<script src="petitbac.js?v=46"></script>
+<script src="loupgarou.js?v=46"></script>
+<script src="naufrages.js?v=46"></script>
+<script src="memes.js?v=46"></script>
+<script src="limite-cartes.js?v=46"></script>
+<script src="limite.js?v=46"></script>
+<script src="solitaire.js?v=46"></script>
+<script src="poker.js?v=46"></script>
+<script src="desk.js?v=46"></script>
+<script src="regles.js?v=46"></script>
 </body>
 </html>

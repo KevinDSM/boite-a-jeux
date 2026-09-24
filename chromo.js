@@ -77,10 +77,10 @@ const Chromo = (() => {
     return got;
   }
 
-  function create({ hostId, players, rounds, stack, bots }) {
+  function create({ hostId, players, rounds, stack, bots, zero }) {
     const room = {
       hostId, round: 0, phase: 'play',
-      settings: { rounds: clamp(rounds, 1, 10, 3), stack: !!stack },
+      settings: { rounds: clamp(rounds, 1, 10, 3), stack: !!stack, zero: !!zero },
       players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: false, score: 0, hand: [], inRound: false })),
     };
     const nb = clamp(bots, 0, 4, 0);
@@ -136,6 +136,14 @@ const Chromo = (() => {
       return endRound(room, pid);
     }
 
+    // règle du zéro : chacun passe sa main à son voisin, dans le sens du jeu
+    if (card.v === '0' && room.settings.zero) {
+      const seats = room.order.filter(id => pl(room, id)?.inRound), hands = seats.map(id => pl(room, id).hand);
+      const n = seats.length, step = room.dir === 1 ? 1 : -1;
+      seats.forEach((id, i) => { pl(room, seats[((i + step) % n + n) % n]).hand = hands[i]; });
+      room.called = {}; room.vulnerable = null;
+      text += ' : règle du zéro, chacun passe sa main à son voisin';
+    }
     if (card.v === 'skip') {
       text += `, ${pl(room, peekNext(room, 1)).name} passe son tour`; advance(room, 2);
     } else if (card.v === 'rev') {
@@ -283,7 +291,7 @@ const Chromo = (() => {
   function view(room, pid) {
     const me = pl(room, pid), cur = currentId(room), myTurn = room.phase === 'play' && cur === pid;
     return {
-      phase: room.phase, round: room.round, rounds: room.settings.rounds, stack: room.settings.stack,
+      phase: room.phase, round: room.round, rounds: room.settings.rounds, stack: room.settings.stack, zero: room.settings.zero,
       isHost: pid === room.hostId,
       me: me && me.inRound
         ? { inRound: true, hand: sortHand(me.hand), called: !!room.called[pid],
@@ -324,7 +332,7 @@ function renderChromo(v) {
   const me = v.me, host = v.isHost;
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
 
-  root.appendChild(el('div', 'ch-head', `<span class="eyebrow">Manche ${v.round}/${v.rounds}${v.stack ? ' · cumul des +2 et +4' : ''}</span>`));
+  root.appendChild(el('div', 'ch-head', `<span class="eyebrow">Manche ${v.round}/${v.rounds}${v.stack ? ' · cumul des +2 et +4' : ''}${v.zero ? ' · règle du zéro' : ''}</span>`));
 
   const seatHTML = p => `<span class="ch-seat-name">${p.bot && v.phase === 'play' ? '🤖 ' : ''}${esc(p.name)}${p.bot && v.phase !== 'play' ? ' <small>robot</small>' : ''}</span><span class="ch-seat-count"><i class="ch-mini"></i>${p.count} carte${p.count > 1 ? 's' : ''}</span>`
     + (p.count === 1 && v.phase === 'play' ? `<span class="ch-flag${p.called ? '' : ' warn'}">${p.called ? 'Chromo !' : '1 carte'}</span>` : '');
