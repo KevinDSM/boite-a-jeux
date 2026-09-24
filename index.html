@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=43">
-<link rel="apple-touch-icon" href="icon-180.png?v=43">
+<link rel="manifest" href="manifest.json?v=45">
+<link rel="apple-touch-icon" href="icon-180.png?v=45">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=43">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&family=Archivo+Black&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=45">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -98,7 +98,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne marche pas ? Diagnostic réseau</button>
-    <p class="fine">14 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">15 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -200,6 +200,12 @@
         <span class="gdesc">Une situation, et chacun pose le mème ou le GIF de sa main qui y répond le mieux. Le plus drôle marque.</span>
         <span class="gmeta">3 à 12 joueurs · 20 min · mèmes et GIF</span>
       </button>
+      <button class="gcard g-limite" type="button" data-game="limite">
+        <span class="gart" aria-hidden="true"><span class="hlart"><i class="b">___</i><i class="w"></i><i class="w"></i></span></span>
+        <span class="gname">Hors Limite</span>
+        <span class="gdesc">Une phrase à trous, et ta main de cartes pour la compléter. Le plus drôle, ou le plus limite, marque le point.</span>
+        <span class="gmeta">3 à 12 joueurs · 20 min · humour pour adultes</span>
+      </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
   </section>
@@ -279,6 +285,7 @@
       <p class="fine">Convenez d'un signal discret par équipe avant de commencer : il ne passe pas par le téléphone.</p>
     </div>
     <div class="opts" id="opts-mirage" hidden>
+      <label class="field row"><span>Cartes</span><select id="opt-mi-cards"><option value="art" selected>Tableaux du domaine public</option><option value="memes">Mèmes et GIF</option><option value="mix">Les deux mélangés</option></select></label>
       <label class="field row"><span>Jokers par joueur</span><select id="opt-mi-jokers"><option value="0">Aucun</option><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label>
       <label class="field row"><span>Partie en</span><select id="opt-mi-target"><option value="15">15 points, courte</option><option value="30" selected>30 points</option><option value="45">45 points, longue</option></select></label>
       <p class="fine" id="opt-mi-count">Chargement des cartes…</p>
@@ -312,6 +319,12 @@
       <label class="field row"><span>Voix du narrateur sur ce téléphone</span><input id="opt-lw-voice" type="checkbox" class="tick" checked></label>
       <p class="fine" id="opt-lw-count"></p>
       <p class="fine">Posez ce téléphone au milieu, volume monté : il annonce la nuit, les réveils et les morts. Les autres rôles sont complétés par des villageois.</p>
+    </div>
+    <div class="opts" id="opts-limite" hidden>
+      <label class="field row"><span>Qui choisit la meilleure phrase</span><select id="opt-hl-mode"><option value="judge" selected>Un juge, à tour de rôle</option><option value="vote">Tout le monde vote</option></select></label>
+      <label class="field row"><span>Partie en</span><select id="opt-hl-target"><option value="5">5 points</option><option value="7" selected>7 points</option><option value="10">10 points</option></select></label>
+      <label class="field row"><span>Mode soft, sans les cartes épicées</span><input id="opt-hl-soft" type="checkbox" class="tick"></label>
+      <p class="fine">Humour grinçant pour adultes, toutes les cartes sont écrites pour la Boîte à jeux.</p>
     </div>
     <div class="opts" id="opts-naufrages" hidden>
       <label class="field row"><span>Durée</span><select id="opt-nf-length"><option value="court">Courte, l'ouragan arrive tôt</option><option value="normal" selected>Normale</option><option value="long">Longue</option></select></label>
@@ -475,6 +488,11 @@
   <div class="stack" id="mm-main"></div>
 </section>
 
+<!-- ====================== HORS LIMITE ====================== -->
+<section class="screen play limite" id="s-limite" hidden>
+  <div class="stack" id="hl-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -530,21 +548,23 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=43"></script>
-<script src="app.js?v=43"></script>
-<script src="sablier-ui.js?v=43"></script>
-<script src="undercover.js?v=43"></script>
-<script src="geo-config.js?v=43"></script>
-<script src="geo.js?v=43"></script>
-<script src="chromo.js?v=43"></script>
-<script src="kems.js?v=43"></script>
-<script src="mirage.js?v=43"></script>
-<script src="douze.js?v=43"></script>
-<script src="petitbac.js?v=43"></script>
-<script src="loupgarou.js?v=43"></script>
-<script src="naufrages.js?v=43"></script>
-<script src="memes.js?v=43"></script>
-<script src="desk.js?v=43"></script>
-<script src="regles.js?v=43"></script>
+<script src="sablier-engine.js?v=45"></script>
+<script src="app.js?v=45"></script>
+<script src="sablier-ui.js?v=45"></script>
+<script src="undercover.js?v=45"></script>
+<script src="geo-config.js?v=45"></script>
+<script src="geo.js?v=45"></script>
+<script src="chromo.js?v=45"></script>
+<script src="kems.js?v=45"></script>
+<script src="mirage.js?v=45"></script>
+<script src="douze.js?v=45"></script>
+<script src="petitbac.js?v=45"></script>
+<script src="loupgarou.js?v=45"></script>
+<script src="naufrages.js?v=45"></script>
+<script src="memes.js?v=45"></script>
+<script src="limite-cartes.js?v=45"></script>
+<script src="limite.js?v=45"></script>
+<script src="desk.js?v=45"></script>
+<script src="regles.js?v=45"></script>
 </body>
 </html>

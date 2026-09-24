@@ -284,7 +284,7 @@ const Naufrages = (() => {
     const w = room.day ? todayWeather(room) : null;
     return {
       phase: room.phase, day: room.day, seq: room.seq, isHost: pid === room.hostId,
-      weather: w, food: room.food, water: room.water, wood: room.wood, seats: seats(room), woodPerSeat: WOOD_PER_SEAT, woodToNext: WOOD_PER_SEAT - room.wood % WOOD_PER_SEAT,
+      weather: w, history: room.weather.slice(0, room.day), food: room.food, water: room.water, wood: room.wood, seats: seats(room), woodPerSeat: WOOD_PER_SEAT, woodToNext: WOOD_PER_SEAT - room.wood % WOOD_PER_SEAT,
       alive: n, canLeave: canLeave(room),
       me: me?.inGame ? { alive: me.alive, sick: me.sick, canAct: canAct(me), choice: room.choices[pid] || null, items: me.items.map(k => ({ key: k, ...ITEMS[k] })), boost: me.boost, peek: room.peeks[pid] || null, fate: me.fate, won: room.winners.includes(pid) } : null,
       players: room.players.filter(p => p.inGame).map(p => ({ id: p.id, name: p.name, alive: p.alive, sick: p.sick, online: p.online, me: p.id === pid, done: room.phase === 'day' ? !!room.choices[p.id] : room.phase === 'vote' ? !!room.vote?.votes[p.id] : false, items: p.items.length, fate: p.fate, winner: room.winners.includes(p.id), canAct: canAct(p) })),
@@ -308,6 +308,70 @@ const NF_ACTIONS = [
 ];
 const NF_WEATHER = w => w === 'ouragan' ? { icon: '🌀', text: 'Ouragan ce soir' } : [{ icon: '☀️', text: 'Grand soleil : 1 ration d’eau par récolte' }, { icon: '⛅', text: 'Nuageux : 2 rations par récolte' }, { icon: '🌦️', text: 'Averses : 3 rations par récolte' }, { icon: '🌧️', text: 'Pluie battante : 4 rations par récolte' }][w] || { icon: '', text: '' };
 
+/** L'île : la mer, la plage, le feu de camp, les réserves et le radeau en construction. */
+function nfScene(v) {
+  const W = 400, H = 210, per = v.woodPerSeat;
+  const slots = Math.max(v.alive, v.seats, 1), woodSeats = Math.floor(v.wood / per), partial = v.wood % per;
+  const storm = v.weather === 'ouragan';
+  let g = `<svg class="nf-scene${storm ? ' storm' : ''}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Le camp : ${v.wood} bois, ${v.seats} places sur ${v.alive}">`;
+  g += `<defs><linearGradient id="nfSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${storm ? '#3b4658' : '#8fd3f0'}"/><stop offset="1" stop-color="${storm ? '#6b7788' : '#d9f1f7'}"/></linearGradient>`
+    + `<linearGradient id="nfSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${storm ? '#2c5a6e' : '#2aa6c4'}"/><stop offset="1" stop-color="${storm ? '#16384a' : '#127a9a'}"/></linearGradient></defs>`;
+  g += `<rect width="${W}" height="96" fill="url(#nfSky)"/>`;
+  g += storm ? `<g class="nf-clouds" fill="#2a303b" opacity=".85"><ellipse cx="80" cy="30" rx="60" ry="18"/><ellipse cx="200" cy="22" rx="80" ry="20"/><ellipse cx="330" cy="34" rx="70" ry="18"/></g>`
+    : `<circle cx="340" cy="30" r="16" fill="#ffe27a"/>` + (v.weather >= 2 ? `<g fill="#ffffff" opacity=".9"><ellipse cx="120" cy="30" rx="34" ry="11"/><ellipse cx="150" cy="24" rx="24" ry="10"/></g>` : '');
+  if (!storm && v.weather >= 2) { g += '<g class="nf-rain" stroke="#5aa9d6" stroke-width="1.6" stroke-linecap="round">'; for (let i = 0; i < 14; i++) g += `<line x1="${100 + i * 5}" y1="${40 + (i % 3) * 4}" x2="${96 + i * 5}" y2="${52 + (i % 3) * 4}"/>`; g += '</g>'; }
+  g += `<rect y="92" width="${W}" height="${H - 92}" fill="url(#nfSea)"/>`;
+  g += `<path class="nf-wave" d="M0 100 q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2"/>`;
+  // la plage et le feu de camp
+  g += `<path d="M-10 210 L-10 132 Q60 104 170 118 Q250 128 300 158 Q320 176 320 210 Z" fill="#f0d99b"/><path d="M-10 136 Q60 110 168 122" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="3"/>`;
+  g += `<g transform="translate(46 118)"><path d="M0 60 q4 -34 -2 -58" stroke="#8a5a2b" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="#2f8a4a"><path d="M-2 2 q-26 -8 -40 8 q18 -4 40 -8"/><path d="M-2 2 q26 -10 40 6 q-18 -2 -40 -6"/><path d="M-2 2 q-10 -24 -30 -26 q14 10 30 26"/><path d="M-2 2 q14 -22 32 -22 q-16 8 -32 22"/></g><circle cx="3" cy="6" r="3.5" fill="#6b4520"/><circle cx="-5" cy="7" r="3.5" fill="#6b4520"/></g>`;
+  g += `<g transform="translate(112 168)"><path d="M-14 12 L14 12 M-12 14 L12 8 M-12 8 L12 14" stroke="#6b4520" stroke-width="4" stroke-linecap="round"/><path class="nf-fire" d="M0 10 C-10 0 -4 -8 0 -16 C4 -8 10 0 0 10 Z" fill="#ff8a2a"/><path class="nf-fire" d="M0 9 C-5 3 -2 -2 0 -7 C2 -2 5 3 0 9 Z" fill="#ffd34a"/></g>`;
+  // les réserves : un poisson et une jarre par ration, empilés
+  const stack = (n, x, y, draw) => { let o = ''; const shown = Math.min(n, 12); for (let i = 0; i < shown; i++) o += draw(x + (i % 4) * 11, y - Math.floor(i / 4) * 9); return o + (n > 12 ? `<text x="${x + 46}" y="${y + 3}" class="nf-more">+${n - 12}</text>` : ''); };
+  g += stack(v.food, 150, 176, (x, y) => `<path d="M${x} ${y} q5 -5 10 0 q-5 5 -10 0 Z M${x + 10} ${y} l4 -3 v6 Z" fill="#ff9c6b" stroke="#b5552c" stroke-width=".8"/>`);
+  g += stack(v.water, 150, 198, (x, y) => `<path d="M${x + 1} ${y - 7} h7 v2 q3 2 3 6 v4 h-13 v-4 q0 -4 3 -6 Z" fill="#7cc6e8" stroke="#2c7fa6" stroke-width=".8"/>`);
+  // le radeau : une place = ${per} bûches ; les places terminées, la place en cours, les places manquantes en pointillés
+  const cols = Math.min(slots, 6), rows = Math.ceil(slots / 6), sw = 26, sh = 22, gap = 3;
+  const rx = 385 - cols * (sw + gap), ry = 196 - rows * (sh + gap);
+  g += `<g class="nf-raft">`;
+  for (let k = 0; k < slots; k++) {
+    const x = rx + (k % 6) * (sw + gap), y = ry + Math.floor(k / 6) * (sh + gap);
+    const full = k < woodSeats, bonus = !full && k < v.seats;
+    if (full || bonus) {
+      for (let i = 0; i < per; i++) g += `<rect x="${x + i * (sw / per)}" y="${y}" width="${sw / per - 1}" height="${sh}" rx="2" fill="${bonus ? '#c9a15c' : '#a86b34'}" stroke="#6b4520" stroke-width=".8"/>`;
+      g += `<path d="M${x} ${y + 6} h${sw} M${x} ${y + sh - 6} h${sw}" stroke="#e8d3a0" stroke-width="1.4"/>`;
+    } else if (k === Math.max(woodSeats, v.seats) && partial > 0) {
+      for (let i = 0; i < partial; i++) g += `<rect class="nf-log-new" x="${x + i * (sw / per)}" y="${y}" width="${sw / per - 1}" height="${sh}" rx="2" fill="#a86b34" stroke="#6b4520" stroke-width=".8"/>`;
+      g += `<rect x="${x}" y="${y}" width="${sw}" height="${sh}" rx="3" fill="none" stroke="#ffffff" stroke-opacity=".6" stroke-dasharray="3 3"/>`;
+    } else g += `<rect x="${x}" y="${y}" width="${sw}" height="${sh}" rx="3" fill="#ffffff" fill-opacity=".08" stroke="#ffffff" stroke-opacity=".55" stroke-dasharray="3 3"/>`;
+  }
+  if (v.seats >= v.alive && v.alive > 0) {                                      // assez de places : on hisse la voile
+    const mx = rx + (cols * (sw + gap)) / 2;
+    g += `<path d="M${mx} ${ry - 2} V${ry - 62}" stroke="#6b4520" stroke-width="3"/><path class="nf-sail" d="M${mx + 2} ${ry - 60} Q${mx + 34} ${ry - 36} ${mx + 2} ${ry - 12} Z" fill="#fbf4e2" stroke="#c9b58a"/>`;
+  }
+  g += `</g>`;
+  g += `<text x="${rx + (cols * (sw + gap)) / 2 - gap}" y="${ry - (v.seats >= v.alive && v.alive ? 66 : 6)}" text-anchor="middle" class="nf-raft-label">${v.seats}/${v.alive} places</text>`;
+  return g + '</svg>';
+}
+
+/** Le calendrier : chaque jour passé avec sa météo ; l'ouragan, lui, ne prévient pas. */
+function nfCalendar(v) {
+  const icon = w => w === 'ouragan' ? '🌀' : ['☀️', '⛅', '🌦️', '🌧️'][w] || '';
+  let h = '<div class="nf-cal">';
+  (v.history || []).forEach((w, i) => { h += `<span class="nf-cal-day${i === v.history.length - 1 ? ' today' : ''}${w === 'ouragan' ? ' storm' : ''}"><small>J${i + 1}</small>${icon(w)}</span>`; });
+  for (let i = 0; i < 3; i++) h += `<span class="nf-cal-day future"><small>J${v.day + i + 1}</small>?</span>`;
+  return h + '</div>';
+}
+
+/** La carte d'un naufragé : initiale, nom, état, objets (dos de cartes, jamais leur contenu). */
+function nfPersonCard(p, v) {
+  const state = p.winner ? { k: 'win', t: '⛵ sur le radeau' } : !p.alive ? { k: 'dead', t: '✝ ' + (p.fate || 'hors jeu') } : p.sick ? { k: 'sick', t: `🤒 malade ${p.sick} j` } : v.phase === 'day' ? { k: p.done ? 'done' : 'wait', t: p.done ? '✓ a choisi' : '… réfléchit' } : v.phase === 'vote' ? { k: p.done ? 'done' : 'wait', t: p.done ? '✓ a voté' : '… hésite' } : { k: 'ok', t: 'en forme' };
+  const hue = [...p.name].reduce((a, c) => a + c.charCodeAt(0), 0) * 47 % 360;
+  return `<div class="nf-card ${state.k}${p.me ? ' me' : ''}${p.online ? '' : ' off'}"><span class="nf-avatar" style="--h:${hue}">${esc((p.name[0] || '?').toUpperCase())}</span>`
+    + `<span class="nf-card-name">${esc(p.name)}${p.me ? ' <small>(toi)</small>' : ''}</span><span class="nf-card-state">${esc(state.t)}</span>`
+    + `<span class="nf-card-items">${'<i></i>'.repeat(Math.min(p.items, 5))}${p.items ? `<small>${p.items} objet${p.items > 1 ? 's' : ''}</small>` : ''}</span></div>`;
+}
+
 function renderNaufrages(v) {
   if (!v) return;
   const root = $('#nf-main'); root.innerHTML = ''; clearInterval(nfTimer);
@@ -316,7 +380,7 @@ function renderNaufrages(v) {
 
   // la réserve du camp : toujours visible
   const w = NF_WEATHER(v.weather);
-  root.appendChild(el('div', 'nf-camp', `<div class="nf-day"><span class="eyebrow">Jour ${v.day}</span><span class="nf-weather">${w.icon} ${w.text}</span></div>
+  root.appendChild(el('div', 'nf-camp', `<div class="nf-day"><span class="nf-daynum">Jour <b>${v.day}</b></span><span class="nf-weather">${w.icon} ${w.text}</span></div>${nfScene(v)}${nfCalendar(v)}
     <div class="nf-stock"><span title="Poissons"><b>${v.food}</b>🐟</span><span title="Eau"><b>${v.water}</b>💧</span><span title="Bois"><b>${v.wood}</b>🪵</span><span class="nf-raft" title="Places sur le radeau"><b>${v.seats}</b>/${v.alive} places</span></div>
     <div class="nf-need">${v.alive} survivant${v.alive > 1 ? 's' : ''} : il faut ${v.alive} 🐟 et ${v.alive} 💧 chaque soir · encore ${v.woodToNext} 🪵 pour la prochaine place</div>`));
 
@@ -406,7 +470,7 @@ function renderNaufrages(v) {
 
   // le camp
   const grid = el('div', 'nf-people');
-  v.players.forEach(p => grid.appendChild(el('div', `nf-p${p.alive ? '' : ' dead'}${p.me ? ' me' : ''}${p.winner ? ' win' : ''}${p.online ? '' : ' off'}`, `<span class="nf-p-name">${esc(p.name)}</span><span class="nf-p-sub">${p.winner ? 'sur le radeau' : !p.alive ? esc(p.fate || 'hors jeu') : p.sick ? 'malade' : v.phase === 'day' ? (p.done ? 'a choisi' : '…') : v.phase === 'vote' ? (p.done ? 'a voté' : '…') : ''}${p.items ? ` · ${p.items} objet${p.items > 1 ? 's' : ''}` : ''}</span>`)));
+  v.players.forEach(p => grid.insertAdjacentHTML('beforeend', nfPersonCard(p, v)));
   root.appendChild(grid);
   const lg = el('ul', 'nf-log'); v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t)))); root.appendChild(lg);
 }

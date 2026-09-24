@@ -324,17 +324,18 @@ function renderChromo(v) {
   const me = v.me, host = v.isHost;
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
 
-  root.appendChild(el('div', 'ch-head', `<span class="eyebrow">Manche ${v.round}/${v.rounds}${v.stack ? ' · cumul des +2 et +4' : ''}</span>`
-    + (v.phase === 'play' ? `<span class="ch-dir" title="Sens du jeu">${v.dir === 1 ? '↻' : '↺'}</span>` : '')));
+  root.appendChild(el('div', 'ch-head', `<span class="eyebrow">Manche ${v.round}/${v.rounds}${v.stack ? ' · cumul des +2 et +4' : ''}</span>`));
 
+  const seatHTML = p => `<span class="ch-seat-name">${p.bot && v.phase === 'play' ? '🤖 ' : ''}${esc(p.name)}${p.bot && v.phase !== 'play' ? ' <small>robot</small>' : ''}</span><span class="ch-seat-count"><i class="ch-mini"></i>${p.count} carte${p.count > 1 ? 's' : ''}</span>`
+    + (p.count === 1 && v.phase === 'play' ? `<span class="ch-flag${p.called ? '' : ' warn'}">${p.called ? 'Chromo !' : '1 carte'}</span>` : '');
   const seats = el('div', 'ch-players');
-  v.players.forEach(p => {
+  if (v.phase !== 'play') v.players.forEach(p => {
     const d = el('div', 'ch-seat' + (p.id === v.currentId && v.phase === 'play' ? ' now' : '') + (p.online ? '' : ' off') + (p.id === net.me ? ' me' : ''));
     d.innerHTML = `<span class="ch-seat-name">${esc(p.name)}${p.bot ? ' <small>robot</small>' : ''}</span><span class="ch-seat-count"><i class="ch-mini"></i>${p.count} carte${p.count > 1 ? 's' : ''}</span>`
       + (p.count === 1 && v.phase === 'play' ? `<span class="ch-flag${p.called ? '' : ' warn'}">${p.called ? 'Chromo !' : '1 carte'}</span>` : '');
     seats.appendChild(d);
   });
-  root.appendChild(seats);
+  if (seats.children.length) root.appendChild(seats);
 
   if (v.phase === 'play') {
     const cur = v.players.find(p => p.id === v.currentId);
@@ -346,7 +347,21 @@ function renderChromo(v) {
     chLastSeq = v.playSeq;
     table.append(pile, topEl);
     table.appendChild(el('div', 'ch-color', `<i class="ch-dot col-${v.color}"></i>${CH_COLOR_WORD[v.color]}${v.pending ? ` <b class="ch-pending">+${v.pending}</b>` : ''}`));
-    root.appendChild(table);
+    // la table : les joueurs assis dans l'ordre du jeu, toi en bas, la flèche montre le sens
+    const ring = el('div', 'ch-ring n' + Math.min(v.players.length, 10));
+    const n = v.players.length, meIdx = Math.max(0, v.players.findIndex(p => p.id === net.me));
+    v.players.forEach((p, i) => {
+      const k = (i - meIdx + n) % n, ang = Math.PI / 2 + k * 2 * Math.PI / n;       // 90° = en bas, puis sens horaire
+      const d = el('div', 'ch-seat ring' + (p.id === v.currentId ? ' now' : '') + (p.online ? '' : ' off') + (p.id === net.me ? ' me' : ''), seatHTML(p));
+      d.style.left = Math.min(84, Math.max(16, 50 + 40 * Math.cos(ang))).toFixed(2) + '%';
+      d.style.top = (50 + 43 * Math.sin(ang)).toFixed(2) + '%';
+      ring.appendChild(d);
+    });
+    const felt = el('div', 'ch-felt');
+    felt.appendChild(el('span', 'ch-felt-dir' + (v.dir === 1 ? '' : ' rev'), v.dir === 1 ? '↻' : '↺'));
+    felt.appendChild(table);
+    ring.appendChild(felt);
+    root.appendChild(ring);
 
     root.appendChild(el('p', 'ch-status' + (v.myTurn ? ' mine' : ''),
       v.myTurn ? (v.pending ? `À toi : pioche ${v.pending}${v.stack ? ' ou contre' : ''}` : v.drewId ? 'Joue la carte piochée ou passe' : 'À toi de jouer')

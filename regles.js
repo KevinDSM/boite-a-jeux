@@ -143,7 +143,7 @@ const RULES = [
   ] },
   { key: 'mirage', parts: [
     ['Le principe', `<p>Des images évocatrices et des indices. Le conteur doit faire deviner sa carte à certains joueurs, mais pas à tous : son indice ne doit être ni trop clair, ni trop obscur.</p>`],
-    ['Mise en place', `<p>Chacun reçoit six cartes, des tableaux, gravures et estampes du domaine public. Touche une carte pour la voir en grand. Le rôle de conteur tourne à chaque manche.</p>`],
+    ['Mise en place', `<p>Chacun reçoit six cartes. Dans le salon, l'hôte choisit le paquet : des tableaux, gravures et estampes du domaine public, les mèmes et GIF de Mème pas vrai, ou les deux mélangés (les GIF tournent en boucle, sans le son). Touche une carte pour la voir en grand. Le rôle de conteur tourne à chaque manche.</p>`],
     ['Déroulement d’une manche', `<ul>
       <li><b>Le conteur</b> choisit une carte de sa main et donne un indice : un mot, une phrase, un titre de chanson, un bruit… tapé dans l'application ou dit à voix haute.</li>
       <li><b>Les autres</b> choisissent dans leur main la carte qui colle le mieux à cet indice, pour faire croire que c'est celle du conteur.</li>
@@ -247,6 +247,15 @@ const RULES = [
       <li><b>Tout le monde vote</b> : chacun vote pour le meilleur mème, jamais pour le sien. Chaque vote reçu vaut 1 point.</li></ul>`],
     ['Changer sa main', `<p>Rien ne colle ? Une fois par manche, tu peux échanger toute ta main contre 1 point.</p>`],
     ['Fin de partie', `<p>Le premier qui atteint le score fixé (5, 7 ou 10 points) gagne. On peut jouer avec des images seulement, des GIF seulement, ou les deux.</p>`],
+  ] },
+  { key: 'limite', parts: [
+    ['Le principe', `<p>Une carte noire affiche une phrase à trous, par exemple « Mon psy dit que tous mes problèmes viennent de ___ ». Chacun la complète avec une carte blanche de sa main. La phrase la plus drôle, la plus absurde ou la plus limite marque le point. L'humour est volontairement grinçant : c'est un jeu pour adultes entre amis.</p>`],
+    ['Les cartes', `<p>Chacun a 10 cartes blanches en main, complétées après chaque manche. Certaines cartes noires ont deux trous : il faut alors poser deux cartes, dans l'ordre, et un aperçu de la phrase s'affiche avant de valider. Toutes les cartes ont été écrites pour la Boîte à jeux.</p>`],
+    ['Qui décide', `<ul>
+      <li><b>Avec un juge</b> (par défaut) : à chaque manche, un joueur différent ne joue pas. Il lit les phrases, mélangées et anonymes, de préférence à voix haute, et choisit sa préférée : 1 point pour son auteur.</li>
+      <li><b>Tout le monde vote</b> : chacun vote pour la meilleure phrase, jamais pour la sienne. Chaque vote reçu vaut 1 point.</li></ul>`],
+    ['Changer sa main', `<p>Une fois par manche, tu peux échanger toute ta main contre 1 point.</p>`],
+    ['Réglages', `<p>Partie en 5, 7 ou 10 points. Le mode soft retire les cartes les plus crues, pour jouer en famille élargie.</p>`],
   ] },
 ];
 

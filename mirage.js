@@ -18,18 +18,21 @@ const Mirage = (() => {
 
   async function load(v) {
     if (cards) return cards;
-    cards = await fetch(`mirage.json?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => []);
+    const [art, memes] = await Promise.all(['mirage.json', 'memes.json'].map(f => fetch(`${f}?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => [])));
+    // les mèmes de Mème pas vrai, rangés comme des cartes de Mirage (préfixe « m_ » : pas de collision d'identifiants)
+    cards = art.map(c => ({ ...c, set: 'art' })).concat(memes.map(m => ({ id: 'm_' + m.id, set: 'memes', kind: m.kind, url: m.url, thumb: m.thumb, title: m.name, artist: m.kind === 'gif' ? 'GIF' : 'Mème', date: '', credit: 'bibliothèque publique d\u2019Imgflip' })));
     byId = {}; cards.forEach(c => byId[c.id] = c);
     return cards;
   }
-  const count = () => cards ? cards.length : 0;
+  const count = (set = 'art') => cards ? cards.filter(c => set === 'mix' || c.set === set).length : 0;
   const card = id => byId[id];
 
   /** Le paquet : les cartes jamais vues lors des soirées précédentes d'abord, le reste ensuite. */
-  function buildDeck() {
+  function buildDeck(set) {
     let seen = new Set();
     try { seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); } catch { }
-    const fresh = shuffle(cards.filter(c => !seen.has(c.id)).map(c => c.id)), old = shuffle(cards.filter(c => seen.has(c.id)).map(c => c.id));
+    const pool = cards.filter(c => set === 'mix' || c.set === set);
+    const fresh = shuffle(pool.filter(c => !seen.has(c.id)).map(c => c.id)), old = shuffle(pool.filter(c => seen.has(c.id)).map(c => c.id));
     if (!fresh.length) { try { localStorage.removeItem(SEEN_KEY); } catch { } return old; }
     return old.concat(fresh);                                    // on pioche par la fin : les neuves sortent en premier
   }
@@ -48,11 +51,12 @@ const Mirage = (() => {
     if (got.length) markSeen(got);
   }
 
-  function create({ hostId, players, target, jokers }) {
+  function create({ hostId, players, target, jokers, cardset }) {
+    const set = ['art', 'memes', 'mix'].includes(cardset) ? cardset : 'art';
     const room = {
       hostId, phase: 'clue', round: 0, target: clamp(target, 5, 60, 30), jokerStart: clamp(jokers, 0, 9, 3), offers: {},
       players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, hand: [], jokers: 0 })),
-      order: [], teller: -1, deck: buildDeck(), clue: '', tellerCard: null, picks: {}, table: [], votes: {}, result: null,
+      order: [], teller: -1, deck: buildDeck(set), cardset: set, clue: '', tellerCard: null, picks: {}, table: [], votes: {}, result: null,
       log: [], turnAt: Date.now(), seq: 0, winnerId: null,
     };
     room.order = shuffle(room.players.filter(p => p.online).map(p => p.id));
@@ -233,8 +237,13 @@ const Mirage = (() => {
 let miLight = null, miChosen = null, miClueDraft = '', miSkipTimer = null, miLastRound = null;
 const MI_SKIP_MS = 60000;
 
+/** Tableau (fichier du site), mème (image Imgflip) ou GIF (vidéo muette en boucle). */
+function miMedia(c, big = false) {
+  if (!c.kind) return `<img src="mirage/${esc(c.file)}" alt="" loading="lazy" decoding="async">`;
+  return c.kind === 'gif' ? `<video src="${esc(c.url)}" poster="${esc(c.thumb)}" autoplay muted loop playsinline preload="${big ? 'auto' : 'metadata'}"></video>` : `<img src="${esc(c.url)}" alt="" loading="lazy" decoding="async">`;
+}
 function miCardHTML(c, extra = '') {
-  return `<figure class="mi-card${extra}"><img src="mirage/${esc(c.file)}" alt="" loading="lazy" decoding="async"><figcaption>${esc(c.artist)}</figcaption></figure>`;
+  return `<figure class="mi-card${extra}${c.kind ? ' meme' : ''}">${miMedia(c)}<figcaption>${esc(c.artist)}</figcaption></figure>`;
 }
 
 /** La carte en grand, avec l'action du moment (choisir, jouer, voter) et, s'il en reste, le joker. */
@@ -243,8 +252,7 @@ function miOpen(c, action, extra) {
   let box = $('#mi-light');
   if (!box) { box = el('div', 'mi-light'); box.id = 'mi-light'; document.body.appendChild(box); }
   box.innerHTML = '';
-  const img = el('img'); img.src = `mirage/${c.file}`; img.alt = '';
-  box.appendChild(img);
+  box.appendChild(el('div', 'mi-light-media', miMedia(c, true)));
   box.appendChild(el('p', 'mi-light-cap', `${esc(c.title)}<br><small>${esc(c.artist)}${c.date ? ' · ' + esc(c.date) : ''} · ${esc(c.credit)}</small>`));
   const row = el('div', 'mi-light-row');
   [action, extra].filter(Boolean).forEach((x, k) => { const b = el('button', 'btn ' + (k === 0 && action ? 'primary lg' : 'mi-joker-btn'), x.label); b.type = 'button'; b.onclick = () => { miClose(); x.fn(); }; if (x.disabled) b.disabled = true; row.appendChild(b); });
@@ -285,7 +293,7 @@ function renderMirage(v) {
     ? { label: `Joker : échanger cette carte (${me.jokers} restant${me.jokers > 1 ? 's' : ''})`, fn: () => act({ t: 'mi:joker', card: c.id }) } : null;
   if (me.offer) {
     const box = el('div', 'mi-offer');
-    box.appendChild(el('div', 'mi-offer-head', `<figure class="mi-offer-out"><img src="mirage/${esc(me.offer.out.file)}" alt=""></figure><p class="mi-offer-title">Joker : choisis la carte qui remplacera celle-ci</p>`));
+    box.appendChild(el('div', 'mi-offer-head', `<figure class="mi-offer-out">${miMedia(me.offer.out)}</figure><p class="mi-offer-title">Joker : choisis la carte qui remplacera celle-ci</p>`));
     const g = el('div', 'mi-grid offer');
     me.offer.choices.forEach(c => {
       const f = el('button', 'mi-slot'); f.type = 'button'; f.innerHTML = miCardHTML(c);

@@ -31,6 +31,7 @@ function deskSplit(root, side, needs) {
   ['renderUndercover', '#uc-main', '.uc-roster, .uc-order, .uc-scores, .uc-recap'],
   ['renderNaufrages', '#nf-main', '.nf-camp, .nf-people, .nf-log, .nf-items, .nf-peek'],
   ['renderMemes', '#mm-main', '.mm-players, .mm-log'],
+  ['renderHorsLimite', '#hl-main', '.hl-players, .hl-log'],
 ].forEach(([name, rootSel, side, needs]) => {
   const orig = window[name];
   if (typeof orig !== 'function') return;
