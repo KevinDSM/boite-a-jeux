@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '39';
+const ASSET_V = '40';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -30,7 +30,7 @@ const GAMES = {
   camembert: { key: 'camembert', theme: 'camembert', name: 'Camembert' },
   mirage: { key: 'mirage', theme: 'mirage', name: 'Mirage' },
   douze: { key: 'douze', theme: 'douze', name: 'Douze' },
-  petitbac: { key: 'petitbac', theme: 'petitbac', name: 'Petit Bac' },
+  petitbac: { key: 'petitbac', theme: 'petitbac', name: 'Petit Brevet' },
   loupgarou: { key: 'loupgarou', theme: 'loupgarou', name: 'Loup-Garou' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
@@ -422,10 +422,10 @@ class Game {
     this.dz = Douze.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, bots: o.bots });
     s.phase = 'dz';
   }
-  // ================= Petit Bac : la salle vit dans this.pb, les réponses restent secrètes jusqu'à la vérification =================
+  // ================= Petit Brevet (ex-Petit Bac) : la salle vit dans this.pb, les réponses restent secrètes jusqu'à la vérification =================
   startPetitBac(o) {
     const s = this.s;
-    this.pb = PetitBac.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), cats: o.cats, rounds: o.rounds, seconds: o.seconds, hard: o.hard });
+    this.pb = PetitBac.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), cats: o.cats, rounds: o.rounds, seconds: o.seconds, hard: o.hard, stopRule: o.stopRule });
     s.phase = 'pb';
   }
   // ================= Loup-Garou : la salle vit dans this.lw, chaque rôle ne sort que vers son joueur =================
@@ -1416,11 +1416,11 @@ const HELP = {
     </ul>
     <p><b>Cartes :</b> de -2 à 12. Les négatifs sont précieux, les rouges à fuir. La partie s'arrête quand quelqu'un atteint 100 points : le plus bas gagne.</p>
     <p class="fine">Les robots complètent une table : pratique pour tester seul.</p>`,
-  petitbac: `<h3>Petit Bac</h3>
+  petitbac: `<h3>Petit Brevet</h3>
     <p><b>But :</b> trouver, pour chaque catégorie, un mot qui commence par la lettre tirée.</p>
     <ul>
       <li><b>Écrire :</b> remplis tes catégories avant la fin du chrono. Les articles ne comptent pas : « La Rochelle » vaut pour R.</li>
-      <li><b>Stop :</b> quand tu as tout rempli, touche « Stop ! ». Les autres ont encore trois secondes, puis tout le monde pose son stylo.</li>
+      <li><b>Stop :</b> quand tu as tout rempli, touche « Stop ! ». Les autres ont encore trois secondes, puis tout le monde pose son stylo. Si l'hôte a désactivé le stop, chacun touche « J'ai fini » et la manche s'arrête quand tout le monde a fini, ou à la fin du chrono.</li>
       <li><b>Vérifier :</b> toutes les réponses s'affichent. Touche une réponse douteuse pour la contester : elle est refusée si la moitié des autres joueurs la conteste. L'hôte peut trancher.</li>
       <li><b>Points :</b> 10 pour une réponse que personne d'autre n'a, 5 si quelqu'un a la même, 0 si elle est vide, refusée ou ne commence pas par la bonne lettre.</li>
     </ul>`,
@@ -1447,7 +1447,7 @@ const HELP = {
     <ul>
       <li><b>Indices :</b> chacun à son tour dit un mot ou une courte expression à voix haute, sans jamais dire son mot. Tu peux aussi l'écrire : tout ce qui a été dit est rappelé au moment du vote.</li>
       <li><b>Vote :</b> tout le monde vote sur son téléphone. Le plus désigné est éliminé et son rôle est révélé. En cas d'égalité, on revote entre les ex æquo.</li>
-      <li><b>Mister White éliminé</b> tente de deviner le mot des civils. S'il trouve, il gagne seul.</li>
+      <li><b>Mister White éliminé</b> tente de deviner le mot des civils. S'il trouve, il marque 5 points ; il reste éliminé et la manche continue.</li>
     </ul>
     <p><b>Fin de manche :</b> les civils gagnent quand tous les intrus sont éliminés. Les intrus gagnent s'il ne reste plus qu'un civil.</p>
     <p><b>Points :</b> civil gagnant 2, undercover gagnant 10, Mister White gagnant 6. On joue plusieurs manches avec de nouveaux mots.</p>`,
@@ -1663,7 +1663,7 @@ $('#btn-start').onclick = () => {
     const cats = [...$('#opt-pb-cats').querySelectorAll('input:checked')].map(i => i.value);
     if (cats.length < 3) { toast('Choisis au moins trois catégories'); return; }
     if (cats.length > PetitBac.MAX_CATS) { toast(`${PetitBac.MAX_CATS} catégories au maximum`); return; }
-    act({ t: 'start', opts: { mode: 'petitbac', cats, rounds: +$('#opt-pb-rounds').value, seconds: +$('#opt-pb-seconds').value, hard: $('#opt-pb-hard').checked } });
+    act({ t: 'start', opts: { mode: 'petitbac', cats, rounds: +$('#opt-pb-rounds').value, seconds: +$('#opt-pb-seconds').value, hard: $('#opt-pb-hard').checked, stopRule: $('#opt-pb-stop').checked } });
   }
   if (pick === 'geo') {
     (async () => {

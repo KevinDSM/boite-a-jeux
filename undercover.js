@@ -48,7 +48,7 @@ const Undercover = (() => {
     ['Yoga', 'Pilates'], ['Natation', 'Plongée'], ['Boxe', 'Judo'], ['Course à pied', 'Marche'], ['Escalade', 'Randonnée'],
     ['Miel', 'Confiture'], ['Sel', 'Poivre'], ['Ketchup', 'Moutarde'], ['Popcorn', 'Barbe à papa'], ['Bonbon', 'Chewing-gum'],
   ];
-  const POINTS = { civil: 2, undercover: 10, white: 6 };
+  const POINTS = { civil: 2, undercover: 10, white: 6 }, WHITE_BONUS = 5;   // bonus de Mister White qui devine le mot
   const ROLE_NAME = { civil: 'Civil', undercover: 'Undercover', white: 'Mister White' };
   const HIST_KEY = 'uc-vues';
 
@@ -171,9 +171,8 @@ const Undercover = (() => {
       let gain = 0;
       if (winner === 'civils' && r.role === 'civil') gain = POINTS.civil;
       if (winner === 'impostors' && r.role !== 'civil') gain = POINTS[r.role];
-      if (winner === 'white' && id === room.lastElim?.id) gain = POINTS.white;
-      r.gain = gain;
       const p = room.players.find(x => x.id === id); if (p) p.score += gain;
+      r.gain = gain + (r.bonus || 0);                     // le bonus a déjà été compté au moment de la réponse
     });
     room.result = { winner };
     room.phase = 'result';
@@ -209,8 +208,10 @@ const Undercover = (() => {
         if (room.phase !== 'white-guess' || room.lastElim?.id !== pid) return null;
         const guess = String(m.word || '').slice(0, 40);
         const ok = sameWord(guess, room.pair.civil);
-        room.whiteTry = { word: guess, ok };
-        if (ok) finishRound(room, 'white'); else afterElimination(room);
+        room.whiteTry = { word: guess, ok, name: nameOf(room, pid) };
+        // trouvé : 5 points tout de suite, mais la manche continue (il reste éliminé)
+        if (ok) { me.bonus = (me.bonus || 0) + WHITE_BONUS; const p = room.players.find(x => x.id === pid); if (p) p.score += WHITE_BONUS; }
+        afterElimination(room);
         return null;
       }
       case 'uc:force':          // l'hôte débloque une étape qui attend un absent
@@ -271,7 +272,7 @@ const Undercover = (() => {
       order: room.phase === 'clues' ? room.order.map((id, i) => ({ id, name: nameOf(room, id), done: i < room.speaker })) : [],
       candidates: room.candidates, tie: room.tie,
       votedCount: Object.keys(room.votes).length, voterCount: voters(room).length,
-      lastElim: room.lastElim, whiteTry: room.whiteTry,
+      lastElim: room.lastElim, whiteTry: room.whiteTry && (room.phase === 'result' ? room.whiteTry : { ok: room.whiteTry.ok, word: room.whiteTry.word ? '…' : '' }),
       result: room.result, pair: over ? room.pair : null,
       scores: room.players.map(p => ({ id: p.id, name: p.name, score: p.score })).sort((a, b) => b.score - a.score),
     };
@@ -378,6 +379,8 @@ function renderUndercover(v) {
   const elimBlock = () => {
     const e = v.lastElim; if (!e) return;
     root.appendChild(el('div', 'uc-file uc-elim', `<p class="uc-label">Éliminé</p><p class="uc-big">${esc(e.name)}</p>${roleTag(e.role)}<p class="fine">${e.tally.map(t => `${esc(t.name)} ${t.n}`).join(' · ')}</p>`));
+    // Mister White a tenté sa chance : on le dit, la manche continue quoi qu'il arrive
+    if (v.phase === 'elim' && e.role === 'white' && v.whiteTry && v.whiteTry.word) root.appendChild(el('p', 'note uc-white-try', v.whiteTry.ok ? `Mister White a trouvé le mot des civils : +5 points pour ${esc(e.name)}. La manche continue.` : 'Mister White s’est trompé. La manche continue.'));
   };
 
   if (v.phase === 'elim') {
@@ -392,7 +395,7 @@ function renderUndercover(v) {
     elimBlock();
     if (v.lastElim.id === myId()) {
       root.appendChild(el('h2', 'uc-title', 'Dernière chance'));
-      root.appendChild(el('p', 'fine', 'Devine le mot des civils. Si tu trouves, tu gagnes la manche à toi tout seul.'));
+      root.appendChild(el('p', 'fine', 'Devine le mot des civils. Si tu trouves, tu marques 5 points ; tu restes éliminé et la manche continue.'));
       const f = el('form', 'uc-guess', `<input id="uc-guess-in" maxlength="40" autocomplete="off" placeholder="Le mot des civils…"><button class="btn primary" type="submit">Valider</button>`);
       f.onsubmit = e => { e.preventDefault(); const w = $('#uc-guess-in').value.trim(); if (w) act({ t: 'uc:white-guess', word: w }); };
       root.appendChild(f);
@@ -404,8 +407,8 @@ function renderUndercover(v) {
 
   if (v.phase === 'result') {
     const r = v.result;
-    const title = r.winner === 'civils' ? 'Les civils gagnent' : r.winner === 'white' ? 'Mister White gagne' : 'Les intrus gagnent';
-    root.appendChild(el('div', 'uc-verdict ' + r.winner, `<p class="uc-label">Fin de la manche</p><p class="uc-big">${title}</p>${v.whiteTry && v.whiteTry.word ? `<p class="fine">Mister White a proposé « ${esc(v.whiteTry.word)} » : ${v.whiteTry.ok ? 'bien joué' : 'raté'}.</p>` : ''}`));
+    const title = r.winner === 'civils' ? 'Les civils gagnent' : 'Les intrus gagnent';
+    root.appendChild(el('div', 'uc-verdict ' + r.winner, `<p class="uc-label">Fin de la manche</p><p class="uc-big">${title}</p>${v.whiteTry && v.whiteTry.word ? `<p class="fine">Mister White a proposé « ${esc(v.whiteTry.word)} » : ${v.whiteTry.ok ? 'bien joué, +5 points' : 'raté'}.</p>` : ''}`));
     root.appendChild(el('div', 'uc-words', `<div><span class="uc-label">Civils</span><b>${esc(v.pair.civil)}</b></div><div><span class="uc-label">Undercover</span><b>${esc(v.pair.undercover)}</b></div>`));
     root.appendChild(roster(p => `<span class="uc-who">${esc(p.name)} ${roleTag(p.role)}</span><span>${p.gain ? '+' + p.gain : ''}</span>`));
     addRecap();

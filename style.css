@@ -1976,3 +1976,7 @@ button.pb-ans:active{transform:scale(.985)}
   .games{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media (min-width: 1800px) and (min-height: 1040px){ .screen.play:not(#s-geo),#s-end{--z:1.28} }
+
+/* Petit Brevet sans stop */
+.pb-done{text-align:center;margin:-4px 0 0;font:400 20px/1.2 var(--font-d);color:var(--ink-2)}
+.pb-donebtn{font:400 24px var(--font-d);min-height:58px}

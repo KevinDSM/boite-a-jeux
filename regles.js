@@ -77,9 +77,9 @@ const RULES = [
     ['Le vote', `<ul>
       <li>Tout le monde vote sur son téléphone pour éliminer un joueur. Le plus désigné est éliminé et son rôle révélé.</li>
       <li>En cas d'égalité, on revote entre les ex æquo.</li>
-      <li>Mister White éliminé tente de deviner le mot des civils : s'il trouve, il gagne seul la manche.</li></ul>`],
+      <li>Mister White éliminé tente de deviner le mot des civils : s'il trouve, il marque 5 points tout de suite. Dans tous les cas il reste éliminé, et la manche continue.</li></ul>`],
     ['Fin de manche', `<p>Les civils gagnent quand tous les intrus sont éliminés. Les intrus gagnent s'il ne reste plus qu'un civil.</p>`],
-    ['Points', `<p>Civil gagnant : 2 points. Undercover gagnant : 10 points. Mister White gagnant : 6 points. On joue 3, 5 ou 8 manches, avec de nouveaux mots à chaque fois.</p>`],
+    ['Points', `<p>Civil gagnant : 2 points. Undercover gagnant : 10 points. Mister White gagnant (avec les intrus) : 6 points, plus 5 s'il a deviné le mot des civils. On joue 3, 5 ou 8 manches, avec de nouveaux mots à chaque fois.</p>`],
     ['Réglages dans le salon', `<p>Nombre d'undercovers (automatique selon la table, ou 1 à 3) et Mister White. Il reste toujours plus de civils que d'intrus : sur une petite table, un rôle est retiré automatiquement.</p>`],
   ] },
   { key: 'geo', parts: [
@@ -176,7 +176,7 @@ const RULES = [
       <li>Chacun remplit ses catégories sur son téléphone, sans voir celles des autres.</li>
       <li>Les articles ne comptent pas : « La Rochelle » vaut pour R, « L'Oréal » pour O. Une réponse qui ne commence pas par la bonne lettre s'affiche en rouge.</li>
       <li>La touche Entrée passe à la catégorie suivante.</li></ul>`],
-    ['« Stop ! »', `<p>Le bouton Stop s'active quand toutes tes catégories sont remplies. Dès qu'un joueur le touche, les autres ont encore trois secondes, puis tout le monde pose son stylo. Sans Stop, la manche s'arrête à la fin du chrono.</p>`],
+    ['« Stop ! »', `<p>Le bouton Stop s'active quand toutes tes catégories sont remplies. Dès qu'un joueur le touche, les autres ont encore trois secondes, puis tout le monde pose son stylo. Sans Stop, la manche s'arrête à la fin du chrono.</p><p>L'hôte peut désactiver cette règle dans le salon : chacun touche alors « J'ai fini » quand il a terminé (et peut reprendre sa feuille tant que la manche continue). La manche s'arrête quand tout le monde a fini, ou à la fin du chrono.</p>`],
     ['La vérification', `<ul>
       <li>Toutes les réponses s'affichent, catégorie par catégorie, avec les points provisoires.</li>
       <li>Touche une réponse douteuse pour la contester, touche-la encore pour annuler. Elle est refusée si au moins la moitié des autres joueurs la conteste.</li>

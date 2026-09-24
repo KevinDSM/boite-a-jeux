@@ -1,4 +1,5 @@
-/* Petit Bac — une lettre, des catégories, et le premier qui a tout rempli crie « Stop ! ».
+/* Petit Brevet (ex-Petit Bac) — une lettre, des catégories, et le premier qui a tout rempli crie « Stop ! ».
+   Option « sans stop » : chacun touche « J'ai fini », la manche s'arrête quand tout le monde a fini.
 
    Déroulement d'une manche : une lettre est tirée, chacun remplit ses catégories sur son téléphone
    (réponses envoyées à l'hôte au fil de la frappe, en silence). Le chrono s'arrête à la fin du temps
@@ -31,10 +32,10 @@ const PetitBac = (() => {
   const seated = room => room.players.filter(p => p.inRound);
   const log = (room, t) => { room.log.push(t); if (room.log.length > 30) room.log.splice(0, room.log.length - 30); };
 
-  function create({ hostId, players, cats, rounds, seconds, hard }) {
+  function create({ hostId, players, cats, rounds, seconds, hard, stopRule }) {
     const list = (Array.isArray(cats) ? cats : DEFAULT).map(c => String(c).trim().slice(0, 40)).filter(Boolean).slice(0, MAX_CATS);
     const room = {
-      hostId, phase: 'write', round: 0, rounds: clamp(rounds, 1, 20, 5), seconds: clamp(seconds, 30, 600, 120), hard: !!hard,
+      hostId, phase: 'write', round: 0, rounds: clamp(rounds, 1, 20, 5), seconds: clamp(seconds, 30, 600, 120), hard: !!hard, stopRule: stopRule !== false, done: {},
       cats: list.length ? list : DEFAULT.slice(),
       players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, inRound: false, last: 0 })),
       letter: '', used: [], answers: {}, stopBy: null, endsAt: 0, contests: {}, force: {}, ready: {}, result: null, log: [], seq: 0,
@@ -57,7 +58,7 @@ const PetitBac = (() => {
     room.letter = drawLetter(room);
     room.players.forEach(p => { p.inRound = p.online; });
     room.answers = {}; seated(room).forEach(p => room.answers[p.id] = room.cats.map(() => ''));
-    room.stopBy = null; room.contests = {}; room.force = {}; room.ready = {}; room.result = null;
+    room.stopBy = null; room.done = {}; room.contests = {}; room.force = {}; room.ready = {}; room.result = null;
     room.phase = 'write'; room.endsAt = Date.now() + room.seconds * 1000; room.seq += 1;
     log(room, `Manche ${room.round} : la lettre ${room.letter}.`);
   }
@@ -68,8 +69,18 @@ const PetitBac = (() => {
     return 'silent';
   }
 
+  // sans la règle du stop : chacun dit qu'il a fini, la manche s'arrête quand tout le monde a fini
+  function finish(room, pid) {
+    if (room.phase !== 'write' || !room.answers[pid] || room.stopRule) return null;
+    room.done[pid] = !room.done[pid]; room.seq += 1;
+    const people = seated(room).filter(p => p.online);
+    if (people.length && people.every(p => room.done[p.id])) { room.phase = 'stop'; room.endsAt = Date.now() + GRACE_MS; room.seq += 1; log(room, 'Tout le monde a fini.'); }
+    return null;
+  }
+
   function stop(room, pid) {
     if (room.phase !== 'write' || !room.answers[pid]) return null;
+    if (!room.stopRule) return finish(room, pid);
     if (room.answers[pid].some(a => !a.trim())) return 'Remplis toutes les catégories pour dire stop';
     room.stopBy = pid; room.phase = 'stop'; room.endsAt = Date.now() + GRACE_MS; room.seq += 1;
     log(room, `${pl(room, pid).name} crie « Stop ! »`);
@@ -136,6 +147,7 @@ const PetitBac = (() => {
     switch (m.t) {
       case 'pb:ans': return setAnswers(room, pid, m.answers);
       case 'pb:stop': return stop(room, pid);
+      case 'pb:done': return finish(room, pid);
       case 'pb:contest': return contest(room, pid, m.target, m.i);
       case 'pb:force': return force(room, pid, m.target, m.i, m.value);
       case 'pb:ready': return ready(room, pid);
@@ -161,6 +173,7 @@ const PetitBac = (() => {
     const p = pl(room, id); if (!p) return;
     p.online = on;
     if (!on && room.phase === 'vote' && seated(room).filter(q => q.online).every(q => room.ready[q.id])) score(room);
+    if (!on && room.phase === 'write' && !room.stopRule) { const people = seated(room).filter(q => q.online); if (people.length && people.every(q => room.done[q.id])) { room.phase = 'stop'; room.endsAt = Date.now() + GRACE_MS; room.seq += 1; } }
   }
 
   function view(room, pid) {
@@ -170,7 +183,8 @@ const PetitBac = (() => {
     return {
       phase: room.phase, round: room.round, rounds: room.rounds, letter: room.letter, cats: room.cats, seq: room.seq, seconds: room.seconds,
       isHost: pid === room.hostId, seated: !!me?.inRound, left: Math.max(0, room.endsAt - Date.now()),
-      stopBy: room.stopBy ? pl(room, room.stopBy)?.name : null,
+      stopBy: room.stopBy ? pl(room, room.stopBy)?.name : null, stopRule: room.stopRule,
+      meDone: !!room.done[pid], doneCount: people.filter(p => room.done[p.id]).length, doneNeeded: people.filter(p => p.online).length,
       mine: me?.inRound ? room.answers[pid] : null,
       grid: open ? people.map(p => ({ id: p.id, name: p.name, me: p.id === pid, cells: room.cats.map((_, i) => { const c = ev.cells[key(p.id, i)]; return { ...c, mine: (room.contests[key(p.id, i)] || []).includes(pid) }; }), total: ev.totals[p.id] })) : null,
       ready: people.filter(p => room.ready[p.id]).length, readyNeeded: people.filter(p => p.online).length, meReady: !!room.ready[pid],
@@ -222,12 +236,23 @@ function pbTimerBar(v, total) {
   return wrap;
 }
 
+/** Écriture en cours, mode sans stop : qui a fini, et mes champs verrouillés tant que j'ai fini. */
+function pbRefreshWrite(v) {
+  if (v.stopRule) return;
+  const info = $('#pb-main .pb-done'), b = $('#pb-main .pb-donebtn');
+  if (info) info.textContent = `${v.doneCount}/${v.doneNeeded} ont fini`;
+  if (b) b.textContent = v.meDone ? 'Je reprends ma feuille' : 'J\u2019ai fini';
+  if (b) b.classList.toggle('ghost', v.meDone);
+  document.querySelectorAll('#pb-main .pb-in').forEach(i => { i.disabled = v.meDone; });
+}
+
 function renderPetitBac(v) {
   if (!v) return;
   const root = $('#pb-main');
   const k = `${v.round}|${v.phase}`;
-  // pendant l'écriture, on ne reconstruit jamais les champs : une diffusion ne doit pas voler la saisie
-  if (v.phase === 'write' && k === pbKey && root.querySelector('.pb-form')) return;
+  // pendant l'écriture, on ne reconstruit jamais les champs : une diffusion ne doit pas voler la saisie,
+  // on met seulement à jour ce qui bouge (qui a fini, champs verrouillés)
+  if (v.phase === 'write' && k === pbKey && root.querySelector('.pb-form')) { pbRefreshWrite(v); return; }
   if (v.round !== (pbKey || '').split('|')[0] * 1) { pbDraft = null; pbSentStop = null; }
   pbKey = k;
   root.innerHTML = ''; clearInterval(pbTimer);
@@ -241,7 +266,7 @@ function renderPetitBac(v) {
     if (!v.seated) { root.appendChild(el('p', 'note', 'Une manche est en cours : tu joues à la suivante.')); return; }
     if (!pbDraft) pbDraft = (v.mine || v.cats.map(() => '')).slice();
     if (v.phase === 'stop') {
-      root.appendChild(el('p', 'pb-stop', v.stopBy ? `${esc(v.stopBy)} a crié stop ! Pose ton stylo…` : 'Temps écoulé ! Pose ton stylo…'));
+      root.appendChild(el('p', 'pb-stop', v.stopBy ? `${esc(v.stopBy)} a crié stop ! Pose ton stylo…` : !v.stopRule && v.doneNeeded && v.doneCount >= v.doneNeeded ? 'Tout le monde a fini ! On pose les stylos…' : 'Temps écoulé ! Pose ton stylo…'));
       if (pbSentStop !== v.round) { pbSentStop = v.round; clearTimeout(pbSendTimer); act({ t: 'pb:ans', answers: pbDraft }); }
     } else root.appendChild(pbTimerBar(v, v.seconds * 1000));
     const form = el('form', 'pb-form'); form.onsubmit = e => e.preventDefault();
@@ -250,7 +275,7 @@ function renderPetitBac(v) {
       row.innerHTML = `<span class="pb-cat">${esc(c)}</span>`;
       const inp = el('input', 'pb-in'); inp.id = `pb-in-${i}`; inp.type = 'text'; inp.maxLength = 40; inp.autocomplete = 'off'; inp.autocapitalize = 'words'; inp.spellcheck = false;
       inp.placeholder = `${v.letter}…`; inp.value = pbDraft[i] || '';
-      inp.disabled = v.phase === 'stop';
+      inp.disabled = v.phase === 'stop' || (!v.stopRule && v.meDone);
       const mark = () => row.classList.toggle('bad', !!inp.value.trim() && PetitBac.core(inp.value)[0] !== norm(v.letter));
       inp.oninput = () => { pbDraft[i] = inp.value; mark(); pbSend(); refreshStop(); };
       inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); const nx = $(`#pb-in-${i + 1}`); if (nx) nx.focus(); else inp.blur(); } };
@@ -258,9 +283,19 @@ function renderPetitBac(v) {
       row.appendChild(inp); form.appendChild(row);
     });
     root.appendChild(form);
-    const stopBtn = btn('danger lg pb-stopbtn', 'Stop !', () => { clearTimeout(pbSendTimer); act({ t: 'pb:ans', answers: pbDraft }); act({ t: 'pb:stop' }); });
-    const refreshStop = () => { const n = pbDraft.filter(a => a.trim()).length; stopBtn.disabled = n < v.cats.length; stopBtn.textContent = n < v.cats.length ? `Stop ! (${n}/${v.cats.length})` : 'Stop !'; };
-    if (v.phase === 'write') { refreshStop(); root.appendChild(stopBtn); root.appendChild(el('p', 'fine pb-hint', 'Les articles ne comptent pas : « La Rochelle » vaut pour R. Le bouton Stop s’active quand tout est rempli.')); }
+    const stopBtn = v.stopRule
+      ? btn('danger lg pb-stopbtn', 'Stop !', () => { clearTimeout(pbSendTimer); act({ t: 'pb:ans', answers: pbDraft }); act({ t: 'pb:stop' }); })
+      : btn('primary lg pb-donebtn', 'J\u2019ai fini', () => { clearTimeout(pbSendTimer); act({ t: 'pb:ans', answers: pbDraft }); act({ t: 'pb:done' }); });
+    const refreshStop = () => {
+      if (!v.stopRule) return;
+      const n = pbDraft.filter(a => a.trim()).length; stopBtn.disabled = n < v.cats.length; stopBtn.textContent = n < v.cats.length ? `Stop ! (${n}/${v.cats.length})` : 'Stop !';
+    };
+    if (v.phase === 'write') {
+      refreshStop(); root.appendChild(stopBtn);
+      if (!v.stopRule) root.appendChild(el('p', 'pb-done', ''));
+      root.appendChild(el('p', 'fine pb-hint', v.stopRule ? 'Les articles ne comptent pas : « La Rochelle » vaut pour R. Le bouton Stop s\u2019active quand tout est rempli.' : 'Les articles ne comptent pas : « La Rochelle » vaut pour R. Pas de stop : la manche s\u2019arrête quand tout le monde a fini, ou à la fin du chrono.'));
+      pbRefreshWrite(v);
+    }
   }
 
   if (v.phase === 'vote' || v.phase === 'result' || v.phase === 'over') {
