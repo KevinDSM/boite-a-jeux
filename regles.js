@@ -149,6 +149,7 @@ const RULES = [
       <li><b>Les autres</b> choisissent dans leur main la carte qui colle le mieux à cet indice, pour faire croire que c'est celle du conteur.</li>
       <li><b>Le vote :</b> toutes les cartes jouées sont mélangées. Chacun, sauf le conteur, vote pour celle qu'il pense être la sienne. Impossible de voter pour sa propre carte.</li>
       <li>La révélation montre à qui était chaque carte et qui a voté pour quoi. Chacun complète ensuite sa main à six cartes.</li></ul>`],
+    ['Les jokers', `<p>Chacun a 3 jokers pour toute la partie (réglable dans le salon). Quand tu veux, touche une carte de ta main puis « Joker » : 5 cartes de la pioche te sont proposées, tu en gardes une à la place de la tienne, les autres retournent sous la pioche. Tu peux annuler sans perdre ton joker. Une carte déjà jouée pendant la manche ne s'échange pas.</p>`],
     ['Points', `<ul>
       <li>Si tout le monde a trouvé, ou si personne n'a trouvé : le conteur marque 0, les autres 2.</li>
       <li>Sinon : le conteur et ceux qui ont trouvé marquent 3.</li>

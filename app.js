@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '41';
+const ASSET_V = '42';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -419,7 +419,7 @@ class Game {
   // ================= Mirage : la salle vit dans this.mi, chaque main ne sort que vers son joueur =================
   startMirage(o) {
     const s = this.s;
-    this.mi = Mirage.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target });
+    this.mi = Mirage.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, jokers: o.jokers });
     s.phase = 'mi';
   }
   // ================= Douze : la salle vit dans this.dz, les cartes cachées ne sortent jamais =================
@@ -1460,6 +1460,7 @@ const HELP = {
       <li><b>Le conteur</b> choisit une carte de sa main et donne un indice : un mot, une phrase, une chanson, un bruit… tapé dans l'app ou dit à voix haute.</li>
       <li><b>Les autres</b> choisissent dans leur main la carte qui colle le mieux à l'indice, pour faire croire que c'est la leur.</li>
       <li><b>Le vote :</b> toutes les cartes sont mélangées, chacun (sauf le conteur) vote pour celle qu'il pense être celle du conteur. Pas pour la sienne.</li>
+      <li><b>Jokers :</b> chacun en a 3 pour la partie. Touche une carte de ta main, puis « Joker » : 5 cartes te sont proposées, tu en gardes une à la place.</li>
       <li><b>Points :</b> si tout le monde trouve, ou si personne ne trouve, le conteur marque 0 et les autres 2. Sinon le conteur et ceux qui ont trouvé marquent 3. Chaque vote reçu sur sa carte rapporte 1 point, 3 au maximum.</li>
     </ul>
     <p>Touche une carte pour la voir en grand. Les cartes sont des tableaux, gravures et estampes du domaine public : Redon, Goya, Blake, Doré, Hokusai et d'autres. Celles déjà vues lors des soirées précédentes sortent en dernier.</p>
@@ -1701,7 +1702,7 @@ $('#btn-start').onclick = () => {
       if ((view?.players || []).filter(p => p.online).length < 3) { toast('Mirage se joue à trois minimum'); return; }
       await Mirage.load(ASSET_V);
       if (Mirage.count() < 40) { toast('Cartes introuvables : mirage.json manque'); return; }
-      act({ t: 'start', opts: { mode: 'mirage', target: +$('#opt-mi-target').value } });
+      act({ t: 'start', opts: { mode: 'mirage', target: +$('#opt-mi-target').value, jokers: +$('#opt-mi-jokers').value } });
     })();
   }
   if (pick === 'douze') {

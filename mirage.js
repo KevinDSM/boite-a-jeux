@@ -12,7 +12,7 @@
 'use strict';
 
 const Mirage = (() => {
-  const HAND = 6, CLUE_MAX = 80, SEEN_KEY = 'mi-seen';
+  const HAND = 6, CLUE_MAX = 80, SEEN_KEY = 'mi-seen', OFFER = 5;       // un joker montre 5 cartes au choix
   const clamp = (v, lo, hi, def) => { const n = +v; return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : def; };
   let cards = null, byId = {};
 
@@ -48,14 +48,15 @@ const Mirage = (() => {
     if (got.length) markSeen(got);
   }
 
-  function create({ hostId, players, target }) {
+  function create({ hostId, players, target, jokers }) {
     const room = {
-      hostId, phase: 'clue', round: 0, target: clamp(target, 5, 60, 30),
-      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, hand: [] })),
+      hostId, phase: 'clue', round: 0, target: clamp(target, 5, 60, 30), jokerStart: clamp(jokers, 0, 9, 3), offers: {},
+      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, hand: [], jokers: 0 })),
       order: [], teller: -1, deck: buildDeck(), clue: '', tellerCard: null, picks: {}, table: [], votes: {}, result: null,
       log: [], turnAt: Date.now(), seq: 0, winnerId: null,
     };
     room.order = shuffle(room.players.filter(p => p.online).map(p => p.id));
+    room.players.forEach(p => { p.jokers = room.jokerStart; });
     room.players.forEach(p => { if (p.online) drawTo(room, p); });
     nextRound(room);
     return room;
@@ -140,8 +141,45 @@ const Mirage = (() => {
     reveal(room); return null;
   }
 
+  // ------------------------------------------------------------ jokers
+  /** Une carte engagée dans la manche (jouée, choisie par le conteur, posée sur la table) ne s'échange pas. */
+  const committed = (room, pid, cardId) => room.picks[pid] === cardId || (teller(room)?.id === pid && room.tellerCard === cardId) || room.table.some(s => s.card === cardId);
+
+  function jokerStart(room, pid, cardId) {
+    const p = pl(room, pid);
+    if (!p || room.phase === 'over' || room.offers[pid]) return null;
+    if (p.jokers <= 0) return 'Plus de joker';
+    if (!p.hand.includes(cardId)) return null;
+    if (committed(room, pid, cardId)) return 'Cette carte est déjà jouée cette manche';
+    if (!room.deck.length) return 'La pioche est vide';
+    const choices = [];
+    while (choices.length < OFFER && room.deck.length) choices.push(room.deck.pop());
+    room.offers[pid] = { out: cardId, choices }; room.seq += 1;
+    return null;
+  }
+  function jokerPick(room, pid, cardId) {
+    const p = pl(room, pid), o = room.offers[pid];
+    if (!p || !o || !o.choices.includes(cardId)) return null;
+    const i = p.hand.indexOf(o.out);
+    if (i < 0 || committed(room, pid, o.out)) { jokerCancel(room, pid); return 'Cette carte n\u2019est plus échangeable'; }
+    p.hand[i] = cardId; p.jokers -= 1;
+    room.deck.unshift(o.out, ...o.choices.filter(c => c !== cardId));   // sous la pioche : pas de retour immédiat
+    markSeen([cardId]);
+    delete room.offers[pid]; room.seq += 1;
+    log(room, `${p.name} utilise un joker.`);
+    return null;
+  }
+  function jokerCancel(room, pid) {
+    const o = room.offers[pid]; if (!o) return null;
+    room.deck.unshift(...o.choices); delete room.offers[pid]; room.seq += 1;
+    return null;
+  }
+
   function act(room, pid, m) {
     switch (m.t) {
+      case 'mi:joker': return jokerStart(room, pid, m.card);
+      case 'mi:jokerpick': return jokerPick(room, pid, m.card);
+      case 'mi:jokercancel': return jokerCancel(room, pid);
       case 'mi:clue': return setClue(room, pid, m.card, m.text);
       case 'mi:pick': return pick(room, pid, m.card);
       case 'mi:vote': return vote(room, pid, m.card);
@@ -154,13 +192,14 @@ const Mirage = (() => {
   function join(room, id, name) {
     const p = pl(room, id);
     if (p) { p.online = true; p.name = name || p.name; if (!p.hand.length) drawTo(room, p); return; }
-    const q = { id, name, online: true, score: 0, hand: [] };
+    const q = { id, name, online: true, score: 0, hand: [], jokers: room.jokerStart };
     room.players.push(q); room.order.push(id); drawTo(room, q);
   }
   function setOnline(room, id, on) {
     const p = pl(room, id); if (!p) return;
     p.online = on;
     if (on) return;
+    jokerCancel(room, id);                                    // les cartes proposées retournent à la pioche
     if (room.phase === 'clue' && teller(room)?.id === id) nextRound(room);
     else if (room.phase === 'pick' && others(room).length && others(room).every(q => room.picks[q.id])) startVote(room);
     else if (room.phase === 'vote' && others(room).length && others(room).every(q => room.votes[q.id])) reveal(room);
@@ -172,7 +211,10 @@ const Mirage = (() => {
     return {
       phase: room.phase, round: room.round, target: room.target, seq: room.seq, isHost: pid === room.hostId,
       tellerId: t?.id || null, tellerName: t?.name || '', isTeller, clue: room.phase === 'clue' ? '' : room.clue,
-      me: me ? { hand: me.hand.map(card).filter(Boolean), picked: room.picks[pid] || (isTeller ? room.tellerCard : null), voted: room.votes[pid] || null, score: me.score } : { hand: [], picked: null, voted: null, score: 0 },
+      me: me ? { hand: me.hand.map(card).filter(Boolean), picked: room.picks[pid] || (isTeller ? room.tellerCard : null), voted: room.votes[pid] || null, score: me.score,
+        jokers: me.jokers, jokerStart: room.jokerStart, locked: me.hand.filter(c => committed(room, pid, c)),
+        offer: room.offers[pid] ? { out: card(room.offers[pid].out), choices: room.offers[pid].choices.map(card).filter(Boolean) } : null }
+        : { hand: [], picked: null, voted: null, score: 0, jokers: 0, jokerStart: 0, locked: [], offer: null },
       players: room.order.map(id => { const p = pl(room, id); return { id, name: p.name, online: p.online, score: p.score, me: id === pid, teller: id === t?.id, done: room.phase === 'pick' ? !!room.picks[id] : room.phase === 'vote' ? !!room.votes[id] : false, gain: room.result ? room.result.gains[id] || 0 : 0 }; }),
       waiting: waitingOn.map(q => q.name),
       table: room.phase === 'vote' ? room.table.map(s => ({ card: card(s.card), mine: s.owner === pid }))
@@ -195,8 +237,8 @@ function miCardHTML(c, extra = '') {
   return `<figure class="mi-card${extra}"><img src="mirage/${esc(c.file)}" alt="" loading="lazy" decoding="async"><figcaption>${esc(c.artist)}</figcaption></figure>`;
 }
 
-/** La carte en grand, avec l'action du moment (choisir, jouer, voter). */
-function miOpen(c, action) {
+/** La carte en grand, avec l'action du moment (choisir, jouer, voter) et, s'il en reste, le joker. */
+function miOpen(c, action, extra) {
   miLight = { id: c.id };
   let box = $('#mi-light');
   if (!box) { box = el('div', 'mi-light'); box.id = 'mi-light'; document.body.appendChild(box); }
@@ -205,7 +247,7 @@ function miOpen(c, action) {
   box.appendChild(img);
   box.appendChild(el('p', 'mi-light-cap', `${esc(c.title)}<br><small>${esc(c.artist)}${c.date ? ' · ' + esc(c.date) : ''} · ${esc(c.credit)}</small>`));
   const row = el('div', 'mi-light-row');
-  if (action) { const b = el('button', 'btn primary lg', action.label); b.type = 'button'; b.onclick = () => { miClose(); action.fn(); }; if (action.disabled) b.disabled = true; row.appendChild(b); }
+  [action, extra].filter(Boolean).forEach((x, k) => { const b = el('button', 'btn ' + (k === 0 && action ? 'primary lg' : 'mi-joker-btn'), x.label); b.type = 'button'; b.onclick = () => { miClose(); x.fn(); }; if (x.disabled) b.disabled = true; row.appendChild(b); });
   const close = el('button', 'btn ghost', 'Fermer'); close.type = 'button'; close.onclick = miClose; row.appendChild(close);
   box.appendChild(row);
   box.hidden = false;
@@ -238,12 +280,29 @@ function renderMirage(v) {
   root.appendChild(strip);
 
   const zone = el('div', 'mi-zone');
+  // le joker : proposé sur toute carte de ma main qui n'est pas déjà jouée cette manche
+  const jokerFor = c => (!me.offer && me.jokers > 0 && !me.locked.includes(c.id) && v.phase !== 'over' && v.deckLeft > 0)
+    ? { label: `Joker : échanger cette carte (${me.jokers} restant${me.jokers > 1 ? 's' : ''})`, fn: () => act({ t: 'mi:joker', card: c.id }) } : null;
+  if (me.offer) {
+    const box = el('div', 'mi-offer');
+    box.appendChild(el('div', 'mi-offer-head', `<figure class="mi-offer-out"><img src="mirage/${esc(me.offer.out.file)}" alt=""></figure><p class="mi-offer-title">Joker : choisis la carte qui remplacera celle-ci</p>`));
+    const g = el('div', 'mi-grid offer');
+    me.offer.choices.forEach(c => {
+      const f = el('button', 'mi-slot'); f.type = 'button'; f.innerHTML = miCardHTML(c);
+      f.onclick = () => miOpen(c, { label: 'Prendre cette carte', fn: () => act({ t: 'mi:jokerpick', card: c.id }) });
+      g.appendChild(f);
+    });
+    box.appendChild(g);
+    box.appendChild(btn('ghost small', 'Annuler, garder ma carte (le joker n\u2019est pas utilisé)', () => act({ t: 'mi:jokercancel' })));
+    zone.appendChild(box);
+  }
+  if (me.jokerStart > 0 && v.phase !== 'over') zone.appendChild(el('p', 'mi-jokers', `<span class="mi-joker-dots">${'<i class="on"></i>'.repeat(me.jokers)}${'<i></i>'.repeat(Math.max(0, me.jokerStart - me.jokers))}</span>${me.jokers ? `${me.jokers} joker${me.jokers > 1 ? 's' : ''} : touche une de tes cartes pour l\u2019échanger` : 'Plus de joker'}`));
   const handGrid = (onTap, chosenId, label) => {
     const g = el('div', 'mi-grid hand');
     me.hand.forEach(c => {
       const f = el('button', 'mi-slot' + (c.id === chosenId ? ' chosen' : '')); f.type = 'button';
       f.innerHTML = miCardHTML(c);
-      f.onclick = () => miOpen(c, onTap ? { label, fn: () => onTap(c) } : null);
+      f.onclick = () => miOpen(c, onTap ? { label, fn: () => onTap(c) } : null, jokerFor(c));
       g.appendChild(f);
     });
     return g;
