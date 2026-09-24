@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '40';
+const ASSET_V = '41';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -145,7 +145,13 @@ class Game {
   draw() { if (!this.s.deck.length) this.s.deck = shuffle(this.s.mode === 'eclair' ? [...this.poolE()] : [...this.pool()]); return this.s.deck.pop(); }
   card() { return { ...this.draw(), at: ++this.seq }; }
 
-  setPick(pid, key) { if (pid !== this.s.players[0]?.id) return null; if (GAMES[key]) this.s.pick = key; return null; }
+  setPick(pid, key) { if (pid !== this.s.players[0]?.id) return null; if (GAMES[key] && this.s.pick !== key) { this.s.pick = key; this.s.pickOpts = null; } return null; }
+  // résumé des réglages de l'hôte, affiché chez les invités
+  setPickOpts(pid, key, items) {
+    if (pid !== this.s.players[0]?.id || key !== this.s.pick || !Array.isArray(items)) return 'silent';
+    this.s.pickOpts = items.slice(0, 40).map(x => ({ label: String(x.label || '').slice(0, 80), value: String(x.value || '').slice(0, 400) }));
+    return null;
+  }
 
   start(o) {
     const s = this.s;
@@ -583,6 +589,7 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('pb:')) return net.game.pb ? PetitBac.act(net.game.pb, pid, m) : 'silent';
   switch (m.t) {
     case 'pick': return g.setPick(pid, m.key);
+    case 'opts': return g.setPickOpts(pid, m.key, m.items);
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
     case 'restart': if (pid === g.s.players[0]?.id) g.restart(); return null;
     case 'place': return g.place(pid, m.idx);
@@ -803,6 +810,55 @@ function render() {
   }
 }
 
+// ------------------------------------------------ réglages partagés
+// L'hôte résume son panneau d'options ; les invités voient les mêmes réglages en même temps que lui.
+function readOpts(pick) {
+  const box = document.getElementById('opts-' + pick); if (!box) return [];
+  const items = [], clean = n => { const c = n.cloneNode(true); c.querySelectorAll('small, input, select').forEach(x => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+  box.querySelectorAll('fieldset, label.field.row').forEach(n => {
+    if (n.closest('.km-pick') && n !== n.closest('.km-pick')) return;
+    if (n.matches('fieldset.km-pick')) {                                   // Kems : la ligne qui récapitule les équipes
+      const line = n.querySelector('.km-pickline'); if (line) items.push({ label: 'Équipes', value: line.textContent.replace(/\s+/g, ' ').replace(' Regardent', ' · Regardent').trim() });
+      return;
+    }
+    if (n.matches('fieldset')) {
+      const on = [...n.querySelectorAll('label')].filter(l => l.querySelector('input:checked')).map(clean);
+      items.push({ label: (n.querySelector('legend')?.textContent || '').trim(), value: on.length ? on.join(', ') : 'aucun' });
+      return;
+    }
+    const title = (n.querySelector('span')?.textContent || '').trim();
+    const sel = n.querySelector('select'), chk = n.querySelector('input[type=checkbox]'), inp = n.querySelector('input:not([type=checkbox])');
+    let value = '';
+    if (sel) value = sel.selectedOptions[0]?.textContent.trim() || '';
+    else if (chk) value = chk.checked ? 'Oui' : 'Non';
+    else if (inp) { const unit = [...n.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent.trim()).filter(Boolean).join(' '); value = inp.value + (unit ? ' ' + unit : ''); }
+    if (title) items.push({ label: title.replace('sur ce téléphone', 'sur le téléphone de l’hôte'), value });
+  });
+  return items;
+}
+let optsTimer = null, optsSent = '';
+function queueOptsShare() {
+  clearTimeout(optsTimer);
+  optsTimer = setTimeout(() => {
+    const pick = view?.pick; if (!pick || !isHostPlayer() || view.phase !== 'lobby') return;
+    const items = readOpts(pick), key = pick + JSON.stringify(items);
+    if (key === optsSent) return;                                          // rien de neuf : pas de diffusion
+    optsSent = key; act({ t: 'opts', key: pick, items });
+  }, 250);
+}
+// toute modification du panneau (clic, saisie, options construites à la volée) déclenche l'envoi
+['input', 'change', 'click'].forEach(ev => document.getElementById('lobby-opts').addEventListener(ev, () => queueOptsShare()));
+new MutationObserver(() => queueOptsShare()).observe(document.getElementById('lobby-opts'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class'] });
+
+function renderGuestOpts(s) {
+  const box = $('#lobby-guest-opts');
+  const show = !isHostPlayer() && !!s.pick && !!s.pickOpts?.length;
+  box.hidden = !show; if (!show) return;
+  box.innerHTML = `<p class="eyebrow">Réglages de l'hôte · ${esc(GAMES[s.pick].name)}</p>`
+    + `<dl>${s.pickOpts.map(o => `<div><dt>${esc(o.label)}</dt><dd>${esc(o.value)}</dd></div>`).join('')}</dl>`
+    + `<p class="fine">Mis à jour en direct : l'hôte lance la partie quand tout le monde est prêt.</p>`;
+}
+
 // ------------------------------------------------ salon
 function renderLobby(s) {
   $('#lobby-code').textContent = s.code;
@@ -854,6 +910,8 @@ function renderLobby(s) {
   }
   $('#lobby-wait').hidden = isHostPlayer();
   $('#lobby-wait').textContent = chosen ? `L'hôte prépare une partie de ${GAMES[s.pick].name}…` : 'L\'hôte choisit le jeu…';
+  renderGuestOpts(s);
+  if (isHostPlayer() && chosen) queueOptsShare();
 }
 
 // ------------------------------------------------ Décennies

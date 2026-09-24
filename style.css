@@ -1980,3 +1980,14 @@ button.pb-ans:active{transform:scale(.985)}
 /* Petit Brevet sans stop */
 .pb-done{text-align:center;margin:-4px 0 0;font:400 20px/1.2 var(--font-d);color:var(--ink-2)}
 .pb-donebtn{font:400 24px var(--font-d);min-height:58px}
+
+/* réglages de l'hôte vus par les invités */
+#lobby-guest-opts{order:6}
+.guest-opts{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px;animation:screen-in .3s var(--ease)}
+.guest-opts .eyebrow{margin:0}
+.guest-opts dl{margin:0;display:flex;flex-direction:column}
+.guest-opts dl>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;padding:8px 0;border-top:1px solid var(--line);align-items:baseline}
+.guest-opts dl>div:first-child{border-top:0}
+.guest-opts dt{font-size:14px;color:var(--ink-2)}
+.guest-opts dd{margin:0;font-size:14.5px;font-weight:600;color:var(--ink);text-align:right;overflow-wrap:anywhere}
+.guest-opts .fine{margin:0}
