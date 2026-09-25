@@ -217,10 +217,15 @@ body::before{
 .topbar{
   position:fixed;top:0;left:0;right:0;z-index:20;height:calc(var(--bar-h) + env(safe-area-inset-top));
   padding:env(safe-area-inset-top) 10px 0;display:flex;align-items:center;gap:6px;
-  background:color-mix(in oklab, var(--bg) 82%, transparent);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  /* fond UNI, sans transparence ni flou : depuis iOS 26, une appli installée sur l'écran d'accueil
+     recouvre la zone de la barre d'état d'un flou « Liquid Glass » dès que le bord haut de la page
+     n'a pas de couleur unie à prélever, et ce flou déborde sur le titre et les boutons */
+  background:var(--bg);
   border-bottom:1px solid color-mix(in oklab, var(--line) 60%, transparent);
 }
+/* même chose en bas : une bande unie sous la barre d'accueil de l'iPhone (hauteur 0 ailleurs),
+   un vrai élément car iOS ignore les pseudo-éléments pour prélever la couleur */
+.safe-bottom{position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom);background:var(--bg);z-index:19;pointer-events:none;transition:background .35s var(--ease)}
 .ic{
   flex:0 0 auto;width:38px;height:38px;border-radius:var(--r-s);border:1px solid var(--line);
   background:var(--surface);color:var(--ink);font:600 17px/1 var(--font);
