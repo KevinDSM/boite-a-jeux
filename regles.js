@@ -304,6 +304,31 @@ const RULES = [
       <li>La première équipe qui atteint le score fixé (7, 10 ou 15) gagne ; à égalité, on continue.</li></ul>`],
     ['Réglages dans le salon', `<p>Chacun pour soi (dès 2 joueurs) ou en équipes (dès 4), nombre de tours de médium, score à atteindre en équipes. Si le médium ne répond plus, l'hôte peut passer son tour au bout d'une minute.</p>`],
   ] },
+  { key: 'duel', parts: [
+    ['Le principe', `<p>L'équivalent maison de 7 Wonders Duel, pour deux joueurs, ou toi contre le robot. Chacun développe sa cité pendant trois âges. Toutes les cartes et merveilles ont été renommées et écrites pour la Boîte à jeux.</p>`],
+    ['Mise en place', `<p>Chaque cité commence avec 7 pièces. Huit merveilles sont tirées : on les repêche quatre par quatre (l'un en prend une, l'autre deux, le premier la dernière), si bien que chacun en a quatre. Cinq jetons progrès sont posés à côté de la piste militaire.</p>`],
+    ['La pyramide', `<p>À chaque âge, 20 cartes sont posées en pyramide, une rangée sur deux face cachée. On ne peut prendre qu'une carte libre, que rien ne recouvre. Une carte cachée se retourne dès qu'elle est dégagée. L'âge III mélange 3 guildes, reconnaissables à leur dos 👑.</p>`],
+    ['À ton tour', `<ul>
+      <li><b>Construire</b> la carte : paye son coût en pièces et en ressources. Elle rejoint ta cité.</li>
+      <li><b>La défausser</b> : +2 pièces, plus 1 par bâtiment jaune de ta cité.</li>
+      <li><b>Bâtir une merveille</b> : glisse la carte sous une de tes merveilles et paye le coût de la merveille. Il n'y aura que 7 merveilles en tout : dès la septième, la dernière est perdue.</li></ul>`],
+    ['Ressources et achats', `<ul>
+      <li>Les cartes marron (🪵 bois, 🧱 argile, 🪨 pierre) et grises (🧪 verre, 📜 papyrus) produisent à chaque tour, sans s'épuiser.</li>
+      <li>Ce qui manque s'achète à la banque : 2 pièces par ressource, plus 1 par exemplaire que ton adversaire produit avec ses cartes marron et grises. Les dépôts et la douane fixent le prix à 1.</li>
+      <li>Certaines cartes jaunes et merveilles produisent une ressource au choix à chaque tour.</li>
+      <li><b>Enchaînements :</b> une carte marquée d'un symbole (🎭, 🌙, 📖…) rend gratuite la carte d'un âge suivant qui le demande.</li></ul>`],
+    ['Les couleurs', `<ul>
+      <li><b>Bleu :</b> des points de victoire.</li>
+      <li><b>Vert :</b> un symbole scientifique. Deux fois le même symbole : tu prends un jeton progrès.</li>
+      <li><b>Rouge :</b> des boucliers ; le pion militaire avance d'autant vers la capitale adverse. En passant les cases 3 et 6, il pille 2 puis 5 pièces à l'adversaire.</li>
+      <li><b>Jaune :</b> des pièces, des achats moins chers, des productions au choix, et à l'âge III des points.</li>
+      <li><b>Violet (guildes) :</b> des pièces et des points selon la cité la mieux fournie dans un domaine.</li></ul>`],
+    ['Victoire', `<ul>
+      <li><b>Militaire :</b> le pion atteint ta capitale adverse, victoire immédiate.</li>
+      <li><b>Scientifique :</b> 6 symboles scientifiques différents (la Loi en compte un), victoire immédiate.</li>
+      <li><b>Civile :</b> sinon, à la fin de l'âge III, on additionne bleus, verts, jaunes, guildes, merveilles, jetons progrès, 1 point par 3 pièces, et la piste militaire (2, 5 ou 10 points). À égalité, le plus de points bleus l'emporte.</li></ul>`],
+    ['Entre deux âges', `<p>Le joueur le plus faible militairement choisit qui commence l'âge suivant ; à égalité, c'est celui qui a pris la dernière carte.</p>`],
+  ] },
 ];
 
 let rulesBuilt = false;

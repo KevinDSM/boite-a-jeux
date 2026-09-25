@@ -32,6 +32,7 @@ function deskSplit(root, side, needs) {
   ['renderNaufrages', '#nf-main', '.nf-camp, .nf-people, .nf-log, .nf-items, .nf-peek'],
   ['renderMemes', '#mm-main', '.mm-players, .mm-log'],
   ['renderHorsLimite', '#hl-main', '.hl-players, .hl-log'],
+  ['renderDuel', '#du-main', '.du-city, .du-log'],
   ['renderDiapason', '#dp-main', '.dp-scores, .dp-log'],
   ['renderPoker', '#pk-main', '.pk-mine, .pk-actions, .pk-size, .pk-hint, .pk-result, .pk-log, .note, .btn'],
   ['soRender', '#so-main', '.so-race, .so-clock, .so-win, .so-end'],

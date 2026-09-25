@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=48">
-<link rel="apple-touch-icon" href="icon-180.png?v=48">
+<link rel="manifest" href="manifest.json?v=49">
+<link rel="apple-touch-icon" href="icon-180.png?v=49">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&family=Archivo+Black&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=48">
+<link rel="stylesheet" href="style.css?v=49">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -98,7 +98,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Essayer seul</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne marche pas ? Diagnostic réseau</button>
-    <p class="fine">18 jeux dans la boîte · d'autres arrivent</p>
+    <p class="fine">19 jeux dans la boîte · d'autres arrivent</p>
   </div>
 </section>
 
@@ -223,6 +223,12 @@
         <span class="gname">Diapason</span>
         <span class="gdesc">Froid ou chaud, nul ou génial : le médium donne un indice, les autres placent l’aiguille au jugé. Soyez sur la même longueur d’onde.</span>
         <span class="gmeta">2 à 12 joueurs · 20 min · chacun pour soi ou en équipes</span>
+      </button>
+      <button class="gcard g-duel" type="button" data-game="duel">
+        <span class="gart" aria-hidden="true"><span class="duart"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+        <span class="gname">Duel des Cités</span>
+        <span class="gdesc">Trois âges, une pyramide de cartes et quatre merveilles : bâtis la plus grande cité de l’Antiquité, ou écrase ton rival par les armes ou la science.</span>
+        <span class="gmeta">2 joueurs, ou toi contre le robot · 30 min · stratégie</span>
       </button>
       <div class="gsoon">Autres jeux en préparation</div>
     </div>
@@ -361,6 +367,10 @@
       <label class="field row"><span>Pioche</span><select id="opt-so-draw"><option value="1" selected>Une carte à la fois</option><option value="3">Trois cartes, plus corsé</option></select></label>
       <label class="field row"><span>Temps de la course</span><select id="opt-so-minutes"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="15">15 minutes</option><option value="0">Sans limite</option></select></label>
       <p class="fine">Tout le monde reçoit exactement la même donne. Ça se joue aussi tout seul.</p>
+    </div>
+    <div class="opts" id="opts-duel" hidden>
+      <label class="field row"><span>Adversaire</span><select id="opt-du-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
+      <p class="fine">Un duel se joue à deux : l’hôte affronte le premier ami arrivé (ou le robot), les autres regardent la partie.</p>
     </div>
     <div class="opts" id="opts-diapason" hidden>
       <label class="field row"><span>Façon de jouer</span><select id="opt-dp-mode"><option value="solo" selected>Chacun pour soi</option><option value="teams">En deux équipes (4 joueurs et plus)</option></select></label>
@@ -546,6 +556,11 @@
   <div class="stack" id="dp-main"></div>
 </section>
 
+<!-- ====================== DUEL DES CITÉS ====================== -->
+<section class="screen play duel" id="s-duel" hidden>
+  <div class="stack" id="du-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -601,27 +616,29 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=48"></script>
-<script src="app.js?v=48"></script>
-<script src="sablier-ui.js?v=48"></script>
-<script src="undercover.js?v=48"></script>
-<script src="geo-config.js?v=48"></script>
-<script src="geo.js?v=48"></script>
-<script src="chromo.js?v=48"></script>
-<script src="kems.js?v=48"></script>
-<script src="mirage.js?v=48"></script>
-<script src="douze.js?v=48"></script>
-<script src="petitbac.js?v=48"></script>
-<script src="loupgarou.js?v=48"></script>
-<script src="naufrages.js?v=48"></script>
-<script src="memes.js?v=48"></script>
-<script src="limite-cartes.js?v=48"></script>
-<script src="limite.js?v=48"></script>
-<script src="solitaire.js?v=48"></script>
-<script src="poker.js?v=48"></script>
-<script src="diapason-cartes.js?v=48"></script>
-<script src="diapason.js?v=48"></script>
-<script src="desk.js?v=48"></script>
-<script src="regles.js?v=48"></script>
+<script src="sablier-engine.js?v=49"></script>
+<script src="app.js?v=49"></script>
+<script src="sablier-ui.js?v=49"></script>
+<script src="undercover.js?v=49"></script>
+<script src="geo-config.js?v=49"></script>
+<script src="geo.js?v=49"></script>
+<script src="chromo.js?v=49"></script>
+<script src="kems.js?v=49"></script>
+<script src="mirage.js?v=49"></script>
+<script src="douze.js?v=49"></script>
+<script src="petitbac.js?v=49"></script>
+<script src="loupgarou.js?v=49"></script>
+<script src="naufrages.js?v=49"></script>
+<script src="memes.js?v=49"></script>
+<script src="limite-cartes.js?v=49"></script>
+<script src="limite.js?v=49"></script>
+<script src="solitaire.js?v=49"></script>
+<script src="poker.js?v=49"></script>
+<script src="diapason-cartes.js?v=49"></script>
+<script src="diapason.js?v=49"></script>
+<script src="duel-cartes.js?v=49"></script>
+<script src="duel.js?v=49"></script>
+<script src="desk.js?v=49"></script>
+<script src="regles.js?v=49"></script>
 </body>
 </html>
