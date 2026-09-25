@@ -1967,7 +1967,9 @@ button.pb-ans:active{transform:scale(.985)}
   .lobby-side .code-strip{flex-direction:column;align-items:flex-start;gap:8px}
   .lobby-side .code-strip br{display:none}
   .lobby-side #lobby-opts{margin-top:4px}
-  .lobby-side #btn-start{position:sticky;bottom:0;z-index:1;width:100%;box-shadow:0 0 0 14px var(--bg),0 -22px 18px 6px var(--bg)}
+  /* le bouton reste collé en bas ; son ombre couleur de fond estompe ce qui défile derrière lui, et la marge
+     au-dessus garantit qu'elle ne mange pas le texte qui le précède quand rien ne défile */
+  .lobby-side #btn-start{position:sticky;bottom:0;z-index:1;width:100%;margin-top:26px;box-shadow:0 12px 0 10px var(--bg),0 -16px 12px 2px var(--bg)}
 
   /* accueil en deux colonnes : la boîte à gauche, l'entrée à droite */
   #s-home{max-width:1080px;display:grid;grid-template-columns:minmax(0,1fr) 420px;grid-template-rows:auto auto auto;column-gap:80px;row-gap:18px;align-content:center;padding-left:40px;padding-right:40px}
