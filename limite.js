@@ -42,7 +42,7 @@ const HorsLimite = (() => {
     const a = HL_ANSWERS.map((t, i) => i).filter(i => !(soft && spicy(HL_ANSWERS[i])));
     const room = {
       hostId, phase: 'play', round: 0, target: clamp(target, 3, 20, 7), mode: mode === 'vote' ? 'vote' : 'judge', soft: !!soft,
-      players: ps.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, hand: [] })),
+      players: ps.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: !!p.bot, score: 0, hand: [] })),
       order: [], judge: -1,
       deck: ordered(HL_ANSWERS.length, 'a').filter(i => a.includes(i)), discard: [],
       questions: ordered(HL_QUESTIONS.length, 'q').filter(i => q.includes(i)), qUsed: [],
@@ -165,7 +165,26 @@ const HorsLimite = (() => {
       log: room.log.slice(-3),
     };
   }
-  return { HAND, fill, blanks, create, act, join, setOnline, view, count: () => [HL_QUESTIONS.length, HL_ANSWERS.length] };
+  // les robots posent des cartes au hasard, votent ou jugent au hasard, avec un temps de réflexion
+  function tick(room) {
+    if (Date.now() - room.turnAt < 1500 || Math.random() < .5) return false;
+    const bots = room.order.map(id => pl(room, id)).filter(p => p?.bot && p.online), j = judge(room);
+    if (!bots.length) return false;
+    const any = list => list[Math.random() * list.length | 0];
+    if (room.phase === 'play') {
+      const b = bots.find(p => p.id !== j?.id && !room.plays[p.id] && p.hand.length >= need(room));
+      if (b) { play(room, b.id, shuffle(b.hand.slice()).slice(0, need(room))); return true; }
+    }
+    if (room.phase === 'pick' && room.table.length) {
+      if (room.mode === 'judge') { if (j?.bot && Date.now() - room.turnAt > 3500) { choose(room, j.id, any(room.table).key); return true; } }
+      else {
+        const b = bots.find(p => !room.votes[p.id] && room.table.some(x => x.owner !== p.id));
+        if (b) { choose(room, b.id, any(room.table.filter(x => x.owner !== b.id)).key); return true; }
+      }
+    }
+    return false;
+  }
+  return { HAND, fill, blanks, create, act, tick, join, setOnline, view, count: () => [HL_QUESTIONS.length, HL_ANSWERS.length] };
 })();
 
 // ============================================================ écran

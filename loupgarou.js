@@ -56,7 +56,7 @@ const LoupGarou = (() => {
   function create({ hostId, players, wolves, roles, deadSee }) {
     const room = {
       hostId, settings: { wolves: wolves === 'auto' || wolves === undefined ? 'auto' : +wolves, roles: { seer: true, witch: true, hunter: true, cupid: false, guard: false, ...(roles || {}) }, deadSee: deadSee !== false },
-      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, inGame: p.online !== false, role: null, alive: false })),
+      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: !!p.bot, inGame: p.online !== false, role: null, alive: false })),
       log: [], seq: 0,
     };
     newGame(room);
@@ -265,8 +265,44 @@ const LoupGarou = (() => {
     return null;
   }
 
+  // les robots jouent leur rôle au hasard : actions de nuit, vote du jour, dernière balle du Chasseur
+  function botTick(room) {
+    if (Math.random() < .6) return false;
+    const bots = inGame(room).filter(p => p.bot); if (!bots.length) return false;
+    const any = list => list[Math.random() * list.length | 0], al = alive(room), a = room.a || {};
+    const others = p => al.filter(q => q.id !== p.id);
+    if (room.phase === 'roles') { const b = bots.find(p => !room.seenRole[p.id]); if (b) { act(room, b.id, { t: 'lw:seen' }); return true; } }
+    if (room.phase === 'night' && room.step) {
+      const s = room.step;
+      if (s === 'cupid') { const c = aliveRole(room, 'cupid'); if (c?.bot && !room.lovers) { const two = shuffle(al.map(p => p.id)).slice(0, 2); if (two.length === 2) { act(room, c.id, { t: 'lw:cupid', a: two[0], b: two[1] }); return true; } } }
+      if (s === 'lovers' && room.lovers) { const b = room.lovers.map(id => pl(room, id)).find(p => p?.bot && p.alive && !room.loversAck[p.id]); if (b) { act(room, b.id, { t: 'lw:ack' }); return true; } }
+      if (s === 'guard') { const g = aliveRole(room, 'guard'); if (g?.bot && a.guardTarget === null) { const t = any(al.filter(p => p.id !== room.lastGuard)); if (t) { act(room, g.id, { t: 'lw:guard', to: t.id }); return true; } } }
+      if (s === 'wolves') {
+        const ws = al.filter(p => p.role === 'wolf'), prey = al.filter(p => p.role !== 'wolf');
+        const human = ws.find(w => !w.bot && a.wolfVotes[w.id]);
+        const b = ws.find(w => w.bot && (!a.wolfVotes[w.id] || (human && a.wolfVotes[w.id] !== a.wolfVotes[human.id])));
+        if (b && prey.length) { act(room, b.id, { t: 'lw:wolf', to: human ? a.wolfVotes[human.id] : (Object.values(a.wolfVotes)[0] || any(prey).id) }); return true; }
+      }
+      if (s === 'seer') { const se = aliveRole(room, 'seer'); if (se?.bot && !a.seerOk) { if (!a.seerPick) { const t = any(others(se)); if (t) act(room, se.id, { t: 'lw:seer', to: t.id }); } else act(room, se.id, { t: 'lw:seerok' }); return true; } }
+      if (s === 'witch') {
+        const w = aliveRole(room, 'witch');
+        if (w?.bot && !a.witchDone) {
+          if (!room.witchUsed.life && a.wolfTarget && !a.witchSave && Math.random() < .5) act(room, w.id, { t: 'lw:save' });
+          else if (!room.witchUsed.death && !a.witchKill && Math.random() < .15) { const t = any(others(w)); if (t) act(room, w.id, { t: 'lw:poison', to: t.id }); }
+          act(room, w.id, { t: 'lw:witchdone' }); return true;
+        }
+      }
+    }
+    if (room.phase === 'day') {
+      const b = al.find(p => p.bot && !room.votes[p.id]);
+      if (b && Math.random() < .35) { const opts = others(b).filter(p => !room.tied || room.tied.includes(p.id)); if (opts.length) { act(room, b.id, { t: 'lw:vote', to: any(opts).id }); return true; } }
+    }
+    if (room.phase === 'hunter') { const h = pl(room, room.hunter); if (h?.bot) { const t = any(al.filter(p => p.id !== h.id)); if (t) shoot(room, h.id, t.id); else hunterDone(room, null); return true; } }
+    return false;
+  }
   function tick(room) {
     const now = Date.now();
+    if (botTick(room)) return true;
     if (room.phase === 'night' && room.step) {
       if ((actorsDone(room) && now >= room.stepMin) || now >= room.stepMax) { endStep(room); return true; }
       return false;

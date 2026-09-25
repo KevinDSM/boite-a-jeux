@@ -40,7 +40,7 @@ const Diapason = (() => {
   function create({ hostId, players, mode, tours, target }) {
     const room = {
       hostId, mode: mode === 'teams' ? 'teams' : 'solo', tours: clamp(tours, 1, 5, 1), target: clamp(target, 5, 30, 10),
-      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, team: 0 })),
+      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: !!p.bot, score: 0, team: 0 })),
       order: [], deck: deck(), card: 0, pos: 50, clue: '', rerolls: 2, psychicId: null,
       phase: 'clue', round: 0, rounds: 0, guesses: {}, dial: 50, side: null, sideBy: null, result: null,
       teams: TEAMS.map(name => ({ name, score: 0, psy: -1 })), active: Math.random() < .5 ? 0 : 1, again: false,
@@ -158,7 +158,32 @@ const Diapason = (() => {
     }
     return null;
   }
-  function tick() { return false; }
+  // les robots : un indice qui dit à peu près où est la cible, et des aiguilles posées au jugé autour
+  function botClue(room) {
+    const [l, r] = DP_CARDS[room.card], p = room.pos;
+    return p < 15 ? `Complètement « ${l} »` : p < 33 ? `Plutôt « ${l} »` : p < 45 ? `Un peu « ${l} »` : p <= 55 ? 'Pile entre les deux' : p <= 67 ? `Un peu « ${r} »` : p <= 85 ? `Plutôt « ${r} »` : `Complètement « ${r} »`;
+  }
+  function botGuess(room) {
+    const noise = (Math.random() + Math.random() + Math.random() - 1.5) * 16;
+    return Math.round(Math.max(0, Math.min(100, room.pos + noise)) * 2) / 2;
+  }
+  function tick(room) {
+    if (Date.now() - room.turnAt < 1800 || Math.random() < .4) return false;
+    const psy = pl(room, room.psychicId);
+    if (room.phase === 'clue' && psy?.bot) { act(room, psy.id, { t: 'dp:clue', text: botClue(room) }); return true; }
+    if (room.phase === 'guess') {
+      if (room.mode === 'solo') { const b = guessers(room).find(p => p.bot && room.guesses[p.id] === undefined); if (b) { act(room, b.id, { t: 'dp:guess', value: botGuess(room) }); return true; } }
+      else {
+        const team = online(members(room, room.active)).filter(p => p.id !== room.psychicId);
+        if (team.length && team.every(p => p.bot) && Date.now() - room.turnAt > 3500) { act(room, team[0].id, { t: 'dp:lock', value: botGuess(room) }); return true; }
+      }
+    }
+    if (room.phase === 'side') {
+      const opp = online(members(room, 1 - room.active));
+      if (opp.length && opp.every(p => p.bot)) { act(room, opp[0].id, { t: 'dp:side', dir: Math.random() < .5 ? 'left' : 'right' }); return true; }
+    }
+    return false;
+  }
   function join(room, id, name) {
     const p = pl(room, id);
     if (p) { p.online = true; p.name = name || p.name; return; }

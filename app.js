@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '49';
+const ASSET_V = '50';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -396,8 +396,11 @@ class Game {
     const s = this.s, host = s.players[0];
     const room = Sablier.createRoom({ code: s.code, hostId: host.id, hostName: host.name, decks: o.decks });
     s.players.slice(1).forEach(p => { const q = Sablier.addPlayer(room, p.id, p.name); q.connected = p.online; });
+    robots(o.bots).forEach(b => { const q = Sablier.addPlayer(room, b.id, b.name); q.bot = true; });
     Sablier.updateSettings(room, o.settings || {}, Sablier.allCategories());
     if (room.settings.teamMode === 'random') Sablier.randomizeTeams(room); else Sablier.clearTeams(room);
+    // en composition manuelle, les robots sont quand même rangés : dans l'équipe la moins remplie
+    room.players.filter(p => p.bot && !p.teamId).forEach(p => { const t = room.teams.slice().sort((x, y) => Sablier.playersOfTeam(room, x.id).length - Sablier.playersOfTeam(room, y.id).length)[0]; if (t) p.teamId = t.id; });
     this.sab = room; s.phase = 'sab';
   }
   sabPool() { const st = this.sab.settings; return Sablier.pool(st.decks, st.difficulties, st.categories); }
@@ -409,7 +412,7 @@ class Game {
   startUndercover(o) {
     const s = this.s;
     s.players.forEach(p => { p.score = 0; });
-    this.uc = Undercover.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rounds: o.rounds, undercovers: o.undercovers, white: o.white });
+    this.uc = Undercover.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), rounds: o.rounds, undercovers: o.undercovers, white: o.white });
     s.phase = 'uc';
   }
   // ================= Boussole : la salle vit dans this.geo, les coordonnées ne sortent qu'à la révélation =================
@@ -440,7 +443,7 @@ class Game {
   // ================= Mirage : la salle vit dans this.mi, chaque main ne sort que vers son joueur =================
   startMirage(o) {
     const s = this.s;
-    this.mi = Mirage.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, jokers: o.jokers, cardset: o.cardset });
+    this.mi = Mirage.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), target: o.target, jokers: o.jokers, cardset: o.cardset });
     s.phase = 'mi';
   }
   // ================= Douze : la salle vit dans this.dz, les cartes cachées ne sortent jamais =================
@@ -458,7 +461,7 @@ class Game {
   // ================= Loup-Garou : la salle vit dans this.lw, chaque rôle ne sort que vers son joueur =================
   startLoupGarou(o) {
     const s = this.s;
-    this.lw = LoupGarou.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), wolves: o.wolves, roles: o.roles, deadSee: o.deadSee });
+    this.lw = LoupGarou.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), wolves: o.wolves, roles: o.roles, deadSee: o.deadSee });
     s.phase = 'lw';
   }
   // ================= Naufragés : la salle vit dans this.nf, les objets ne sortent que vers leur propriétaire =================
@@ -470,13 +473,13 @@ class Game {
   // ================= Mème pas vrai : la salle vit dans this.mm, chaque main ne sort que vers son joueur =================
   startMemes(o) {
     const s = this.s;
-    this.mm = Memes.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, mode: o.judge, kinds: o.kinds });
+    this.mm = Memes.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), target: o.target, mode: o.judge, kinds: o.kinds });
     s.phase = 'mm';
   }
   // ================= Hors Limite : la salle vit dans this.hl, chaque main ne sort que vers son joueur =================
   startLimite(o) {
     const s = this.s;
-    this.hl = HorsLimite.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), target: o.target, mode: o.judge, soft: o.soft });
+    this.hl = HorsLimite.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), target: o.target, mode: o.judge, soft: o.soft });
     s.phase = 'hl';
   }
   // ================= Solitaire : chacun joue la même donne chez lui, l'hôte tient la course =================
@@ -494,7 +497,7 @@ class Game {
   // ================= Diapason : la salle vit dans this.dp, la cible ne sort que vers le médium =================
   startDiapason(o) {
     const s = this.s;
-    this.dp = Diapason.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), mode: o.dpMode, tours: o.tours, target: o.target });
+    this.dp = Diapason.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), mode: o.dpMode, tours: o.tours, target: o.target });
     s.phase = 'dp';
   }
   // ================= Duel des Cités : à deux (ou contre le robot), les autres regardent =================
@@ -659,7 +662,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   attachHost(peer);
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false) || (g.hl ? HorsLimite.tick(g.hl) : false) || (g.mm ? Memes.tick(g.mm) : false) || (g.mi ? Mirage.tick(g.mi) : false) || (g.uc ? Undercover.tick(g.uc) : false) || (g.dp ? Diapason.tick(g.dp) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -788,7 +791,25 @@ function sabFinishTurn(reason) {
   if (r.turn && ['turn-live', 'turn-idle'].includes(r.phase)) Sablier.endTurn(r, reason);
 }
 function sabAdvanceIfDone() { const r = net.game.sab; if (r && Sablier.selectionDone(r)) Sablier.buildDeckAndStart(r); }
+/** Les robots de Sablier : ils valident leur sélection, lancent leur tour et « font deviner » au hasard. */
+function sabBots() {
+  const r = net.game.sab; if (!r || !r.players.some(p => p.bot)) return false;
+  const now = Date.now();
+  if (r.botWait && now < r.botWait) return false;
+  if (r.phase === 'selection') { const b = r.players.find(p => p.bot && !p.ready); if (b) { Sablier.autoValidate(r, b); sabAdvanceIfDone(); return true; } }
+  const d = r.turn && Sablier.findPlayer(r, r.turn.playerId);
+  if (!d?.bot) return false;
+  if (r.phase === 'turn-idle') { if (!r.botIdle) { r.botIdle = true; r.botWait = now + 2500; return false; } r.botIdle = false; Sablier.startTurn(r); sabWipe(); r.botWait = r.turn.startsAt + 2500 + Math.random() * 2500; return true; }
+  if (r.phase === 'turn-live' && r.currentCardId && r.turn.startsAt && now > r.turn.startsAt) {
+    r.botWait = now + 2500 + Math.random() * 3500;
+    if (Math.random() < .7) { const res = Sablier.markGuessed(r, d.id); sabWipe(); if (res === 'round-over') sabFinishTurn('cleared'); }
+    else { Sablier.markPassed(r, d.id); sabWipe(); }
+    return true;
+  }
+  return false;
+}
 function sabTick() {
+  if (sabBots()) return true;
   const r = net.game.sab; if (!r || r.phase !== 'turn-live' || !r.turn) return false;
   const now = Date.now();
   if (now >= r.turn.endsAt + 150) { sabFinishTurn('time'); return true; }
@@ -1029,7 +1050,7 @@ function renderLobby(s) {
   $('#opts-diapason').hidden = s.pick !== 'diapason';
   $('#opts-duel').hidden = s.pick !== 'duel';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
-  if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length; $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''} : il en faut au moins 5.` : `${n} joueurs : ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
+  if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''} : il en faut au moins 5.` : `${n} joueurs : ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
   if (isHostPlayer() && s.pick === 'mirage') Mirage.load(ASSET_V).then(() => { const set = $('#opt-mi-cards').value, n = Mirage.count(set); $('#opt-mi-count').textContent = !n ? 'Cartes introuvables.' : set === 'art' ? `${n} cartes, des œuvres du domaine public (Met, Cleveland Museum of Art).` : set === 'memes' ? `${n} mèmes et GIF de la bibliothèque publique d\u2019Imgflip.` : `${n} cartes : tableaux, mèmes et GIF mélangés.`; });
   if (isHostPlayer() && s.pick === 'camembert') Camembert.load(ASSET_V).then(() => { const n = Camembert.count(); $('#opt-cm-count').textContent = n ? `${n} questions dans la boîte, réparties en six couleurs.` : 'Questions introuvables.'; });
@@ -1797,6 +1818,14 @@ $('#btn-back').onclick = () => {
   else askConfirm('Quitter', 'Seul l\'hôte peut ramener tout le monde au salon. Tu peux quitter la partie de ton côté.', 'Quitter la partie', () => location.reload());
 };
 
+// ============================================================ robots
+// Des joueurs robots pour compléter une table ou tester un jeu tout seul. Chaque jeu les fait jouer
+// dans le tick de l'hôte ; ici on ne fait que les ajouter à la liste des joueurs.
+const ROBOT_NAMES = ['Robot Pixel', 'Robot Zinc', 'Robot Mira', 'Robot Quartz', 'Robot Nova', 'Robot Écho', 'Robot Tilt', 'Robot Bip'];
+const robots = n => Array.from({ length: Math.max(0, Math.min(ROBOT_NAMES.length, +n || 0)) }, (_, i) => ({ id: 'bot' + i, name: ROBOT_NAMES[i], online: true, bot: true }));
+const withRobots = (s, n) => s.players.map(p => ({ id: p.id, name: p.name, online: p.online })).concat(robots(n));
+const botsOpt = key => +($('#opt-' + key + '-bots')?.value || 0);
+
 // ============================================================ thème
 function syncThemeColor() {
   const bg = getComputedStyle(document.body).backgroundColor;
@@ -1922,17 +1951,17 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'sprint', decades, jv, anime, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
   }
   if (pick === 'sablier') {
-    if ((view?.players || []).filter(p => p.online).length < 2) { toast('Sablier se joue à deux minimum, par équipes'); return; }
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('sab') < 2) { toast('Sablier se joue à deux minimum, par équipes : ajoute des robots'); return; }
     const roundTypes = [...$('#opt-sab-rounds').querySelectorAll('input:checked')].map(i => i.value);
     if (!roundTypes.length) { toast('Choisis au moins une manche'); return; }
     const decks = [...$('#opt-sab-decks').querySelectorAll('input:checked')].map(i => i.value);
     if (!decks.length) { toast('Choisis au moins un deck'); return; }
     const settings = { roundTypes, turnSeconds: +$('#opt-sab-turn').value, drawSeconds: +$('#opt-sab-draw').value, dealPerPlayer: +$('#opt-sab-deal').value, discardPerPlayer: +$('#opt-sab-discard').value, teamMode: $('#opt-sab-teammode').value, decks, difficulties: [...$('#opt-sab-diff').querySelectorAll('input:checked')].map(i => +i.value) };
-    act({ t: 'start', opts: { mode: 'sablier', decks, settings } });
+    act({ t: 'start', opts: { mode: 'sablier', decks, settings, bots: botsOpt('sab') } });
   }
   if (pick === 'undercover') {
-    if ((view?.players || []).filter(p => p.online).length < 3) { toast('Undercover se joue à trois minimum'); return; }
-    act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked } });
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('uc') < 3) { toast('Undercover se joue à trois minimum : ajoute des robots'); return; }
+    act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked, bots: botsOpt('uc') } });
   }
   if (pick === 'chromo') {
     const humans = (view?.players || []).filter(p => p.online).length, bots = +$('#opt-ch-bots').value;
@@ -1957,11 +1986,11 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'mirage') {
     (async () => {
-      if ((view?.players || []).filter(p => p.online).length < 3) { toast('Mirage se joue à trois minimum'); return; }
+      if ((view?.players || []).filter(p => p.online).length + botsOpt('mi') < 3) { toast('Mirage se joue à trois minimum : ajoute des robots'); return; }
       await Mirage.load(ASSET_V);
       const cardset = $('#opt-mi-cards').value;
       if (Mirage.count(cardset) < 40) { toast('Cartes introuvables'); return; }
-      act({ t: 'start', opts: { mode: 'mirage', target: +$('#opt-mi-target').value, jokers: +$('#opt-mi-jokers').value, cardset } });
+      act({ t: 'start', opts: { mode: 'mirage', target: +$('#opt-mi-target').value, jokers: +$('#opt-mi-jokers').value, cardset, bots: botsOpt('mi') } });
     })();
   }
   if (pick === 'douze') {
@@ -1971,8 +2000,8 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'douze', target: +$('#opt-dz-target').value, bots } });
   }
   if (pick === 'limite') {
-    if ((view?.players || []).filter(p => p.online).length < 3) { toast('Hors Limite se joue à trois minimum'); return; }
-    act({ t: 'start', opts: { mode: 'limite', target: +$('#opt-hl-target').value, judge: $('#opt-hl-mode').value, soft: $('#opt-hl-soft').checked } });
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('hl') < 3) { toast('Hors Limite se joue à trois minimum : ajoute des robots'); return; }
+    act({ t: 'start', opts: { mode: 'limite', target: +$('#opt-hl-target').value, judge: $('#opt-hl-mode').value, soft: $('#opt-hl-soft').checked, bots: botsOpt('hl') } });
   }
   if (pick === 'solitaire') act({ t: 'start', opts: { mode: 'solitaire', draw: +$('#opt-so-draw').value, minutes: +$('#opt-so-minutes').value } });
   if (pick === 'duel') {
@@ -1981,10 +2010,10 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'duel', rival } });
   }
   if (pick === 'diapason') {
-    const n = (view?.players || []).filter(p => p.online).length, dpMode = $('#opt-dp-mode').value;
-    if (n < 2) { toast('Diapason se joue à deux minimum'); return; }
+    const n = (view?.players || []).filter(p => p.online).length + botsOpt('dp'), dpMode = $('#opt-dp-mode').value;
+    if (n < 2) { toast('Diapason se joue à deux minimum : ajoute un robot'); return; }
     if (dpMode === 'teams' && n < 4) { toast('En équipes, il faut au moins quatre joueurs'); return; }
-    act({ t: 'start', opts: { mode: 'diapason', dpMode, tours: +$('#opt-dp-tours').value, target: +$('#opt-dp-target').value } });
+    act({ t: 'start', opts: { mode: 'diapason', dpMode, tours: +$('#opt-dp-tours').value, target: +$('#opt-dp-target').value, bots: botsOpt('dp') } });
   }
   if (pick === 'poker') {
     const bots = +$('#opt-pk-bots').value, humans = (view?.players || []).filter(p => p.online).length;
@@ -1999,18 +2028,18 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'memes') {
     (async () => {
-      if ((view?.players || []).filter(p => p.online).length < 3) { toast('Mème pas vrai se joue à trois minimum'); return; }
+      if ((view?.players || []).filter(p => p.online).length + botsOpt('mm') < 3) { toast('Mème pas vrai se joue à trois minimum : ajoute des robots'); return; }
       await Memes.load(ASSET_V);
       if (Memes.count() < 60) { toast('Mèmes introuvables : memes.json manque'); return; }
-      act({ t: 'start', opts: { mode: 'memes', target: +$('#opt-mm-target').value, judge: $('#opt-mm-mode').value, kinds: $('#opt-mm-kinds').value } });
+      act({ t: 'start', opts: { mode: 'memes', target: +$('#opt-mm-target').value, judge: $('#opt-mm-mode').value, kinds: $('#opt-mm-kinds').value, bots: botsOpt('mm') } });
     })();
   }
   if (pick === 'loupgarou') {
-    if ((view?.players || []).filter(p => p.online).length < 5) { toast('Loup-Garou se joue à cinq minimum'); return; }
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('lw') < 5) { toast('Loup-Garou se joue à cinq minimum : ajoute des robots'); return; }
     const roles = {}; LoupGarou.SPECIALS.forEach(r => { roles[r] = !!$('#opt-lw-' + r)?.checked; });
     try { localStorage.setItem('lw-voice', $('#opt-lw-voice').checked ? '1' : '0'); } catch { }
     if ($('#opt-lw-voice').checked && window.speechSynthesis) { try { speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch { } }   // débloque la voix sur iPhone
-    act({ t: 'start', opts: { mode: 'loupgarou', wolves: $('#opt-lw-wolves').value, roles, deadSee: $('#opt-lw-dead').checked } });
+    act({ t: 'start', opts: { mode: 'loupgarou', wolves: $('#opt-lw-wolves').value, roles, deadSee: $('#opt-lw-dead').checked, bots: botsOpt('lw') } });
   }
   if (pick === 'petitbac') {
     const cats = [...$('#opt-pb-cats').querySelectorAll('input:checked')].map(i => i.value);

@@ -85,7 +85,7 @@ const Undercover = (() => {
     const room = {
       hostId, rounds: Math.max(1, Math.min(10, +rounds || 3)), round: 0,
       settings: { undercovers: undercovers || 'auto', white: !!white },
-      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0 })),
+      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: !!p.bot, score: 0 })),
       phase: 'reveal',
     };
     startRound(room);
@@ -278,7 +278,30 @@ const Undercover = (() => {
     };
   }
 
-  return { PAIRS, POINTS, ROLE_NAME, create, act, join, setOnline, view, sameWord, impostorPlan };
+  // les robots : un indice vague tiré d'une liste, des votes au hasard, et Mister White qui tente un mot
+  const BOT_HINTS = ['Souvent', 'Pratique', 'Rond', 'Chez soi', 'En été', 'Coloré', 'Petit', 'Célèbre', 'Dehors', 'Ancien', 'Doux', 'Rapide', 'Bruyant', 'Cher', 'Utile', 'Populaire', 'Le matin', 'En famille', 'Classique', 'Moderne', 'Partout', 'Plaisir', 'Fragile', 'Grand', 'Simple', 'Enfance', 'Vacances'];
+  const isBot = (room, id) => !!room.players.find(p => p.id === id && p.bot);
+  function tick(room) {
+    const now = Date.now();
+    if (room.botWait && now < room.botWait) return false;
+    const wait = () => { room.botWait = now + 1400 + Math.random() * 1800; };
+    const any = list => list[Math.random() * list.length | 0];
+    if (room.phase === 'reveal') { const b = room.inRound.find(id => isBot(room, id) && !room.roles[id].ready); if (b) { act(room, b, { t: 'uc:ready' }); return true; } }
+    if (room.phase === 'clues') {
+      const sp = room.order[room.speaker];
+      if (sp && isBot(room, sp)) { if (!room.botWait) { wait(); return false; } act(room, sp, { t: 'uc:clue', text: any(BOT_HINTS) }); room.botWait = 0; return true; }
+    }
+    if (room.phase === 'vote') {
+      const b = alive(room).find(id => isBot(room, id) && !room.votes[id]);
+      if (b) {
+        const opts = (room.candidates || alive(room)).filter(id => id !== b && room.roles[id].alive);
+        if (opts.length) { act(room, b, { t: 'uc:vote', target: any(opts) }); wait(); return true; }
+      }
+    }
+    if (room.phase === 'white-guess' && room.lastElim && isBot(room, room.lastElim.id)) { act(room, room.lastElim.id, { t: 'uc:white-guess', word: any(any(PAIRS)) }); return true; }
+    return false;
+  }
+  return { PAIRS, POINTS, ROLE_NAME, create, act, tick, join, setOnline, view, sameWord, impostorPlan };
 })();
 
 // ============================================================ écran

@@ -55,7 +55,7 @@ const Mirage = (() => {
     const set = ['art', 'memes', 'mix'].includes(cardset) ? cardset : 'art';
     const room = {
       hostId, phase: 'clue', round: 0, target: clamp(target, 5, 60, 30), jokerStart: clamp(jokers, 0, 9, 3), offers: {},
-      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, score: 0, hand: [], jokers: 0 })),
+      players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: !!p.bot, score: 0, hand: [], jokers: 0 })),
       order: [], teller: -1, deck: buildDeck(set), cardset: set, clue: '', tellerCard: null, picks: {}, table: [], votes: {}, result: null,
       log: [], turnAt: Date.now(), seq: 0, winnerId: null,
     };
@@ -230,7 +230,20 @@ const Mirage = (() => {
     };
   }
 
-  return { HAND, CLUE_MAX, load, count, card, create, act, join, setOnline, view };
+  // les robots : un indice tiré d'une liste de mots évocateurs, des cartes et des votes au hasard
+  const BOT_CLUES = ['Rêverie', 'Solitude', 'Voyage', 'Mystère', 'Enfance', 'Silence', 'Tempête', 'Nostalgie', 'Liberté', 'Danger', 'Fête', 'Secret', 'Lumière', 'La nuit', 'Attente', 'Colère', 'Douceur', 'Vertige', 'Promesse', 'Illusion', 'Départ', 'Racines', 'Équilibre', 'Chaos', 'Espoir', 'Mélancolie', 'Victoire', 'Fragile', 'Éternité', 'Refuge', 'Le dimanche', 'Premier amour', 'Trop tard', 'Sans retour'];
+  function tick(room) {
+    if (Date.now() - room.turnAt < 1800 || Math.random() < .5) return false;
+    const any = list => list[Math.random() * list.length | 0], t = teller(room);
+    if (room.phase === 'clue' && t?.bot && t.hand.length && Date.now() - room.turnAt > 2500) { setClue(room, t.id, any(t.hand), any(BOT_CLUES)); return true; }
+    if (room.phase === 'pick') { const b = others(room).find(p => p.bot && !room.picks[p.id]); if (b) { pick(room, b.id, any(b.hand)); return true; } }
+    if (room.phase === 'vote') {
+      const b = others(room).find(p => p.bot && !room.votes[p.id]);
+      if (b) { const opts = room.table.filter(x => x.owner !== b.id); if (opts.length) { vote(room, b.id, any(opts).card); return true; } }
+    }
+    return false;
+  }
+  return { HAND, CLUE_MAX, load, count, card, create, act, tick, join, setOnline, view };
 })();
 
 // ============================================================ écran
