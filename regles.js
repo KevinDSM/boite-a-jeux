@@ -288,6 +288,22 @@ const RULES = [
     ['Fin de partie', `<p>Un joueur sans jetons est éliminé. Le dernier à en avoir gagne. Les blindes doublent régulièrement pour que la partie finisse.</p>`],
     ['Réglages dans le salon', `<p>Robots à la table (jusqu'à 5), jetons au départ (500, 1 000 ou 2 000) et rythme des blindes (doublées toutes les 5 ou 10 mains, ou jamais). Si un joueur ne répond plus, l'hôte peut passer sa main au bout de 30 secondes ; un joueur déconnecté parle ou se couche automatiquement.</p>`],
   ] },
+  { key: 'diapason', parts: [
+    ['Le principe', `<p>L'équivalent maison de Wavelength : se mettre sur la même longueur d'onde. Chaque manche, une carte donne deux extrêmes, par exemple « Froid ↔ Chaud » ou « Film nul ↔ Chef-d’œuvre du cinéma ». Une cible est cachée quelque part sur le cadran, entre les deux, et seul le médium la voit.</p>`],
+    ['Le médium', `<ul>
+      <li>Il cherche un indice qui place la cible au bon endroit : un mot, un nom, un film, un plat, une expression… Pour « Froid ↔ Chaud », « une douche en été » tombe plutôt vers le milieu, « le soleil » tout à droite.</li>
+      <li>Il l'écrit sur son téléphone, ou le dit à voix haute. Pas de nombre, pas de pourcentage.</li>
+      <li>La carte ne l'inspire pas ? Il peut en changer deux fois par manche, la cible reste au même endroit.</li></ul>`],
+    ['Placer l’aiguille', `<p>Les autres font glisser l'aiguille du cadran là où l'indice leur semble tomber. Les boutons ◀ ▶ affinent au millimètre. Puis la cible est dévoilée : plein centre 4 points, les zones voisines 3, puis 2, et rien au-delà.</p>`],
+    ['Chacun pour soi', `<p>Le rôle de médium tourne. Chacun place sa propre aiguille sur son téléphone et marque selon sa précision ; le médium gagne la moyenne des points des autres : un indice clair profite à tout le monde. Chacun est médium une, deux ou trois fois, puis le plus gros total gagne.</p>`],
+    ['En équipes', `<ul>
+      <li>Deux équipes tirées au sort, Corail et Lagon, jouent à tour de rôle ; le médium change à chaque tour de l'équipe.</li>
+      <li>L'équipe du médium discute et déplace une aiguille commune : tout le monde la voit bouger en direct. Un membre valide quand l'équipe est d'accord.</li>
+      <li>L'équipe adverse parie alors que la cible est plus à gauche ou plus à droite de l'aiguille : 1 point si elle a raison, sauf si l'aiguille est en plein centre.</li>
+      <li>Une équipe en retard qui fait un plein centre rejoue aussitôt.</li>
+      <li>La première équipe qui atteint le score fixé (7, 10 ou 15) gagne ; à égalité, on continue.</li></ul>`],
+    ['Réglages dans le salon', `<p>Chacun pour soi (dès 2 joueurs) ou en équipes (dès 4), nombre de tours de médium, score à atteindre en équipes. Si le médium ne répond plus, l'hôte peut passer son tour au bout d'une minute.</p>`],
+  ] },
 ];
 
 let rulesBuilt = false;
