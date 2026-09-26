@@ -3130,3 +3130,23 @@ input,select{font-family:var(--font);border-radius:12px}
 .field.row input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:48px;height:30px;min-height:0;margin:0 6px 0 0;padding:0;border:0;border-radius:99px;cursor:pointer;background:radial-gradient(circle at 15px 50%, var(--surface) 0 11px, transparent 12px), var(--line);transition:background-color .2s}
 .field.row input[type=checkbox]:checked{background:radial-gradient(circle at 33px 50%, var(--on-acc) 0 11px, transparent 12px), var(--acc)}
 .field.row input[type=checkbox]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+/* ------------------------------------------------------------ composants communs du meneur (tous les jeux)
+   .mj-meta   : la ligne d'info discrète en haut (« Manche 2 · premier à 7 »)
+   .mj-status : ce qui se passe, dit par le meneur : <h3 class="mj-title"> + <p class="mj-say">
+   .mj-prog   : l'attente, une barre par joueur attendu (<i class="f"> pour ceux qui ont joué) + <span>2 sur 5</span>
+   .mj-side-title : intitulé discret d'un bloc de la colonne de droite (Scores, Ce qui s'est passé)
+   .mj-list   : liste groupée (lignes jointives dans un conteneur arrondi), .mj-row pour une ligne */
+.mj-meta{margin:0;font-size:14px;color:var(--mute)}
+.mj-status{display:flex;flex-direction:column;gap:0}
+.mj-title{margin:4px 0 0;font:700 27px/1.12 var(--font);letter-spacing:-.02em;color:var(--ink)}
+.mj-say{margin:4px 0 0;font-size:17px;line-height:1.4;color:var(--ink-2);max-width:48ch}
+.mj-prog{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:14px;font-size:13.5px;color:var(--mute);font-variant-numeric:tabular-nums}
+.mj-prog i{width:28px;height:5px;border-radius:3px;background:var(--line)}
+.mj-prog i.f{background:var(--acc)}
+.mj-prog span{margin-left:6px}
+.mj-side-title{display:block;margin:0 0 4px;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--mute)}
+.mj-list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mj-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-top:1px solid var(--line);font-size:15px}
+.mj-row:first-child{border-top:0}
+@media (min-width: 700px){ .mj-title{font-size:32px} }
