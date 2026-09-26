@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=54">
-<link rel="apple-touch-icon" href="icon-180.png?v=54">
+<link rel="manifest" href="manifest.json?v=55">
+<link rel="apple-touch-icon" href="icon-180.png?v=55">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Special+Elite&family=Lilita+One&family=Alfa+Slab+One&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=54">
+<link rel="stylesheet" href="style.css?v=55">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -73,7 +73,7 @@
       </svg>
     </div>
     <h1>Boîte à jeux</h1>
-    <p class="lede">Dix-neuf jeux pour la soirée. Sortez les téléphones.</p>
+    <p class="lede">Vingt et un jeux pour la soirée. Sortez les téléphones.</p>
   </div>
 
   <form class="stack" id="f-home">
@@ -99,7 +99,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Jouer seul, pour tester</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne se connecte pas ? Diagnostic</button>
-    <p class="fine">19 jeux, et d’autres en route.</p>
+    <p class="fine">21 jeux, et d’autres en route.</p>
   </div>
 </section>
 
@@ -230,6 +230,18 @@
         <span class="gname">Duel des Cités</span>
         <span class="gdesc">Trois âges pour bâtir ta cité. Ou raser la sienne.</span>
         <span class="gmeta"><b>2 joueurs</b><i>30 min</i></span>
+      </button>
+      <button class="gcard g-teldes" type="button" data-game="teldes">
+        <span class="gart" aria-hidden="true"><svg class="tdart" viewBox="0 0 56 48" aria-hidden="true"><rect x="4" y="9" width="30" height="34" rx="3" transform="rotate(-8 19 26)" fill="#faf7f0" stroke="#2a2f45" stroke-width="1.6"/><rect x="22" y="5" width="30" height="34" rx="3" transform="rotate(7 37 22)" fill="#fff" stroke="#2a2f45" stroke-width="1.6"/><circle cx="37" cy="19" r="6" fill="#fbbf24"/><path d="M28 31c4-5 9 3 14-2" fill="none" stroke="#e5484d" stroke-width="2.4" stroke-linecap="round"/><path d="M9 20h14M9 26h10" stroke="#8a90a8" stroke-width="2" stroke-linecap="round" transform="rotate(-8 19 26)"/></svg></span>
+        <span class="gname">Téléphone dessiné</span>
+        <span class="gdesc">Une phrase devient un dessin, qui devient une phrase. Et tout part en vrille.</span>
+        <span class="gmeta"><b>3 à 12</b><i>20 min</i></span>
+      </button>
+      <button class="gcard g-nomcode" type="button" data-game="nomcode">
+        <span class="gart" aria-hidden="true"><span class="ncart"><i class="c0"></i><i class="c2"></i><i class="c1"></i><i class="c1"></i><i class="c0"></i><i class="c2"></i><i class="c3"></i><i class="c1"></i><i class="c0"></i></span></span>
+        <span class="gname">Nom de code</span>
+        <span class="gdesc">Un mot, un nombre. Trouve tes agents, fuis l’assassin.</span>
+        <span class="gmeta"><b>4 à 12</b><i>20 min</i></span>
       </button>
       <p class="gsoon">D’autres jeux arrivent bientôt.</p>
     </div>
@@ -372,6 +384,16 @@
       <label class="field row"><span>Pioche</span><select id="opt-so-draw"><option value="1" selected>Une carte à la fois</option><option value="3">Trois cartes, plus corsé</option></select></label>
       <label class="field row"><span>Temps de la course</span><select id="opt-so-minutes"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="15">15 minutes</option><option value="0">Sans limite</option></select></label>
       <p class="fine">Tout le monde reçoit exactement la même donne. Ça se joue aussi tout seul.</p>
+    </div>
+    <div class="opts" id="opts-teldes" hidden>
+      <label class="field row"><span>Robots à table</span><select id="opt-td-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
+      <label class="field row"><span>Rythme</span><select id="opt-td-speed"><option value="relax">Détendu</option><option value="normal" selected>Normal</option><option value="rapide">Rapide</option></select></label>
+      <label class="field row"><span>Longueur des carnets</span><select id="opt-td-length"><option value="complet" selected>Un tour de table complet</option><option value="court">Court, 5 étapes au plus</option></select></label>
+      <p class="fine">Chacun dessine sur son écran. Les robots gribouillent, mais ils essaient.</p>
+    </div>
+    <div class="opts" id="opts-nomcode" hidden>
+      <label class="field row"><span>Robots à table</span><select id="opt-nc-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
+      <p class="fine">Deux équipes tirées au sort, qu’on peut changer avant de lancer la grille. Les robots savent être espions ou agents.</p>
     </div>
     <div class="opts" id="opts-duel" hidden>
       <label class="field row"><span>Adversaire</span><select id="opt-du-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
@@ -569,6 +591,16 @@
   <div class="stack" id="du-main"></div>
 </section>
 
+<!-- ====================== TÉLÉPHONE DESSINÉ ====================== -->
+<section class="screen play teldes" id="s-teldes" hidden>
+  <div class="stack" id="td-main"></div>
+</section>
+
+<!-- ====================== NOM DE CODE ====================== -->
+<section class="screen play nomcode" id="s-nomcode" hidden>
+  <div class="stack" id="nc-main"></div>
+</section>
+
 <!-- ====================== BOUSSOLE ====================== -->
 <section class="screen play geo" id="s-geo" hidden>
   <div class="geo-hud" id="geo-hud"></div>
@@ -624,29 +656,33 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=54"></script>
-<script src="app.js?v=54"></script>
-<script src="sablier-ui.js?v=54"></script>
-<script src="undercover.js?v=54"></script>
-<script src="geo-config.js?v=54"></script>
-<script src="geo.js?v=54"></script>
-<script src="chromo.js?v=54"></script>
-<script src="kems.js?v=54"></script>
-<script src="mirage.js?v=54"></script>
-<script src="douze.js?v=54"></script>
-<script src="petitbac.js?v=54"></script>
-<script src="loupgarou.js?v=54"></script>
-<script src="naufrages.js?v=54"></script>
-<script src="memes.js?v=54"></script>
-<script src="limite-cartes.js?v=54"></script>
-<script src="limite.js?v=54"></script>
-<script src="solitaire.js?v=54"></script>
-<script src="poker.js?v=54"></script>
-<script src="diapason-cartes.js?v=54"></script>
-<script src="diapason.js?v=54"></script>
-<script src="duel-cartes.js?v=54"></script>
-<script src="duel.js?v=54"></script>
-<script src="desk.js?v=54"></script>
-<script src="regles.js?v=54"></script>
+<script src="sablier-engine.js?v=55"></script>
+<script src="app.js?v=55"></script>
+<script src="toile.js?v=55"></script>
+<script src="sablier-ui.js?v=55"></script>
+<script src="undercover.js?v=55"></script>
+<script src="geo-config.js?v=55"></script>
+<script src="geo.js?v=55"></script>
+<script src="chromo.js?v=55"></script>
+<script src="kems.js?v=55"></script>
+<script src="mirage.js?v=55"></script>
+<script src="douze.js?v=55"></script>
+<script src="petitbac.js?v=55"></script>
+<script src="loupgarou.js?v=55"></script>
+<script src="naufrages.js?v=55"></script>
+<script src="memes.js?v=55"></script>
+<script src="limite-cartes.js?v=55"></script>
+<script src="limite.js?v=55"></script>
+<script src="solitaire.js?v=55"></script>
+<script src="poker.js?v=55"></script>
+<script src="diapason-cartes.js?v=55"></script>
+<script src="diapason.js?v=55"></script>
+<script src="duel-cartes.js?v=55"></script>
+<script src="duel.js?v=55"></script>
+<script src="teldes.js?v=55"></script>
+<script src="nomcode-mots.js?v=55"></script>
+<script src="nomcode.js?v=55"></script>
+<script src="desk.js?v=55"></script>
+<script src="regles.js?v=55"></script>
 </body>
 </html>

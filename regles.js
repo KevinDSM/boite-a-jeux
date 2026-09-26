@@ -332,6 +332,32 @@ const RULES = [
         <li><b>Civile.</b> Sinon, à la fin de l’âge III, on additionne bleus, verts, jaunes, guildes, merveilles, jetons progrès, 1 point par tranche de 3 pièces, et la piste militaire (2, 5 ou 10 points). À égalité, le plus de points bleus l’emporte.</li></ul>`],
       ['Entre deux âges', `<p>Le joueur le plus faible militairement choisit qui ouvre l’âge suivant. À égalité, c’est celui qui a pris la dernière carte.</p>`],
     ] },
+  { key: 'teldes', parts: [
+    ['Le principe', `<p>Le téléphone arabe, mais en dessins. Chaque joueur commence un carnet avec une phrase. Le carnet passe au voisin, qui dessine la phrase ; le suivant ne voit que le dessin et écrit ce qu’il croit y voir ; le suivant dessine cette nouvelle phrase, et ainsi de suite. À la fin, on lit les carnets et on mesure les dégâts.</p>`],
+    ['Les étapes', `<ul>
+      <li><b>Écrire :</b> une phrase à dessiner. « Inspire-moi » en propose une si l’inspiration manque.</li>
+      <li><b>Dessiner :</b> tu vois la phrase du carnet que tu tiens. Crayon, gomme, seau de peinture, trois épaisseurs, douze couleurs, Annuler. Pas de lettres ni de chiffres.</li>
+      <li><b>Deviner :</b> tu vois seulement le dernier dessin, et tu écris ce qu’il représente.</li>
+      <li>Écriture et devinettes alternent jusqu’à ce que chaque carnet ait fait le tour de la table (ou 5 étapes en version courte).</li></ul>`],
+    ['Le temps', `<p>Chaque étape a un chrono (détendu, normal ou rapide). Quand tout le monde a envoyé, on passe tout de suite à la suite. Au gong, ce que tu as commencé part tel quel ; une page vide devient « rien écrit » ou une feuille blanche.</p>`],
+    ['La lecture', `<p>L’hôte déroule les carnets page par page, sur tous les écrans à la fois. Lis à voix haute ! Pendant la lecture, touche le cœur des meilleurs moments (jamais les tiens). À la fin, on voit qui a récolté le plus de cœurs.</p>`],
+    ['Réglages dans le salon', `<p>Robots (ils écrivent et devinent au hasard, et gribouillent), rythme des étapes, longueur des carnets. De 3 à 12 joueurs.</p>`],
+  ] },
+  { key: 'nomcode', parts: [
+    ['Le principe', `<p>L’équivalent maison de Codenames. Deux équipes, la Rouge et la Bleue, s’affrontent sur une grille de 25 mots. Chaque équipe a un espion : lui seul sait quels mots cachent ses agents.</p>`],
+    ['La grille', `<ul>
+      <li>9 agents pour l’équipe qui commence, 8 pour l’autre, 7 passants, et 1 assassin.</li>
+      <li>Les espions voient les couleurs sur leur écran, les autres joueurs ne voient que les mots.</li></ul>`],
+    ['L’indice', `<p>À son tour, l’espion donne un indice d’un seul mot et un nombre : le nombre de mots de la grille qui s’y rapportent. Par exemple « Océan » pour 3 pour Baleine, Vague et Pirate. L’indice ne peut pas être un mot de la grille. « Sans limite » permet de rattraper des mots d’indices précédents.</p>`],
+    ['Deviner', `<ul>
+      <li>Les agents discutent, pointent un mot (les coéquipiers voient qui pointe quoi), puis le retournent.</li>
+      <li>Un de leurs agents : ils peuvent continuer, jusqu’au nombre annoncé plus un.</li>
+      <li>Un passant ou un agent adverse : le tour s’arrête, et un agent adverse est offert à l’autre équipe.</li>
+      <li>L’assassin : la partie est perdue sur-le-champ.</li>
+      <li>Après au moins un mot, on peut s’arrêter là.</li></ul>`],
+    ['Victoire', `<p>La première équipe dont tous les agents sont retournés gagne, même si c’est l’adversaire qui a retourné le dernier. Entre deux grilles, les espions changent et l’équipe perdante commence.</p>`],
+    ['Réglages et robots', `<p>Les équipes sont tirées au sort ; avant de lancer, chacun peut changer d’équipe ou se proposer comme espion. Les robots savent jouer les deux rôles : un robot espion donne un thème en indice, un robot agent retourne les mots de ce thème. De 4 à 12 joueurs, robots compris.</p>`],
+  ] },
 ];
 
 let rulesBuilt = false;

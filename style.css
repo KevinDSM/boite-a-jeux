@@ -4072,3 +4072,190 @@ button.sab-team:active{background:var(--surface-2)}
 /* plus de police d'affichage pour l'ossature : --font-d retombe sur la police du système hors des jeux */
 :root{--font-d:var(--font)}
 .km-pip{font-family:var(--font)}
+
+/* ============================================================ outils de dessin communs (toile.js) : Sablier et Téléphone dessiné */
+.toile-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.toile-seg{display:inline-flex;gap:2px;padding:3px;border-radius:11px;background:var(--surface-2)}
+.toile-seg button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;min-width:40px;padding:6px 11px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font:600 14px var(--font);cursor:pointer}
+.toile-seg button svg{width:18px;height:18px}
+.toile-seg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px oklch(0 0 0/.22)}
+.toile-seg.sizes button i{display:block;border-radius:50%;background:currentColor}
+.toile-colors{display:flex;flex-wrap:wrap;gap:6px}
+.toile-sw{position:relative;width:30px;height:30px;padding:0;border-radius:50%;border:2px solid color-mix(in oklab, var(--ink) 18%, transparent);background:var(--c);cursor:pointer}
+.toile-sw[aria-pressed="true"],.toile-more.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--acc)}
+.toile-more{display:grid;place-items:center;background:conic-gradient(#e5484d,#fbbf24,#2fa96b,#38bdf8,#8e4ec6,#e5484d);overflow:hidden}
+.toile-more.on{background:var(--c)}
+.toile-more input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:0;min-height:0}
+.toile-act{display:flex;gap:6px;margin-left:auto}
+.toile-act .btn{min-height:38px}
+.toile-act .btn.armed{color:var(--neg);border-color:var(--neg)}
+.toile-cv,#sab-canvas{cursor:crosshair}
+.toile-cv[data-tool="fill"],#sab-canvas[data-tool="fill"]{cursor:cell}
+#sab-tools.toile-bar{flex-direction:row}
+@media (min-width: 1100px){
+  #sab-tools.toile-bar{flex-direction:column;align-items:stretch}
+  #sab-tools .toile-seg{display:flex}
+  #sab-tools .toile-seg button{flex:1;padding:6px 4px}
+  #sab-tools .toile-seg.tools button span{display:none}
+  #sab-tools .toile-act{margin-left:0;flex-direction:column}
+}
+
+/* ============================================================ Téléphone dessiné : encre indigo, papier et crayon jaune */
+[data-game="teldes"]{
+  --bg:        oklch(0.215 0.045 270);
+  --surface:   oklch(0.265 0.050 270);
+  --surface-2: oklch(0.315 0.055 270);
+  --line:      oklch(0.385 0.055 270);
+  --ink:       oklch(0.965 0.012 95);
+  --ink-2:     oklch(0.830 0.030 260);
+  --mute:      oklch(0.680 0.040 265);
+  --acc:       oklch(0.860 0.150 95);
+  --acc-soft:  oklch(0.900 0.110 95);
+  --on-acc:    oklch(0.250 0.050 270);
+  --pos:       oklch(0.820 0.140 155);
+  --neg:       oklch(0.680 0.200 25);
+  --gold:      oklch(0.860 0.150 95);
+  --glow: 0.12;
+}
+[data-theme="light"][data-game="teldes"]{
+  --bg:        oklch(0.965 0.018 90);
+  --surface:   oklch(0.995 0.008 90);
+  --surface-2: oklch(0.930 0.022 90);
+  --line:      oklch(0.865 0.030 90);
+  --ink:       oklch(0.250 0.060 270);
+  --ink-2:     oklch(0.420 0.060 270);
+  --mute:      oklch(0.550 0.050 270);
+  --acc:       oklch(0.450 0.160 275);
+  --acc-soft:  oklch(0.400 0.150 275);
+  --on-acc:    oklch(0.985 0.010 90);
+  --pos:       oklch(0.520 0.130 155);
+  --neg:       oklch(0.540 0.200 25);
+  --glow: 0.07;
+}
+.g-teldes .gname{color:inherit}
+.tdart{width:56px;height:48px;overflow:visible}
+.gcard[aria-pressed="true"] .tdart{transform:rotate(-4deg);transition:transform .4s var(--ease)}
+.td-zone{display:flex;flex-direction:column;gap:12px}
+.td-prompt{margin:0;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font:700 22px/1.25 var(--font);letter-spacing:-.01em;text-align:center}
+.td-prompt i{font-style:normal;color:var(--mute);font-weight:600}
+.td-imgbox{border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);max-width:640px;width:100%;margin:0 auto;aspect-ratio:4/3;display:grid;place-items:center}
+.td-imgbox img{width:100%;height:100%;object-fit:contain;display:block}
+.td-imgbox p{color:oklch(0.5 0.02 270);font-weight:600;margin:0}
+.td-input{width:100%;font-size:19px;padding:15px 16px}
+.td-row{display:flex;flex-wrap:wrap;gap:8px}
+.td-row .btn{flex:1 1 150px}
+.toile-pad{display:flex;flex-direction:column;gap:10px;max-width:680px;width:100%;margin:0 auto}
+.toile-cv{display:block;width:100%;aspect-ratio:4/3;height:auto;background:#fff;border-radius:14px;border:1px solid var(--line);touch-action:none;box-shadow:0 10px 24px -16px oklch(0 0 0/.5)}
+.td-book{display:flex;flex-direction:column;gap:10px}
+.td-page{position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);animation:screen-in .35s var(--ease)}
+.td-who{font-size:13px;font-weight:600;color:var(--mute)}
+.td-text{margin:0;font:700 21px/1.25 var(--font);letter-spacing:-.01em;padding-right:64px}
+.td-text i{font-style:normal;color:var(--mute)}
+.td-page img{display:block;width:100%;max-width:560px;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:10px}
+.td-blank{margin:0;color:var(--mute);font-weight:600}
+.td-heart{position:absolute;right:10px;top:8px;display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);font:600 14px var(--font);font-variant-numeric:tabular-nums}
+button.td-heart{cursor:pointer}
+.td-heart.on{background:color-mix(in oklab, oklch(0.62 0.21 15) 22%, var(--surface));border-color:oklch(0.62 0.21 15);color:oklch(0.72 0.2 15)}
+[data-theme="light"] .td-heart.on{color:oklch(0.52 0.21 15)}
+.td-page.img .td-heart{top:auto;bottom:18px;right:18px;background:color-mix(in oklab, var(--surface) 88%, transparent)}
+.td-rank{padding:0;margin:0;list-style:none}
+.td-rank b{font-variant-numeric:tabular-nums}
+.td-players{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.td-players .mj-side-title{flex-basis:100%}
+.td-player{display:flex;gap:6px;align-items:baseline;font-size:14.5px}
+.td-player i{font-style:normal;font-size:12.5px;color:var(--pos)}
+.td-player.me span::after{content:" (toi)";color:var(--mute)}
+.td-player.off{opacity:.45}
+.td-log{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:13.5px;color:var(--mute)}
+.desk-side .td-players{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:0}
+.desk-side .td-player{justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)}
+.desk-side .td-players .mj-side-title+.td-player{border-top:0}
+.desk-side .td-player i{color:var(--mute)}
+
+/* ============================================================ Nom de code : ardoise, papier kraft, rouge et bleu */
+[data-game="nomcode"]{
+  --bg:        oklch(0.200 0.014 250);
+  --surface:   oklch(0.250 0.016 250);
+  --surface-2: oklch(0.300 0.018 250);
+  --line:      oklch(0.370 0.020 250);
+  --ink:       oklch(0.960 0.010 85);
+  --ink-2:     oklch(0.810 0.015 250);
+  --mute:      oklch(0.650 0.020 250);
+  --acc:       oklch(0.820 0.120 85);
+  --acc-soft:  oklch(0.880 0.090 85);
+  --on-acc:    oklch(0.230 0.030 250);
+  --pos:       oklch(0.800 0.140 155);
+  --neg:       oklch(0.660 0.200 25);
+  --gold:      oklch(0.820 0.120 85);
+  --glow: 0.10;
+  --nc-r:      oklch(0.600 0.190 27);
+  --nc-b:      oklch(0.580 0.140 250);
+  --nc-paper:  oklch(0.925 0.030 85);
+  --nc-ink:    oklch(0.240 0.020 60);
+  --nc-mid:    oklch(0.800 0.045 80);
+  --nc-x:      oklch(0.180 0.010 250);
+}
+[data-theme="light"][data-game="nomcode"]{
+  --bg:        oklch(0.950 0.008 250);
+  --surface:   oklch(0.990 0.004 250);
+  --surface-2: oklch(0.915 0.010 250);
+  --line:      oklch(0.850 0.014 250);
+  --ink:       oklch(0.220 0.020 250);
+  --ink-2:     oklch(0.400 0.020 250);
+  --mute:      oklch(0.540 0.020 250);
+  --acc:       oklch(0.520 0.120 70);
+  --acc-soft:  oklch(0.450 0.110 70);
+  --on-acc:    oklch(0.990 0.005 85);
+  --glow: 0.06;
+  --nc-paper:  oklch(0.955 0.030 85);
+}
+.g-nomcode .gname{color:inherit}
+.ncart{display:grid;grid-template-columns:repeat(3,14px);gap:3px;width:48px}
+.ncart i{height:11px;border-radius:2px;background:oklch(0.85 0.04 80)}
+.ncart .c0{background:oklch(0.6 0.19 27)} .ncart .c1{background:oklch(0.58 0.14 250)} .ncart .c3{background:oklch(0.22 0.01 250)}
+.gcard[aria-pressed="true"] .ncart .c2{background:oklch(0.6 0.19 27);transition:background .4s}
+.nc-status.t0 .mj-title{color:var(--ink)}
+.nc-clue{display:flex;flex-wrap:wrap;gap:8px}
+.nc-clue input{flex:1 1 200px;font-size:18px}
+.nc-clue select{flex:0 0 auto;min-width:92px}
+.nc-clue .btn{flex:1 1 160px}
+.nc-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%;max-width:760px;margin:0 auto}
+.nc-card{position:relative;display:grid;place-items:center;min-height:58px;padding:8px 3px 14px;border-radius:9px;border:0;background:var(--nc-paper);color:var(--nc-ink);font:700 clamp(10px,2.75vw,15.5px)/1.1 var(--font);letter-spacing:.01em;text-transform:uppercase;text-align:center;overflow-wrap:anywhere;hyphens:auto;box-shadow:0 2px 0 oklch(0 0 0/.25);transition:transform .15s var(--ease),box-shadow .2s,background .25s}
+button.nc-card{cursor:pointer}
+button.nc-card:active{transform:scale(.96)}
+.nc-card .nc-w{display:block;max-width:100%}
+.nc-pts{position:absolute;left:3px;right:3px;bottom:2px;font:600 9.5px/1.1 var(--font);text-transform:none;letter-spacing:0;color:oklch(0.35 0.03 60);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nc-card.pointed{box-shadow:0 0 0 3px var(--acc),0 4px 10px oklch(0 0 0/.3)}
+.nc-card.has-points:not(.pointed){box-shadow:0 0 0 2px color-mix(in oklab, var(--acc) 60%, transparent)}
+/* ce que voit l'espion (et tout le monde à la fin) : la couleur, en teinte */
+.nc-card.k0:not(.rev){background:color-mix(in oklab, var(--nc-r) 32%, var(--nc-paper));box-shadow:inset 0 0 0 2px var(--nc-r)}
+.nc-card.k1:not(.rev){background:color-mix(in oklab, var(--nc-b) 32%, var(--nc-paper));box-shadow:inset 0 0 0 2px var(--nc-b)}
+.nc-card.k3:not(.rev){background:var(--nc-x);color:oklch(0.9 0.01 85)}
+.nc-card.k3:not(.rev) .nc-pts{color:oklch(0.8 0.01 85)}
+/* les mots retournés : l'agent couvre la carte */
+.nc-card.rev{box-shadow:none}
+.nc-card.rev.k0{background:var(--nc-r);color:oklch(0.98 0.01 25)}
+.nc-card.rev.k1{background:var(--nc-b);color:oklch(0.98 0.01 250)}
+.nc-card.rev.k2{background:var(--nc-mid);color:oklch(0.35 0.03 60)}
+.nc-card.rev.k3{background:var(--nc-x);color:oklch(0.85 0.01 85)}
+.nc-card.rev .nc-w{opacity:.7;text-decoration:line-through;text-decoration-thickness:2px}
+.nc-card.rev.k0 .nc-w,.nc-card.rev.k1 .nc-w{text-decoration:none;opacity:.85}
+.nc-row{display:flex;flex-wrap:wrap;gap:8px}
+.nc-row .btn{flex:1 1 180px}
+.nc-setup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.nc-team{display:flex;flex-direction:column;gap:8px;min-width:0}
+.nc-team h4{margin:0;display:flex;justify-content:space-between;align-items:baseline;font:700 16px var(--font)}
+.nc-team.t0 h4{color:color-mix(in oklab, var(--nc-r) 70%, var(--ink))}
+.nc-team.t1 h4{color:color-mix(in oklab, var(--nc-b) 60%, var(--ink))}
+.nc-team h4 b{font-variant-numeric:tabular-nums}
+.nc-team .mj-row{padding:9px 12px;font-size:14.5px}
+.nc-team .mj-row i{font-style:normal;font-size:12.5px;color:var(--mute)}
+.nc-team .mj-row.me span::after{content:" (toi)";color:var(--mute)}
+.nc-team .mj-row.off{opacity:.45}
+.nc-team.on .mj-list{box-shadow:0 0 0 2px var(--acc)}
+.nc-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.nc-log{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:13.5px;color:var(--mute)}
+.nc-log li:nth-child(2){color:var(--ink-2)}
+.desk-side .nc-side{grid-template-columns:1fr}
+@media (min-width: 700px){ .nc-card{min-height:74px;border-radius:11px} .nc-grid{gap:8px} }
+ul.mj-list,ol.mj-list{list-style:none;margin:0;padding:0}

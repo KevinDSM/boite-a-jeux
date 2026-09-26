@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '54';
+const ASSET_V = '55';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -39,6 +39,8 @@ const GAMES = {
   poker: { key: 'poker', theme: 'poker', name: 'Poker' },
   diapason: { key: 'diapason', theme: 'diapason', name: 'Diapason' },
   duel: { key: 'duel', theme: 'duel', name: 'Duel des Cités' },
+  teldes: { key: 'teldes', theme: 'teldes', name: 'Téléphone dessiné' },
+  nomcode: { key: 'nomcode', theme: 'nomcode', name: 'Nom de code' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -57,12 +59,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -121,7 +123,7 @@ class Game {
 
   addPlayer(id, name, host = false) {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.hl) HorsLimite.join(this.hl, id, p.name); if (this.so) Solitaire.join(this.so, id, p.name); if (this.pk) Poker.join(this.pk, id, p.name); if (this.dp) Diapason.join(this.dp, id, p.name); if (this.du) Duel.join(this.du, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.hl) HorsLimite.join(this.hl, id, p.name); if (this.so) Solitaire.join(this.so, id, p.name); if (this.pk) Poker.join(this.pk, id, p.name); if (this.dp) Diapason.join(this.dp, id, p.name); if (this.du) Duel.join(this.du, id, p.name); if (this.td) TelDes.join(this.td, id, p.name); if (this.nc) NomCode.join(this.nc, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
@@ -141,10 +143,12 @@ class Game {
     if (this.pk) Poker.join(this.pk, id, name);
     if (this.dp) Diapason.join(this.dp, id, name);
     if (this.du) Duel.join(this.du, id, name);
+    if (this.td) TelDes.join(this.td, id, name);
+    if (this.nc) NomCode.join(this.nc, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); if (this.hl) HorsLimite.setOnline(this.hl, id, false); if (this.so) Solitaire.setOnline(this.so, id, false); if (this.pk) Poker.setOnline(this.pk, id, false); if (this.dp) Diapason.setOnline(this.dp, id, false); if (this.du) Duel.setOnline(this.du, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); if (this.hl) HorsLimite.setOnline(this.hl, id, false); if (this.so) Solitaire.setOnline(this.so, id, false); if (this.pk) Poker.setOnline(this.pk, id, false); if (this.dp) Diapason.setOnline(this.dp, id, false); if (this.du) Duel.setOnline(this.du, id, false); if (this.td) TelDes.setOnline(this.td, id, false); if (this.nc) NomCode.setOnline(this.nc, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -189,6 +193,8 @@ class Game {
     if (s.mode === 'poker') return this.startPoker(o);
     if (s.mode === 'diapason') return this.startDiapason(o);
     if (s.mode === 'duel') return this.startDuel(o);
+    if (s.mode === 'teldes') return this.startTelDes(o);
+    if (s.mode === 'nomcode') return this.startNomCode(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -501,12 +507,15 @@ class Game {
     s.phase = 'dp';
   }
   // ================= Duel des Cités : à deux (ou contre le robot), les autres regardent =================
+  // ================= Téléphone dessiné et Nom de code =================
+  startTelDes(o) { const s = this.s; this.td = TelDes.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), speed: o.speed, length: o.length }); s.phase = 'td'; }
+  startNomCode(o) { const s = this.s; this.nc = NomCode.create({ hostId: s.players[0].id, players: withRobots(s, o.bots) }); s.phase = 'nc'; }
   startDuel(o) {
     const s = this.s;
     this.du = Duel.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rival: o.rival });
     s.phase = 'du';
   }
-  viewFor(base, pid) { if (this.du) return { ...base, du: Duel.view(this.du, pid) }; if (this.dp) return { ...base, dp: Diapason.view(this.dp, pid) }; if (this.so) return { ...base, so: Solitaire.view(this.so, pid) }; if (this.pk) return { ...base, pk: Poker.view(this.pk, pid) }; if (this.hl) return { ...base, hl: HorsLimite.view(this.hl, pid) }; if (this.nf) return { ...base, nf: Naufrages.view(this.nf, pid) }; if (this.mm) return { ...base, mm: Memes.view(this.mm, pid) }; if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  viewFor(base, pid) { if (this.td) return { ...base, td: TelDes.view(this.td, pid) }; if (this.nc) return { ...base, nc: NomCode.view(this.nc, pid) }; if (this.du) return { ...base, du: Duel.view(this.du, pid) }; if (this.dp) return { ...base, dp: Diapason.view(this.dp, pid) }; if (this.so) return { ...base, so: Solitaire.view(this.so, pid) }; if (this.pk) return { ...base, pk: Poker.view(this.pk, pid) }; if (this.hl) return { ...base, hl: HorsLimite.view(this.hl, pid) }; if (this.nf) return { ...base, nf: Naufrages.view(this.nf, pid) }; if (this.mm) return { ...base, mm: Memes.view(this.mm, pid) }; if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   /** Résumé d'une partie terminée, pour les podiums du salon ; null si la partie n'est pas allée au bout. */
   summary() {
@@ -525,6 +534,8 @@ class Game {
     if (this.lw?.phase === 'over') { const w = this.lw.players.filter(p => this.lw.winners.includes(p.id)); return pack('loupgarou', w.map(p => ({ name: p.name })), { note: this.lw.winner === 'village' ? 'Le village a gagné' : this.lw.winner === 'wolves' ? 'Les loups ont gagné' : this.lw.winner === 'lovers' ? 'Les amoureux ont gagné' : 'Personne n\u2019a survécu', team: true }); }
     if (this.nf?.phase === 'over') { const w = this.nf.players.filter(p => this.nf.winners.includes(p.id)); return pack('naufrages', w.map(p => ({ name: p.name })), { note: w.length ? `${w.length} rescapé${w.length > 1 ? 's' : ''} sur ${this.nf.players.filter(p => p.inGame).length}` : 'Aucun rescapé', team: true }); }
     if (this.so?.phase === 'over') return pack('solitaire', Solitaire.ranking(this.so).map(r => ({ name: r.name, score: r.found })), { unit: 'cartes' });
+    if (this.td?.phase === 'over') return pack('teldes', TelDes.ranking(this.td).map(r => ({ name: r.name, score: r.hearts })), { unit: 'cœurs' });
+    if (this.nc?.phase === 'over' && this.nc.winner !== null) { const w = this.nc.players.filter(p => p.inGame && p.team === this.nc.winner); return pack('nomcode', w.map(p => ({ name: p.name })), { note: `L\u2019équipe ${NomCode.TEAM[this.nc.winner]} gagne`, team: true }); }
     if (this.du?.phase === 'over') {
       const f = this.du.final, seats = this.du.seats, order = this.du.winner === 1 ? [1, 0] : [0, 1];
       return pack('duel', order.map(k => ({ name: seats[k].name, score: f ? f[k].total : 0 })), { unit: 'pts', note: this.du.winner < 0 ? 'Égalité parfaite' : `Victoire ${this.du.winType}` });
@@ -541,7 +552,7 @@ class Game {
   }
   restart() {
     this.record();
-    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null; this.nf = null; this.mm = null; this.hl = null; this.so = null; this.pk = null; this.dp = null; this.du = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null; this.nf = null; this.mm = null; this.hl = null; this.so = null; this.pk = null; this.dp = null; this.du = null; this.td = null; this.nc = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -662,7 +673,7 @@ async function hostGame() {
   net.game.addPlayer(net.me, net.name, true);
   attachHost(peer);
   setNet(true, 'hôte');
-  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false) || (g.hl ? HorsLimite.tick(g.hl) : false) || (g.mm ? Memes.tick(g.mm) : false) || (g.mi ? Mirage.tick(g.mi) : false) || (g.uc ? Undercover.tick(g.uc) : false) || (g.dp ? Diapason.tick(g.dp) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
+  setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false) || (g.td ? TelDes.tick(g.td) : false) || (g.nc ? NomCode.tick(g.nc) : false) || (g.hl ? HorsLimite.tick(g.hl) : false) || (g.mm ? Memes.tick(g.mm) : false) || (g.mi ? Mirage.tick(g.mi) : false) || (g.uc ? Undercover.tick(g.uc) : false) || (g.dp ? Diapason.tick(g.dp) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
   broadcast();
 }
 
@@ -685,6 +696,8 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('dz:')) return net.game.dz ? Douze.act(net.game.dz, pid, m) : 'Pas de partie de Douze en cours';
   if (typeof m.t === 'string' && m.t.startsWith('nf:')) return net.game.nf ? Naufrages.act(net.game.nf, pid, m) : 'Pas de partie de Naufragés en cours';
   if (typeof m.t === 'string' && m.t.startsWith('so:')) return net.game.so ? Solitaire.act(net.game.so, pid, m) : 'Pas de partie en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('td:')) return net.game.td ? TelDes.act(net.game.td, pid, m) : 'Pas de partie en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('nc:')) return net.game.nc ? NomCode.act(net.game.nc, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('du:')) return net.game.du ? Duel.act(net.game.du, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('dp:')) return net.game.dp ? Diapason.act(net.game.dp, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('pk:')) return net.game.pk ? Poker.act(net.game.pk, pid, m) : 'Pas de partie en cours';
@@ -935,6 +948,8 @@ function render() {
   else if (s.phase === 'pk') { show('s-poker'); renderPoker(s.pk); }
   else if (s.phase === 'dp') { show('s-diapason'); renderDiapason(s.dp); }
   else if (s.phase === 'du') { show('s-duel'); renderDuel(s.du); }
+  else if (s.phase === 'td') { show('s-teldes'); renderTelDes(s.td); }
+  else if (s.phase === 'nc') { show('s-nomcode'); renderNomCode(s.nc); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -1049,6 +1064,8 @@ function renderLobby(s) {
   $('#opts-poker').hidden = s.pick !== 'poker';
   $('#opts-diapason').hidden = s.pick !== 'diapason';
   $('#opts-duel').hidden = s.pick !== 'duel';
+  $('#opts-teldes').hidden = s.pick !== 'teldes';
+  $('#opts-nomcode').hidden = s.pick !== 'nomcode';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
   if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''}, robots compris. Il en faut au moins 5.` : `${n} joueurs, dont ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
@@ -1067,7 +1084,7 @@ function renderLobby(s) {
   }
   renderHistory(s);
   $('#lobby-wait').hidden = isHostPlayer();
-  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre dix-neuf jeux.';
+  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre vingt et un jeux.';
   $('#btn-start').textContent = chosen ? `Lancer ${GAMES[s.pick].name}` : 'Choisis un jeu';
   renderGuestOpts(s);
   if (isHostPlayer() && chosen) queueOptsShare();
@@ -1713,6 +1730,22 @@ const HELP = {
       <li>La pioche tourne une ou trois cartes. Vide, elle reprend le talon.</li>
       <li>Annuler ne coûte rien. Au bout du temps, on classe sur les cartes montées.</li>
     </ul>`,
+  teldes: `<h3>Téléphone dessiné</h3>
+    <p>Le téléphone arabe, en dessins. Chacun écrit une phrase, le voisin la dessine, le suivant devine le dessin, et ainsi de suite jusqu’au bout du carnet.</p>
+    <ul>
+      <li><b>Écrire :</b> une phrase à dessiner. Plus c’est absurde, mieux c’est. « Inspire-moi » en propose une.</li>
+      <li><b>Dessiner :</b> crayon, gomme, seau, trois épaisseurs. Pas de lettres, c’est la règle.</li>
+      <li><b>Deviner :</b> écris ce que tu vois, même si ça ne ressemble à rien.</li>
+      <li><b>La lecture :</b> l’hôte déroule les carnets un par un. Donne un cœur aux meilleurs moments.</li>
+    </ul>`,
+  nomcode: `<h3>Nom de code</h3>
+    <p>Deux équipes, 25 mots. Chaque espion connaît la couleur des mots et fait deviner les siens avec un seul mot et un nombre.</p>
+    <ul>
+      <li><b>L’espion</b> donne un indice qui relie plusieurs de ses mots, par exemple « Océan » pour 3.</li>
+      <li><b>Les agents</b> pointent un mot, puis le retournent. Jusqu’au nombre annoncé, plus un.</li>
+      <li>Un passant ou un mot adverse arrête le tour. L’assassin fait perdre la partie.</li>
+      <li>La première équipe qui retrouve tous ses agents gagne.</li>
+    </ul>`,
   duel: `<h3>Duel des Cités</h3>
     <p>À deux, bâtis la plus grande cité de l’Antiquité en trois âges. Les cartes forment une pyramide, et seules celles que rien ne recouvre se prennent.</p>
     <ul>
@@ -1960,8 +1993,8 @@ document.querySelectorAll('.gcard').forEach(b => b.onclick = () => act({ t: 'pic
 const FAMILIES = [
   { id: 'musique', icon: '🎵', name: 'Musique', short: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
   { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'poker', 'solitaire', 'duel'] },
-  { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['mirage', 'memes', 'limite'] },
-  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['sablier', 'diapason', 'petitbac', 'geo'] },
+  { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['teldes', 'mirage', 'memes', 'limite'] },
+  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['nomcode', 'sablier', 'diapason', 'petitbac', 'geo'] },
   { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', short: 'Rôles cachés', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages'] },
 ];
 let famCur = 'all'; try { famCur = localStorage.getItem('dc-fam') || 'all'; } catch { }
@@ -2062,6 +2095,16 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'limite', target: +$('#opt-hl-target').value, judge: $('#opt-hl-mode').value, soft: $('#opt-hl-soft').checked, bots: botsOpt('hl') } });
   }
   if (pick === 'solitaire') act({ t: 'start', opts: { mode: 'solitaire', draw: +$('#opt-so-draw').value, minutes: +$('#opt-so-minutes').value } });
+  if (pick === 'teldes') {
+    const n = (view?.players || []).filter(p => p.online).length + botsOpt('td');
+    if (n < 3) { toast('Le téléphone dessiné se joue à trois minimum : ajoute des robots'); return; }
+    act({ t: 'start', opts: { mode: 'teldes', bots: botsOpt('td'), speed: $('#opt-td-speed').value, length: $('#opt-td-length').value } });
+  }
+  if (pick === 'nomcode') {
+    const n = (view?.players || []).filter(p => p.online).length + botsOpt('nc');
+    if (n < 4) { toast('Nom de code se joue à quatre minimum, deux par équipe : ajoute des robots'); return; }
+    act({ t: 'start', opts: { mode: 'nomcode', bots: botsOpt('nc') } });
+  }
   if (pick === 'duel') {
     const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-du-rival').value;
     if (rival === 'ami' && n < 2) { toast('Il faut un ami connecté, ou choisis le robot'); return; }

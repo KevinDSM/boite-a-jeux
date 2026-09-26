@@ -414,7 +414,8 @@ function sabFloodFill(ctx, x, y, hex) {
   const img = ctx.getImageData(0, 0, W, H), d = img.data, i0 = (y * W + x) * 4;
   const tr = d[i0], tg = d[i0 + 1], tb = d[i0 + 2], ta = d[i0 + 3], [fr, fg, fb] = hexToRgb(hex), TOL2 = 64 * 64;
   if ((tr - fr) ** 2 + (tg - fg) ** 2 + (tb - fb) ** 2 + (ta - 255) ** 2 <= TOL2) return;
-  const match = i => (d[i] - tr) ** 2 + (d[i + 1] - tg) ** 2 + (d[i + 2] - tb) ** 2 + (d[i + 3] - ta) ** 2 <= TOL2;
+  // sur un fond transparent, les bords adoucis des traits (à moitié transparents) sont recouverts aussi : plus de liseré blanc
+  const match = i => (d[i] - tr) ** 2 + (d[i + 1] - tg) ** 2 + (d[i + 2] - tb) ** 2 + (d[i + 3] - ta) ** 2 <= TOL2 || (ta < 40 && d[i + 3] < 170);
   const stack = [x, y];
   while (stack.length) {
     const py = stack.pop(); let px = stack.pop();
@@ -462,20 +463,15 @@ sabCv.addEventListener('pointermove', e => { if (!sabCur) return; e.preventDefau
 ['pointerup', 'pointercancel'].forEach(ev => window.addEventListener(ev, () => { if (!sabCur) return; if (sabFlush) { clearTimeout(sabFlush); sabFlush = null; } sabFlushSeg(); sabCur = null; }));
 if (window.ResizeObserver) new ResizeObserver(() => { if (!$('#sab-draw').hidden) sabFitCanvas(); }).observe(sabCv);
 
-// palette et outils
-(function buildTools() {
-  const t = $('#sab-tools');
-  t.innerHTML = `<div class="swatches">${Sablier.DRAW_COLORS.map(c => `<button type="button" class="sw${c === '#1f2430' ? ' on' : ''}" data-c="${c}" style="background:${c}" aria-label="${c}"></button>`).join('')}<input type="color" id="sab-picker" value="#1f2430" aria-label="Autre couleur"></div>
-    <div class="row tools"><button type="button" class="btn small" data-w="0.005">Fin</button><button type="button" class="btn small on" data-w="0.012">Moyen</button><button type="button" class="btn small" data-w="0.028">Gros</button>
-    <button type="button" class="btn small" id="sab-fill">Seau</button><button type="button" class="btn small" id="sab-eraser">Gomme</button><button type="button" class="btn small" id="sab-undo">Annuler</button><button type="button" class="btn small" id="sab-clear">Tout effacer</button></div>`;
-  t.querySelectorAll('.sw').forEach(b => b.onclick = () => { sabColor = b.dataset.c; sabErase = false; t.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); $('#sab-eraser').classList.remove('on'); });
-  $('#sab-picker').oninput = e => { sabColor = e.target.value; sabErase = false; t.querySelectorAll('.sw').forEach(x => x.classList.remove('on')); };
-  t.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { sabWidth = +b.dataset.w; t.querySelectorAll('[data-w]').forEach(x => x.classList.toggle('on', x === b)); });
-  $('#sab-fill').onclick = () => { sabFill = !sabFill; sabErase = false; $('#sab-fill').classList.toggle('on', sabFill); $('#sab-eraser').classList.remove('on'); };
-  $('#sab-eraser').onclick = () => { sabErase = !sabErase; sabFill = false; $('#sab-eraser').classList.toggle('on', sabErase); $('#sab-fill').classList.remove('on'); };
-  $('#sab-undo').onclick = () => act({ t: 'sab:undo' });
-  $('#sab-clear').onclick = () => act({ t: 'sab:clear' });
-})();
+// palette et outils : la barre commune (toile.js), un seul outil actif à la fois
+const sabTool = { tool: 'pen', color: '#1f2430', width: 0.012 };
+toileToolbar($('#sab-tools'), sabTool, {
+  colors: Sablier.DRAW_COLORS,
+  onChange: st => { sabColor = st.color; sabWidth = st.width; sabErase = st.tool === 'eraser'; sabFill = st.tool === 'fill'; sabCv.dataset.tool = st.tool; },
+  onUndo: () => act({ t: 'sab:undo' }),
+  onClear: () => act({ t: 'sab:clear' }),
+});
+sabCv.dataset.tool = 'pen';
 
 // messages hors état : traits, canevas complet, réactions
 function sabOnMessage(m) {
