@@ -345,7 +345,7 @@ function buildRules() {
     const art = card.querySelector('.gart')?.innerHTML || '';
     const name = card.querySelector('.gname')?.textContent || g.key;
     const desc = card.querySelector('.gdesc')?.textContent || '';
-    const meta = card.querySelector('.gmeta')?.textContent || '';
+    const m = card.querySelector('.gmeta'), meta = m ? `${m.querySelector('b')?.textContent || ''} joueurs · ${m.querySelector('i')?.textContent || ''}`.replace('joueurs joueurs', 'joueurs') : '';
     const link = el('a', `rules-chip g-${card.className.match(/g-(\S+)/)?.[1] || g.key}`, `<span class="gart" aria-hidden="true">${art}</span><span class="gname">${name}</span>`);
     link.href = `#r-${g.key}`;
     link.onclick = e => { e.preventDefault(); $(`#r-${g.key}`).scrollIntoView({ behavior: 'smooth', block: 'start' }); };

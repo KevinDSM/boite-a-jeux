@@ -2991,3 +2991,142 @@ button.du-wcard:hover,.du-choice:hover{border-color:var(--acc)}
 .du-log{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:12.5px;color:var(--mute);text-align:center}
 .desk-side .du-log{text-align:left}
 @media (min-width: 700px){ .du-cap{max-width:120px;font-size:12.5px} .du-cells{height:30px} .du-pawn{font-size:17px} .du-loot{font-size:9.5px} }
+
+/* ====================================================================================================
+   CHARTE 2026 : ossature épurée, voix du meneur (voir PRODUCT.md et DESIGN.md)
+   Une seule famille, celle du système ; hiérarchie par la taille et le gras ; listes groupées plutôt
+   que cartes ; aucune étiquette en capitales espacées. Les jeux gardent leur couleur et leur dessin.
+   ==================================================================================================== */
+:root{--font:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,"Helvetica Neue",sans-serif}
+body{font-size:16px;line-height:1.45}
+.eyebrow{font-size:13px;letter-spacing:0;text-transform:none;font-weight:600;color:var(--mute)}
+.fine{font-size:13.5px}
+
+/* barre haute */
+.crumb,[data-game="eclair"] .crumb{font-family:var(--font);font-weight:600;font-size:16px;letter-spacing:0;text-transform:none}
+.ic{border-radius:10px;font-family:var(--font)}
+
+/* titres du shell */
+#s-home h1,#s-rules h1{font-family:var(--font);font-weight:700;font-size:clamp(36px,10vw,46px);letter-spacing:-.025em;line-height:1.02}
+.section-title{font-family:var(--font);font-weight:700;font-size:21px;letter-spacing:-.01em}
+.lede{font-size:17px;line-height:1.4;max-width:34ch}
+
+/* boutons et champs */
+.btn{font-family:var(--font);border-radius:13px;font-weight:600;letter-spacing:0}
+.btn.primary{font-weight:650}
+input,select{font-family:var(--font);border-radius:12px}
+
+/* ------------------------------------------------------------ accueil */
+.hub-hero{gap:12px}
+.gamebox{width:96px;height:80px}
+.gamebox svg{width:96px;height:80px}
+#in-code{letter-spacing:.3em;font-weight:700}
+.join-label{margin:8px 0 -4px;font-size:14px;font-weight:500;color:var(--ink-2)}
+.rules-entry{margin-top:4px;padding:14px 16px;border-radius:14px;gap:12px}
+.rules-entry-icon{display:none}
+.rules-entry-text b{font:600 16px var(--font);letter-spacing:0}
+.rules-entry-text small{font-size:13.5px}
+
+/* ------------------------------------------------------------ salon : la liste des jeux */
+#s-lobby .picker .section-title{font-size:26px;letter-spacing:-.02em;margin:0 0 12px}
+.gfilters{display:flex;width:fit-content;max-width:100%;gap:2px;padding:3px;margin:0 0 6px;background:var(--surface-2);border-radius:11px;overflow-x:auto;scrollbar-width:none}
+.gfilter{min-height:34px;padding:6px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font:600 14px var(--font);white-space:nowrap;cursor:pointer}
+.gfilter small{display:none}
+.gfilter[aria-pressed="true"]{background:var(--surface);color:var(--ink);border:0;box-shadow:0 1px 3px oklch(0 0 0/.22)}
+#games{display:block}
+.gfam{margin:0;padding:18px 4px 7px;font:600 13px/1.2 var(--font);letter-spacing:0;color:var(--mute)}
+.glist{display:grid;grid-template-columns:minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#games .gcard{display:grid;grid-template-columns:52px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:12px;row-gap:2px;align-items:center;
+  min-height:74px;padding:10px 14px 10px 10px;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none;color:var(--ink);text-align:left;transition:background .15s}
+#games .glist .gcard:first-child{border-top:0}
+#games .gcard:active{transform:none;background:var(--surface-2)}
+#games .gcard[aria-pressed="true"]{background:color-mix(in oklab, var(--acc) 13%, var(--surface));box-shadow:inset 0 0 0 2px var(--acc)}
+#games .gcard .gart{grid-row:1/3;grid-column:1;width:52px;height:52px;transform:scale(.8)}
+#games .gcard .gname{grid-column:2;grid-row:1;align-self:end;font:600 16px/1.2 var(--font);letter-spacing:0;text-transform:none;color:var(--ink)}
+#games .gcard .gname::after{content:none}
+#games .g-limite .gname::after{content:"18+";display:inline-block;margin-left:7px;padding:1px 5px;border-radius:5px;border:1px solid currentColor;font-size:10.5px;font-weight:700;color:var(--mute);vertical-align:2px}
+#games .gcard .gdesc{grid-column:2;grid-row:2;align-self:start;font-size:13.5px;line-height:1.35;color:var(--ink-2);text-transform:none;letter-spacing:0}
+#games .gcard .gmeta{grid-column:3;grid-row:1/3;margin:0;display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-size:12.5px;line-height:1.3;letter-spacing:0;color:var(--mute);white-space:nowrap}
+#games .gcard .gmeta b{font-weight:600;color:var(--ink-2)}
+#games .gcard .gmeta i{font-style:normal}
+#games .gcard:disabled{cursor:default}
+.gsoon{margin:14px 4px 0;padding:0;border:0;text-align:left;font-size:13.5px;color:var(--mute)}
+@media (min-width: 760px){
+  .glist{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #games .glist .gcard:nth-child(2){border-top:0}
+  #games .glist .gcard:nth-child(odd){border-right:1px solid var(--line)}
+  #games .glist .gcard:nth-child(odd):last-child{border-right:0}
+}
+
+/* ------------------------------------------------------------ salon : code, joueurs, réglages */
+.code-strip{flex-direction:column;align-items:flex-start;gap:6px;padding:0;background:none;border:0;border-radius:0}
+.code-strip .code{font-family:var(--font);font-weight:700;font-size:46px;letter-spacing:.08em;padding:0;line-height:1}
+.code-strip .fine{font-size:14px;color:var(--ink-2);max-width:40ch}
+.code-strip br{display:none}
+.players{align-items:center}
+.players-title{flex-basis:100%;margin-bottom:2px}
+.chip{animation:none;padding:6px 12px;gap:6px;font-size:14.5px}
+.chip .dot{display:none}
+.chip i{font-style:normal;font-size:12.5px;color:var(--mute)}
+.opts{gap:10px}
+.opts .fine{margin-top:-2px}
+.field.row{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:5px 8px 5px 14px;min-height:52px}
+.field.row>span{font-size:15px;color:var(--ink)}
+.field.row+.field.row{margin-top:-11px;border-top-left-radius:0;border-top-right-radius:0}
+.field.row:has(+ .field.row){border-bottom-left-radius:0;border-bottom-right-radius:0}
+.field.row select,.field.row input:not([type=checkbox]){min-height:40px;padding:6px 6px;border:0;background:transparent;color:var(--ink-2);text-align:right;text-align-last:right;box-shadow:none;max-width:62%}
+.field.row select:focus,.field.row input:not([type=checkbox]):focus{box-shadow:none;color:var(--ink)}
+.field.row select option{color:initial}
+.chips legend{font:600 13px var(--font);letter-spacing:0;text-transform:none;color:var(--mute)}
+.chips label{border-radius:99px;padding:8px 14px;font-size:14.5px}
+#lobby-wait{font-size:14.5px;color:var(--ink-2)}
+@media (min-width: 1100px){
+  .lobby-side{background:var(--surface-2);border-radius:16px;padding:22px 22px 18px}
+  .lobby-side #btn-start{box-shadow:0 12px 0 10px var(--surface-2),0 -16px 12px 2px var(--surface-2)}
+  .players{flex-direction:column;align-items:stretch;gap:0}
+  .players .chip{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:9px 2px;justify-content:space-between}
+  .players-title+.chip{border-top:0}
+  .players .chip .pname{flex:1}
+}
+
+/* ------------------------------------------------------------ Hors Limite */
+.hl-meta{margin:0;font-size:14px;color:var(--mute)}
+.hl-black{border-radius:16px;padding:24px 22px 40px}
+.hl-black p{font:700 25px/1.2 var(--font);letter-spacing:-.015em}
+.hl-brand{font:600 12px var(--font);letter-spacing:0;color:oklch(0.62 0.01 20)}
+.hl-pick{font:600 12.5px var(--font);letter-spacing:0;text-transform:none}
+.hl-status h3{margin:4px 0 0;font:700 27px/1.12 var(--font);letter-spacing:-.02em}
+.hl-say{margin:4px 0 0;font-size:17px;line-height:1.4;color:var(--ink-2);max-width:48ch}
+.hl-prog{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:13.5px;color:var(--mute);font-variant-numeric:tabular-nums}
+.hl-prog i{width:28px;height:5px;border-radius:3px;background:var(--line)}
+.hl-prog i.f{background:var(--acc)}
+.hl-prog span{margin-left:6px}
+.hl-preview{border-style:solid;border-radius:12px}
+.hl-white{font:700 15px/1.28 var(--font);border-radius:12px}
+.hl-white::after{font:600 9.5px var(--font);letter-spacing:0}
+.hl-answer p{font-size:17px}
+.hl-ranking li{border-radius:10px}
+.hl-players{flex-wrap:wrap;overflow:visible;margin:0;padding:0;gap:4px 14px;align-items:baseline}
+.hl-side-title{flex-basis:100%;margin:0 0 2px}
+.hl-player{flex-direction:row;align-items:baseline;gap:6px;min-width:0;padding:0;background:none;border:0;border-radius:0}
+.hl-player .hl-player-name{font-size:14.5px;max-width:none}
+.hl-player .hl-player-score{font-size:14.5px;font-weight:600;color:var(--ink)}
+.hl-player i{font-style:normal;font-size:12.5px;color:var(--mute)}
+.hl-player i.ok{color:var(--pos)}
+.hl-player.judge .hl-player-name{color:var(--acc)}
+.hl-log{text-align:left;font-size:13.5px;gap:4px}
+.hl-log li.hl-side-title{margin-bottom:0}
+.desk-side .hl-players{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:0}
+.desk-side .hl-player{justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)}
+.desk-side .hl-side-title+.hl-player{border-top:0}
+.desk-side .hl-player .hl-player-name{flex:1}
+@media (min-width: 700px){ .hl-black p{font-size:30px} .hl-status h3{font-size:32px} }
+
+/* charte, retouches du lot 1 */
+#btn-start{width:100%}
+#in-code:placeholder-shown{letter-spacing:0;font-weight:500}
+.hl-fill{font-family:var(--font);font-weight:700}
+/* interrupteur à la place de la case à cocher dans les réglages */
+.field.row input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:48px;height:30px;min-height:0;margin:0 6px 0 0;padding:0;border:0;border-radius:99px;cursor:pointer;background:radial-gradient(circle at 15px 50%, var(--surface) 0 11px, transparent 12px), var(--line);transition:background-color .2s}
+.field.row input[type=checkbox]:checked{background:radial-gradient(circle at 33px 50%, var(--on-acc) 0 11px, transparent 12px), var(--acc)}
+.field.row input[type=checkbox]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}

@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=52">
-<link rel="apple-touch-icon" href="icon-180.png?v=52">
+<link rel="manifest" href="manifest.json?v=53">
+<link rel="apple-touch-icon" href="icon-180.png?v=53">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Fraunces:opsz,wght,SOFT@9..144,700,40&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@700;800&family=Special+Elite&family=Space+Grotesk:wght@500;700&family=Lilita+One&family=Alfa+Slab+One&family=Fredoka:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&family=Archivo+Black&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=52">
+<link rel="stylesheet" href="style.css?v=53">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -73,7 +73,7 @@
       </svg>
     </div>
     <h1>Boîte à jeux</h1>
-    <p class="lede">Des jeux à jouer ensemble, chacun sur son téléphone.</p>
+    <p class="lede">Dix-neuf jeux pour la soirée. Sortez les téléphones.</p>
   </div>
 
   <form class="stack" id="f-home">
@@ -82,24 +82,24 @@
       <input id="in-name" maxlength="14" autocomplete="off" placeholder="Prénom" required>
     </label>
     <button class="btn primary lg" type="submit" data-act="create">Créer une partie</button>
-    <div class="or"><span>ou rejoindre</span></div>
+    <p class="join-label">Tu as un code ?</p>
     <div class="join-row">
-      <input id="in-code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie">
-      <button class="btn" type="submit" data-act="join">Entrer</button>
+      <input id="in-code" maxlength="4" placeholder="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie">
+      <button class="btn" type="submit" data-act="join">Rejoindre</button>
     </div>
     <p class="err" id="home-err" role="alert"></p>
   </form>
 
   <button class="rules-entry" id="btn-rules" type="button">
     <span class="rules-entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></span>
-    <span class="rules-entry-text"><b>Règles des jeux</b><small>Toutes les règles détaillées, jeu par jeu</small></span>
+    <span class="rules-entry-text"><b>Les règles</b><small>Tout ce qu’il faut savoir, jeu par jeu</small></span>
     <span class="rules-entry-go" aria-hidden="true">›</span>
   </button>
 
   <div class="hub-foot">
-    <button class="btn ghost" id="btn-solo">Essayer seul</button>
-    <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne marche pas ? Diagnostic réseau</button>
-    <p class="fine">19 jeux dans la boîte · d'autres arrivent</p>
+    <button class="btn ghost" id="btn-solo">Jouer seul, pour tester</button>
+    <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne se connecte pas ? Diagnostic</button>
+    <p class="fine">19 jeux, et d’autres en route.</p>
   </div>
 </section>
 
@@ -115,133 +115,133 @@
 <!-- ====================== SALON ====================== -->
 <section class="screen" id="s-lobby" hidden>
   <section class="picker">
-    <h2 class="section-title">Choisir un jeu</h2>
+    <h2 class="section-title">On joue à quoi ?</h2>
     <div class="games" id="games">
       <button class="gcard g-decennies" type="button" data-game="timeline">
         <span class="gart" aria-hidden="true"><span class="disc"></span></span>
         <span class="gname">Décennies</span>
-        <span class="gdesc">Place chaque chanson dans ta frise d'années. Le premier à remplir sa frise gagne.</span>
-        <span class="gmeta">1 à 8 joueurs · 30 min</span>
+        <span class="gdesc">Range les tubes dans l’ordre. Ton oreille contre ta mémoire.</span>
+        <span class="gmeta"><b>1 à 8</b><i>30 min</i></span>
       </button>
       <button class="gcard g-eclair" type="button" data-game="eclair">
         <span class="gart" aria-hidden="true"><span class="bolt"></span></span>
         <span class="gname">Éclair</span>
-        <span class="gdesc">Trouve le titre en un minimum de secondes. Plus tu es rapide, plus tu marques.</span>
-        <span class="gmeta">1 à 8 joueurs · 15 min</span>
+        <span class="gdesc">Une demi-seconde de son. Trouve le titre avant les autres.</span>
+        <span class="gmeta"><b>1 à 8</b><i>15 min</i></span>
       </button>
       <button class="gcard g-sprint" type="button" data-game="sprint">
         <span class="gart" aria-hidden="true"><span class="chrono"></span></span>
         <span class="gname">Sprint</span>
-        <span class="gdesc">Tout le monde écoute en même temps. Le premier à donner l'artiste et le titre rafle la mise.</span>
-        <span class="gmeta">1 à 8 joueurs · 15 min</span>
+        <span class="gdesc">Même chanson pour tout le monde. Le premier qui trouve gagne.</span>
+        <span class="gmeta"><b>1 à 8</b><i>15 min</i></span>
       </button>
       <button class="gcard g-sablier" type="button" data-game="sablier">
         <span class="gart" aria-hidden="true"><span class="hourglass"></span></span>
         <span class="gname">Sablier</span>
-        <span class="gdesc">Par équipes, fais deviner des cartes : d'abord librement, puis en un seul mot, puis en dessinant.</span>
-        <span class="gmeta">4 à 24 joueurs · 45 min · sans musique</span>
+        <span class="gdesc">Fais deviner des mots à ton équipe. Puis en un mot. Puis en dessin.</span>
+        <span class="gmeta"><b>4 à 24</b><i>45 min</i></span>
       </button>
       <button class="gcard g-undercover" type="button" data-game="undercover">
         <span class="gart" aria-hidden="true"><span class="dossier"></span></span>
         <span class="gname">Undercover</span>
-        <span class="gdesc">Tout le monde a le même mot secret, sauf l'intrus. Donnez des indices, votez, démasquez-le.</span>
-        <span class="gmeta">3 à 20 joueurs · 20 min · sans musique</span>
+        <span class="gdesc">Tout le monde a le même mot. Sauf un. Trouvez-le.</span>
+        <span class="gmeta"><b>3 à 20</b><i>20 min</i></span>
       </button>
       <button class="gcard g-geo" type="button" data-game="geo">
         <span class="gart" aria-hidden="true"><span class="compass"></span></span>
         <span class="gname">Boussole</span>
-        <span class="gdesc">Une photo de rue, quelque part dans le monde. Devine où tu es et pose ton épingle sur la carte.</span>
-        <span class="gmeta">1 à 20 joueurs · 15 min · sans musique</span>
+        <span class="gdesc">Une rue au bout du monde. Plante ton épingle au bon endroit.</span>
+        <span class="gmeta"><b>1 à 20</b><i>15 min</i></span>
       </button>
       <button class="gcard g-chromo" type="button" data-game="chromo">
         <span class="gart" aria-hidden="true"><span class="fan"><i></i><i></i><i></i></span></span>
         <span class="gname">Chromo</span>
-        <span class="gdesc">Débarrasse-toi de toutes tes cartes : même couleur ou même symbole, et des +2, +4 et jokers pour piéger les autres.</span>
-        <span class="gmeta">2 à 10 joueurs · 20 min · robots possibles</span>
+        <span class="gdesc">Vide ta main. Pourris celle des autres.</span>
+        <span class="gmeta"><b>2 à 10</b><i>20 min</i></span>
       </button>
       <button class="gcard g-kems" type="button" data-game="kems">
         <span class="gart" aria-hidden="true"><span class="quad"><i>R</i><i>R</i><i>R</i><i>R</i></span></span>
         <span class="gname">Kems</span>
-        <span class="gdesc">Réunis un carré, fais ton signal en douce à ton partenaire, et crie Kems avant que les adversaires ne flairent le coup.</span>
-        <span class="gmeta">4 joueurs, 2 équipes · 15 min · robots possibles</span>
+        <span class="gdesc">Un carré en main, un signal en douce, et on crie Kems.</span>
+        <span class="gmeta"><b>4 joueurs</b><i>15 min</i></span>
       </button>
       <button class="gcard g-mirage" type="button" data-game="mirage">
         <span class="gart" aria-hidden="true"><span class="dream"><i></i><i></i><i></i></span></span>
         <span class="gname">Mirage</span>
-        <span class="gdesc">Un indice, des images qui se ressemblent : fais deviner ta carte à certains, pas à tous.</span>
-        <span class="gmeta">3 à 8 joueurs · 30 min · tableaux du domaine public</span>
+        <span class="gdesc">Fais deviner ta carte à certains. Pas à tous.</span>
+        <span class="gmeta"><b>3 à 8</b><i>30 min</i></span>
       </button>
       <button class="gcard g-douze" type="button" data-game="douze">
         <span class="gart" aria-hidden="true"><span class="dzgrid"><i>-2</i><i></i><i>7</i><i></i><i>12</i><i></i></span></span>
         <span class="gname">Douze</span>
-        <span class="gdesc">Douze cartes cachées, un total à faire baisser : échange, retourne, vide tes colonnes, et ferme au bon moment.</span>
-        <span class="gmeta">2 à 8 joueurs · 25 min · robots possibles</span>
+        <span class="gdesc">Douze cartes cachées. Le plus petit total l’emporte.</span>
+        <span class="gmeta"><b>2 à 8</b><i>25 min</i></span>
       </button>
       <button class="gcard g-petitbac" type="button" data-game="petitbac">
         <span class="gart" aria-hidden="true"><span class="bac"><b>B</b><i></i><i></i><i></i></span></span>
         <span class="gname">Petit Brevet</span>
-        <span class="gdesc">Une lettre, des catégories : un prénom, un pays, un animal… Le premier qui a tout rempli crie stop.</span>
-        <span class="gmeta">1 à 20 joueurs · 20 min · sans musique</span>
+        <span class="gdesc">Une lettre, des catégories, et le premier qui a fini crie stop.</span>
+        <span class="gmeta"><b>1 à 20</b><i>20 min</i></span>
       </button>
       <button class="gcard g-loupgarou" type="button" data-game="loupgarou">
         <span class="gart" aria-hidden="true"><span class="lwart"><i class="lwart-moon"></i><svg viewBox="0 0 48 48" fill="currentColor"><path d="M8 44 13 30l-3-9 7 4 4-10 3 8 3-8 4 10 7-4-3 9 5 14z"/></svg></span></span>
         <span class="gname">Loup-Garou</span>
-        <span class="gdesc">Des loups se cachent parmi vous. La nuit ils dévorent, le jour le village vote. L'application fait le meneur.</span>
-        <span class="gmeta">5 à 20 joueurs · 30 min · de vive voix</span>
+        <span class="gdesc">La nuit, les loups mangent. Le jour, le village accuse.</span>
+        <span class="gmeta"><b>5 à 20</b><i>30 min</i></span>
       </button>
       <button class="gcard g-naufrages" type="button" data-game="naufrages">
         <span class="gart" aria-hidden="true"><span class="island"><i class="island-sun"></i><i class="island-palm">🌴</i><i class="island-raft"></i></span></span>
         <span class="gname">Naufragés</span>
-        <span class="gdesc">Échoués sur une île, construisez un radeau avant l'ouragan. Mais s'il n'y a pas assez à manger, le camp vote…</span>
-        <span class="gmeta">3 à 12 joueurs · 30 min · coopération et trahison</span>
+        <span class="gdesc">Construisez le radeau ensemble. Et votez quand l’eau manque.</span>
+        <span class="gmeta"><b>3 à 12</b><i>30 min</i></span>
       </button>
       <button class="gcard g-memes" type="button" data-game="memes">
         <span class="gart" aria-hidden="true"><span class="memeart"><b>QUAND</b><i>😂</i></span></span>
         <span class="gname">Mème pas vrai</span>
-        <span class="gdesc">Une situation, et chacun pose le mème ou le GIF de sa main qui y répond le mieux. Le plus drôle marque.</span>
-        <span class="gmeta">3 à 12 joueurs · 20 min · mèmes et GIF</span>
+        <span class="gdesc">Une situation, ton meilleur mème. Le plus drôle marque.</span>
+        <span class="gmeta"><b>3 à 12</b><i>20 min</i></span>
       </button>
       <button class="gcard g-limite" type="button" data-game="limite">
         <span class="gart" aria-hidden="true"><span class="hlart"><i class="b">___</i><i class="w"></i><i class="w"></i></span></span>
         <span class="gname">Hors Limite</span>
-        <span class="gdesc">Une phrase à trous, et ta main de cartes pour la compléter. Le plus drôle, ou le plus limite, marque le point.</span>
-        <span class="gmeta">3 à 12 joueurs · 20 min · humour pour adultes</span>
+        <span class="gdesc">Une phrase à trous. Tes pires cartes. Un juge sans pitié.</span>
+        <span class="gmeta"><b>3 à 12</b><i>20 min</i></span>
       </button>
       <button class="gcard g-solitaire" type="button" data-game="solitaire">
         <span class="gart" aria-hidden="true"><span class="soart"><i>A</i><i>2</i><i>3</i></span></span>
         <span class="gname">Solitaire</span>
-        <span class="gdesc">La patience classique, mais en course : même donne pour tout le monde, le premier qui monte ses 52 cartes gagne.</span>
-        <span class="gmeta">1 à 12 joueurs · 5 à 15 min · réflexion</span>
+        <span class="gdesc">La patience, mais en course. Même donne pour tout le monde.</span>
+        <span class="gmeta"><b>1 à 12</b><i>10 min</i></span>
       </button>
       <button class="gcard g-poker" type="button" data-game="poker">
         <span class="gart" aria-hidden="true"><span class="pkart"><i></i><i></i><i></i></span></span>
         <span class="gname">Poker</span>
-        <span class="gdesc">Texas Hold'em entre amis avec des jetons fictifs : blindes, relances, tapis et abattage. Des robots complètent la table.</span>
-        <span class="gmeta">2 à 9 joueurs · 30 min · bluff</span>
+        <span class="gdesc">Des jetons pour rire, des bluffs pour de vrai.</span>
+        <span class="gmeta"><b>2 à 9</b><i>30 min</i></span>
       </button>
       <button class="gcard g-diapason" type="button" data-game="diapason">
         <span class="gart" aria-hidden="true"><svg class="dpart" viewBox="0 0 60 34"><path d="M2 32 A28 28 0 0 1 58 32 Z" fill="#f1e6cf" stroke="#23304a" stroke-width="2.4"/><path d="M30 32 L38.6 5.4 A28 28 0 0 1 48.6 11.2 Z" fill="#f2a93b"/><path d="M30 32 L41.2 6.3 A28 28 0 0 1 45.7 8.8 Z" fill="#e8663d"/><path class="dpart-needle" d="M30 32 L16 9" stroke="#d63a2f" stroke-width="2.6" stroke-linecap="round"/><circle cx="30" cy="32" r="4" fill="#23304a"/></svg></span>
         <span class="gname">Diapason</span>
-        <span class="gdesc">Froid ou chaud, nul ou génial : le médium donne un indice, les autres placent l’aiguille au jugé. Soyez sur la même longueur d’onde.</span>
-        <span class="gmeta">2 à 12 joueurs · 20 min · chacun pour soi ou en équipes</span>
+        <span class="gdesc">Un indice, une aiguille, zéro télépathie.</span>
+        <span class="gmeta"><b>2 à 12</b><i>20 min</i></span>
       </button>
       <button class="gcard g-duel" type="button" data-game="duel">
         <span class="gart" aria-hidden="true"><span class="duart"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
         <span class="gname">Duel des Cités</span>
-        <span class="gdesc">Trois âges, une pyramide de cartes et quatre merveilles : bâtis la plus grande cité de l’Antiquité, ou écrase ton rival par les armes ou la science.</span>
-        <span class="gmeta">2 joueurs, ou toi contre le robot · 30 min · stratégie</span>
+        <span class="gdesc">Trois âges pour bâtir ta cité. Ou raser la sienne.</span>
+        <span class="gmeta"><b>2 joueurs</b><i>30 min</i></span>
       </button>
-      <div class="gsoon">Autres jeux en préparation</div>
+      <p class="gsoon">D’autres jeux arrivent bientôt.</p>
     </div>
   </section>
 
   <aside class="lobby-side">
   <div class="code-strip">
     <div>
-      <span class="eyebrow">Code</span>
+      <span class="eyebrow">Code du salon</span>
       <div class="code" id="lobby-code">····</div>
     </div>
-    <p class="fine">Tes amis ouvrent la même adresse <br>et tapent ce code. <br><b>Garde cette page ouverte</b> : c'est ton téléphone qui fait tourner la partie.</p>
+    <p class="fine">Donne ce code à la table. Et garde cet écran allumé : c’est lui qui fait tourner la soirée.</p>
   </div>
 
   <div class="players" id="lobby-players"></div>
@@ -312,7 +312,7 @@
       <p class="fine">Convenez d'un signal discret par équipe avant de commencer : il ne passe pas par le téléphone.</p>
     </div>
     <div class="opts" id="opts-mirage" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-mi-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-mi-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
       <label class="field row"><span>Cartes</span><select id="opt-mi-cards"><option value="art" selected>Tableaux du domaine public</option><option value="memes">Mèmes et GIF</option><option value="mix">Les deux mélangés</option></select></label>
       <label class="field row"><span>Jokers par joueur</span><select id="opt-mi-jokers"><option value="0">Aucun</option><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label>
       <label class="field row"><span>Partie en</span><select id="opt-mi-target"><option value="15">15 points, courte</option><option value="30" selected>30 points</option><option value="45">45 points, longue</option></select></label>
@@ -335,7 +335,7 @@
       <p class="fine">Décoché : chacun touche « J'ai fini », la manche s'arrête quand tout le monde a fini ou à la fin du chrono.</p>
     </div>
     <div class="opts" id="opts-loupgarou" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-lw-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-lw-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
       <label class="field row"><span>Loups-garous</span><select id="opt-lw-wolves"><option value="auto" selected>Selon le nombre</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
       <fieldset class="chips"><legend class="eyebrow">Rôles spéciaux</legend>
         <label><input type="checkbox" id="opt-lw-seer" checked>Voyante</label>
@@ -350,11 +350,11 @@
       <p class="fine">Posez ce téléphone au milieu, volume monté : il annonce la nuit, les réveils et les morts. Les autres rôles sont complétés par des villageois.</p>
     </div>
     <div class="opts" id="opts-limite" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-hl-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
-      <label class="field row"><span>Qui choisit la meilleure phrase</span><select id="opt-hl-mode"><option value="judge" selected>Un juge, à tour de rôle</option><option value="vote">Tout le monde vote</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-hl-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+      <label class="field row"><span>Qui tranche</span><select id="opt-hl-mode"><option value="judge" selected>Un juge qui tourne</option><option value="vote">Tout le monde vote</option></select></label>
       <label class="field row"><span>Partie en</span><select id="opt-hl-target"><option value="5">5 points</option><option value="7" selected>7 points</option><option value="10">10 points</option></select></label>
-      <label class="field row"><span>Mode soft, sans les cartes épicées</span><input id="opt-hl-soft" type="checkbox" class="tick"></label>
-      <p class="fine">Humour grinçant pour adultes, toutes les cartes sont écrites pour la Boîte à jeux.</p>
+      <label class="field row"><span>Version soft, sans les cartes épicées</span><input id="opt-hl-soft" type="checkbox" class="tick"></label>
+      <p class="fine">Humour noir, pour adultes. Toutes les cartes sont maison.</p>
     </div>
     <div class="opts" id="opts-naufrages" hidden>
       <label class="field row"><span>Robots naufragés</span><select id="opt-nf-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="6">6</option></select></label>
@@ -362,7 +362,7 @@
       <p class="fine">L'hôte lance les soirées et le départ du radeau : parlez-en avant de décider.</p>
     </div>
     <div class="opts" id="opts-memes" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-mm-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-mm-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
       <label class="field row"><span>Qui choisit le meilleur mème</span><select id="opt-mm-mode"><option value="judge" selected>Un juge, à tour de rôle</option><option value="vote">Tout le monde vote</option></select></label>
       <label class="field row"><span>Cartes</span><select id="opt-mm-kinds"><option value="mix" selected>Images et GIF</option><option value="img">Images seulement</option><option value="gif">GIF seulement</option></select></label>
       <label class="field row"><span>Partie en</span><select id="opt-mm-target"><option value="5">5 points</option><option value="7" selected>7 points</option><option value="10">10 points</option></select></label>
@@ -378,7 +378,7 @@
       <p class="fine">Un duel se joue à deux : l’hôte affronte le premier ami arrivé (ou le robot), les autres regardent la partie.</p>
     </div>
     <div class="opts" id="opts-diapason" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-dp-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-dp-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
       <label class="field row"><span>Façon de jouer</span><select id="opt-dp-mode"><option value="solo" selected>Chacun pour soi</option><option value="teams">En deux équipes (4 joueurs et plus)</option></select></label>
       <label class="field row"><span>Chacun pour soi : chacun est médium</span><select id="opt-dp-tours"><option value="1" selected>une fois</option><option value="2">deux fois</option><option value="3">trois fois</option></select></label>
       <label class="field row"><span>En équipes : partie en</span><select id="opt-dp-target"><option value="7">7 points</option><option value="10" selected>10 points</option><option value="15">15 points</option></select></label>
@@ -398,14 +398,14 @@
       <p class="fine">Les images viennent de Mapillary : la qualité varie d'un lieu à l'autre.</p>
     </div>
     <div class="opts" id="opts-undercover" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-uc-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-uc-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
       <label class="field row"><span>Undercovers</span><select id="opt-uc-count"><option value="auto" selected>Selon le nombre</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
       <label class="field row"><span>Mister White, un joueur sans mot</span><input id="opt-uc-white" type="checkbox" class="tick"></label>
       <label class="field row"><span>Nombre de manches</span><select id="opt-uc-rounds"><option>3</option><option selected>5</option><option>8</option></select></label>
       <p class="fine">Il reste toujours plus de civils que d'intrus : si la table est trop petite, Mister White ou un undercover est retiré automatiquement.</p>
     </div>
     <div class="opts" id="opts-sablier" hidden>
-      <label class="field row"><span>Robots, pour compléter ou tester</span><select id="opt-sab-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></label>
+      <label class="field row"><span>Robots à table</span><select id="opt-sab-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></label>
       <fieldset class="chips" id="opt-sab-rounds"><legend class="eyebrow">Manches, dans l'ordre</legend>
         <label><input type="checkbox" value="free" checked>Description libre</label>
         <label><input type="checkbox" value="word" checked>Un seul mot</label>
@@ -428,7 +428,7 @@
     </div>
     <button class="btn primary lg" id="btn-start">Lancer la partie</button>
   </div>
-  <p class="fine" id="lobby-wait">L'hôte choisit le jeu…</p>
+  <p class="fine" id="lobby-wait">L’hôte choisit le jeu.</p>
   <div class="guest-opts" id="lobby-guest-opts" hidden></div>
   </aside>
 </section>
@@ -624,29 +624,29 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=52"></script>
-<script src="app.js?v=52"></script>
-<script src="sablier-ui.js?v=52"></script>
-<script src="undercover.js?v=52"></script>
-<script src="geo-config.js?v=52"></script>
-<script src="geo.js?v=52"></script>
-<script src="chromo.js?v=52"></script>
-<script src="kems.js?v=52"></script>
-<script src="mirage.js?v=52"></script>
-<script src="douze.js?v=52"></script>
-<script src="petitbac.js?v=52"></script>
-<script src="loupgarou.js?v=52"></script>
-<script src="naufrages.js?v=52"></script>
-<script src="memes.js?v=52"></script>
-<script src="limite-cartes.js?v=52"></script>
-<script src="limite.js?v=52"></script>
-<script src="solitaire.js?v=52"></script>
-<script src="poker.js?v=52"></script>
-<script src="diapason-cartes.js?v=52"></script>
-<script src="diapason.js?v=52"></script>
-<script src="duel-cartes.js?v=52"></script>
-<script src="duel.js?v=52"></script>
-<script src="desk.js?v=52"></script>
-<script src="regles.js?v=52"></script>
+<script src="sablier-engine.js?v=53"></script>
+<script src="app.js?v=53"></script>
+<script src="sablier-ui.js?v=53"></script>
+<script src="undercover.js?v=53"></script>
+<script src="geo-config.js?v=53"></script>
+<script src="geo.js?v=53"></script>
+<script src="chromo.js?v=53"></script>
+<script src="kems.js?v=53"></script>
+<script src="mirage.js?v=53"></script>
+<script src="douze.js?v=53"></script>
+<script src="petitbac.js?v=53"></script>
+<script src="loupgarou.js?v=53"></script>
+<script src="naufrages.js?v=53"></script>
+<script src="memes.js?v=53"></script>
+<script src="limite-cartes.js?v=53"></script>
+<script src="limite.js?v=53"></script>
+<script src="solitaire.js?v=53"></script>
+<script src="poker.js?v=53"></script>
+<script src="diapason-cartes.js?v=53"></script>
+<script src="diapason.js?v=53"></script>
+<script src="duel-cartes.js?v=53"></script>
+<script src="duel.js?v=53"></script>
+<script src="desk.js?v=53"></script>
+<script src="regles.js?v=53"></script>
 </body>
 </html>

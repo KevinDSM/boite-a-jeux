@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '52';
+const ASSET_V = '53';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -1012,9 +1012,10 @@ function renderHistory(s) {
 function renderLobby(s) {
   $('#lobby-code').textContent = s.code;
   const wrap = $('#lobby-players'); wrap.innerHTML = '';
+  wrap.appendChild(el('span', 'eyebrow players-title', 'À table'));
   s.players.forEach(p => {
     const c = el('div', 'chip' + (p.host ? ' host' : '') + (p.online ? '' : ' off'));
-    c.innerHTML = `<span class="dot">${(p.name[0] || '?').toUpperCase()}</span>${p.name}${p.host ? ' · hôte' : ''}`;
+    c.innerHTML = `<span class="dot">${esc((p.name[0] || '?').toUpperCase())}</span><span class="pname">${esc(p.name)}</span>${p.host ? '<i>hôte</i>' : p.online ? '' : '<i>parti</i>'}`;
     wrap.appendChild(c);
   });
   document.querySelectorAll('.gcard').forEach(b => {
@@ -1067,7 +1068,8 @@ function renderLobby(s) {
   }
   renderHistory(s);
   $('#lobby-wait').hidden = isHostPlayer();
-  $('#lobby-wait').textContent = chosen ? `L'hôte prépare une partie de ${GAMES[s.pick].name}…` : 'L\'hôte choisit le jeu…';
+  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre dix-neuf jeux.';
+  $('#btn-start').textContent = chosen ? `Lancer ${GAMES[s.pick].name}` : 'Choisis un jeu';
   renderGuestOpts(s);
   if (isHostPlayer() && chosen) queueOptsShare();
 }
@@ -1651,11 +1653,12 @@ const HELP = {
     </ul>
     <p class="fine">Les morts gardent le silence. Les rôles de chacun sont détaillés dans la page Règles des jeux.</p>`,
   limite: `<h3>Hors Limite</h3>
-    <p>Une phrase à trous s'affiche. Chacun la complète avec la carte de sa main la plus drôle, la plus absurde ou la plus limite. Certaines phrases demandent deux cartes : touche-les dans l'ordre des trous.</p>
+    <p>Une phrase à trous, dix cartes en main. Complète-la avec la carte la plus drôle, ou la plus limite. Premier au score fixé, gagné.</p>
     <ul>
-      <li><b>Avec un juge :</b> à tour de rôle, un joueur lit les phrases complétées à voix haute et choisit sa préférée, qui marque 1 point.</li>
-      <li><b>Tout le monde vote :</b> chacun vote pour la meilleure phrase, jamais la sienne.</li>
-      <li>Rien ne va dans ta main ? Échange-la toute entière contre 1 point. Le mode soft retire les cartes les plus épicées.</li>
+      <li><b>Avec un juge :</b> chacun son tour, un joueur lit les phrases à voix haute et garde sa préférée. 1 point pour son auteur.</li>
+      <li><b>Tout le monde vote :</b> chacun vote pour sa préférée. Jamais la sienne.</li>
+      <li>Deux trous ? Touche tes cartes dans l’ordre.</li>
+      <li>Main pourrie ? Change-la entière contre 1 point. La version soft retire les cartes épicées.</li>
     </ul>`,
   solitaire: `<h3>Solitaire</h3>
     <p>La patience classique, en course : tout le monde reçoit exactement la même donne et joue sur son écran. Le premier qui monte les 52 cartes sur les fondations gagne.</p>
@@ -1903,16 +1906,18 @@ document.querySelectorAll('.gcard').forEach(b => b.onclick = () => act({ t: 'pic
 // ============================================================ familles de jeux
 // Les jeux sont rangés par famille, avec un intitulé, et des pastilles pour n'afficher qu'une famille.
 const FAMILIES = [
-  { id: 'musique', icon: '🎵', name: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
-  { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'poker', 'solitaire', 'duel'] },
-  { id: 'rire', icon: '😂', name: 'Humour et imagination', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['mirage', 'memes', 'limite'] },
-  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['sablier', 'diapason', 'petitbac', 'geo'] },
-  { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages'] },
+  { id: 'musique', icon: '🎵', name: 'Musique', short: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
+  { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'poker', 'solitaire', 'duel'] },
+  { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['mirage', 'memes', 'limite'] },
+  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['sablier', 'diapason', 'petitbac', 'geo'] },
+  { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', short: 'Rôles cachés', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages'] },
 ];
 let famCur = 'all'; try { famCur = localStorage.getItem('dc-fam') || 'all'; } catch { }
 function famApply() {
   if (!FAMILIES.some(f => f.id === famCur)) famCur = 'all';
-  document.querySelectorAll('#games > [data-fam]').forEach(n => { n.hidden = famCur !== 'all' && n.dataset.fam !== famCur && n.getAttribute('aria-pressed') !== 'true'; });
+  // une famille masquée reste visible si elle contient le jeu choisi par l'hôte
+  const keep = new Set([...document.querySelectorAll('#games .gcard[aria-pressed="true"]')].map(c => c.dataset.fam));
+  document.querySelectorAll('#games > [data-fam]').forEach(n => { n.hidden = famCur !== 'all' && n.dataset.fam !== famCur && !keep.has(n.dataset.fam); });
   document.querySelectorAll('#gfilters button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.fam === famCur)));
 }
 (function buildFamilies() {
@@ -1923,11 +1928,12 @@ function famApply() {
   FAMILIES.forEach(f => {
     const cards = f.games.map(g => grid.querySelector(`.gcard[data-game="${g}"]`)).filter(Boolean);
     if (!cards.length) return;
-    chip(f.id, `${f.icon} ${f.name}`, cards.length);
-    const head = el('div', 'gfam', `<span class="gfam-name"><span aria-hidden="true">${f.icon}</span> ${f.name}</span><span class="gfam-desc">${f.desc}</span>`);
+    chip(f.id, f.short || f.name, cards.length);
+    const head = el('h3', 'gfam', f.name);
     head.dataset.fam = f.id;
-    grid.insertBefore(head, soon);
-    cards.forEach(c => { c.dataset.fam = f.id; grid.insertBefore(c, soon); });
+    const box = el('div', 'glist'); box.dataset.fam = f.id;
+    grid.insertBefore(head, soon); grid.insertBefore(box, soon);
+    cards.forEach(c => { c.dataset.fam = f.id; box.appendChild(c); });
   });
   grid.parentNode.insertBefore(bar, grid);
   famApply();
