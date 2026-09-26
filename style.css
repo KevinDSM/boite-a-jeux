@@ -3150,3 +3150,36 @@ input,select{font-family:var(--font);border-radius:12px}
 .mj-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-top:1px solid var(--line);font-size:15px}
 .mj-row:first-child{border-top:0}
 @media (min-width: 700px){ .mj-title{font-size:32px} }
+
+/* ------------------------------------------------------------ page Règles (charte) */
+.rules-toc{display:block;margin-bottom:30px}
+.rules-fam{margin:0;padding:16px 4px 7px;font:600 13px/1.2 var(--font);letter-spacing:0;color:var(--mute)}
+.rules-fam:first-child{padding-top:0}
+.rules-toc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rules-chip{display:flex;align-items:center;gap:8px;min-width:0;padding:8px 10px;border:0;border-radius:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-decoration:none}
+.rules-chip:nth-child(-n+2){border-top:0}
+.rules-chip:nth-child(odd){border-right:1px solid var(--line)}
+.rules-chip:nth-child(odd):last-child{border-right:0}
+.rules-chip:active{transform:none;background:var(--surface-2)}
+.rules-chip:hover{background:var(--surface-2)}
+.rules-chip .gart{flex:0 0 auto;width:34px;height:34px;transform:scale(.6)}
+.rules-chip .gname{font:600 15px var(--font);letter-spacing:0;text-transform:none;color:var(--ink)}
+.rules-chip .gname::after{content:none}
+.rules-list{gap:44px}
+.rules-head{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:center;padding:0 0 4px;background:none;border:0;cursor:default}
+.rules-head .gart{width:56px;height:56px}
+.rules-head h2{margin:0;font:700 26px/1.1 var(--font);letter-spacing:-.02em;color:var(--ink)}
+.rules-hook{margin:3px 0 0;font-size:15px;color:var(--ink-2)}
+.rules-meta{margin:2px 0 0;font-size:13px;color:var(--mute)}
+.rules-part{padding:0}
+.rules-part h3{margin:0 0 6px;font:600 16.5px/1.25 var(--font);letter-spacing:0;text-transform:none;color:var(--ink)}
+.rules-top{padding:6px 0;font:500 14px var(--font);color:var(--mute)}
+@media (min-width: 1100px){
+  .rules-toc{position:sticky;top:calc(var(--bar-h) + env(safe-area-inset-top) + 12px);max-height:calc(100dvh - var(--bar-h) - 30px);overflow-y:auto;margin:0;padding-right:4px;scrollbar-width:thin}
+  .rules-toc-list{grid-template-columns:1fr}
+  .rules-chip{padding:6px 10px}
+  .rules-chip:nth-child(2){border-top:1px solid var(--line)}
+  .rules-chip:nth-child(odd){border-right:0}
+  .rules-chip .gart{width:30px;height:30px;transform:scale(.52)}
+  .rules-chip .gname{font-size:14.5px}
+}

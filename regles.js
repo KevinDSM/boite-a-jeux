@@ -337,25 +337,31 @@ function buildRules() {
   const root = $('#rules-main');
   const toc = el('nav', 'rules-toc'); toc.setAttribute('aria-label', 'Sommaire des jeux');
   const list = el('div', 'rules-list');
-  const famOrder = FAMILIES.flatMap(f => f.games);
-  const ordered = [...RULES].sort((x, y) => (famOrder.indexOf(x.key) + 1 || 99) - (famOrder.indexOf(y.key) + 1 || 99));
-  ordered.forEach(g => {
-    const card = document.querySelector(`.gcard[data-game="${g.key}"]`);
-    if (!card) return;
-    const art = card.querySelector('.gart')?.innerHTML || '';
-    const name = card.querySelector('.gname')?.textContent || g.key;
-    const desc = card.querySelector('.gdesc')?.textContent || '';
-    const m = card.querySelector('.gmeta'), meta = m ? `${m.querySelector('b')?.textContent || ''} joueurs · ${m.querySelector('i')?.textContent || ''}`.replace('joueurs joueurs', 'joueurs') : '';
-    const link = el('a', `rules-chip g-${card.className.match(/g-(\S+)/)?.[1] || g.key}`, `<span class="gart" aria-hidden="true">${art}</span><span class="gname">${name}</span>`);
-    link.href = `#r-${g.key}`;
-    link.onclick = e => { e.preventDefault(); $(`#r-${g.key}`).scrollIntoView({ behavior: 'smooth', block: 'start' }); };
-    toc.appendChild(link);
-    const sec = el('section', 'rules-game'); sec.id = `r-${g.key}`;
-    sec.innerHTML = `<header class="rules-head gcard ${card.className.match(/g-\S+/)?.[0] || ''}"><span class="gart" aria-hidden="true">${art}</span><span class="gname">${name}</span><span class="gdesc">${desc}</span><span class="gmeta">${meta}</span></header>`
-      + g.parts.map(([title, html]) => `<div class="rules-part"><h3>${title}</h3>${html}</div>`).join('')
-      + `<button class="rules-top" type="button">↑ Retour au sommaire</button>`;
-    sec.querySelector('.rules-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-    list.appendChild(sec);
+  const byKey = Object.fromEntries(RULES.map(g => [g.key, g]));
+  FAMILIES.forEach(f => {
+    const games = f.games.filter(k => byKey[k] && document.querySelector(`.gcard[data-game="${k}"]`));
+    if (!games.length) return;
+    toc.appendChild(el('h2', 'rules-fam', f.name));
+    const box = el('div', 'rules-toc-list');
+    games.forEach(k => {
+      const g = byKey[k], card = document.querySelector(`.gcard[data-game="${k}"]`);
+      const art = card.querySelector('.gart')?.innerHTML || '';
+      const name = card.querySelector('.gname')?.textContent || k;
+      const desc = card.querySelector('.gdesc')?.textContent || '';
+      const m = card.querySelector('.gmeta');
+      const meta = m ? `${m.querySelector('b')?.textContent || ''} joueurs · ${m.querySelector('i')?.textContent || ''}`.replace('joueurs joueurs', 'joueurs') : '';
+      const link = el('a', 'rules-chip', `<span class="gart" aria-hidden="true">${art}</span><span class="gname">${name}</span>`);
+      link.href = `#r-${k}`;
+      link.onclick = e => { e.preventDefault(); $(`#r-${k}`).scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+      box.appendChild(link);
+      const sec = el('section', 'rules-game'); sec.id = `r-${k}`;
+      sec.innerHTML = `<header class="rules-head"><span class="gart" aria-hidden="true">${art}</span><div><h2>${name}</h2><p class="rules-hook">${desc}</p><p class="rules-meta">${meta}</p></div></header>`
+        + g.parts.map(([title, html]) => `<div class="rules-part"><h3>${title}</h3>${html}</div>`).join('')
+        + '<button class="rules-top" type="button">Retour au sommaire</button>';
+      sec.querySelector('.rules-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+      list.appendChild(sec);
+    });
+    toc.appendChild(box);
   });
   root.append(toc, list);
   rulesBuilt = true;
