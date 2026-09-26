@@ -115,7 +115,7 @@ const Duel = (() => {
     room.first = f;
     room.draft = { pools: [w.slice(0, 4), w.slice(4)], pool: 0, order: [[f, g, g, f], [g, f, f, g]], step: 0 };
     room.cur = f;
-    log(room, `Repêchage des merveilles : ${seats[f].name} choisit en premier.`);
+    log(room, `Repêchage des merveilles. ${seats[f].name} choisit en premier.`);
     return room;
   }
   function draftPick(room, s, w) {
@@ -128,7 +128,7 @@ const Duel = (() => {
     if (d.step >= 4) { d.pool += 1; d.step = 0; }
     if (d.pool >= 2) {
       room.phase = 'play'; room.age = 1; deal(room); room.cur = room.first;
-      log(room, `Âge I : ${room.seats[room.first].name} commence.`);
+      log(room, `Âge I. ${room.seats[room.first].name} commence.`);
     } else room.cur = d.order[d.pool][d.step];
     bump(room); return null;
   }
@@ -137,14 +137,14 @@ const Duel = (() => {
   function win(room, s, type) {
     if (room.winner !== null) return;
     room.winner = s; room.winType = type; room.phase = 'over'; room.final = scores(room);
-    log(room, `${room.seats[s].name} remporte une victoire ${type} !`);
+    log(room, `Victoire ${type} pour ${room.seats[s].name}.`);
   }
   function military(room, s, n) {
     if (!n) return;
     room.military = Math.max(-9, Math.min(9, room.military + (s === 0 ? n : -n)));
     [[3, 2], [6, 5]].forEach(([at, loss]) => {
-      if (room.military >= at && !room.milTok['1-' + at]) { room.milTok['1-' + at] = true; const c = room.city[1]; const l = Math.min(loss, c.coins); c.coins -= l; log(room, `${room.seats[1].name} est pillé : −${l} pièces.`); }
-      if (room.military <= -at && !room.milTok['0-' + at]) { room.milTok['0-' + at] = true; const c = room.city[0]; const l = Math.min(loss, c.coins); c.coins -= l; log(room, `${room.seats[0].name} est pillé : −${l} pièces.`); }
+      if (room.military >= at && !room.milTok['1-' + at]) { room.milTok['1-' + at] = true; const c = room.city[1]; const l = Math.min(loss, c.coins); c.coins -= l; log(room, `${room.seats[1].name} se fait piller ${l} pièce${l > 1 ? 's' : ''}.`); }
+      if (room.military <= -at && !room.milTok['0-' + at]) { room.milTok['0-' + at] = true; const c = room.city[0]; const l = Math.min(loss, c.coins); c.coins -= l; log(room, `${room.seats[0].name} se fait piller ${l} pièce${l > 1 ? 's' : ''}.`); }
     });
     if (Math.abs(room.military) >= 9) win(room, room.military > 0 ? 0 : 1, 'militaire');
   }
@@ -181,7 +181,7 @@ const Duel = (() => {
     if (W.destroy && opp.cards.some(i => CARD(i).t === W.destroy)) room.pending.push({ type: 'destroy', seat: s, color: W.destroy });
     if (W.library && room.tokensSpare.length) room.pending.push({ type: 'library', seat: s, options: shuffle(room.tokensSpare.slice()).slice(0, 3) });
     if (W.revive && room.discard.length) room.pending.push({ type: 'revive', seat: s });
-    if (builtWonders(room.city[0]) + builtWonders(room.city[1]) >= 7) room.city.forEach(c => c.wonders.forEach(w => { if (!w.built && !w.lost) { w.lost = true; log(room, `La 7e merveille est bâtie : ${WONDER(w.w).n} ne le sera jamais.`); } }));
+    if (builtWonders(room.city[0]) + builtWonders(room.city[1]) >= 7) room.city.forEach(c => c.wonders.forEach(w => { if (!w.built && !w.lost) { w.lost = true; log(room, `Septième merveille bâtie. ${WONDER(w.w).n} ne le sera jamais.`); } }));
     if (W.sh) military(room, s, W.sh);
   }
   function applyToken(room, s, k) {
@@ -199,12 +199,12 @@ const Duel = (() => {
     if (m.how === 'build') {
       const pr = cardPrice(room, s, b.card); if (pr.total > city.coins) return 'Pas assez de pièces';
       b.taken = true; room.lastSeat = s;
-      log(room, `${name} construit ${c.n}${pr.chain ? ' (gratuit par enchaînement)' : pr.total ? ` pour ${pr.total} pièce${pr.total > 1 ? 's' : ''}` : ''}.`);
+      log(room, `${name} construit ${c.n}${pr.chain ? ' gratuitement, par enchaînement' : pr.total ? ` pour ${pr.total} pièce${pr.total > 1 ? 's' : ''}` : ''}.`);
       buildCard(room, s, b.card, false);
     } else if (m.how === 'discard') {
       b.taken = true; room.lastSeat = s;
       const gain = 2 + count(city, 'jaune'); city.coins += gain; room.discard.push(b.card);
-      log(room, `${name} défausse ${c.n} (+${gain} pièces).`);
+      log(room, `${name} défausse ${c.n} et prend ${gain} pièces.`);
     } else if (m.how === 'wonder') {
       const slot = city.wonders[m.w]; if (!slot || slot.built || slot.lost) return null;
       const pr = price(room, s, WONDER(slot.w).c, 'wonder'); if (pr.total > city.coins) return 'Pas assez de pièces';
@@ -255,7 +255,7 @@ const Duel = (() => {
   function startAge(room, s, who) {
     if (room.phase !== 'start' || room.chooser !== s || (who !== 0 && who !== 1)) return null;
     room.age += 1; room.phase = 'play'; room.chooser = null; deal(room); room.cur = who;
-    log(room, `Âge ${['', 'I', 'II', 'III'][room.age]} : ${room.seats[who].name} commence.`);
+    log(room, `Âge ${['', 'I', 'II', 'III'][room.age]}. ${room.seats[who].name} commence.`);
     bump(room); return null;
   }
 
@@ -277,7 +277,7 @@ const Duel = (() => {
     const sc = scores(room);
     room.final = sc; room.phase = 'over'; room.winType = 'civile';
     room.winner = sc[0].total !== sc[1].total ? (sc[0].total > sc[1].total ? 0 : 1) : sc[0].bleu !== sc[1].bleu ? (sc[0].bleu > sc[1].bleu ? 0 : 1) : -1;
-    log(room, room.winner >= 0 ? `Fin de l’âge III : ${room.seats[room.winner].name} gagne ${sc[room.winner].total} à ${sc[other(room.winner)].total}.` : `Fin de l’âge III : égalité parfaite, ${sc[0].total} partout.`);
+    log(room, room.winner >= 0 ? `Fin de l’âge III. ${room.seats[room.winner].name} gagne ${sc[room.winner].total} à ${sc[other(room.winner)].total}.` : `Fin de l’âge III. Égalité parfaite, ${sc[0].total} partout.`);
     bump(room);
   }
 
@@ -429,14 +429,14 @@ function duEffLong(c) {
   if (c.p) out.push(`Produit ${c.p.split('').map(r => DU_RES[r] + ' ' + DU_RES_NAME[r]).join(', ')} à chaque tour.`);
   if (c.ch) out.push(`Produit au choix ${c.ch.split('').map(r => DU_RES[r]).join(' ou ')} à chaque tour.`);
   if (c.tr) out.push(`Tu achètes ${c.tr.split('').map(r => DU_RES[r] + ' ' + DU_RES_NAME[r]).join(' et ')} à 1 pièce seulement.`);
-  if (c.sci) out.push(`Symbole scientifique ${DU_SCI[c.sci]} : deux fois le même donne un jeton progrès, six différents font gagner.`);
-  if (c.sh) out.push(`${c.sh} bouclier${c.sh > 1 ? 's' : ''} : le pion avance d’autant vers la capitale adverse.`);
+  if (c.sci) out.push(`Symbole scientifique ${DU_SCI[c.sci]} : deux fois le même donne un jeton progrès, six différents font gagner.`);
+  if (c.sh) out.push(`${c.sh} bouclier${c.sh > 1 ? 's' : ''} : le pion avance d’autant vers la capitale adverse.`);
   if (c.co) out.push(`+${c.co} pièces tout de suite.`);
   if (c.per) out.push(`+${c.pc} pièce${c.pc > 1 ? 's' : ''} par ${c.per === 'merveille' ? 'merveille bâtie' : `carte ${c.per === 'brun' ? 'marron' : c.per}`} de ta cité, tout de suite.`);
   if (c.g) out.push(DU_GUILD[c.g]);
   if (c.vp) out.push(`${c.vp} point${c.vp > 1 ? 's' : ''} de victoire.`);
   if (c.cf) out.push(`Gratuit si tu as ${DU_CHAIN[c.cf]}.`);
-  if (c.ct) out.push(`Donne ${DU_CHAIN[c.ct]} : une carte d’un âge suivant sera gratuite.`);
+  if (c.ct) out.push(`Donne ${DU_CHAIN[c.ct]} : une carte d’un âge suivant sera gratuite.`);
   return out.join(' ');
 }
 function duWonderLong(W) {
@@ -450,27 +450,27 @@ function duWonderLong(W) {
   if (W.ch) out.push(`produit au choix ${W.ch.split('').map(r => DU_RES[r]).join(' ou ')}`);
   if (W.replay) out.push('tu rejoues');
   if (W.vp) out.push(`${W.vp} points`);
-  return out.join(', ') + '.';
+  const t = out.join(', ') + '.';
+  return t.charAt(0).toUpperCase() + t.slice(1);
 }
 const duToken = k => DU_TOKENS.find(t => t.k === k);
 
 function duCity(v, k) {
-  const c = v.cities[k], seat = v.seats[k], me = k === v.mySeat;
-  const d = el('div', `du-city${me ? ' mine' : ' opp'}${v.cur === k && v.phase !== 'over' ? ' turn' : ''}`);
-  const prod = Object.entries(c.prod).map(([r, n]) => `<span class="du-res${n ? '' : ' zero'}">${DU_RES[r]}<b>${n}</b></span>`).join('');
+  const c = v.cities[k], seat = v.seats[k], me = k === v.mySeat, turn = v.cur === k && v.phase !== 'over';
+  const d = el('div', `du-city${me ? ' mine' : ' opp'}${turn ? ' turn' : ''}`);
+  const prod = Object.entries(c.prod).map(([r, n]) => `<span class="du-res${n ? '' : ' zero'}" title="${DU_RES_NAME[r]}">${DU_RES[r]}<b>${n}</b></span>`).join('');
   const extra = [...c.choices.map(ch => `<span class="du-res ch">${ch.split('').map(r => DU_RES[r]).join('/')}</span>`), ...c.trade.map(r => `<span class="du-res tr">${DU_RES[r]}=1</span>`)].join('');
-  const groups = ['brun', 'gris', 'jaune', 'rouge', 'bleu', 'vert', 'violet'].map(t => {
-    const list = c.cards.filter(i => DU_CARDS[i].t === t); if (!list.length) return '';
-    return list.map(i => `<button type="button" class="du-pill t-${t}" data-info="c${i}">${esc(DU_CARDS[i].n)}</button>`).join('');
-  }).join('');
+  const groups = ['brun', 'gris', 'jaune', 'rouge', 'bleu', 'vert', 'violet'].map(t => c.cards.filter(i => DU_CARDS[i].t === t)
+    .map(i => `<button type="button" class="du-pill t-${t}" data-info="c${i}">${esc(DU_CARDS[i].n)}</button>`).join('')).join('');
   const sci = Object.entries(c.sci).map(([s, n]) => `<span class="du-sci">${DU_SCI[s]}${n > 1 ? '×2' : ''}</span>`).join('');
-  const wonders = c.wonders.map(w => { const W = DU_WONDERS[w.w]; return `<button type="button" class="du-w${w.built ? ' built' : ''}${w.lost ? ' lost' : ''}" data-info="w${w.w}"><b>${esc(W.n)}</b><span>${w.built ? '✓ bâtie' : w.lost ? 'perdue' : duCost(W.c)}</span></button>`; }).join('');
-  const tokens = c.tokens.map(t => `<button type="button" class="du-tok small" data-info="t${t}">${duToken(t).i}</button>`).join('');
-  d.innerHTML = `<div class="du-city-head"><span class="du-city-name">${seat.bot ? '🤖 ' : ''}${esc(seat.name)}${me ? ' <small>(toi)</small>' : ''}${seat.online ? '' : ' <small>· hors ligne</small>'}</span><span class="du-coins"><span class="du-coin">${c.coins}</span></span><span class="du-score">${c.vp} ★</span></div>`
-    + `<div class="du-prodrow">${prod}${extra}</div>`
-    + (sci || tokens ? `<div class="du-scirow">${sci}${tokens}</div>` : '')
-    + `<div class="du-wonders">${wonders}</div>`
-    + (groups ? `<div class="du-pills">${groups}</div>` : '');
+  const wonders = c.wonders.map(w => { const W = DU_WONDERS[w.w]; return `<button type="button" class="du-w${w.built ? ' built' : ''}${w.lost ? ' lost' : ''}" data-info="w${w.w}"><b>${esc(W.n)}</b><span>${w.built ? 'bâtie' : w.lost ? 'perdue' : duCost(W.c)}</span></button>`; }).join('');
+  const tokens = c.tokens.map(t => `<button type="button" class="du-tok small" data-info="t${t}" title="${esc(duToken(t).n)}">${duToken(t).i}</button>`).join('');
+  const tag = turn ? `<span class="du-city-turn">${me ? 'à toi' : 'joue'}</span>` : '';
+  d.innerHTML = `<div class="du-city-head"><span class="du-city-name">${seat.bot ? '🤖 ' : ''}${esc(seat.name)}${me ? ' <small>toi</small>' : ''}${seat.online ? '' : ' <small>hors ligne</small>'}</span>${tag}<span class="du-coins" title="pièces"><span class="du-coin">${c.coins}</span></span><span class="du-score">${c.vp} point${c.vp > 1 ? 's' : ''}</span></div>`
+    + `<div class="du-city-row"><span class="du-lbl">Production</span><div class="du-prodrow">${prod}${extra}</div></div>`
+    + (sci || tokens ? `<div class="du-city-row"><span class="du-lbl">Science et progrès</span><div class="du-scirow">${sci}${tokens}</div></div>` : '')
+    + (wonders ? `<div class="du-city-row"><span class="du-lbl">Merveilles</span><div class="du-wonders">${wonders}</div></div>` : '')
+    + (groups ? `<div class="du-city-row"><span class="du-lbl">Bâtiments</span><div class="du-pills">${groups}</div></div>` : '');
   return d;
 }
 
@@ -497,6 +497,54 @@ function duCardTile(v, b, W) {
   return `<button type="button" class="${cls.join(' ')}" data-bi="${b.bi}"><span class="du-cc">${duCost(c.c).replace('<span class="du-free">gratuit</span>', '')}</span><span class="du-eff">${duEffShort(c)}</span>${W > 58 ? `<span class="du-nm">${esc(c.n)}</span>` : ''}${c.ct ? `<span class="du-ct">${DU_CHAIN[c.ct]}</span>` : ''}${tag}</button>`;
 }
 
+const DU_AGE = ['', 'I', 'II', 'III'];
+const duPieces = n => `${n} pièce${n > 1 ? 's' : ''}`;
+
+/** Ce que dit le meneur : [titre, réplique]. Les variantes suivent l'âge et le nombre de cartes prises : stables pendant un tour. */
+function duVoice(v) {
+  const me = v.mySeat, watch = me < 0, opp = me === 1 ? 0 : 1;
+  const taken = v.board.filter(b => b.taken).length;
+  const say = list => list[(v.age + taken) % list.length];
+  const name = s => esc(v.seats[s]?.name || '');
+  const cur = name(v.cur);
+  if (v.phase === 'draft') {
+    const k = v.draft.pool.length;
+    if (v.draft.picker === me) return ['À toi de choisir.', ['Une merveille pour ta cité. Chacun en aura quatre.', 'Prends celle qui te fait envie. Chacun en aura quatre.'][k % 2]];
+    return [`${cur} choisit.`, watch ? 'Tu regardes la partie.' : ['Croise les doigts pour ta préférée.', 'Il reste de belles merveilles. Pour l’instant.'][k % 2]];
+  }
+  if (v.phase === 'start') {
+    const next = DU_AGE[v.age + 1];
+    if (v.chooser === me) return ['Tu choisis qui commence.', v.military !== 0 ? `Ton armée traîne, alors tu décides qui ouvre l’âge ${next}.` : `Tu as pris la dernière carte, alors tu décides qui ouvre l’âge ${next}.`];
+    return [`${name(v.chooser)} choisit qui commence.`, `L’âge ${next} se prépare.`];
+  }
+  if (v.phase === 'over') {
+    const w = v.winner, f = v.final;
+    if (w < 0) return ['Égalité parfaite.', `${f[0].total} points partout, et autant de bleu. Personne ne gagne.`];
+    const title = w === me ? 'Tu gagnes.' : `${name(w)} gagne.`;
+    const line = v.winType === 'militaire' ? 'Victoire militaire. Le pion a pris la capitale.'
+      : v.winType === 'scientifique' ? 'Victoire scientifique. Six symboles, rien à ajouter.'
+        : `Victoire civile, ${f[w].total} points à ${f[1 - w].total}.`;
+    return [title, line];
+  }
+  const p = v.pending;
+  if (p) {
+    const color = p.color === 'brun' ? 'marron' : 'grise';
+    if (p.mine) return {
+      token: ['Deux symboles pareils.', 'Prends un jeton progrès.'],
+      library: ['Grande Bibliothèque.', 'Un jeton parmi ces trois, tirés hors du jeu.'],
+      destroy: ['Place à la démolition.', `Choisis la carte ${color} à raser chez ${name(opp)}.`],
+      revive: ['Fouille la défausse.', 'La carte choisie se construit gratuitement.'],
+    }[p.type];
+    return [`${esc(p.who)} choisit.`, {
+      token: 'Un jeton progrès à empocher.', library: 'Un jeton progrès, tiré hors du jeu.',
+      destroy: watch ? `Une carte ${color} va y passer.` : `Une de tes cartes ${p.color === 'brun' ? 'marron' : 'grises'} va y passer.`, revive: 'La défausse se fait fouiller.',
+    }[p.type]];
+  }
+  if (v.myTurn) return ['À toi.', say(['Ta cité attend ses ouvriers.', 'Choisis bien, ton rival lorgne peut-être la même carte.', 'Chaque carte que tu laisses, l’autre peut la prendre.'])];
+  if (watch) return [`${cur} joue.`, 'Tu regardes la partie.'];
+  return [`${cur} joue.`, say(['Touche une carte pour la lire en attendant.', 'Surveille ses pièces, et la piste militaire.', 'Prépare ta riposte.'])];
+}
+
 function renderDuel(v) {
   if (!v) return;
   const root = $('#du-main'); root.innerHTML = '';
@@ -505,14 +553,18 @@ function renderDuel(v) {
   const key = v.age + ':' + v.phase;
   if (key !== duSelKey) { duSelKey = key; duSel = null; }
   if (duSel !== null && (!v.board[duSel] || v.board[duSel].taken)) duSel = null;
-  const curName = v.seats[v.cur]?.name || '';
 
-  let head = '';
-  if (v.phase === 'draft') head = `Repêchage des merveilles · ${v.draft.picker === me ? 'à toi de choisir' : `${esc(curName)} choisit`}`;
-  else if (v.phase === 'play') head = `Âge ${['', 'I', 'II', 'III'][v.age]} · ${v.pending ? (v.pending.mine ? 'à toi de choisir' : `${esc(v.pending.who)} choisit`) : v.myTurn ? 'à toi de jouer' : `à ${esc(curName)} de jouer`}`;
-  else if (v.phase === 'start') head = `Fin de l’âge ${['', 'I', 'II'][v.age]}`;
-  else head = 'Partie terminée';
-  root.appendChild(el('div', 'du-head', `<span class="eyebrow">${head}</span>${watch ? '<span class="du-watch">Tu regardes la partie</span>' : ''}`));
+  // ce qui se passe, dit par le meneur
+  let meta = '';
+  if (v.phase === 'draft') meta = 'Repêchage des merveilles';
+  else if (v.phase === 'play') {
+    const left = v.board.filter(b => !b.taken).length;
+    meta = `Âge ${DU_AGE[v.age]} · ${left} carte${left > 1 ? 's' : ''} à prendre${v.discard.length ? ` · ${v.discard.length} à la défausse` : ''}`;
+  } else if (v.phase === 'start') meta = `Fin de l’âge ${DU_AGE[v.age]}`;
+  else meta = `Partie terminée${v.winType ? ` · victoire ${v.winType}` : ''}`;
+  root.appendChild(el('p', 'mj-meta', meta));
+  const [title, line] = duVoice(v);
+  root.appendChild(el('div', 'mj-status du-status', `<h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>`));
 
   root.appendChild(duCity(v, watch ? 1 : opp));
   root.appendChild(duTrack(v));
@@ -530,77 +582,77 @@ function renderDuel(v) {
     pyr.innerHTML = v.board.filter(b => !b.taken).map(b => duCardTile(v, b, W).replace('<button', `<button style="left:${Math.round((b.x - minX) * unit + 2)}px;top:${b.r * step}px;z-index:${b.r + 1}"`)).join('');
     pyr.onclick = e => { const t = e.target.closest('[data-bi]'); if (!t) return; const bi = +t.dataset.bi; duSel = duSel === bi ? null : bi; duInfo = null; renderDuel(view.du); };
     root.appendChild(el('div', 'du-pyr-wrap')).appendChild(pyr);
-    if (v.discard.length) root.appendChild(el('p', 'du-discard', `Défausse : ${v.discard.length} carte${v.discard.length > 1 ? 's' : ''}`));
   }
 
   // le panneau d'action
   const sheet = el('div', 'du-sheet');
   if (v.phase === 'draft') {
     const mine = v.draft.picker === me;
-    sheet.appendChild(el('p', 'du-hint', mine ? 'Choisis une merveille pour ta cité. Chacun en aura quatre.' : `${esc(curName)} choisit une merveille…`));
-    const list = el('div', 'du-wlist');
+    const list = el('div', 'mj-list du-wlist');
     v.draft.pool.forEach(w => {
       const W = DU_WONDERS[w];
-      const b = el(mine ? 'button' : 'div', 'du-wcard', `<b>${esc(W.n)}</b><span class="du-wcost">${duCost(W.c)}</span><span class="du-wtxt">${duWonderLong(W)}</span>`);
+      const b = el(mine ? 'button' : 'div', 'mj-row du-wcard', `<b>${esc(W.n)}</b><span class="du-wcost">${duCost(W.c)}</span><span class="du-wtxt">${duWonderLong(W)}</span>`);
       if (mine) { b.type = 'button'; b.onclick = () => act({ t: 'du:draft', w }); }
       list.appendChild(b);
     });
     sheet.appendChild(list);
   } else if (v.phase === 'start') {
     if (v.chooser === me) {
-      sheet.appendChild(el('p', 'du-hint', `Ton armée est en retard (ou tu as joué la dernière carte) : tu choisis qui commence l’âge ${['', 'I', 'II', 'III'][v.age + 1]}.`));
       const row = el('div', 'du-row'); row.append(btn('primary lg', 'Je commence', () => act({ t: 'du:start', who: me })), btn('lg', `${esc(v.seats[opp].name)} commence`, () => act({ t: 'du:start', who: opp }))); sheet.appendChild(row);
-    } else sheet.appendChild(el('p', 'du-hint', `${esc(v.seats[v.chooser].name)} choisit qui commence l’âge suivant…`));
+    }
   } else if (v.phase === 'play' && v.pending) {
     const p = v.pending;
-    if (!p.mine) sheet.appendChild(el('p', 'du-hint', `${esc(p.who)} fait un choix…`));
-    else {
-      const title = { token: 'Deux symboles identiques : choisis un jeton progrès.', library: 'Grande Bibliothèque : choisis un jeton parmi ces trois.', destroy: `Choisis la carte ${p.color === 'brun' ? 'marron' : 'grise'} à détruire chez ton adversaire.`, revive: 'Choisis une carte de la défausse : tu la construis gratuitement.' }[p.type];
-      sheet.appendChild(el('p', 'du-hint strong', title));
-      const list = el('div', 'du-choices');
+    if (p.mine) {
+      const list = el('div', 'mj-list du-choices');
       const opts = p.type === 'token' ? v.tokensBoard : p.type === 'library' ? p.options : p.type === 'destroy' ? p.targets : v.discard;
       opts.forEach(o => {
         let h;
         if (p.type === 'token' || p.type === 'library') { const t = duToken(o); h = `<b>${t.i} ${esc(t.n)}</b><span>${esc(t.d)}</span>`; }
         else { const c = DU_CARDS[o]; h = `<b><i class="du-sq t-${c.t}"></i> ${esc(c.n)}</b><span>${duEffLong(c)}</span>`; }
-        const b = el('button', 'du-choice', h); b.type = 'button'; b.onclick = () => act({ t: 'du:choose', pick: o }); list.appendChild(b);
+        const b = el('button', 'mj-row du-choice', h); b.type = 'button'; b.onclick = () => act({ t: 'du:choose', pick: o }); list.appendChild(b);
       });
       sheet.appendChild(list);
     }
   } else if (v.phase === 'play') {
     const b = duSel !== null ? v.board[duSel] : null;
     if (duInfo) sheet.appendChild(duInfoBox(duInfo));
-    else if (!b) sheet.appendChild(el('p', 'du-hint', v.myTurn ? 'Touche une carte libre de la pyramide (non recouverte) pour la construire, la défausser ou bâtir une merveille.' : `${esc(curName)} réfléchit… touche une carte pour la lire.`));
-    else if (b.card !== null) {
+    else if (b && b.card !== null) {
       const c = DU_CARDS[b.card];
-      sheet.appendChild(el('div', 'du-detail', `<div class="du-dhead"><i class="du-sq t-${c.t}"></i><b>${esc(c.n)}</b><small>${DU_COLOR[c.t]} · âge ${['', 'I', 'II', 'III', 'III'][c.a]}</small></div><p>${duEffLong(c)}</p><p class="du-dcost">Coût : ${duCost(c.c)}</p>`));
+      sheet.appendChild(el('div', 'du-detail', `<div class="du-dhead"><i class="du-sq t-${c.t}"></i><b>${esc(c.n)}</b><small>${DU_COLOR[c.t]} · âge ${['', 'I', 'II', 'III', 'III'][c.a]}</small></div><p>${duEffLong(c)}</p><p class="du-dcost">Coût : ${duCost(c.c)}</p>`));
       if (v.myTurn && b.acc && b.price) {
         const coins = v.cities[me].coins, pr = b.price;
         const row = el('div', 'du-actions');
-        const bb = btn('primary', pr.chain ? 'Construire · gratuit 🔗' : `Construire · ${pr.total} 🪙${pr.trade ? ` (dont ${pr.trade} d’achat)` : ''}`, () => act({ t: 'du:take', b: b.bi, how: 'build' }));
+        const bb = btn('primary', pr.chain ? 'Construire gratuitement, par enchaînement' : pr.total ? `Construire pour ${duPieces(pr.total)}${pr.trade ? ` (dont ${pr.trade} d’achat)` : ''}` : 'Construire gratuitement', () => act({ t: 'du:take', b: b.bi, how: 'build' }));
         bb.disabled = pr.total > coins; row.appendChild(bb);
-        row.appendChild(btn('', `Défausser · +${v.discardGain} 🪙`, () => act({ t: 'du:take', b: b.bi, how: 'discard' })));
+        row.appendChild(btn('', `Défausser pour ${duPieces(v.discardGain)}`, () => act({ t: 'du:take', b: b.bi, how: 'discard' })));
         v.cities[me].wonders.forEach((w, wi) => {
           if (w.built || w.lost || v.wondersLeft <= 0) return;
           const wp = v.wonderPrices[wi], W = DU_WONDERS[w.w];
-          const wb = btn('ghost wbtn', `Merveille : ${esc(W.n)} · ${wp.total} 🪙`, () => act({ t: 'du:take', b: b.bi, how: 'wonder', w: wi }));
+          const wb = btn('ghost wbtn', `Bâtir ${esc(W.n)} ${wp.total ? `pour ${duPieces(wp.total)}` : 'gratuitement'}`, () => act({ t: 'du:take', b: b.bi, how: 'wonder', w: wi }));
           wb.disabled = wp.total > coins; wb.title = duWonderLong(W); row.appendChild(wb);
         });
         sheet.appendChild(row);
-        if (pr.total > coins) sheet.appendChild(el('p', 'note', `Il te manque ${pr.total - coins} pièce${pr.total - coins > 1 ? 's' : ''} pour la construire.`));
-      } else if (v.myTurn && !b.acc) sheet.appendChild(el('p', 'note', 'Cette carte est encore recouverte : prends d’abord celles qui sont dessus.'));
+        if (pr.total > coins) sheet.appendChild(el('p', 'note', `Il te manque ${duPieces(pr.total - coins)} pour la construire.`));
+      } else if (v.myTurn && !b.acc) sheet.appendChild(el('p', 'note', 'Encore recouverte. Prends d’abord les cartes posées dessus.'));
     }
   }
   if (v.phase === 'over') {
-    const f = v.final, w = v.winner;
-    const title = w < 0 ? 'Égalité parfaite !' : `${esc(v.seats[w].name)} gagne${v.winType !== 'civile' ? ` par victoire ${v.winType}` : ''} !`;
-    const rows = [['Bâtiments bleus', 'bleu'], ['Bâtiments verts', 'vert'], ['Bâtiments jaunes', 'jaune'], ['Guildes', 'violet'], ['Merveilles', 'merveilles'], ['Jetons progrès', 'progres'], ['Pièces (1 pour 3)', 'pieces'], ['Militaire', 'militaire'], ['Total', 'total']];
-    sheet.appendChild(el('div', 'du-final', `<p class="du-verdict">${title}</p><table class="du-table"><thead><tr><th></th><th>${esc(v.seats[0].name)}</th><th>${esc(v.seats[1].name)}</th></tr></thead><tbody>${rows.map(([l, k]) => `<tr${k === 'total' ? ' class="tot"' : ''}><td>${l}</td><td>${f[0][k]}</td><td>${f[1][k]}</td></tr>`).join('')}</tbody></table>`));
+    const f = v.final;
+    const rows = [['Bâtiments bleus', 'bleu'], ['Bâtiments verts', 'vert'], ['Bâtiments jaunes', 'jaune'], ['Guildes', 'violet'], ['Merveilles', 'merveilles'], ['Jetons progrès', 'progres'], ['Pièces, 1 point pour 3', 'pieces'], ['Militaire', 'militaire'], ['Total', 'total']];
+    const box = el('div', 'du-final');
+    box.appendChild(el('span', 'mj-side-title', 'Décompte'));
+    box.appendChild(el('div', 'mj-list', `<table class="du-table"><thead><tr><th></th><th>${esc(v.seats[0].name)}</th><th>${esc(v.seats[1].name)}</th></tr></thead><tbody>${rows.map(([l, k]) => `<tr${k === 'total' ? ' class="tot"' : ''}><td>${l}</td><td>${f[0][k]}</td><td>${f[1][k]}</td></tr>`).join('')}</tbody></table>`));
+    sheet.appendChild(box);
     if (v.isHost) sheet.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
   }
-  root.appendChild(sheet);
+  if (sheet.children.length) root.appendChild(sheet);
   root.appendChild(duCity(v, watch ? 0 : me));
-  const lg = el('ul', 'du-log'); v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t)))); root.appendChild(lg);
+  if (v.log.length) {
+    const lg = el('ul', 'du-log');
+    lg.appendChild(el('li', 'mj-side-title', 'Ce qui s’est passé'));
+    v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t))));
+    root.appendChild(lg);
+  }
 
   // fiches d'information : cartes des cités, merveilles, jetons
   root.querySelectorAll('[data-info]').forEach(n => n.onclick = e => { e.stopPropagation(); duInfo = duInfo === n.dataset.info ? null : n.dataset.info; if (duInfo) duSel = null; renderDuel(view.du); });
@@ -609,7 +661,7 @@ function duInfoBox(key) {
   const kind = key[0], id = key.slice(1);
   let h = '';
   if (kind === 'c') { const c = DU_CARDS[+id]; h = `<div class="du-dhead"><i class="du-sq t-${c.t}"></i><b>${esc(c.n)}</b><small>${DU_COLOR[c.t]}</small></div><p>${duEffLong(c)}</p>`; }
-  if (kind === 'w') { const W = DU_WONDERS[+id]; h = `<div class="du-dhead"><b>🏛 ${esc(W.n)}</b><small>merveille</small></div><p>${duWonderLong(W)}</p><p class="du-dcost">Coût : ${duCost(W.c)}</p>`; }
+  if (kind === 'w') { const W = DU_WONDERS[+id]; h = `<div class="du-dhead"><b>${esc(W.n)}</b><small>merveille</small></div><p>${duWonderLong(W)}</p><p class="du-dcost">Coût : ${duCost(W.c)}</p>`; }
   if (kind === 't') { const t = duToken(id); h = `<div class="du-dhead"><b>${t.i} ${esc(t.n)}</b><small>jeton progrès</small></div><p>${esc(t.d)}</p>`; }
   return el('div', 'du-detail info', h + '<p class="fine">Touche à nouveau pour fermer.</p>');
 }

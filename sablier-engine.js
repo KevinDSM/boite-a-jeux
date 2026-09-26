@@ -21,10 +21,10 @@ window.Sablier = (() => {
   ];
 
   const ROUND_TYPES = {
-    free: { title: 'Description libre', rule: "Tout est permis sauf prononcer un mot de la carte, sa traduction ou sa racine. Tu peux passer autant que tu veux." },
-    word: { title: 'Un seul mot', rule: "Un seul mot par carte, prononcé une seule fois. Aucun geste, aucun bruit, aucune reformulation." },
-    mime: { title: 'Mime', rule: "Tu mimes, ils devinent à voix haute. Aucun mot, aucun son, aucune lettre tracée en l'air. Tu peux passer autant que tu veux.", mime: true },
-    draw: { title: 'Dessin', rule: "Tu dessines, ils devinent à voix haute. Aucune lettre, aucun chiffre, aucun geste vers l'écran.", draw: true },
+    free: { title: 'Description libre', rule: 'Tout est permis, sauf dire un mot de la carte, sa traduction ou sa racine. Passe autant que tu veux.' },
+    word: { title: 'Un seul mot', rule: 'Un seul mot par carte, dit une seule fois. Pas de geste, pas de bruit, pas de reformulation.' },
+    mime: { title: 'Mime', rule: 'Tu mimes, ils devinent à voix haute. Pas un mot, pas un son, pas de lettre tracée en l’air. Passe autant que tu veux.', mime: true },
+    draw: { title: 'Dessin', rule: 'Tu dessines, ils devinent à voix haute. Pas de lettre, pas de chiffre, pas de geste vers l’écran.', draw: true },
   };
 
   const DRAW_COLORS = [
@@ -175,11 +175,11 @@ window.Sablier = (() => {
   function clearTeams(room) { room.players.forEach(p => { p.teamId = null; }); }
   function teamProblems(room, availableCards) {
     const problems = [];
-    if (room.teams.filter(t => playersOfTeam(room, t.id).length > 0).length < 2) problems.push('Il faut au moins deux équipes avec un joueur chacune.');
+    if (room.teams.filter(t => playersOfTeam(room, t.id).length > 0).length < 2) problems.push('Il faut au moins deux équipes d’un joueur chacune.');
     const orphans = room.players.filter(p => !p.teamId);
-    if (orphans.length) problems.push(orphans.length === 1 ? `${orphans[0].name} n'a pas d'équipe.` : `${orphans.length} joueurs n'ont pas d'équipe.`);
+    if (orphans.length) problems.push(orphans.length === 1 ? `${orphans[0].name} n’a pas d’équipe.` : `${orphans.length} joueurs n’ont pas d’équipe.`);
     const need = room.players.length * room.settings.dealPerPlayer;
-    if (availableCards.length < need) problems.push(`Il faut ${need} cartes pour distribuer, seulement ${availableCards.length} disponibles. Ajoute un deck ou une difficulté.`);
+    if (availableCards.length < need) problems.push(`Il faut ${need} cartes pour distribuer, il n’y en a que ${availableCards.length}. Ajoute un deck ou une difficulté.`);
     return problems;
   }
 

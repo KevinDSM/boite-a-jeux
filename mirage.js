@@ -6,7 +6,7 @@
    listées dans mirage.json et rangées dans mirage/ ; chaque téléphone charge ses images directement.
    Points : si tout le monde ou personne trouve la carte du conteur, il marque 0 et les autres 2 ;
    sinon le conteur et ceux qui ont trouvé marquent 3. Chaque vote reçu sur sa carte rapporte 1 (3 max).
-   Même modèle que les autres jeux : la salle vit chez l'hôte (net.game.mi), actions « mi:… ».
+   Même modèle que les autres jeux : la salle vit chez l'hôte (net.game.mi), actions « mi:… ».
    Chargé après app.js : réutilise $, el, act, esc, toast, shuffle, net, view et ASSET_V. */
 
 'use strict';
@@ -19,7 +19,7 @@ const Mirage = (() => {
   async function load(v) {
     if (cards) return cards;
     const [art, memes] = await Promise.all(['mirage.json', 'memes.json'].map(f => fetch(`${f}?v=${v}`).then(r => r.ok ? r.json() : []).catch(() => [])));
-    // les mèmes de Mème pas vrai, rangés comme des cartes de Mirage (préfixe « m_ » : pas de collision d'identifiants)
+    // les mèmes de Mème pas vrai, rangés comme des cartes de Mirage (préfixe « m_ » : pas de collision d'identifiants)
     cards = art.map(c => ({ ...c, set: 'art' })).concat(memes.map(m => ({ id: 'm_' + m.id, set: 'memes', kind: m.kind, url: m.url, thumb: m.thumb, title: m.name, artist: m.kind === 'gif' ? 'GIF' : 'Mème', date: '', credit: 'bibliothèque publique d\u2019Imgflip' })));
     byId = {}; cards.forEach(c => byId[c.id] = c);
     return cards;
@@ -82,7 +82,7 @@ const Mirage = (() => {
     const t = String(text || '').trim().slice(0, CLUE_MAX);
     room.tellerCard = cardId; room.clue = t;
     room.picks = {}; room.phase = 'pick'; room.turnAt = Date.now(); room.seq += 1;
-    log(room, `${p.name} donne son indice${t ? ` : « ${t} »` : ' à voix haute'}.`);
+    log(room, t ? `${p.name} lance « ${t} ».` : `${p.name} donne son indice à voix haute.`);
     if (!others(room).length) return 'Il faut au moins un autre joueur';
     return null;
   }
@@ -105,7 +105,7 @@ const Mirage = (() => {
     if (room.phase !== 'vote' || teller(room)?.id === pid) return null;
     const p = pl(room, pid); if (!p) return null;
     const slot = room.table.find(s => s.card === cardId); if (!slot) return null;
-    if (slot.owner === pid) return 'C’est ta carte : vote pour une autre';
+    if (slot.owner === pid) return 'C’est ta carte, vote pour une autre';
     room.votes[pid] = cardId; room.seq += 1;
     if (others(room).every(q => room.votes[q.id])) reveal(room);
     return null;
@@ -121,7 +121,8 @@ const Mirage = (() => {
     room.table.forEach(s => { if (s.owner === t.id) return; const n = voters.filter(id => room.votes[id] === s.card).length; gains[s.owner] += Math.min(3, n); });
     Object.entries(gains).forEach(([id, g]) => { const p = pl(room, id); if (p) p.score += g; });
     room.result = { gains, found: found.map(id => pl(room, id).name), allOrNone, none: found.length === 0, all: found.length === voters.length && voters.length > 0 };
-    log(room, allOrNone ? (found.length === 0 ? `Personne n'a trouvé la carte de ${t.name} : 2 points pour les autres.` : `Tout le monde a trouvé la carte de ${t.name} : 2 points pour les autres.`) : `${found.map(id => pl(room, id).name).join(', ')} ${found.length > 1 ? 'ont' : 'a'} trouvé : 3 points, et 3 pour ${t.name}.`);
+    const names = found.map(id => pl(room, id).name), who = names.length > 1 ? names.slice(0, -1).join(', ') + ' et ' + names[names.length - 1] : names[0];
+    log(room, allOrNone ? (found.length === 0 ? `Personne ne trouve la carte de ${t.name}. 2 points pour les autres.` : `Tout le monde trouve la carte de ${t.name}. 2 points pour les autres.`) : `${who} ${found.length > 1 ? 'trouvent' : 'trouve'} la carte de ${t.name}. 3 points chacun.`);
     room.phase = 'reveal'; room.turnAt = Date.now(); room.seq += 1;
   }
 
@@ -139,7 +140,7 @@ const Mirage = (() => {
 
   function hostSkip(room, pid) {
     if (pid !== room.hostId || !['clue', 'pick', 'vote'].includes(room.phase)) return null;
-    if (room.phase === 'clue') { log(room, `L'hôte passe le tour de ${teller(room).name}.`); nextRound(room); return null; }
+    if (room.phase === 'clue') { log(room, `L’hôte passe le tour de ${teller(room).name}.`); nextRound(room); return null; }
     if (room.phase === 'pick') { others(room).forEach(q => { if (!room.picks[q.id]) room.picks[q.id] = q.hand[Math.random() * q.hand.length | 0]; }); startVote(room); return null; }
     others(room).forEach(q => { if (!room.votes[q.id]) { const opts = room.table.filter(s => s.owner !== q.id); room.votes[q.id] = opts[Math.random() * opts.length | 0].card; } });
     reveal(room); return null;
@@ -247,8 +248,10 @@ const Mirage = (() => {
 })();
 
 // ============================================================ écran
+// Voix du meneur (voir DESIGN.md) : une phrase courte qui dit ce qui se passe à la table.
 let miLight = null, miChosen = null, miClueDraft = '', miSkipTimer = null, miLastRound = null;
 const MI_SKIP_MS = 60000;
+const miNames = list => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' et ' + list[list.length - 1];
 
 /** Tableau (fichier du site), mème (image Imgflip) ou GIF (vidéo muette en boucle). */
 function miMedia(c, big = false) {
@@ -278,35 +281,59 @@ function miClose() { miLight = null; const box = $('#mi-light'); if (box) box.hi
 
 function renderMirage(v) {
   if (!v) return;
-  const root = $('#mi-main'); root.innerHTML = '';
+  const root = $('#mi-main');
+  const hadFocus = document.activeElement?.id === 'mi-clue-in';
+  root.innerHTML = '';
   clearTimeout(miSkipTimer);
   if (v.round !== miLastRound) { miLastRound = v.round; miChosen = null; miClueDraft = ''; miClose(); }
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
-  const me = v.me;
+  const me = v.me, T = esc(v.tellerName);
+  const say = list => list[(v.round - 1) % list.length];          // une réplique stable pendant toute la manche
+  const plus = () => v.waiting.length ? `Plus que ${esc(miNames(v.waiting))}.` : 'Tout le monde a joué.';
 
-  // en-tête : manche, conteur, indice
-  const head = el('div', 'mi-head');
-  head.innerHTML = `<span class="eyebrow">Manche ${v.round} · ${v.target} points pour gagner</span>`
-    + `<p class="mi-teller">${v.isTeller ? 'Tu es le conteur' : `${esc(v.tellerName)} raconte`}</p>`
-    + (v.phase !== 'clue' ? `<p class="mi-clue">${v.clue ? `« ${esc(v.clue)} »` : '<i>indice donné à voix haute</i>'}</p>` : '');
-  root.appendChild(head);
+  root.appendChild(el('p', 'mj-meta', `Manche ${v.round} · premier à ${v.target} · ${v.deckLeft} carte${v.deckLeft > 1 ? 's' : ''} dans la pioche`));
+  // l'indice du conteur, une fois donné
+  if (v.phase !== 'clue' && v.phase !== 'over') root.appendChild(el('p', 'mi-clue' + (v.clue ? '' : ' spoken'), v.clue ? `« ${esc(v.clue)} »` : `${T} a donné son indice à voix haute.`));
 
-  // les joueurs : score, et qui a fini
-  const strip = el('div', 'mi-players');
-  v.players.forEach(p => {
-    const d = el('div', `mi-player${p.teller ? ' teller' : ''}${p.done ? ' done' : ''}${p.online ? '' : ' off'}${p.me ? ' me' : ''}`);
-    d.innerHTML = `<span class="mi-player-name">${esc(p.name)}</span><span class="mi-player-score">${p.score}${v.phase === 'reveal' && p.gain ? ` <b>+${p.gain}</b>` : ''}</span>${p.teller ? '<span class="mi-badge">conteur</span>' : p.done ? '<span class="mi-badge ok">✓</span>' : ''}`;
-    strip.appendChild(d);
-  });
-  root.appendChild(strip);
+  // ce qui se passe, dit par le meneur
+  let title = '', line = '', prog = null;
+  const done = v.players.filter(p => p.done).length;
+  if (v.phase === 'clue') {
+    if (v.isTeller) {
+      title = miChosen ? 'Ton indice ?' : 'Tu racontes.';
+      line = miChosen ? 'Un mot, une phrase, un titre, un bruit. Ou dis-le à voix haute.'
+        : say(['Choisis une image. Ton indice doit perdre quelques joueurs en route, pas tous.', 'Une carte, un indice. Ni trop clair, ni trop obscur.', 'Trouve l’indice qui en égare certains. Pas tous.']);
+    } else {
+      title = `${T} raconte.`;
+      line = say([`${T} cherche ses mots. Regarde ta main en attendant.`, 'Repère déjà la carte qui pourrait coller.', `Laisse ${T} rêver un peu.`]);
+    }
+  } else if (v.phase === 'pick') {
+    prog = [done, done + v.waiting.length];
+    if (v.isTeller) { title = 'Ils cherchent.'; line = say(['Chacun glisse une carte qui colle à ton indice.', 'Ils fouillent leur main. Garde ton sérieux.']); }
+    else if (me.picked) { title = 'C’est joué.'; line = plus(); }
+    else { title = 'Brouille les pistes.'; line = say(['Glisse la carte qui colle le mieux, pour tromper les autres.', 'Trouve un faux convaincant.', `Fais croire que c’est la carte de ${T}.`]); }
+  } else if (v.phase === 'vote') {
+    prog = [done, done + v.waiting.length];
+    if (v.isTeller) { title = 'Ils votent.'; line = say(['Pas un mot, pas une grimace.', 'Garde ton sérieux.', 'Croise les doigts pour qu’ils ne trouvent pas tous.']); }
+    else if (me.voted) { title = 'Vote enregistré.'; line = plus(); }
+    else { title = `Où est la carte de ${T} ?`; line = say(['Pas la tienne, évidemment.', 'Fie-toi à ton instinct.', 'Méfie-toi des évidences.']); }
+  } else if (v.phase === 'reveal' && v.result) {
+    const r = v.result;
+    title = r.none ? 'Personne n’a trouvé.' : r.all ? 'Tout le monde a trouvé.' : `${esc(miNames(r.found))} ${r.found.length > 1 ? 'ont' : 'a'} trouvé.`;
+    line = r.allOrNone ? `Trop ${r.none ? 'obscur' : 'clair'}. Rien pour ${T}, 2 points pour les autres.` : `3 points pour ${T} et pour ${r.found.length > 1 ? 'ceux qui ont trouvé' : esc(r.found[0])}.`;
+    line += ' Chaque vote attrapé rapporte 1 point.';
+  } else if (v.phase === 'over') { title = `${esc(v.winnerName || '')} gagne la partie.`; line = 'Revanche ? Tout se passe au salon.'; }
+  const status = el('div', 'mj-status', `<h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>`);
+  if (prog && prog[1] > 0) status.appendChild(el('div', 'mj-prog', `${Array.from({ length: prog[1] }, (_, i) => `<i${i < prog[0] ? ' class="f"' : ''}></i>`).join('')}<span>${prog[0]} sur ${prog[1]}</span>`));
+  root.appendChild(status);
 
   const zone = el('div', 'mi-zone');
   // le joker : proposé sur toute carte de ma main qui n'est pas déjà jouée cette manche
   const jokerFor = c => (!me.offer && me.jokers > 0 && !me.locked.includes(c.id) && v.phase !== 'over' && v.deckLeft > 0)
-    ? { label: `Joker : échanger cette carte (${me.jokers} restant${me.jokers > 1 ? 's' : ''})`, fn: () => act({ t: 'mi:joker', card: c.id }) } : null;
+    ? { label: `Échanger avec un joker (${me.jokers} restant${me.jokers > 1 ? 's' : ''})`, fn: () => act({ t: 'mi:joker', card: c.id }) } : null;
   if (me.offer) {
     const box = el('div', 'mi-offer');
-    box.appendChild(el('div', 'mi-offer-head', `<figure class="mi-offer-out">${miMedia(me.offer.out)}</figure><p class="mi-offer-title">Joker : choisis la carte qui remplacera celle-ci</p>`));
+    box.appendChild(el('div', 'mi-offer-head', `<figure class="mi-offer-out">${miMedia(me.offer.out)}</figure><p class="mi-offer-title">Joker. Laquelle prend sa place ?</p>`));
     const g = el('div', 'mi-grid offer');
     me.offer.choices.forEach(c => {
       const f = el('button', 'mi-slot'); f.type = 'button'; f.innerHTML = miCardHTML(c);
@@ -314,10 +341,9 @@ function renderMirage(v) {
       g.appendChild(f);
     });
     box.appendChild(g);
-    box.appendChild(btn('ghost small', 'Annuler, garder ma carte (le joker n\u2019est pas utilisé)', () => act({ t: 'mi:jokercancel' })));
+    box.appendChild(btn('ghost small', 'Garder ma carte (le joker reste en poche)', () => act({ t: 'mi:jokercancel' })));
     zone.appendChild(box);
   }
-  if (me.jokerStart > 0 && v.phase !== 'over') zone.appendChild(el('p', 'mi-jokers', `<span class="mi-joker-dots">${'<i class="on"></i>'.repeat(me.jokers)}${'<i></i>'.repeat(Math.max(0, me.jokerStart - me.jokers))}</span>${me.jokers ? `${me.jokers} joker${me.jokers > 1 ? 's' : ''} : touche une de tes cartes pour l\u2019échanger` : 'Plus de joker'}`));
   const handGrid = (onTap, chosenId, label) => {
     const g = el('div', 'mi-grid hand');
     me.hand.forEach(c => {
@@ -331,32 +357,23 @@ function renderMirage(v) {
 
   if (v.phase === 'clue') {
     if (v.isTeller) {
-      zone.appendChild(el('p', 'mi-hint', miChosen ? 'Maintenant, ton indice : un mot, une phrase, un titre de film, un son…' : 'Choisis une carte de ta main, puis trouve un indice ni trop clair ni trop obscur.'));
       zone.appendChild(handGrid(c => { miChosen = c.id; renderMirage(view.mi); setTimeout(() => $('#mi-clue-in')?.focus(), 50); }, miChosen, 'Choisir cette carte'));
       if (miChosen) {
         const form = el('form', 'mi-clue-form');
-        const inp = el('input', 'mi-clue-in'); inp.id = 'mi-clue-in'; inp.type = 'text'; inp.maxLength = Mirage.CLUE_MAX; inp.placeholder = 'Ton indice (ou dis-le à voix haute)'; inp.autocomplete = 'off'; inp.value = miClueDraft;
+        const inp = el('input', 'mi-clue-in'); inp.id = 'mi-clue-in'; inp.type = 'text'; inp.maxLength = Mirage.CLUE_MAX; inp.placeholder = 'Ton indice, ou rien si tu le dis'; inp.autocomplete = 'off'; inp.value = miClueDraft;
         inp.oninput = () => { miClueDraft = inp.value; };
-        const send = btn('primary', 'Envoyer l’indice', () => { }); send.type = 'submit';
+        const send = btn('primary lg', 'Donner l’indice', () => { }); send.type = 'submit';
         form.append(inp, send);
         form.onsubmit = e => { e.preventDefault(); act({ t: 'mi:clue', card: miChosen, text: inp.value }); };
         zone.appendChild(form);
+        if (hadFocus) setTimeout(() => { const i = $('#mi-clue-in'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }, 0);
       }
-    } else {
-      zone.appendChild(el('p', 'mi-hint', `${esc(v.tellerName)} choisit une carte et cherche un indice… Regarde ta main en attendant.`));
-      zone.appendChild(handGrid(null, null, ''));
-    }
+    } else zone.appendChild(handGrid(null, null, ''));
   }
 
-  if (v.phase === 'pick') {
-    if (v.isTeller) zone.appendChild(el('p', 'mi-hint', `Les autres cherchent une carte qui colle à ton indice… On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.`));
-    else if (me.picked) zone.appendChild(el('p', 'mi-hint', `Carte jouée. On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.`));
-    else zone.appendChild(el('p', 'mi-hint', 'Glisse la carte de ta main qui colle le mieux à l’indice, pour tromper les autres.'));
-    zone.appendChild(handGrid(v.isTeller || me.picked ? null : c => act({ t: 'mi:pick', card: c.id }), me.picked, 'Jouer cette carte'));
-  }
+  if (v.phase === 'pick') zone.appendChild(handGrid(v.isTeller || me.picked ? null : c => act({ t: 'mi:pick', card: c.id }), me.picked, 'Jouer cette carte'));
 
   if (v.phase === 'vote') {
-    zone.appendChild(el('p', 'mi-hint', v.isTeller ? `Ils votent… On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.` : me.voted ? `Vote enregistré. On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.` : `Quelle carte est celle de ${esc(v.tellerName)} ?`));
     const g = el('div', 'mi-grid table');
     v.table.forEach(s => {
       const f = el('button', 'mi-slot' + (s.mine ? ' mine' : '') + (me.voted === s.card.id ? ' chosen' : '')); f.type = 'button';
@@ -367,40 +384,45 @@ function renderMirage(v) {
     zone.appendChild(g);
   }
 
-  if (v.phase === 'reveal' || v.phase === 'over') {
-    if (v.result && v.phase === 'reveal') {
-      const r = v.result;
-      zone.appendChild(el('div', 'mi-verdict' + (r.allOrNone ? ' flat' : ''), `<p class="mi-verdict-big">${r.none ? 'Personne n’a trouvé' : r.all ? 'Tout le monde a trouvé' : `${r.found.map(esc).join(', ')} ${r.found.length > 1 ? 'ont' : 'a'} trouvé`}</p><p class="mi-verdict-sub">${r.allOrNone ? `Indice ${r.none ? 'trop obscur' : 'trop clair'} : 0 pour ${esc(v.tellerName)}, 2 pour les autres.` : `3 points pour ${esc(v.tellerName)} et pour ceux qui ont trouvé.`} Chaque vote reçu rapporte 1.</p>`));
-    }
-    if (v.phase === 'reveal') {
-      const g = el('div', 'mi-grid table');
-      v.table.forEach(s => {
-        const f = el('button', 'mi-slot' + (s.teller ? ' teller' : '')); f.type = 'button';
-        f.innerHTML = miCardHTML(s.card) + `<span class="mi-owner">${s.teller ? '★ ' : ''}${esc(s.owner)}</span>` + (s.votes.length ? `<span class="mi-votes">${s.votes.map(esc).join(', ')}</span>` : '');
-        f.onclick = () => miOpen(s.card, null);
-        g.appendChild(f);
-      });
-      zone.appendChild(g);
-      if (v.isHost || v.isTeller) zone.appendChild(btn('primary lg', 'Manche suivante', () => act({ t: 'mi:next' })));
-      else zone.appendChild(el('p', 'note', 'Le conteur ou l’hôte lance la suite.'));
-    } else {
-      const fin = el('div', 'mi-final');
-      fin.innerHTML = `<span class="eyebrow">Partie terminée</span><p class="mi-final-name">${esc(v.winnerName || '')} gagne</p>`
-        + `<ol class="mi-ranking">${v.scores.map(s => `<li${s.me ? ' class="me"' : ''}><span>${esc(s.name)}</span><b>${s.score}</b></li>`).join('')}</ol>`;
-      zone.appendChild(fin);
-      if (v.isHost) zone.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
-    }
+  if (v.phase === 'reveal') {
+    const g = el('div', 'mi-grid table');
+    v.table.forEach(s => {
+      const f = el('button', 'mi-slot' + (s.teller ? ' teller' : '')); f.type = 'button';
+      f.innerHTML = miCardHTML(s.card) + `<span class="mi-owner">${esc(s.owner)}${s.teller ? ' · conteur' : ''}</span>` + (s.votes.length ? `<span class="mi-votes">${s.votes.map(esc).join(', ')}</span>` : '');
+      f.onclick = () => miOpen(s.card, null);
+      g.appendChild(f);
+    });
+    zone.appendChild(g);
+    if (v.isHost || v.isTeller) zone.appendChild(btn('primary lg', 'Manche suivante', () => act({ t: 'mi:next' })));
+    else zone.appendChild(el('p', 'note', 'Le conteur ou l’hôte lance la suite.'));
   }
+  if (v.phase === 'over') {
+    zone.appendChild(el('ol', 'mj-list hm-rank', v.scores.map((s, i) => `<li class="mj-row${s.me ? ' me' : ''}"><span><i>${i + 1}</i>${esc(s.name)}</span><b>${s.score}</b></li>`).join('')));
+    if (v.isHost) zone.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
+  }
+  // mes jokers, sous la main
+  if (me.jokerStart > 0 && (v.phase === 'clue' || v.phase === 'pick') && !me.offer) zone.appendChild(el('p', 'mi-jokers', `<span class="mi-joker-dots" aria-hidden="true">${'<i class="on"></i>'.repeat(me.jokers)}${'<i></i>'.repeat(Math.max(0, me.jokerStart - me.jokers))}</span>${me.jokers ? `${me.jokers} joker${me.jokers > 1 ? 's' : ''} en poche. Ouvre une carte de ta main pour l’échanger.` : 'Plus de joker.'}`));
 
   // l'hôte peut débloquer une manche qui n'avance plus
   if (v.isHost && ['clue', 'pick', 'vote'].includes(v.phase)) {
-    if (v.quiet > MI_SKIP_MS) zone.appendChild(btn('ghost small', v.phase === 'clue' ? `${esc(v.tellerName)} ne joue pas ? Passer son tour` : 'Quelqu’un bloque ? Jouer pour les absents', () => act({ t: 'mi:skip' })));
-    else miSkipTimer = setTimeout(() => { if (view?.mi) renderMirage(view.mi); }, MI_SKIP_MS - v.quiet + 200);
+    if (v.quiet > MI_SKIP_MS) zone.appendChild(btn('ghost small', v.phase === 'clue' ? 'Le conteur s’est endormi ? Passer son tour' : 'Quelqu’un traîne ? Jouer à sa place', () => act({ t: 'mi:skip' })));
+    else miSkipTimer = setTimeout(() => { if (view?.mi && document.activeElement?.id !== 'mi-clue-in') renderMirage(view.mi); }, MI_SKIP_MS - v.quiet + 200);
   }
   root.appendChild(zone);
 
-  const lg = el('ul', 'mi-log');
-  v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t))));
-  lg.appendChild(el('li', 'fine', `${v.deckLeft} cartes dans la pioche`));
-  root.appendChild(lg);
+  // les joueurs (colonne de droite sur PC) et le fil de la partie
+  const strip = el('div', 'mi-players hm-players');
+  strip.appendChild(el('span', 'mj-side-title', 'Scores'));
+  v.players.forEach(p => {
+    const tag = p.teller ? '<i>conteur</i>' : p.done ? `<i class="ok">${v.phase === 'vote' ? 'a voté' : 'a joué'}</i>` : '';
+    strip.appendChild(el('div', `hm-player${p.teller ? ' lead' : ''}${p.online ? '' : ' off'}${p.me ? ' me' : ''}`,
+      `<span class="hm-name">${esc(p.name)}</span>${tag}<span class="hm-score">${p.score}${v.phase === 'reveal' && p.gain ? ` <b>+${p.gain}</b>` : ''}</span>`));
+  });
+  root.appendChild(strip);
+  if (v.log.length) {
+    const lg = el('ul', 'mi-log hm-log');
+    lg.appendChild(el('li', 'mj-side-title', 'Ce qui s’est passé'));
+    v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t))));
+    root.appendChild(lg);
+  }
 }

@@ -14,7 +14,7 @@ const Geo = (() => {
     europe: { name: 'Europe', size: 4500, center: [51, 12], zoom: 3 },
     france: { name: 'France', size: 1200, center: [46.6, 2.4], zoom: 5 },
   };
-  const MODES = { move: 'Déplacement libre', nomove: 'Sans bouger', nmpz: 'Ni bouger ni zoomer' };
+  const MODES = { move: 'déplacement libre', nomove: 'sans bouger', nmpz: 'ni bouger ni zoomer' };
   const HIST_KEY = 'geo-vues';
   let places = null;
 
@@ -94,7 +94,7 @@ const Geo = (() => {
     switch (m.t) {
       case 'geo:guess': {
         if (room.phase !== 'play' || !room.players.find(p => p.id === pid)) return null;
-        if (room.guesses[pid]) return 'Réponse déjà envoyée';
+        if (room.guesses[pid]) return 'Ton épingle est déjà plantée.';
         const lat = +m.lat, lon = +m.lon;
         if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90) return null;
         room.guesses[pid] = { lat, lon: ((lon + 540) % 360) - 180 };
@@ -163,7 +163,7 @@ function geoLibs() {
   return geoLibsP;
 }
 
-const geoFmtDist = d => d == null ? 'pas de réponse'
+const geoFmtDist = d => d == null ? 'pas d’épingle'
   : d < 1 ? `${Math.round(d * 1000)} m`
     : d < 100 ? `${d.toFixed(1).replace('.', ',')} km`
       : `${Math.round(d).toLocaleString('fr-FR')} km`;
@@ -181,7 +181,7 @@ function geoComponents(mode) {
 
 function geoShowImage(v) {
   const box = $('#geo-pano');
-  if (!window.MAPILLARY_TOKEN) { box.innerHTML = '<p class="note geo-missing">Jeton Mapillary manquant : il faut le coller dans geo-config.js.</p>'; return; }
+  if (!window.MAPILLARY_TOKEN) { box.innerHTML = '<p class="note geo-missing">Jeton Mapillary manquant. Colle-le dans geo-config.js.</p>'; return; }
   if (geoViewer && geoViewerMode !== v.mode) { try { geoViewer.remove(); } catch { } geoViewer = null; }
   if (!geoViewer) {
     box.innerHTML = '';
@@ -189,7 +189,7 @@ function geoShowImage(v) {
     geoViewerMode = v.mode; geoViewerImage = v.imageId;
   } else if (geoViewerImage !== v.imageId) {
     geoViewerImage = v.imageId;
-    geoViewer.moveTo(v.imageId).catch(() => toast('Image indisponible, l\'hôte peut terminer la manche'));
+    geoViewer.moveTo(v.imageId).catch(() => toast('Cette photo ne charge pas. L’hôte peut clore la manche.'));
   }
 }
 
@@ -204,7 +204,7 @@ function geoEnsureMap(v) {
     if (!cur || cur.phase !== 'play' || cur.myGuess) return;
     if (geoPin) geoPin.setLatLng(e.latlng);
     else geoPin = L.marker(e.latlng, { icon: geoIcon('me') }).addTo(geoLayer);
-    const b = $('#geo-validate'); if (b) b.disabled = false;
+    geoValidateLabel($('#geo-validate'));
   });
   $('#geo-map').addEventListener('transitionend', () => geoMap.invalidateSize());
 }
@@ -233,12 +233,22 @@ function geoDrawReveal(v) {
 
 function geoResize() { setTimeout(() => { geoMap?.invalidateSize(); try { geoViewer?.resize(); } catch { } }, 60); }
 
+// voix du meneur (voir DESIGN.md) : ce qui se passe, en une phrase ; les répliques changent à chaque manche
+const geoSay = (list, n) => list[(Math.max(1, n) - 1) % list.length];
+const geoVerdict = d => d == null ? 'Zéro point, mais une belle photo.'
+  : d < 1 ? 'Tu y habites, avoue.'
+    : d < 25 ? 'Presque dans le mille.'
+      : d < 300 ? 'Bonne région, mauvaise rue.'
+        : d < 1500 ? 'Le bon coin du monde, en gros.'
+          : 'Tu étais en vacances ailleurs.';
+function geoValidateLabel(b) { if (b) { b.disabled = !geoPin; b.textContent = geoPin ? 'Valider mon épingle' : 'Pose ton épingle'; } }
+
 function renderGeo(v) {
   if (!v) return;
   geoOffset = v.serverNow - Date.now();
   if (!window.L || !window.mapillary) {
-    $('#geo-hud').innerHTML = '<p class="note">Chargement des images et de la carte…</p>';
-    geoLibs().then(() => { if (view?.geo) renderGeo(view.geo); }).catch(() => toast('Impossible de charger la carte, vérifie ta connexion'));
+    $('#geo-hud').innerHTML = '<p class="mj-meta">On déplie la carte.</p>';
+    geoLibs().then(() => { if (view?.geo) renderGeo(view.geo); }).catch(() => toast('La carte ne charge pas. Vérifie ta connexion.'));
     return;
   }
   const play = v.phase === 'play';
@@ -246,9 +256,31 @@ function renderGeo(v) {
   screen.classList.toggle('revealing', !play);
   if (!play) screen.classList.remove('geo-bigmap');
 
-  const me = v.scores.find(s => s.id === net.me);
-  $('#geo-hud').innerHTML = `<div class="geo-hud-row"><span class="eyebrow">Manche ${v.round}/${v.rounds} · ${esc(v.mapName)} · ${esc(v.modeName)}</span><span class="geo-total">${(me?.score || 0).toLocaleString('fr-FR')} pts</span></div>`
-    + (play ? '<div class="geo-timer" id="geo-timer">–</div>' : '');
+  const me = v.scores.find(s => s.id === net.me), solo = v.scores.length <= 1, fr = n => n.toLocaleString('fr-FR');
+  let title, line, prog = null;
+  if (play) {
+    if (!v.myGuess) {
+      title = geoSay(['Où sommes-nous ?', 'Devine où tu es.', 'Quelque part sur la carte.'], v.round);
+      line = geoSay(['Panneaux, plaques, côté de la route.', 'Cherche une langue, une plaque.', 'Les panneaux ne mentent jamais.'], v.round);
+    } else {
+      title = 'Épingle plantée.';
+      line = solo ? 'Plus moyen de changer d’avis.' : v.guessed.length >= v.playerCount ? 'Tout le monde a répondu.' : geoSay(['Les autres cherchent encore.', 'Trop tard pour changer d’avis.'], v.round);
+    }
+    if (!solo) prog = [v.guessed.length, v.playerCount];
+  } else {
+    const best = v.results[0], mine = v.results.find(r => r.id === net.me);
+    if (solo || !best || best.d == null) {
+      const r = solo ? mine : best;
+      title = r && r.d != null ? `${fr(r.points)} point${r.points > 1 ? 's' : ''}.` : solo ? 'Pas d’épingle.' : 'Personne n’a répondu.';
+      line = r && r.d != null ? `À ${geoFmtDist(r.d)} du bon endroit. ${geoVerdict(r.d)}` : geoVerdict(null);
+    } else {
+      title = best.id === net.me ? 'Tu étais le plus près.' : `${esc(best.name)} était le plus près.`;
+      line = `À ${geoFmtDist(best.d)}. ${geoVerdict(best.d)}`;
+    }
+  }
+  const meta = `Manche ${v.round} sur ${v.rounds} · ${esc(v.mapName)} · ${play ? esc(v.modeName) : `${fr(me?.score || 0)} point${(me?.score || 0) > 1 ? 's' : ''} au total`}`;
+  $('#geo-hud').innerHTML = `<div class="geo-hud-top"><p class="mj-meta">${meta}</p>${play ? '<div class="geo-timer" id="geo-timer">–</div>' : ''}</div>`
+    + `<div class="mj-status"><h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>${prog ? `<div class="mj-prog">${Array.from({ length: prog[1] }, (_, i) => `<i${i < prog[0] ? ' class="f"' : ''}></i>`).join('')}<span>${prog[0]} sur ${prog[1]}</span></div>` : ''}</div>`;
 
   $('#geo-pano').hidden = !play;
   if (play) geoShowImage(v);
@@ -267,29 +299,32 @@ function renderGeo(v) {
   const bar = $('#geo-bar'); bar.innerHTML = '';
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
   if (play) {
-    if (v.myGuess) bar.appendChild(el('p', 'note', `Épingle posée. ${v.guessed.length} / ${v.playerCount} ont répondu.`));
-    else {
+    if (!v.myGuess) {
       const row = el('div', 'geo-actions');
-      const ok = btn('primary lg', 'Valider', () => { if (!geoPin) return; const ll = geoPin.getLatLng().wrap(); act({ t: 'geo:guess', lat: ll.lat, lon: ll.lng }); });
-      ok.id = 'geo-validate'; ok.disabled = !geoPin;
+      const ok = btn('primary lg', '', () => { if (!geoPin) return; const ll = geoPin.getLatLng().wrap(); act({ t: 'geo:guess', lat: ll.lat, lon: ll.lng }); });
+      ok.id = 'geo-validate'; geoValidateLabel(ok);
       const big = btn('', screen.classList.contains('geo-bigmap') ? 'Réduire la carte' : 'Agrandir la carte', () => { screen.classList.toggle('geo-bigmap'); geoResize(); renderGeo(view.geo); });
       big.classList.add('geo-toggle');
       row.append(big, ok); bar.appendChild(row);
-      bar.appendChild(el('p', 'note', 'Regarde autour de toi, puis touche la carte pour poser ton épingle.'));
     }
-    if (v.isHost) bar.appendChild(btn('ghost', 'Terminer la manche maintenant', () => act({ t: 'geo:force' })));
+    if (v.isHost) bar.appendChild(btn('ghost small', solo ? 'Je sèche, montre-moi' : 'Clore la manche', () => act({ t: 'geo:force' })));
   } else {
-    const list = el('ol', 'geo-results');
-    v.results.forEach((r, i) => {
-      const li = el('li', r.d == null ? 'none' : '');
-      li.innerHTML = `<i style="background:${GEO_COLORS[i % GEO_COLORS.length]}"></i><b>${esc(r.name)}</b><span>${geoFmtDist(r.d)}</span><em>+${r.points.toLocaleString('fr-FR')}</em>`;
-      list.appendChild(li);
-    });
-    bar.appendChild(list);
-    bar.appendChild(el('p', 'fine center', `<a href="https://www.mapillary.com/app/?pKey=${encodeURIComponent(v.imageId)}" target="_blank" rel="noopener">Voir le lieu sur Mapillary</a>`));
-    bar.appendChild(el('div', 'geo-scores', '<span class="eyebrow">Scores</span>' + v.scores.map(s => `<span>${esc(s.name)} <b>${s.score.toLocaleString('fr-FR')}</b></span>`).join('')));
-    if (v.isHost) bar.appendChild(btn('primary lg', v.round >= v.rounds ? 'Voir le classement' : 'Manche suivante', () => act({ t: 'geo:next' })));
-    else bar.appendChild(el('p', 'note', 'L\'hôte lance la suite.'));
+    const block = el('div', 'geo-block');
+    block.appendChild(el('span', 'mj-side-title', 'La manche'));
+    const list = el('div', 'mj-list geo-results');
+    v.results.forEach((r, i) => list.appendChild(el('div', 'mj-row' + (r.d == null ? ' none' : '') + (r.id === net.me ? ' me' : ''),
+      `<span class="geo-rk">${i + 1}</span><i style="background:${GEO_COLORS[i % GEO_COLORS.length]}"></i><b>${esc(r.name)}</b><span>${geoFmtDist(r.d)}</span><em>+${fr(r.points)}</em>`)));
+    block.appendChild(list);
+    bar.appendChild(block);
+    if (!solo) {
+      const sc = el('div', 'geo-block');
+      sc.appendChild(el('span', 'mj-side-title', 'Classement'));
+      sc.appendChild(el('div', 'mj-list geo-scores', v.scores.map(s => `<div class="mj-row${s.id === net.me ? ' me' : ''}"><span>${esc(s.name)}</span><b>${fr(s.score)}</b></div>`).join('')));
+      bar.appendChild(sc);
+    }
+    if (v.isHost) bar.appendChild(btn('primary lg', v.round >= v.rounds ? 'Voir le classement final' : 'Manche suivante', () => act({ t: 'geo:next' })));
+    else bar.appendChild(el('p', 'note', v.round >= v.rounds ? 'L’hôte ouvre le classement final.' : 'L’hôte lance la manche suivante.'));
+    bar.appendChild(el('p', 'geo-link', `<a href="https://www.mapillary.com/app/?pKey=${encodeURIComponent(v.imageId)}" target="_blank" rel="noopener">Voir le lieu sur Mapillary</a>`));
   }
 
   clearInterval(geoClock); geoClock = null;

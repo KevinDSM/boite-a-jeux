@@ -5,7 +5,7 @@
    À chaque manche une situation est tirée ; chacun pose une carte en secret ; les cartes sont
    révélées, mélangées et anonymes. Selon le réglage, un juge tournant choisit la meilleure (1 point),
    ou tout le monde vote (1 point par vote reçu, jamais pour la sienne). Premier au score fixé gagne.
-   Même modèle que les autres jeux : la salle vit chez l'hôte (net.game.mm), actions « mm:… ».
+   Même modèle que les autres jeux : la salle vit chez l'hôte (net.game.mm), actions « mm:… ».
    Chargé après app.js : réutilise $, el, act, esc, toast, shuffle, net, view et ASSET_V. */
 
 'use strict';
@@ -15,41 +15,41 @@ const Memes = (() => {
   const PROMPTS = [
     'Quand tu entends ton prénom dans une conversation à côté de toi',
     'Moi le lundi matin à 7 h',
-    'Quand le serveur dit « attention, l’assiette est chaude » et que tu la touches quand même',
+    'Quand le serveur dit « attention, l’assiette est chaude » et que tu la touches quand même',
     'Quand tu retrouves 20 € dans une vieille veste',
-    'Ma tête quand quelqu’un dit « on peut faire un point rapide ? »',
-    'Quand ta mère dit « on a de la nourriture à la maison »',
+    'Ma tête quand quelqu’un dit « on peut faire un point rapide ? »',
+    'Quand ta mère dit « on a de la nourriture à la maison »',
     'Moi en train d’expliquer un jeu de société à des gens qui n’écoutent pas',
     'Quand tu réalises que tu as envoyé le message à la mauvaise personne',
     'Quand le wifi coupe en pleine partie',
     'Quand quelqu’un mange ta part de pizza',
     'Moi qui fais semblant de comprendre ce que dit le mécanicien',
-    'Quand le GPS dit « faites demi-tour dès que possible »',
-    'Quand tu dis « je rentre tôt ce soir »',
-    'Quand ton pote dit « j’arrive dans 5 minutes »',
+    'Quand le GPS dit « faites demi-tour dès que possible »',
+    'Quand tu dis « je rentre tôt ce soir »',
+    'Quand ton pote dit « j’arrive dans 5 minutes »',
     'Quand tu vois le prix de l’essence',
-    'Quand le prof dit « prenez une feuille »',
+    'Quand le prof dit « prenez une feuille »',
     'Quand ton réveil sonne alors que tu viens de t’endormir',
     'Moi devant le frigo à minuit',
     'Quand quelqu’un met ta chanson préférée en soirée',
     'Quand tu marches sur une pièce de Lego',
     'Quand tu as gagné un débat sous la douche, trois jours trop tard',
-    'Quand ton chef répond « tout à fait » à un mail que tu n’as pas lu',
+    'Quand ton chef répond « tout à fait » à un mail que tu n’as pas lu',
     'Quand tu entends un bruit bizarre dans la maison à 3 h du matin',
     'Quand la pub dure plus longtemps que la vidéo',
     'Quand tu comprends enfin la blague, dix minutes après',
     'Quand le livreur sonne pile quand tu es sous la douche',
     'Moi qui gère mes finances à la fin du mois',
-    'Quand quelqu’un dit « on se fait un restau, chacun paie sa part » et commande du homard',
+    'Quand quelqu’un dit « on se fait un restau, chacun paie sa part » et commande du homard',
     'Quand tu as encore oublié pourquoi tu es entré dans cette pièce',
     'Quand ton téléphone passe à 1 % de batterie',
-    'Quand tu entends « il faut qu’on parle »',
+    'Quand tu entends « il faut qu’on parle »',
     'Ma réaction quand quelqu’un spoile la fin de la série',
     'Quand tu fais un câlin à quelqu’un qui voulait juste te serrer la main',
     'Quand la photo de groupe est parfaite sauf toi',
     'Quand tu vois un chien dans la rue',
     'Quand tu mets un pied dans la mer en juin',
-    'Quand le vendeur demande « je peux vous aider ? » et que tu regardes juste',
+    'Quand le vendeur demande « je peux vous aider ? » et que tu regardes juste',
     'Moi après une seule séance de sport',
     'Quand la réunion aurait pu être un mail',
     'Quand ta commande arrive enfin après trois semaines',
@@ -61,9 +61,9 @@ const Memes = (() => {
     'Quand tu entends ta propre voix enregistrée',
     'Quand tu fais tomber ta tartine côté beurre',
     'Quand ta grand-mère découvre les emojis',
-    'Quand quelqu’un dit « c’est pas pour moi, c’est pour un ami »',
+    'Quand quelqu’un dit « c’est pas pour moi, c’est pour un ami »',
     'Moi quand on me demande ce que je veux faire plus tard',
-    'Quand ton colis indique « livré » mais qu’il n’y a rien',
+    'Quand ton colis indique « livré » mais qu’il n’y a rien',
     'Quand on te demande ton avis et que tu n’écoutais pas',
     'Quand tu cries victoire trop tôt',
     'Quand le chat fait tomber un verre en te regardant droit dans les yeux',
@@ -75,20 +75,20 @@ const Memes = (() => {
     'Quand tu rates le bus de trois secondes',
     'Quand tu découvres que ta série préférée a été annulée',
     'Moi en train de lire les conditions générales',
-    'Quand tu réponds « toi aussi » au serveur qui dit « bon appétit »',
+    'Quand tu réponds « toi aussi » au serveur qui dit « bon appétit »',
     'Quand tu réussis à ouvrir un pot de cornichons du premier coup',
     'Quand tu crois que la marche est là et qu’il n’y en a pas',
     'Quand la maîtresse sort la télé à roulettes',
     'Quand quelqu’un applaudit à l’atterrissage',
     'Moi qui attends que tout le monde parte pour finir les chips',
-    'Quand tu as « juste une dernière partie » à 2 h du matin',
+    'Quand tu as « juste une dernière partie » à 2 h du matin',
     'Quand tes parents essaient d’utiliser l’argot des jeunes',
     'Quand tu reçois une note vocale de 6 minutes',
     'Quand on t’invite à un anniversaire surprise… qui est le tien',
-    'Quand ton pote a « un plan infaillible »',
+    'Quand ton pote a « un plan infaillible »',
     'Quand tu vois quelqu’un avec le même t-shirt que toi',
     'Quand tu retrouves tes lunettes sur ta tête',
-    'Quand le docteur dit « ça va piquer un peu »',
+    'Quand le docteur dit « ça va piquer un peu »',
     'Quand quelqu’un met de l’ananas sur la pizza',
     'Quand le groupe WhatsApp de la famille s’enflamme',
     'Quand tu as dit que tu avais lu le livre du club de lecture',
@@ -97,14 +97,14 @@ const Memes = (() => {
     'Quand tu apprends que c’est toi qui conduis ce soir',
     'Quand tout le monde rit et que tu ris aussi sans avoir compris',
     'Moi au buffet à volonté',
-    'Quand tu entends « c’est le dernier verre, promis »',
+    'Quand tu entends « c’est le dernier verre, promis »',
     'Quand on se rend compte que personne n’a pris les clés',
     'Quand le jeu de société tourne au règlement de comptes familial',
     'Quand tu vois le bout du tunnel et que c’est un train',
     'Quand tu te fais doubler à la caisse',
     'Quand tu mets le chauffage en novembre et que tu vois la facture en janvier',
     'Quand la personne devant toi a 47 articles à la caisse express',
-    'Quand ton pote prétend qu’il « gère » le barbecue',
+    'Quand ton pote prétend qu’il « gère » le barbecue',
     'Quand tu dois dire au revoir et que vous partez dans la même direction',
     'Quand tu gagnes à un jeu de hasard et que tu dis que c’était de la stratégie',
     'Quand on t’annonce qu’il reste encore une surprise',
@@ -113,15 +113,15 @@ const Memes = (() => {
     'Quand le boss final a une deuxième phase',
     'Quand tu apprends qu’il n’y a pas cours demain',
     'Quand tu retrouves ton téléphone dans ta main en le cherchant',
-    'Quand ton pote dit « t’inquiète, je connais un raccourci »',
-    'Quand tu entends « tu as changé » à une soirée',
+    'Quand ton pote dit « t’inquiète, je connais un raccourci »',
+    'Quand tu entends « tu as changé » à une soirée',
     'Quand ton équipe perd et que tu dis que l’arbitre est vendu',
     'Quand tu as mis trop de sauce piquante',
-    'Quand le coiffeur demande « alors, ça vous plaît ? »',
+    'Quand le coiffeur demande « alors, ça vous plaît ? »',
     'Quand tu vois ton reflet dans la vitre du bus au réveil',
     'Quand le patron passe derrière ton écran',
     'Quand la voiture ne démarre pas le jour J',
-    'Quand ton ami dit « je ne bois pas ce soir »',
+    'Quand ton ami dit « je ne bois pas ce soir »',
     'Quand tu reçois un compliment et que tu ne sais pas quoi faire',
     'Quand tu fais semblant d’être au téléphone pour éviter quelqu’un',
     'Quand la personne en face de toi à table mâche la bouche ouverte',
@@ -133,14 +133,14 @@ const Memes = (() => {
     'Quand tu entends la musique du camion de glaces',
     'Quand tu veux dormir mais que ton cerveau rejoue un moment gênant de 2012',
     'Quand le sèche-cheveux de l’hôtel souffle de l’air tiède',
-    'Quand tu dis « ce sera rapide » au début d’une tâche',
+    'Quand tu dis « ce sera rapide » au début d’une tâche',
     'Quand tu comprends que c’était un piège',
     'Quand quelqu’un met un vocal au milieu d’une conversation écrite',
     'Quand le mariage a un open bar',
     'Quand tu retrouves ton doudou d’enfance',
     'Quand tu es le seul à venir déguisé',
     'Quand tu gagnes enfin un argument contre ta mère',
-    'Quand tu dis « on se capte » et que personne ne se capte jamais',
+    'Quand tu dis « on se capte » et que personne ne se capte jamais',
     'Moi quand le dessert arrive',
   ];
 
@@ -224,7 +224,7 @@ const Memes = (() => {
       return finish(room, { [slot.owner]: 1 });
     }
     const p = pl(room, pid); if (!p || !p.online) return null;
-    if (slot.owner === pid) return 'C’est ta carte : vote pour une autre';
+    if (slot.owner === pid) return 'C’est ton mème, vote pour un autre';
     room.votes[pid] = cardId; room.seq += 1;
     const voters = room.order.map(id => pl(room, id)).filter(q => q.online);
     if (voters.every(q => room.votes[q.id] || !room.table.some(s => s.owner !== q.id))) {
@@ -240,7 +240,8 @@ const Memes = (() => {
     // les cartes posées quittent les mains
     room.table.forEach(s => { const p = pl(room, s.owner); if (p) p.hand = p.hand.filter(c => c !== s.card); (room.discard = room.discard || []).push(s.card); });
     room.phase = 'reveal'; room.turnAt = Date.now(); room.seq += 1;
-    log(room, room.result.winners.length ? `${room.result.winners.join(' et ')} remporte${room.result.winners.length > 1 ? 'nt' : ''} la manche.` : 'Personne ne marque cette manche.');
+    const w = room.result.winners, many = w.length > 1;
+    log(room, !w.length ? 'Personne ne marque cette manche.' : room.mode === 'judge' ? `${w.join(' et ')} empoche${many ? 'nt' : ''} le point.` : `${w.join(' et ')} rafle${many ? 'nt' : ''} le plus de voix.`);
     return null;
   }
   function next(room, pid) {
@@ -256,7 +257,7 @@ const Memes = (() => {
     const p = pl(room, pid); if (!p || room.plays[pid] || p.id === judge(room)?.id || p.swapped === room.round) return null;
     if (p.score < 1) return 'Il faut 1 point pour changer toute ta main';
     (room.discard = room.discard || []).push(...p.hand); p.hand = []; p.score -= 1; p.swapped = room.round; fill(room, p); room.seq += 1;
-    log(room, `${p.name} change toute sa main (−1 point).`);
+    log(room, `${p.name} jette toute sa main et perd 1 point.`);
     return null;
   }
   function hostSkip(room, pid) {
@@ -334,15 +335,17 @@ const Memes = (() => {
 })();
 
 // ============================================================ écran
+// Voix du meneur (voir DESIGN.md) : une phrase courte qui dit ce qui se passe à la table.
 let mmSkipTimer = null, mmLastRound = null;
 const MM_SKIP_MS = 60000;
+const mmNames = list => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' et ' + list[list.length - 1];
 
 /** Une carte : image, ou GIF en vidéo muette qui tourne en boucle. */
 function mmMedia(c, big = false) {
   if (!c) return '';
   return c.kind === 'gif'
     ? `<video src="${esc(c.url)}" poster="${esc(c.thumb)}" autoplay muted loop playsinline preload="${big ? 'auto' : 'metadata'}"></video>`
-    : `<img src="${esc(big ? c.url : c.url)}" alt="" loading="lazy" decoding="async">`;
+    : `<img src="${esc(c.url)}" alt="" loading="lazy" decoding="async">`;
 }
 function mmCardHTML(c) {
   return `<figure class="mm-card${c.kind === 'gif' ? ' gif' : ''}">${mmMedia(c)}${c.kind === 'gif' ? '<span class="mm-gif">GIF</span>' : ''}</figure>`;
@@ -369,18 +372,44 @@ function renderMemes(v) {
   clearTimeout(mmSkipTimer);
   if (v.round !== mmLastRound) { mmLastRound = v.round; mmClose(); }
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
-  const me = v.me, judgeMode = v.mode === 'judge';
+  const me = v.me, judgeMode = v.mode === 'judge', J = esc(v.judgeName);
+  const say = list => list[(v.round - 1) % list.length];          // une réplique stable pendant toute la manche
 
-  root.appendChild(el('div', 'mm-head', `<span class="eyebrow">Manche ${v.round} · ${v.target} points pour gagner${judgeMode ? ` · juge : ${esc(v.judgeName)}` : ' · tout le monde vote'}</span>`
-    + `<p class="mm-prompt">${esc(v.prompt)}</p>`));
+  root.appendChild(el('p', 'mj-meta', `Manche ${v.round} · premier à ${v.target} · ${judgeMode ? 'le juge tourne' : 'tout le monde vote'}`));
+  root.appendChild(el('p', 'mm-prompt', esc(v.prompt)));
 
-  const strip = el('div', 'mm-players');
-  v.players.forEach(p => {
-    const d = el('div', `mm-player${p.judge ? ' judge' : ''}${p.done ? ' done' : ''}${p.online ? '' : ' off'}${p.me ? ' me' : ''}`);
-    d.innerHTML = `<span class="mm-player-name">${esc(p.name)}</span><span class="mm-player-score">${p.score}${v.phase === 'reveal' && p.gain ? ` <b>+${p.gain}</b>` : ''}</span>${p.judge ? '<span class="mm-badge">juge</span>' : p.done ? '<span class="mm-badge ok">✓</span>' : ''}`;
-    strip.appendChild(d);
-  });
-  root.appendChild(strip);
+  // ce qui se passe, dit par le meneur
+  let title = '', line = '', prog = null;
+  if (v.phase === 'play') {
+    prog = [v.playedCount, v.playersCount];
+    if (v.isJudge) {
+      title = 'Tu juges.';
+      line = say(['Ils fouillent leurs mèmes. Ta main, elle, attend la manche suivante.', 'Pendant qu’ils cherchent, entraîne-toi à rester de marbre.', 'Ta seule mission : ne pas rire avant d’avoir tout vu.']);
+    } else if (!v.seated) { title = judgeMode ? `${J} juge.` : 'Tout le monde cherche.'; line = 'Tu regardes cette manche, tu joueras à la suivante.'; }
+    else if (me.played) { title = 'C’est posé.'; line = v.waiting.length ? `Plus que ${esc(mmNames(v.waiting))}.` : 'Tout le monde a posé.'; }
+    else {
+      title = judgeMode ? `${J} juge.` : 'À toi de poser.';
+      line = judgeMode ? say([`Trouve le mème qui fera craquer ${J}.`, `Pense à ce qui fera rire ${J}. Pas toi.`, 'Le plus juste, ou le plus absurde. À toi de voir.'])
+        : say(['Le plus juste, ou le plus absurde. À toi de voir.', 'Vise le fou rire général.']);
+    }
+  } else if (v.phase === 'pick') {
+    if (judgeMode) {
+      if (v.isJudge) { title = 'À toi de trancher.'; line = 'Ouvre-les en grand, puis garde ton préféré.'; }
+      else { title = `${J} tranche.`; line = say(['Croise les doigts.', 'Fais comme si tu n’avais rien posé.', 'Surtout, garde ton sérieux.']); }
+    } else {
+      const done = v.players.filter(p => p.done).length;
+      prog = [done, done + v.waiting.length];
+      title = me.voted ? 'Vote enregistré.' : 'Votez.';
+      line = me.voted ? (v.waiting.length ? `Plus que ${esc(mmNames(v.waiting))}.` : 'Dépouillement.') : 'Ton préféré. Pas le tien.';
+    }
+  } else if (v.phase === 'reveal') {
+    const w = v.result?.winners || [];
+    title = !w.length ? 'Personne ne marque.' : judgeMode ? `${esc(mmNames(w))} ${w.length > 1 ? 'marquent' : 'marque'} le point.` : `${esc(mmNames(w))} ${w.length > 1 ? 'raflent' : 'rafle'} le plus de voix.`;
+    line = w.length ? (judgeMode ? say(['Le juge a parlé.', 'On ne discute pas les goûts du juge.', 'Applaudissements, ou huées.']) : say(['La table a parlé.', 'Applaudissements, ou huées.'])) : 'Pas une seule voix. Dur.';
+  } else if (v.phase === 'over') { title = `${esc(v.winnerName || '')} gagne la partie.`; line = 'Revanche ? Tout se passe au salon.'; }
+  const status = el('div', 'mj-status', `<h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>`);
+  if (prog && prog[1] > 0) status.appendChild(el('div', 'mj-prog', `${Array.from({ length: prog[1] }, (_, i) => `<i${i < prog[0] ? ' class="f"' : ''}></i>`).join('')}<span>${prog[0]} sur ${prog[1]}</span>`));
+  root.appendChild(status);
 
   const zone = el('div', 'mm-zone');
   const grid = (list, onTap, label, cls = '') => {
@@ -395,45 +424,44 @@ function renderMemes(v) {
     return g;
   };
 
-  if (v.phase === 'play') {
-    if (v.isJudge) {
-      zone.appendChild(el('p', 'mm-hint', `Tu es le juge : les autres cherchent le meilleur mème… (${v.playedCount}/${v.playersCount})`));
-      zone.appendChild(el('p', 'fine', 'Ta main reste pour la manche suivante.'));
-    } else if (me.played) {
-      zone.appendChild(el('p', 'mm-hint', `Carte posée. On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.`));
-    } else zone.appendChild(el('p', 'mm-hint', 'Touche le mème de ta main qui répond le mieux à la phrase.'));
-    if (v.seated) {
-      zone.appendChild(grid(me.hand.map(c => ({ card: c, chosen: c.id === me.played })), v.isJudge || me.played ? null : c => act({ t: 'mm:play', card: c.id }), 'Poser ce mème', 'hand'));
-      if (!v.isJudge && !me.played && me.canSwap) zone.appendChild(btn('ghost small', 'Rien ne va ? Changer toute ma main (−1 point)', () => act({ t: 'mm:swap' })));
-    }
+  if (v.phase === 'play' && v.seated) {
+    zone.appendChild(grid(me.hand.map(c => ({ card: c, chosen: c.id === me.played })), v.isJudge || me.played ? null : c => act({ t: 'mm:play', card: c.id }), 'Poser ce mème', 'hand'));
+    if (!v.isJudge && !me.played && me.canSwap) zone.appendChild(btn('ghost small', 'Main pourrie ? Tout changer (−1 point)', () => act({ t: 'mm:swap' })));
   }
-
   if (v.phase === 'pick') {
     const canChoose = judgeMode ? v.isJudge : v.seated && !me.voted;
-    zone.appendChild(el('p', 'mm-hint', judgeMode
-      ? (v.isJudge ? 'À toi de choisir le mème qui te fait le plus rire.' : `${esc(v.judgeName)} choisit son mème préféré…`)
-      : (me.voted ? `Vote enregistré. On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.` : 'Vote pour le meilleur mème. Pas pour le tien !')));
     zone.appendChild(grid(v.table.map(s => ({ card: s.card, mine: s.mine, chosen: me.voted === s.card.id, tag: s.mine ? 'le tien' : '', disabled: !judgeMode && s.mine })),
       canChoose ? c => act({ t: 'mm:choose', card: c.id }) : null, it => (it.disabled ? 'C’est ton mème' : judgeMode ? 'Ce mème gagne' : 'Voter pour ce mème'), 'table'));
   }
-
-  if (v.phase === 'reveal' || v.phase === 'over') {
-    if (v.phase === 'reveal') {
-      const w = v.result?.winners || [];
-      zone.appendChild(el('div', 'mm-verdict', `<p class="mm-verdict-big">${w.length ? `${w.map(esc).join(' et ')} remporte${w.length > 1 ? 'nt' : ''} la manche` : 'Personne ne marque'}</p>`));
-      zone.appendChild(grid(v.table.map(s => ({ card: s.card, win: s.gain && s.gain === Math.max(...v.table.map(t => t.gain)), tag: `${esc(s.owner)}${s.gain ? ` · +${s.gain}` : ''}` })), null, '', 'table'));
-      if (v.isHost || v.isJudge) zone.appendChild(btn('primary lg', 'Manche suivante', () => act({ t: 'mm:next' })));
-      else zone.appendChild(el('p', 'note', 'L’hôte ou le juge lance la suite.'));
-    } else {
-      zone.appendChild(el('div', 'mm-final', `<span class="eyebrow">Partie terminée</span><p class="mm-verdict-big">${esc(v.winnerName || '')} gagne</p><ol class="mm-ranking">${v.scores.map(s => `<li${s.me ? ' class="me"' : ''}><span>${esc(s.name)}</span><b>${s.score}</b></li>`).join('')}</ol>`));
-      if (v.isHost) zone.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
-    }
+  if (v.phase === 'reveal') {
+    const best = Math.max(0, ...v.table.map(t => t.gain || 0));
+    zone.appendChild(grid(v.table.map(s => ({ card: s.card, win: s.gain && s.gain === best, tag: `${esc(s.owner)}${s.gain ? ` · +${s.gain}` : ''}` })), null, '', 'table'));
+    if (v.isHost || v.isJudge) zone.appendChild(btn('primary lg', 'Manche suivante', () => act({ t: 'mm:next' })));
+    else zone.appendChild(el('p', 'note', 'L’hôte ou le juge lance la suite.'));
   }
-
+  if (v.phase === 'over') {
+    zone.appendChild(el('ol', 'mj-list hm-rank', v.scores.map((s, i) => `<li class="mj-row${s.me ? ' me' : ''}"><span><i>${i + 1}</i>${esc(s.name)}</span><b>${s.score}</b></li>`).join('')));
+    if (v.isHost) zone.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
+  }
   if (v.isHost && (v.phase === 'play' || v.phase === 'pick')) {
-    if (v.quiet > MM_SKIP_MS) zone.appendChild(btn('ghost small', v.phase === 'play' ? 'Quelqu’un bloque ? Jouer pour les absents' : judgeMode ? 'Le juge ne répond pas ? Tirer au sort' : 'Clore le vote', () => act({ t: 'mm:skip' })));
+    if (v.quiet > MM_SKIP_MS) zone.appendChild(btn('ghost small', v.phase === 'play' ? 'Quelqu’un traîne ? Jouer à sa place' : judgeMode ? 'Le juge s’est endormi ? Tirer au sort' : 'Clore le vote', () => act({ t: 'mm:skip' })));
     else mmSkipTimer = setTimeout(() => { if (view?.mm) renderMemes(view.mm); }, MM_SKIP_MS - v.quiet + 200);
   }
   root.appendChild(zone);
-  const lg = el('ul', 'mm-log'); v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t)))); root.appendChild(lg);
+
+  // les joueurs (colonne de droite sur PC) et le fil de la partie
+  const strip = el('div', 'mm-players hm-players');
+  strip.appendChild(el('span', 'mj-side-title', 'Scores'));
+  v.players.forEach(p => {
+    const tag = p.judge ? '<i>juge</i>' : p.done ? `<i class="ok">${v.phase === 'pick' ? 'a voté' : 'a posé'}</i>` : '';
+    strip.appendChild(el('div', `hm-player${p.judge ? ' lead' : ''}${p.online ? '' : ' off'}${p.me ? ' me' : ''}`,
+      `<span class="hm-name">${esc(p.name)}</span>${tag}<span class="hm-score">${p.score}${v.phase === 'reveal' && p.gain ? ` <b>+${p.gain}</b>` : ''}</span>`));
+  });
+  root.appendChild(strip);
+  if (v.log.length) {
+    const lg = el('ul', 'mm-log hm-log');
+    lg.appendChild(el('li', 'mj-side-title', 'Ce qui s’est passé'));
+    v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t))));
+    root.appendChild(lg);
+  }
 }

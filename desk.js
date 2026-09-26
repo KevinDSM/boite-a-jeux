@@ -34,8 +34,8 @@ function deskSplit(root, side, needs) {
   ['renderHorsLimite', '#hl-main', '.hl-players, .hl-log'],
   ['renderDuel', '#du-main', '.du-city, .du-log'],
   ['renderDiapason', '#dp-main', '.dp-scores, .dp-log'],
-  ['renderPoker', '#pk-main', '.pk-mine, .pk-actions, .pk-size, .pk-hint, .pk-result, .pk-log, .note, .btn'],
-  ['soRender', '#so-main', '.so-race, .so-clock, .so-win, .so-end'],
+  ['renderPoker', '#pk-main', '.pk-mine, .pk-actions, .pk-size, .pk-result, .pk-log, .note, .btn'],
+  ['soRender', '#so-main', '.so-race, .so-end'],
 ].forEach(([name, rootSel, side, needs]) => {
   const orig = window[name];
   if (typeof orig !== 'function') return;

@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '53';
+const ASSET_V = '54';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -68,7 +68,7 @@ function show(id) {
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
   $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair' || id === 's-sprint');
   if ($('#btn-vol').hidden) $('#vol-bar').hidden = true;
-  $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux' : id === 's-rules' ? 'Règles des jeux'
+  $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux' : id === 's-rules' ? 'Les règles'
     : id === 's-lobby' ? 'Salon' + (net.code ? ' · ' + net.code : '')
       : id === 's-end' ? 'Classement' : (GAMES[view?.mode]?.name || 'Boîte à jeux');
   syncThemeColor();
@@ -200,7 +200,7 @@ class Game {
   // --- Décennies : actions
   place(pid, idx) {
     const s = this.s;
-    if (s.phase !== 'listen' || pid !== this.active.id) return 'Ce n\'est pas ton tour';
+    if (s.phase !== 'listen' || pid !== this.active.id) return 'Ce n\u2019est pas ton tour';
     s.placement = idx; s.phase = 'bet'; s.betEnds = Date.now() + BET_SECONDS * 1000;
     if (!s.players.some(p => p.id !== pid && p.online && p.tokens > 0)) this.reveal();
     return null;
@@ -208,15 +208,15 @@ class Game {
   claim(pid) {
     const s = this.s; const p = this.player(pid);
     if (s.phase !== 'bet' || pid === this.active.id) return 'Impossible maintenant';
-    if (s.bet) return `${this.player(s.bet.pid)?.name || 'Quelqu\'un'} a déjà pris le pari`;
-    if (p.tokens < 1) return 'Tu n\'as plus de jeton';
+    if (s.bet) return `${this.player(s.bet.pid)?.name || 'Quelqu\u2019un'} a déjà pris le pari`;
+    if (p.tokens < 1) return 'Tu n\u2019as plus de jeton';
     p.tokens--; s.bet = { pid, idx: null }; s.betEnds = Date.now() + BET_SECONDS * 1000;
     return null;
   }
   betPlace(pid, idx) {
     const s = this.s;
     if (s.phase !== 'bet' || s.bet?.pid !== pid || s.bet.idx != null) return 'Impossible maintenant';
-    if (idx === s.placement) return `C'est déjà le choix de ${this.active.name}`;
+    if (idx === s.placement) return `C\u2019est déjà le choix de ${this.active.name}`;
     s.bet.idx = idx; this.reveal(); return null;
   }
   cancelBet(pid) {
@@ -312,14 +312,14 @@ class Game {
     let ok;
     if (s.current.jv) {                               // musique de jeu vidéo : on attend le nom du jeu
       const r = this.jvResolve(title);
-      if (r.n > 1) return `${r.n} titres correspondent, précise`;   // trop vague : n'use pas d'essai
+      if (r.n > 1) return `${r.n} titres correspondent, précise un peu`;   // trop vague : n'use pas d'essai
       ok = r.n === 1 && norm(r.game) === norm(s.current.title);
     } else ok = norm(title) === norm(s.current.title) || (norm(title).length > 3 && norm(s.current.title).includes(norm(title)));
     e.tries.push({ title, ok });
     if (ok) { e.done = true; e.points = E_POINTS[e.level]; this.player(pid).score += e.points; }
     else if (e.level < E_LEVELS.length - 1) e.level++;
     else { e.done = true; e.points = 0; }
-    this.eCheck(); return ok ? null : 'Raté !';
+    this.eCheck(); return ok ? null : e.done ? 'Raté. Manche finie pour toi.' : 'Raté\u00a0! Le palier suivant s\u2019ouvre.';
   }
   eGiveUp(pid) { const s = this.s; if (s.phase !== 'e-play') return null; const e = this.eSlot(pid); if (e.done) return null; e.done = true; e.points = 0; this.eCheck(); return null; }
   eCheck() { const s = this.s; if (s.players.filter(p => p.online).every(p => this.eSlot(p.id).done)) s.phase = 'e-reveal'; }
@@ -368,7 +368,7 @@ class Game {
     let good;
     if (s.current.jv) {                               // musique de jeu vidéo : on attend le nom du jeu
       const rr = this.jvResolve(text);
-      if (rr.n > 1) return `${rr.n} titres correspondent, précise`;   // trop vague : n'use pas d'essai
+      if (rr.n > 1) return `${rr.n} titres correspondent, précise un peu`;   // trop vague : n'use pas d'essai
       good = rr.n === 1 && norm(rr.game) === norm(s.current.title);
     } else good = this.spMatch(text, s.current);
     if (good) {
@@ -378,7 +378,7 @@ class Game {
     } else {
       e.tries++;
       if (e.tries >= SP_TRIES) { e.done = true; e.points = 0; }
-      this.spCheck(); return e.done ? 'Trois essais ratés, manche finie pour toi' : `Raté · ${SP_TRIES - e.tries} essai${SP_TRIES - e.tries > 1 ? 's' : ''} restant${SP_TRIES - e.tries > 1 ? 's' : ''}`;
+      this.spCheck(); return e.done ? 'Trois essais ratés. Manche finie pour toi.' : `Raté. Plus que ${SP_TRIES - e.tries} essai${SP_TRIES - e.tries > 1 ? 's' : ''}.`;
     }
     this.spCheck(); return null;
   }
@@ -865,7 +865,7 @@ function sabAction(pid, m) {
     case 'sab:passed': if (Sablier.markPassed(r, pid) !== 'ignored') sabWipe(); return null;
     case 'sab:abort': if (host) sabFinishTurn('abort'); return null;
     case 'sab:buzzer': if (host) Sablier.buzzerResolve(r, !!m.accept); return null;
-    case 'sab:amend': if (host && Array.isArray(m.ids)) { const n = Sablier.amendGuesses(r, m.ids); if (n) toast(`${n} carte${n > 1 ? 's' : ''} remise${n > 1 ? 's' : ''} dans la pile`); } return null;
+    case 'sab:amend': if (host && Array.isArray(m.ids)) { const n = Sablier.amendGuesses(r, m.ids); if (n) toast(`${n} carte${n > 1 ? 's' : ''} retourne${n > 1 ? 'nt' : ''} dans le paquet.`); } return null;
     case 'sab:next': if (host) Sablier.nextRound(r); return null;
     case 'sab:reset': if (host) { Sablier.resetToLobby(r); sabWipe(); } return null;
     case 'sab:seg': {
@@ -996,16 +996,15 @@ function renderHistory(s) {
   const box = $('#lobby-history'), list = s.history || [];
   box.hidden = !list.length; if (!list.length) { box.innerHTML = ''; return; }
   const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'à l\u2019instant' : m < 60 ? `il y a ${m} min` : `il y a ${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`; };
-  const medal = ['🥇', '🥈', '🥉'];
-  box.innerHTML = `<div class="hist-head"><h2 class="section-title">Parties de ce salon</h2>${isHostPlayer() ? '<button class="btn ghost small" id="hist-clear" type="button">Effacer</button>' : ''}</div>`
-    + '<div class="hist-list">' + list.map(h => {
+  box.innerHTML = `<div class="hist-head"><span class="mj-side-title">Parties de ce salon</span>${isHostPlayer() ? '<button class="btn ghost small" id="hist-clear" type="button">Effacer</button>' : ''}</div>`
+    + '<div class="mj-list hist-rows">' + list.map(h => {
       const p = h.podium;
-      const pod = h.team
-        ? `<p class="hist-note">${esc(h.note || '')}</p>${p.length ? `<p class="hist-winners">🏆 ${p.map(x => esc(x.name)).join(', ')}</p>` : ''}`
-        : `<div class="podium">${[1, 0, 2].filter(i => p[i]).map(i => `<div class="pod pod${i + 1}"><span class="pod-name">${esc(p[i].name)}</span><span class="pod-score">${p[i].score ?? ''} ${esc(h.unit || '')}</span><span class="pod-step">${medal[i]}</span></div>`).join('')}</div>${h.low ? '<p class="hist-note">le plus bas gagne</p>' : ''}`;
-      return `<article class="hist-card g-${esc(h.game)}"><div class="hist-top"><b class="gname">${esc(h.name)}</b><small>${ago(h.when)}</small></div>${pod}</article>`;
+      const who = h.team
+        ? `${esc(h.note || '')}${p.length ? `${h.note ? '\u00a0: ' : ''}<b>${p.map(x => esc(x.name)).join(', ')}</b>` : ''}`
+        : p.map((x, i) => `<span class="hist-p${i === 0 ? ' first' : ''}">${i + 1}. ${esc(x.name)}${x.score !== undefined && x.score !== null ? ` <i>${x.score}${h.unit ? ' ' + esc(h.unit) : ''}</i>` : ''}</span>`).join('') + (h.low ? '<span class="hist-low">le plus bas gagne</span>' : '');
+      return `<div class="hist-row"><div class="hist-top"><b>${esc(h.name)}</b><small>${ago(h.when)}</small></div><p class="hist-who">${who}</p></div>`;
     }).join('') + '</div>';
-  const c = $('#hist-clear'); if (c) c.onclick = () => askConfirm('Effacer l\u2019historique', 'Les podiums des parties de ce salon disparaissent pour tout le monde.', 'Effacer', () => act({ t: 'history-clear' }));
+  const c = $('#hist-clear'); if (c) c.onclick = () => askConfirm('Effacer l\u2019historique', 'Les résultats des parties de ce salon disparaissent pour tout le monde.', 'Effacer', () => act({ t: 'history-clear' }));
 }
 
 // ------------------------------------------------ salon
@@ -1051,9 +1050,9 @@ function renderLobby(s) {
   $('#opts-diapason').hidden = s.pick !== 'diapason';
   $('#opts-duel').hidden = s.pick !== 'duel';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
-  if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''} : il en faut au moins 5.` : `${n} joueurs : ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
+  if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''}, robots compris. Il en faut au moins 5.` : `${n} joueurs, dont ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
-  if (isHostPlayer() && s.pick === 'mirage') Mirage.load(ASSET_V).then(() => { const set = $('#opt-mi-cards').value, n = Mirage.count(set); $('#opt-mi-count').textContent = !n ? 'Cartes introuvables.' : set === 'art' ? `${n} cartes, des œuvres du domaine public (Met, Cleveland Museum of Art).` : set === 'memes' ? `${n} mèmes et GIF de la bibliothèque publique d\u2019Imgflip.` : `${n} cartes : tableaux, mèmes et GIF mélangés.`; });
+  if (isHostPlayer() && s.pick === 'mirage') Mirage.load(ASSET_V).then(() => { const set = $('#opt-mi-cards').value, n = Mirage.count(set); $('#opt-mi-count').textContent = !n ? 'Cartes introuvables.' : set === 'art' ? `${n} cartes, des œuvres du domaine public (Met, Cleveland Museum of Art).` : set === 'memes' ? `${n} mèmes et GIF de la bibliothèque publique d\u2019Imgflip.` : `${n} cartes, tableaux, mèmes et GIF mélangés.`; });
   if (isHostPlayer() && s.pick === 'camembert') Camembert.load(ASSET_V).then(() => { const n = Camembert.count(); $('#opt-cm-count').textContent = n ? `${n} questions dans la boîte, réparties en six couleurs.` : 'Questions introuvables.'; });
   if (isHostPlayer() && s.pick === 'kems') renderKemsOpts(s);
   if (isHostPlayer() && s.pick === 'sablier' && !$('#opt-sab-decks').querySelector('label') && Sablier.deckIds().length) {
@@ -1077,44 +1076,86 @@ function renderLobby(s) {
 // ------------------------------------------------ Décennies
 let lastTurnKey = null, betArmed = false, lastTlKey = null;
 
+// Voix du meneur, commune aux trois jeux musicaux (voir DESIGN.md) : une ligne d'info, un titre qui
+// dit ce qui se passe à la table, une réplique. Les variantes sont tirées du numéro de tour ou de
+// manche : l'écran se redessine sans cesse, la phrase ne doit pas changer à chaque fois.
+const muPick = (list, n) => list[Math.max(0, (n || 1) - 1) % list.length];
+const muNames = list => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' et ' + list[list.length - 1];
+const muPts = n => `${n} point${n > 1 ? 's' : ''}`;
+const muRank = n => n === 1 ? '1er' : `${n}e`;
+function muVoice(box, meta, title, say, prog) {
+  const bars = prog && prog[1] > 1 ? `<div class="mj-prog">${Array.from({ length: prog[1] }, (_, i) => `<i${i < prog[0] ? ' class="f"' : ''}></i>`).join('')}<span>${prog[0]} sur ${prog[1]}</span></div>` : '';
+  box.innerHTML = `<p class="mj-meta">${meta}</p><div class="mj-status"><h3 class="mj-title">${title}</h3>${say ? `<p class="mj-say">${say}</p>` : ''}${bars}</div>`;
+}
+// la liste des joueurs : nom, une ligne d'état, le score à droite (colonne de droite sur PC)
+function muPlayers(box, rows) {
+  box.innerHTML = `<span class="mj-side-title">Scores</span><div class="mj-list">${rows.map(r =>
+    `<div class="mj-row mu-row${r.on ? ' on' : ''}${r.me ? ' me' : ''}${r.off ? ' off' : ''}"><span class="mu-who"><b>${esc(r.name)}${r.me ? ' <i>toi</i>' : ''}</b>${r.sub ? `<small>${r.sub}</small>` : ''}</span><span class="mu-score">${r.score}</span></div>`).join('')}</div>`;
+}
+// sur PC, les scores passent dans une colonne à droite (même mécanique que desk.js pour les autres jeux)
+function muDesk(id) { if (typeof deskSplit === 'function') deskSplit($(id), '.scoreboard, .others'); }
+
 function renderGame(s) {
   const me = s.players.find(p => p.id === net.me);
   const active = s.players[s.turn % s.players.length];
   const isMe = active.id === net.me;
   const r = s.result;
   if (s.phase !== 'bet') betArmed = false;
+  const nameOf = id => esc(s.players.find(p => p.id === id)?.name || '');
+  const A = esc(active.name), say = list => muPick(list, s.turn + 1);
+  const iAmBettor = s.bet?.pid === net.me;
 
   // scores
-  const sb = $('#scoreboard'); sb.innerHTML = '';
-  s.players.forEach(p => {
-    const d = el('div', 'sb' + (p.id === active.id ? ' active' : '') + (p.id === net.me ? ' me' : ''));
-    d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.timeline.length}</b>/${s.target}</span>${s.solo ? '' : `<span class="tok"><b>${p.tokens}</b> ●</span>`}</span>`;
-    if (!p.online) d.style.opacity = .45;
-    sb.appendChild(d);
-  });
+  muPlayers($('#scoreboard'), s.players.map(p => {
+    const state = s.phase === 'reveal' ? '' : p.id === active.id ? 'joue' : s.bet?.pid === p.id ? 'parie' : s.phase === 'bet' && s.passes.includes(p.id) ? 'passe' : '';
+    const tok = s.solo ? '' : `${p.tokens} jeton${p.tokens > 1 ? 's' : ''}`;
+    return { name: p.name, me: p.id === net.me, on: p.id === active.id && s.phase !== 'reveal', off: !p.online, sub: [state, tok].filter(Boolean).join(' · '), score: `${p.timeline.length}<small>/${s.target}</small>` };
+  }));
 
-  // bandeau
-  const nameOf = id => s.players.find(p => p.id === id)?.name;
-  const b = $('#turn-banner');
-  const iAmBettor = s.bet?.pid === net.me;
+  // le meneur
+  const meta = s.solo ? `${me.timeline.length} carte${me.timeline.length > 1 ? 's' : ''} sur ${s.target}` : `Tour ${s.turn + 1} · premier à ${s.target} cartes`;
+  const timer = `<span class="mu-timer">${s.betLeft} s</span>`;
+  let title = '', line = '', prog = null;
   if (s.phase === 'listen') {
-    b.innerHTML = !isMe ? `${active.name} écoute<small>Prépare-toi : tu pourras parier qu'il se trompe.</small>`
-      : s.solo ? `Carte ${me.timeline.length + 1}<small>Écoute, puis touche le « + » où la chanson se place. Objectif : ${s.target} cartes.</small>`
-        : `À toi de jouer<small>Écoute, puis touche le « + » où la chanson se place dans ta frise.</small>`;
+    if (!isMe) {
+      title = `${A} écoute.`;
+      line = me && me.tokens < 1 ? 'Plus de jeton pour toi. Profite du spectacle.' : say([`Si ${A} se trompe, tu pourras parier.`, 'Chut. Et garde un jeton sous le coude.', `Laisse ${A} réfléchir. Enfin, un peu.`]);
+    } else {
+      title = 'À toi.';
+      line = s.solo ? say(['Écoute, puis glisse la chanson au bon endroit de ta frise.', 'Avant, après, entre les deux ? Ton oreille décide.', 'Fie-toi à ton oreille, pas à ta mémoire.'])
+        : say(['Écoute, puis glisse la chanson au bon endroit de ta frise.', 'Trouve sa place. Les autres guettent ton erreur.', 'Prends ton temps. Enfin, pas trop.']);
+    }
   } else if (s.phase === 'bet') {
-    const t = `<span class="timer">${s.betLeft}s</span>`;
-    if (s.bet && s.bet.idx == null) b.innerHTML = iAmBettor ? `Ton pari ${t}<small>Touche le « + » où TOI tu placerais la chanson.</small>` : `${nameOf(s.bet.pid)} a pris le pari ${t}<small>Un seul pari par tour. On attend son choix.</small>`;
-    else b.innerHTML = isMe ? `Ton choix est posé ${t}<small>Quelqu'un peut encore parier contre toi.</small>` : `${active.name} a choisi ${t}<small>Tu penses qu'il se trompe ? Prends le pari.</small>`;
+    if (s.bet && s.bet.idx == null) {
+      const B = nameOf(s.bet.pid);
+      if (iAmBettor) { title = `Ton pari. ${timer}`; line = 'Place la chanson là où, toi, tu la vois.'; }
+      else if (isMe) { title = `${B} parie contre toi. ${timer}`; line = 'Croise les doigts.'; }
+      else { title = `${B} parie. ${timer}`; line = 'Un seul pari par tour. On attend son choix.'; }
+    } else {
+      const others = s.players.filter(p => p.id !== active.id && p.online);
+      prog = [others.filter(p => s.passes.includes(p.id) || p.tokens < 1).length, others.length];
+      if (isMe) { title = `C’est posé. ${timer}`; line = say(['Quelqu’un peut encore parier contre toi.', 'Les autres hésitent à parier contre toi.']); }
+      else {
+        title = `${A} a choisi. ${timer}`;
+        line = s.passes.includes(net.me) ? 'Tu passes. On attend les autres.' : me && me.tokens < 1 ? 'Plus de jeton, pas de pari pour toi.'
+          : say([`Ça sent l’erreur ? Parie contre ${A}.`, 'Tu flaires l’erreur ? Prends le pari.', 'Un jeton, et tu tentes le coup.']);
+      }
+    }
   } else if (s.phase === 'reveal') {
-    const win = r.by ? nameOf(r.by) : null;
-    const head = s.solo ? (r.ok ? 'Bien vu' : 'Raté') : (r.ok ? `${nameOf(r.activeId)} a trouvé` : (r.betWon ? `Raté ! ${win} rafle la carte` : `${nameOf(r.activeId)} s'est trompé`));
+    const W = r.by ? nameOf(r.by) : '', RA = nameOf(r.activeId);
+    const meA = r.activeId === net.me, meW = r.by === net.me;
+    title = s.solo ? (r.ok ? 'Bien vu.' : 'Raté.') : r.ok ? (meA ? 'Tu tombes juste.' : `${RA} tombe juste.`)
+      : r.betWon ? (meW ? 'Tu rafles la carte.' : meA ? `${W} te rafle la carte.` : `${W} rafle la carte.`) : meA ? 'Tu te trompes.' : `${RA} se trompe.`;
     const bits = [];
-    if (r.tokenWon === true) bits.push(`Artiste et titre justes : +1 jeton.`);
-    if (r.betPid && !r.betWon) bits.push(`Pari perdu pour ${nameOf(r.betPid)} : 1 jeton${r.lost ? ` et la carte ${r.lost}` : ''} en moins.`);
-    if (s.winner) bits.push('Frise complète, partie terminée.');
-    const fallback = s.solo ? (r.ok ? 'La carte rejoint ta frise.' : 'Cette carte est écartée, on enchaîne.') : 'Touche « Tour suivant » quand tout le monde a vu.';
-    b.innerHTML = `${head}<small>${bits.join(' ') || fallback}</small>`;
+    if (r.betWon) bits.push(meA ? 'Le pari contre toi paie.' : `Le pari contre ${RA} paie.`);
+    if (r.tokenWon === true) bits.push('Artiste et titre justes, +1 jeton.');
+    else if (r.tokenWon === 'max') bits.push(`Artiste et titre justes, mais ${meA ? 'tu as' : RA + ' a'} déjà ${TOKEN_MAX} jetons.`);
+    if (r.betPid && !r.betWon) bits.push(r.betPid === net.me ? `Pari perdu, tu laisses un jeton${r.lost ? ` et ta carte de ${r.lost}` : ''}.` : `Pari perdu, ${nameOf(r.betPid)} laisse un jeton${r.lost ? ` et sa carte de ${r.lost}` : ''}.`);
+    if (s.winner) bits.push(s.solo ? 'Frise complète. Chapeau.' : s.winner === net.me ? 'Tu complètes ta frise. Partie terminée.' : `${nameOf(s.winner)} complète sa frise. Partie terminée.`);
+    line = bits.join(' ') || (s.solo ? (r.ok ? say(['La carte rejoint ta frise.', 'Une de plus dans ta frise.']) : say(['Carte écartée. On enchaîne.', 'Celle-là file à la poubelle. Suivante.']))
+      : r.ok ? say(['Joli coup d’oreille.', 'L’année ne ment pas.', 'Rien à redire.']) : say(['La carte est perdue.', 'Carte perdue. Ça arrive aux meilleurs.']));
   }
+  muVoice($('#turn-banner'), meta, title, line, prog);
 
   // scène
   const speakerHere = s.soundAll || (s.speakerId ? s.speakerId === net.me : isMe);
@@ -1125,7 +1166,7 @@ function renderGame(s) {
     info.innerHTML = `<div class="big ${r.ok || r.betWon ? 'ok' : 'ko'}">${r.year}</div>${r.song.artist}<small>${r.song.title}</small>`;
   } else {
     vinyl.classList.remove('revealed'); $('#art').removeAttribute('src');
-    info.innerHTML = speakerHere ? '' : `<small>Le son sort du téléphone de ${s.speakerId ? nameOf(s.speakerId) : active.name}.</small>`;
+    info.innerHTML = speakerHere ? '' : `<small>Le son sort de chez ${s.speakerId ? nameOf(s.speakerId) : A}.</small>`;
   }
   $('#audio-row').hidden = !(speakerHere || s.phase === 'reveal');
   const key = s.turn + ':' + (s.current?.preview || '');
@@ -1133,7 +1174,7 @@ function renderGame(s) {
 
   // frise
   const owner = s.phase === 'reveal' && r.betWon ? s.players.find(p => p.id === r.by) : active;
-  $('#tl-owner').textContent = owner.id === net.me ? 'Ta frise' : `Frise de ${owner.name}`;
+  $('#tl-owner').textContent = owner.id === net.me ? 'Ta frise' : `La frise de ${owner.name}`;
   const tl = $('#timeline');
   const cards = owner.timeline;
   const canPlace = s.phase === 'listen' && isMe;
@@ -1158,12 +1199,12 @@ function renderGame(s) {
     for (let i = 0; i <= cards.length; i++) {
       const slot = el('div', 'slot', '+');
       if (s.placement != null && i === s.placement) { slot.classList.add('pick'); slot.dataset.who = active.name; }
-      if (s.bet?.idx === i) { slot.classList.add('bet'); slot.dataset.bet = nameOf(s.bet.pid); }
+      if (s.bet?.idx === i) { slot.classList.add('bet'); slot.dataset.bet = s.players.find(p => p.id === s.bet.pid)?.name || ''; }
       if (canBetPlace && i !== s.placement) slot.classList.add('arm');
       if (!(canPlace || canBetPlace)) slot.classList.add('disabled');
       slot.onclick = () => {
         if (canPlace) act({ t: 'place', idx: i });
-        else if (canBetPlace) { if (i === s.placement) toast(`C'est déjà le choix de ${active.name}`); else act({ t: 'bet-place', idx: i }); }
+        else if (canBetPlace) { if (i === s.placement) toast(`C’est déjà le choix de ${active.name}`); else act({ t: 'bet-place', idx: i }); }
       };
       tl.appendChild(slot);
       if (i < cards.length) { const c = el('div', 'tcard'); c.innerHTML = cardHTML(cards[i]); tl.appendChild(c); }
@@ -1176,12 +1217,12 @@ function renderGame(s) {
   // actions
   const ac = $('#actions'); ac.innerHTML = '';
   if (s.phase === 'listen' && isMe && s.solo) {
-    const sk = el('button', 'btn', 'Je ne connais pas · chanson suivante');
+    const sk = el('button', 'btn', 'Passer cette chanson');
     sk.onclick = () => act({ t: 'solo-skip' }); ac.appendChild(sk);
-    ac.appendChild(el('div', 'note', 'Seul, tu passes autant de chansons que tu veux : ni jetons, ni paris.'));
+    ac.appendChild(el('div', 'note', 'Seul, tu passes autant de chansons que tu veux. Ni jetons, ni paris.'));
   }
   if (s.phase === 'listen' && isMe && !s.solo) {
-    ac.appendChild(el('div', 'note', 'Tu connais la chanson ? Écris artiste <b>et</b> titre : +1 jeton si les deux sont justes.'));
+    ac.appendChild(el('div', 'note', 'Tu la connais ? Artiste <b>et</b> titre justes, +1 jeton.'));
     const g = el('div', 'guess');
     g.innerHTML = `<input id="g-artist" placeholder="Artiste" autocomplete="off"><input id="g-title" placeholder="Titre" autocomplete="off">`;
     ac.appendChild(g);
@@ -1192,29 +1233,25 @@ function renderGame(s) {
   if (s.phase === 'bet' && !isMe && me) {
     if (iAmBettor && s.bet.idx == null) {
       const c = el('button', 'btn ghost', 'Annuler mon pari'); c.onclick = () => act({ t: 'cancel-bet' }); ac.appendChild(c);
-    } else if (s.bet) {
-      ac.appendChild(el('div', 'note', `${nameOf(s.bet.pid)} a pris le pari de ce tour.`));
-    } else if (s.passes.includes(me.id)) {
-      ac.appendChild(el('div', 'note', 'Tu ne paries pas. On attend les autres.'));
-    } else if (me.tokens < 1) {
-      ac.appendChild(el('div', 'note', 'Plus de jeton : tu ne peux pas parier ce tour.'));
-    } else {
+    } else if (!s.bet && !s.passes.includes(me.id) && me.tokens >= 1) {
       const row = el('div', 'row');
-      const b1 = el('button', 'btn primary', `Je prends le pari <span class="cost">1 ●</span>`);
+      const b1 = el('button', 'btn primary', `Parier <span class="cost">1 jeton</span>`);
       b1.onclick = () => act({ t: 'claim' });
       const b2 = el('button', 'btn', 'Je passe'); b2.onclick = () => act({ t: 'pass' });
       row.append(b1, b2); ac.appendChild(row);
-      ac.appendChild(el('div', 'note', `Un seul joueur peut parier par tour, le premier qui se lance. S'il se trompe, tu perds le jeton <b>et</b> une carte.`));
+      ac.appendChild(el('div', 'note', 'Premier qui parie, seul qui parie. Raté, tu perds le jeton <b>et</b> une carte.'));
     }
   }
   if (me && !s.solo && ['listen', 'bet'].includes(s.phase)) ac.appendChild(tokenLine(me.tokens));
   if (s.phase === 'reveal') {
-    const btn = el('button', 'btn lg ' + (s.winner ? 'pos' : 'primary'), s.winner ? (s.solo ? 'Voir le résultat' : 'Voir le classement') : (s.solo ? 'Chanson suivante →' : 'Tour suivant →'));
+    const btn = el('button', 'btn lg ' + (s.winner ? 'pos' : 'primary'), s.winner ? (s.solo ? 'Voir le résultat' : 'Voir le classement') : (s.solo ? 'Chanson suivante' : 'Tour suivant'));
     btn.onclick = () => act({ t: 'next' }); ac.appendChild(btn);
   }
   if (['listen', 'bet'].includes(s.phase) && !isMe && !active.online) {
-    const f = el('button', 'btn ghost small', `${active.name} est déconnecté · passer son tour`); f.onclick = () => act({ t: 'force-next' }); ac.appendChild(f);
+    ac.appendChild(el('div', 'note', `${A} n’est plus connecté.`));
+    const f = el('button', 'btn ghost small', `Passer le tour de ${A}`); f.onclick = () => act({ t: 'force-next' }); ac.appendChild(f);
   }
+  muDesk('#s-game');
 }
 const maxAt = cards => Math.max(...cards.map(c => c.at || 0));
 const cardHTML = c => `<img src="${c.art}" alt=""><b>${c.year}</b><small>${c.artist}<br>${c.title}</small>`;
@@ -1235,7 +1272,7 @@ const cardHTML = c => `<img src="${c.art}" alt=""><b>${c.year}</b><small>${c.art
 function ghostCard(r) { const g = el('div', 'tcard lost'); g.innerHTML = cardHTML({ ...r.song, year: r.year }); return g; }
 function tokenLine(n) {
   const d = el('div', 'tokline');
-  d.innerHTML = Array.from({ length: TOKEN_MAX }, (_, i) => `<span class="pip${i < n ? '' : ' off'}"></span>`).join('') + `<span>${n} jeton${n > 1 ? 's' : ''} · sert à parier</span>`;
+  d.innerHTML = Array.from({ length: TOKEN_MAX }, (_, i) => `<span class="pip${i < n ? '' : ' off'}"></span>`).join('') + `<span>${n} jeton${n > 1 ? 's' : ''} pour parier</span>`;
   return d;
 }
 
@@ -1288,26 +1325,44 @@ function drawSeg() {
 function renderEclair(s) {
   const e = s.eclair[net.me] || { level: 0, done: false, points: 0, tries: [] };
   const reveal = s.phase === 'e-reveal';
+  const say = list => muPick(list, s.round);
 
-  const sb = $('#e-scoreboard'); sb.innerHTML = '';
-  [...s.players].forEach(p => {
-    const d = el('div', 'sb' + (p.id === net.me ? ' me' : ''));
-    d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.score || 0}</b> pts</span></span>`;
-    if (!p.online) d.style.opacity = .45;
-    sb.appendChild(d);
-  });
-
-  const b = $('#e-banner');
-  if (!reveal) b.innerHTML = e.done
-    ? `Manche ${s.round}/${s.rounds} <span class="pts">${e.points ? '+' + e.points : '0'} pt${e.points > 1 ? 's' : ''}</span><small>On attend les autres…</small>`
-    : `Manche ${s.round}/${s.rounds}<small>Écoute ${fmtS(E_LEVELS[e.level])}. ${s.current?.jv ? 'Le nom du jeu' : 'Le titre'} maintenant vaut <b class="pts">${E_POINTS[e.level]} pt${E_POINTS[e.level] > 1 ? 's' : ''}</b>.</small>`;
-  else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
+  // le meneur
+  const online = s.players.filter(p => p.online);
+  const doneCount = online.filter(p => s.eclair[p.id]?.done).length;
+  const waiting = online.filter(p => p.id !== net.me && !s.eclair[p.id]?.done).map(p => esc(p.name));
+  let title = '', line = '', prog = null;
+  if (!reveal && !e.done) {
+    title = `${muPts(E_POINTS[e.level])} en jeu.`;
+    line = say([
+      ['Une demi-seconde. Les vrais la reconnaissent.', 'Une demi-seconde, pas plus. Bonne chance.'],
+      ['Une seconde. Ça te dit quelque chose ?', 'Une seconde. Tu chauffes, ou pas du tout ?'],
+      ['Deux secondes. Tu l’as sur le bout de la langue.', 'Deux secondes. Les fans n’ont plus d’excuse.'],
+      ['Trois secondes. Là, ça devient gênant.', 'Trois secondes. Même ta tante l’aurait trouvée.'],
+      ['Cinq secondes, dernier palier.', 'Dernier palier. C’est maintenant ou jamais.'],
+    ][e.level]);
+    if (s.current?.jv) line += ' Ici, on veut le nom du jeu.';
+    if (!s.solo) prog = [doneCount, online.length];
+  } else if (!reveal) {
+    title = e.points ? `Trouvé, +${e.points}.` : 'Manche finie pour toi.';
+    line = waiting.length ? `Plus que ${muNames(waiting)}.` : 'Tout le monde a fini.';
+    prog = [doneCount, online.length];
+  } else {
+    const best = Math.max(0, ...s.players.map(p => s.eclair[p.id]?.points || 0));
+    const topP = s.players.filter(p => best && (s.eclair[p.id]?.points || 0) === best), topMe = topP.some(p => p.id === net.me);
+    const top = topP.filter(p => p.id !== net.me).map(p => esc(p.name)).concat(topMe ? ['toi'] : []);
+    title = s.solo ? (e.points ? `Trouvé, +${e.points}.` : 'Pas trouvé.')
+      : top.length ? `${top.length === 1 && topMe ? 'Tu empoches' : `${muNames(top)} ${top.length > 1 ? (topMe ? 'empochez' : 'empochent') : 'empoche'}`} ${muPts(best)}.` : 'Personne ne trouve.';
+    line = s.round >= s.rounds ? 'Dernière manche. Place au classement.'
+      : say(['Évidemment, maintenant elle paraît facile.', 'Tu la connaissais, avoue.', 'Réécoute-la en entier, ça soigne.']);
+  }
+  muVoice($('#e-banner'), `Manche ${s.round} sur ${s.rounds}`, title, line, prog);
 
   loadAudio(s.current?.preview);
   if (s.round !== eLastRound) { eLastRound = s.round; stopSnippet(); $('#e-vinyl').classList.remove('revealed'); }
   const stage = $('#e-vinyl'), info = $('#e-info');
   if (reveal) { stage.classList.add('revealed'); $('#e-art').src = s.current.art; info.innerHTML = `<div class="big ok">${s.current.title}</div>${s.current.artist}<small>${s.current.jv ? s.current.sub : s.current.year}</small>`; }
-  else { $('#e-art').removeAttribute('src'); info.innerHTML = e.tries.length ? `<small>Raté : ${e.tries.map(t => t.title).join(' · ')}</small>` : ''; }
+  else { $('#e-art').removeAttribute('src'); const miss = e.tries.filter(t => !t.ok); info.innerHTML = miss.length ? `<small>Pas ${miss.map(t => `« ${esc(t.title)} »`).join(', pas ')}.</small>` : ''; }
 
   const bar = $('#e-segbar'); bar.innerHTML = ''; let prev = 0;
   E_LEVELS.forEach((sec, i) => {
@@ -1335,29 +1390,23 @@ function renderEclair(s) {
   if (!reveal && !e.done) {
     const submitE = input => { const t = input.value.trim(); if (!t) return; act({ t: 'e-guess', title: t }); input.value = ''; };
     const jvNow = !!s.current?.jv;
-    ac.appendChild(makeGuessBox('e-input', jvNow ? 'Nom du jeu…' : 'Titre de la chanson…', submitE, q => {
+    ac.appendChild(makeGuessBox('e-input', jvNow ? 'Nom du jeu' : 'Titre de la chanson', submitE, q => {
       const games = (s.jv ? (jvCatalog || []).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : []).concat(s.anime ? (animeCatalog || []).map(x => ({ label: x.game, sub: 'anime', fill: x.game })) : []).filter(x => norm(x.label).includes(q));
       const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: x.title }));
       return (jvNow ? games.concat(songs) : songs.concat(games)).slice(0, 6);
     }));
     const row = el('div', 'row');
-    row.innerHTML = `<button class="btn primary" id="e-submit">Valider</button>`
+    row.innerHTML = `<button class="btn primary" id="e-submit">Proposer</button>`
       + (e.level < E_LEVELS.length - 1 ? `<button class="btn" id="e-more">Écouter plus <span class="cost">${fmtS(E_LEVELS[e.level + 1])} · ${E_POINTS[e.level + 1]} pt${E_POINTS[e.level + 1] > 1 ? 's' : ''}</span></button>` : '')
       + `<button class="btn ghost small" id="e-giveup">Je passe</button>`;
     ac.appendChild(row);
-    ac.appendChild(el('div', 'note', 'Un titre faux débloque automatiquement le palier suivant.'));
+    if (e.level < E_LEVELS.length - 1) ac.appendChild(el('div', 'note', 'Un titre faux ? Le palier suivant s’ouvre tout seul.'));
     $('#e-submit').onclick = () => submitE($('#e-input'));
     if ($('#e-more')) $('#e-more').onclick = () => act({ t: 'e-unlock' });
     $('#e-giveup').onclick = () => act({ t: 'e-giveup' });
   }
   if (reveal) {
-    const res = el('div', 'round-res');
-    s.players.forEach(p => {
-      const x = s.eclair[p.id] || {};
-      res.appendChild(el('div', '', `<span>${p.name}</span><span>${x.points ? `<b class="pts">+${x.points}</b> à ${fmtS(E_LEVELS[x.level])}` : '<span style="color:var(--neg)">pas trouvé</span>'}</span>`));
-    });
-    ac.appendChild(res);
-    const btn = el('button', 'btn lg ' + (s.round >= s.rounds ? 'pos' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante →');
+    const btn = el('button', 'btn lg ' + (s.round >= s.rounds ? 'pos' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante');
     btn.onclick = () => act({ t: 'e-next' }); ac.appendChild(btn);
   }
   renderEOthers(s, reveal);
@@ -1408,26 +1457,39 @@ audio.addEventListener('play', syncSPLabel);
 audio.addEventListener('pause', syncSPLabel);
 audio.addEventListener('ended', syncSPLabel);
 function renderSprint(s) {
-  const me = s.players.find(p => p.id === net.me);
   const e = s.sprint[net.me] || { tries: 0, done: false, points: 0, rank: 0 };
   const reveal = s.phase === 's-reveal';
-  const nameOf = id => s.players.find(p => p.id === id)?.name;
+  const nameOf = id => esc(s.players.find(p => p.id === id)?.name || '');
+  const say = list => muPick(list, s.round);
 
-  const sb = $('#sp-scoreboard'); sb.innerHTML = '';
-  s.players.forEach(p => {
-    const d = el('div', 'sb' + (p.id === net.me ? ' me' : ''));
-    d.innerHTML = `<span class="name">${p.name}</span><span class="stats"><span><b>${p.score || 0}</b> pts</span></span>`;
-    if (!p.online) d.style.opacity = .45;
-    sb.appendChild(d);
-  });
-
-  const b = $('#sp-banner');
-  if (!reveal) {
-    const left = SP_TRIES - e.tries;
-    b.innerHTML = e.done
-      ? `Manche ${s.round}/${s.rounds}${e.points ? ` · <span class="pts">+${e.points}</span>` : ''}<small>${e.points ? `${e.rank}${e.rank === 1 ? 'er' : 'e'} à trouver. On attend les autres.` : 'Manche finie pour toi, on attend les autres.'}</small>`
-      : `Manche ${s.round}/${s.rounds} <span class="timer">${s.spLeft}s</span><small>${s.current?.kind === 'anime' ? 'De quel anime vient cette musique ?' : s.current?.jv ? 'De quel jeu vient cette musique ?' : 'Artiste et titre, le plus vite possible.'} ${left} essai${left > 1 ? 's' : ''} restant${left > 1 ? 's' : ''}.</small>`;
-  } else b.innerHTML = `Manche ${s.round}/${s.rounds} terminée<small>${s.round >= s.rounds ? 'Dernière manche. Place au classement.' : 'Touche « Manche suivante » quand tout le monde a vu.'}</small>`;
+  // le meneur
+  const online = s.players.filter(p => p.online);
+  const doneCount = online.filter(p => s.sprint[p.id]?.done).length;
+  const waiting = online.filter(p => p.id !== net.me && !s.sprint[p.id]?.done).map(p => esc(p.name));
+  const kind = s.current?.kind === 'anime' ? 'anime' : s.current?.jv ? 'jv' : 'song';
+  let title = '', line = '', prog = null;
+  if (!reveal && !e.done) {
+    const left = SP_TRIES - e.tries, tries = left < SP_TRIES ? ` Plus que ${left} essai${left > 1 ? 's' : ''}.` : '';
+    if (s.order.length) {
+      title = s.order.length === 1 ? `${nameOf(s.order[0])} a trouvé !` : `Déjà ${s.order.length} à avoir trouvé.`;
+      line = `Le suivant prend ${muPts(SP_POINTS[Math.min(s.order.length, SP_POINTS.length - 1)])}.` + tries;
+    } else {
+      title = kind === 'anime' ? 'De quel anime ?' : kind === 'jv' ? 'De quel jeu ?' : 'Qui chante quoi ?';
+      line = (s.solo ? say(['Seul en piste, 5 points si tu trouves.', 'Personne pour te doubler. Profites-en.'])
+        : say([`Le premier qui trouve prend ${muPts(SP_POINTS[0])}.`, 'Chaque seconde compte. Surtout les premières.', 'Dégaine avant les autres.'])) + tries;
+    }
+    if (!s.solo) prog = [doneCount, online.length];
+  } else if (!reveal) {
+    title = e.points ? (e.rank === 1 ? 'Trouvé en premier !' : `Trouvé, ${muRank(e.rank)}.`) : 'Manche finie pour toi.';
+    line = (e.points ? `+${muPts(e.points)}.` : e.tries >= SP_TRIES ? 'Trois essais, zéro miracle.' : 'Tu sèches.')
+      + (waiting.length ? ` Plus que ${muNames(waiting)}.` : '');
+    prog = [doneCount, online.length];
+  } else {
+    title = s.solo ? (e.points ? `Trouvé, +${e.points}.` : 'Pas trouvé.') : s.order.length ? (s.order[0] === net.me ? 'Tu gagnes le sprint.' : `${nameOf(s.order[0])} gagne le sprint.`) : 'Personne ne trouve.';
+    line = s.round >= s.rounds ? 'Dernière manche. Place au classement.'
+      : say(['Évidemment, maintenant ça paraît facile.', 'Tu la connaissais, avoue.', 'La prochaine, tu l’as.']);
+  }
+  muVoice($('#sp-banner'), `Manche ${s.round} sur ${s.rounds}`, title, line, prog);
 
   // audio : tout le monde en même temps, sauf si l'hôte fait enceinte
   loadAudio(s.current?.preview);
@@ -1446,7 +1508,7 @@ function renderSprint(s) {
     if (spRevealKey !== s.round) { spRevealKey = s.round; audio.pause(); }
   } else {
     $('#sp-art').removeAttribute('src');
-    info.innerHTML = speakerHere ? '' : `<small>Le son sort du téléphone de ${nameOf(s.speakerId) || 'l\'hôte'}.</small>`;
+    info.innerHTML = speakerHere ? '' : `<small>Le son sort de chez ${nameOf(s.speakerId) || 'l’hôte'}.</small>`;
   }
   $('#sp-audio').hidden = !speakerHere && !reveal;
   syncSPLabel();
@@ -1463,52 +1525,43 @@ function renderSprint(s) {
     const jvNow = !!s.current?.jv;
     const source = q => {
       const games = (s.jv ? (jvCatalog || []).map(x => ({ label: x.game, sub: 'jeu vidéo', fill: x.game })) : []).concat(s.anime ? (animeCatalog || []).map(x => ({ label: x.game, sub: 'anime', fill: x.game })) : []).filter(x => norm(x.label).includes(q));
-      const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} — ${x.artist}` }));
+      const songs = (eCatalog || []).filter(x => norm(x.title).includes(q) || norm(x.artist).includes(q)).map(x => ({ label: x.title, sub: x.artist, fill: `${x.title} · ${x.artist}` }));
       return (jvNow ? games.concat(songs) : songs.concat(games)).slice(0, 6);
     };
-    ac.appendChild(makeGuessBox('sp-input', jvNow ? (s.current?.kind === 'anime' ? "Nom de l'anime…" : 'Nom du jeu…') : 'Titre et artiste…', submit, source));
+    ac.appendChild(makeGuessBox('sp-input', kind === 'anime' ? 'Nom de l’anime' : kind === 'jv' ? 'Nom du jeu' : 'Titre et artiste', submit, source));
     const row = el('div', 'row');
-    row.innerHTML = `<button class="btn primary" id="sp-submit">Valider</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
+    row.innerHTML = `<button class="btn primary" id="sp-submit">Proposer</button><button class="btn ghost small" id="sp-pass">Je sèche</button>`;
     ac.appendChild(row);
-    ac.appendChild(el('div', 'note', jvNow ? (s.current?.kind === 'anime' ? 'Choisis dans la liste : les animés y sont tous.' : 'Choisis dans la liste : les jeux y sont tous.') : 'Choisis dans la liste : elle remplit le titre <b>et</b> l\'artiste d\'un coup.'));
+    ac.appendChild(el('div', 'note', kind === 'anime' ? 'Tous les animés sont dans la liste.' : kind === 'jv' ? 'Tous les jeux sont dans la liste.' : 'La liste remplit titre <b>et</b> artiste d’un coup. Plus rapide que tes pouces.'));
     $('#sp-submit').onclick = () => submit($('#sp-input'));
     $('#sp-pass').onclick = () => act({ t: 'sp-giveup' });
   }
   if (reveal) {
-    const pod = el('div', 'podium');
-    s.order.forEach((pid, i) => {
-      const x = s.sprint[pid] || {};
-      pod.appendChild(el('div', '', `<span class="pos">${i + 1}</span><span class="who">${nameOf(pid)}</span><span class="gain">+${x.points}</span>`));
-    });
-    s.players.filter(p => !s.order.includes(p.id)).forEach(p => {
-      pod.appendChild(el('div', '', `<span class="pos">–</span><span class="who">${p.name}</span><span class="miss">pas trouvé</span>`));
-    });
-    ac.appendChild(pod);
-    const btn = el('button', 'btn lg ' + (s.round >= s.rounds ? 'pos' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante →');
+    const btn = el('button', 'btn lg ' + (s.round >= s.rounds ? 'pos' : 'primary'), s.round >= s.rounds ? 'Voir le classement' : 'Manche suivante');
     btn.onclick = () => act({ t: 'sp-next' }); ac.appendChild(btn);
   }
   renderSPOthers(s, reveal);
 }
+// les joueurs et où ils en sont (ordre d'arrivée et points de la manche à la révélation)
 function renderSPOthers(s, reveal) {
-  const ot = $('#sp-others'); ot.innerHTML = '';
-  if (reveal) return;
-  s.players.filter(p => p.id !== net.me).forEach(p => {
+  $('#sp-others').hidden = true;
+  muPlayers($('#sp-scoreboard'), s.players.map(p => {
     const x = s.sprint[p.id] || { tries: 0 };
-    const sp = el('span', x.done ? (x.points ? 'done' : 'out') : '');
-    sp.textContent = `${p.name} · ${x.done ? (x.points ? `${x.rank}${x.rank === 1 ? 'er' : 'e'} +${x.points}` : 'sèche') : `${x.tries} essai${x.tries > 1 ? 's' : ''}`}`;
-    ot.appendChild(sp);
-  });
+    const sub = x.done || reveal ? (x.points ? `${muRank(x.rank)}, +${x.points}` : reveal ? 'pas trouvé' : 'sèche')
+      : x.tries ? `${x.tries} raté${x.tries > 1 ? 's' : ''}` : 'cherche';
+    return { name: p.name, me: p.id === net.me, off: !p.online, on: !!x.points, sub, score: p.score || 0 };
+  }));
+  muDesk('#s-sprint');
 }
 
 function renderEOthers(s, reveal) {
-  const ot = $('#e-others'); ot.innerHTML = '';
-  if (reveal) return;
-  s.players.filter(p => p.id !== net.me).forEach(p => {
+  $('#e-others').hidden = true;
+  muPlayers($('#e-scoreboard'), s.players.map(p => {
     const x = s.eclair[p.id] || { level: 0 };
-    const sp = el('span', x.done ? (x.points ? 'done' : 'out') : '');
-    sp.textContent = `${p.name} · ${x.done ? (x.points ? 'trouvé +' + x.points : 'abandon') : 'écoute ' + fmtS(E_LEVELS[x.level])}`;
-    ot.appendChild(sp);
-  });
+    const sub = x.done || reveal ? (x.points ? `+${x.points} à ${fmtS(E_LEVELS[x.level])}` : 'pas trouvé') : `écoute ${fmtS(E_LEVELS[x.level])}`;
+    return { name: p.name, me: p.id === net.me, off: !p.online, on: !!x.points, sub, score: p.score || 0 };
+  }));
+  muDesk('#s-eclair');
 }
 loadSongsE().then(l => { eCatalog = l; }).catch(() => { });
 let jvCatalog = null;
@@ -1521,88 +1574,82 @@ function renderEnd(s) {
   const w = s.players.find(p => p.id === s.winner);
   const eclair = s.mode !== 'timeline';
   const solo = s.players.filter(p => p.online).length <= 1;
-  $('#end-winner').textContent = solo ? 'Terminé' : (w ? w.name : '—');
+  const score = n => `${n} point${n > 1 ? 's' : ''}`;
+  $('#end-winner').textContent = solo
+    ? (eclair ? `${score(w ? w.score : 0)} en ${s.rounds} manches.` : 'Frise complète.')
+    : w ? (w.id === net.me ? 'Tu gagnes.' : `${w.name} gagne.`) : 'Partie terminée.';
+  const host = isHostPlayer() ? ' Revanche ? Tout se passe au salon.' : ' L’hôte décide de la revanche.';
   $('#end-sub').textContent = solo
-    ? (eclair ? `${w ? w.score : 0} points sur ${s.rounds} manches.` : `Frise complète : ${s.target} cartes bien placées.`)
-    : s.mode === 'sprint' ? 'a été le plus rapide sur la gâchette.'
-      : s.mode === 'undercover' ? "a été l'agent le plus redoutable."
-      : s.mode === 'geo' ? 'a le meilleur sens de l\'orientation.'
-        : (eclair ? 'a l\'oreille la plus rapide.' : 'a rempli sa frise le premier.');
+    ? (!eclair ? `${s.target} cartes bien placées. Chapeau.` : w?.score ? 'Pas mal, tout seul. La prochaine fois, invite du monde.' : 'Zéro pointé. Les oreilles, ça se travaille.')
+    : (s.mode === 'sprint' ? 'La gâchette la plus rapide de la table.'
+      : s.mode === 'undercover' ? 'L’agent le plus redoutable de la table.'
+        : s.mode === 'geo' ? 'Le meilleur sens de l’orientation de la table.'
+          : eclair ? 'L’oreille la plus fine de la table.' : 'Première frise complète de la table.') + host;
   const ol = $('#ranking'); ol.innerHTML = '';
   [...s.players]
     .sort((a, b) => eclair ? b.score - a.score : (b.timeline.length - a.timeline.length || b.tokens - a.tokens))
-    .forEach(p => { const li = el('li'); li.innerHTML = `<span>${p.name}</span><b>${eclair ? p.score + ' pts' : p.timeline.length + ' cartes'}</b>`; ol.appendChild(li); });
+    .forEach(p => {
+      const n = eclair ? p.score : p.timeline.length;
+      const li = el('li', p.id === net.me ? 'me' : ''); li.innerHTML = `<span>${esc(p.name)}${p.id === net.me ? ' <i>toi</i>' : ''}</span><b>${n} ${eclair ? (n > 1 ? 'pts' : 'pt') : (n > 1 ? 'cartes' : 'carte')}</b>`; ol.appendChild(li);
+    });
   $('#btn-again').hidden = !isHostPlayer();
 }
 
 // ============================================================ aide & feuilles
 const HELP = {
   timeline: `<h3>Décennies</h3>
-    <p><b>But :</b> être le premier à remplir sa frise de chansons rangées par année.</p>
-    <p><b>À ton tour :</b> écoute l'extrait, touche le « + » où la chanson se place dans ta frise. Bonne année, la carte est à toi. Sinon elle est perdue.</p>
-    <h3>Les jetons ●</h3>
-    <p>Tu commences avec 2 jetons, 3 au maximum. Ils servent à une seule chose : <b>parier</b>.</p>
-    <ul>
-      <li><b>Prendre le pari, 1 jeton.</b> Quand un joueur a posé son choix, le premier qui se lance prend le pari du tour. Un seul pari par tour.</li>
-      <li><b>Gagné :</b> le joueur actif s'est trompé et ton emplacement était le bon. La carte rejoint ta frise.</li>
-      <li><b>Perdu :</b> tu perds le jeton et une carte de ta frise. Tu gardes toujours au moins une carte.</li>
-      <li><b>Regagner un jeton :</b> à ton tour, écris l'artiste et le titre avant de placer. Les deux justes, +1 jeton.</li>
-    </ul>
-    <h3>Tout seul</h3>
-    <p>Si tu es le seul joueur, les jetons et les paris disparaissent. Tu enchaînes les chansons, tu passes librement celles que tu ne connais pas, et tu t'arrêtes quand ta frise est pleine.</p>`,
+<p>Chacun construit sa frise de chansons rangées par année. Le premier qui la remplit gagne.</p>
+<ul>
+  <li>À ton tour, écoute l’extrait et touche le «&nbsp;+&nbsp;» où la chanson se place. Bonne année, la carte est à toi. Sinon, elle est perdue.</li>
+  <li>Tu démarres avec 2 jetons, 3 au plus. Ils ne servent qu’à parier.</li>
+  <li>Un joueur a posé sa carte&nbsp;? Le premier qui parie (1 jeton) choisit sa place à lui. Un seul pari par tour. S’il a raison et l’autre tort, la carte rejoint sa frise.</li>
+  <li>Pari perdu, tu laisses le jeton et une carte de ta frise. Il t’en reste toujours au moins une.</li>
+  <li>À ton tour, artiste et titre justes avant de placer, +1 jeton. Seul, ni jetons ni paris&nbsp;: tu passes les chansons que tu veux, jusqu’à la frise pleine.</li>
+</ul>`,
   eclair: `<h3>Éclair</h3>
-    <p>Tout le monde écoute la même chanson en même temps, chacun sur son téléphone.</p>
-    <p><b>But :</b> trouver le titre avec le moins de secondes d'écoute possible.</p>
-    <ul>
-      <li>0,5 s vaut 5 points, puis 1 s vaut 4, 2 s vaut 3, 3 s vaut 2, 5 s vaut 1.</li>
-      <li>Un titre faux débloque automatiquement le palier suivant.</li>
-      <li>« Écouter plus » débloque le palier sans tenter de réponse.</li>
-      <li>Avec la case <b>Jeux vidéo</b> cochée, des musiques de jeux se glissent parmi les chansons : pour celles-là, c'est le nom du jeu qu'il faut donner. Un nom trop vague comme « zelda » ne coûte pas d'essai, on te demande de préciser.</li>
-    </ul>
-    <p>Le plus grand total après toutes les manches gagne.</p>`,
+<p>Tout le monde écoute la même chanson en même temps, chacun sur son téléphone. Trouve le titre en écoutant le moins possible.</p>
+<ul>
+  <li>0,5 s vaut 5 points, 1 s en vaut 4, 2 s 3, 3 s 2, et 5 s 1.</li>
+  <li>Un titre faux ouvre le palier suivant. «&nbsp;Écouter plus&nbsp;» l’ouvre sans tenter de réponse.</li>
+  <li>Case Jeux vidéo cochée, des musiques de jeux se glissent parmi les chansons. Pour celles-là, donne le nom du jeu. Trop vague, comme «&nbsp;zelda&nbsp;»&nbsp;? Ça ne coûte pas d’essai, on te demande de préciser.</li>
+  <li>Après la dernière manche, le plus gros total gagne.</li>
+</ul>`,
   sprint: `<h3>Sprint</h3>
-    <p>La même chanson démarre chez tout le monde en même temps. Le but : donner <b>l'artiste et le titre</b> avant les autres.</p>
-    <ul>
-      <li>Le 1<sup>er</sup> marque 5 points, le 2<sup>e</sup> 3, le 3<sup>e</sup> 2, les suivants 1.</li>
-      <li>Trois essais par manche, puis la manche est finie pour toi.</li>
-      <li>La liste de suggestions remplit le titre et l'artiste d'un seul coup : sers-t'en, c'est plus rapide que de tout taper.</li>
-      <li>La manche s'arrête quand l'extrait est fini ou que tout le monde a répondu.</li>
-      <li>Avec la case <b>Jeux vidéo</b> cochée, des musiques de jeux se glissent parmi les chansons : pour celles-là, c'est le nom du jeu qu'il faut donner. Un nom trop vague ne coûte pas d'essai.</li>
-    </ul>
-    <p><b>Animés :</b> case facultative dans les options. Pour une musique d'anime, on donne le nom de l'anime, pas le titre du morceau.</p>`,
+<p>La même chanson démarre chez tout le monde en même temps. Donne l’artiste et le titre avant les autres.</p>
+<ul>
+  <li>Le 1<sup>er</sup> prend 5 points, le 2<sup>e</sup> 3, le 3<sup>e</sup> 2, les suivants 1.</li>
+  <li>Trois essais par manche. Après, c’est fini pour toi.</li>
+  <li>La liste de suggestions remplit titre et artiste d’un coup. Sers-t’en, tes pouces te diront merci.</li>
+  <li>La manche s’arrête à la fin de l’extrait, ou quand tout le monde a répondu.</li>
+  <li>Jeux vidéo ou Animés cochés dans le salon&nbsp;? Pour ces musiques-là, donne le nom du jeu ou de l’anime, pas le titre du morceau. Un nom trop vague ne coûte pas d’essai.</li>
+</ul>`,
   sablier: `<h3>Sablier</h3>
-    <p>Par équipes. Chacun reçoit des cartes et en écarte quelques-unes ; le reste forme le paquet commun. Le but : faire deviner le plus de cartes à son équipe, en un temps limité, sur plusieurs manches avec les <b>mêmes cartes</b>.</p>
+    <p>Par équipes, sur plusieurs manches, toujours avec les <b>mêmes cartes</b>. Chacun écarte quelques cartes de sa main, puis fait deviner le paquet qui reste à son équipe, chrono en main.</p>
     <ul>
-      <li><b>Description libre :</b> tout est permis sauf les mots de la carte.</li>
-      <li><b>Un seul mot :</b> un mot, une seule fois. Comme les cartes sont déjà connues, ça suffit souvent.</li>
-      <li><b>Mime :</b> si vous êtes dans la même pièce. Aucun mot, aucun son, ton équipe devine à voix haute.</li>
-      <li><b>Dessin :</b> tu dessines sur ton téléphone, ton équipe voit le dessin en direct.</li>
-    </ul>
-    <p>Chaque tour commence par trois secondes de préparation, la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main n'est jamais révélée : l'hôte peut la compter si elle a été trouvée pile à la fin.</p>
-    <p>Pendant un tour, le public envoie des réactions emoji, et les équipes qui ne jouent pas peuvent gribouiller sur les bords de l'écran avec le crayon ✏️ (couleur de leur équipe, effacé au tour suivant).</p>
-    <p>L'hôte peut corriger une carte comptée par erreur entre deux tours. Les cartes déjà vues lors des soirées précédentes ne reviennent pas tant qu'il en reste des neuves.</p>`,
+      <li><b>Description libre&nbsp;:</b> tout sauf les mots de la carte. <b>Un seul mot&nbsp;:</b> un mot, dit une seule fois. Les cartes sont connues, ça suffit souvent.</li>
+      <li><b>Mime&nbsp;:</b> si vous êtes dans la même pièce. Pas un mot, pas un son, ton équipe devine à voix haute. <b>Dessin&nbsp;:</b> tu dessines sur ton téléphone, ton équipe voit le dessin en direct.</li>
+      <li>Trois secondes pour te préparer, puis la carte arrive avec le chrono. Passer est libre, la carte reviendra. Au gong, la carte en main reste secrète. Trouvée pile à temps&nbsp;? L’hôte peut la compter.</li>
+      <li>Entre deux tours, l’hôte peut retirer une carte comptée par erreur. Les cartes vues les soirs d’avant ne reviennent pas tant qu’il en reste des neuves.</li>
+      <li>Pendant un tour, le public envoie des emojis. Les équipes qui ne jouent pas gribouillent sur les bords de l’écran avec le crayon ✏️, dans leur couleur. Tout s’efface au tour suivant.</li>
+    </ul>`,
   chromo: `<h3>Chromo</h3>
-    <p><b>But :</b> être le premier à ne plus avoir de cartes.</p>
-    <ul>
-      <li><b>À ton tour :</b> pose une carte de la même couleur ou du même symbole que celle du dessus. Sinon, pioche : si la carte piochée va, tu peux la jouer tout de suite.</li>
-      <li><b>Passe :</b> le suivant saute son tour. <b>Sens :</b> on tourne dans l'autre sens, et à deux joueurs ça fait passer. <b>+2 :</b> le suivant pioche deux cartes et passe.</li>
-      <li><b>Joker :</b> se pose sur tout, tu choisis la couleur. <b>Joker +4 :</b> pareil, et le suivant pioche quatre cartes.</li>
-      <li><b>Cumul :</b> avec l'option, on répond à un +2 par un +2 ou un +4, et à un +4 par un +4. Le premier qui ne peut pas contrer pioche le total.</li>
-      <li><b>« Chromo ! » :</b> quand il ne te reste qu'une ou deux cartes, touche le bouton. Si tu tombes à une carte sans l'avoir crié, n'importe qui peut t'attraper avant que le suivant ne joue : deux cartes de pénalité.</li>
-    </ul>
-    <p><b>Points :</b> le gagnant d'une manche marque la valeur des cartes restées chez les autres : le chiffre pour un nombre, 20 pour Passe, Sens et +2, 50 pour les jokers.</p>
-    <p class="fine">Les robots jouent tout seuls et attrapent ceux qui oublient de crier.</p>`,
+<p>Le premier qui vide sa main gagne la manche. Et il empoche tout ce qui traîne encore chez les autres.</p>
+<ul>
+  <li>À ton tour, pose une carte de la même couleur ou du même symbole. Rien ne va ? Pioche. Si la carte piochée va, tu peux la poser tout de suite.</li>
+  <li>Passe fait sauter le suivant. Sens inverse le tour, et à deux, ça fait passer. Le +2 fait piocher deux cartes au suivant, qui passe.</li>
+  <li>Le joker se pose sur tout et tu choisis la couleur. Le joker +4 aussi, et le suivant pioche quatre cartes. Avec le cumul, on répond à un +2 par un +2 ou un +4, à un +4 par un +4. Le premier qui ne peut pas contrer pioche le total.</li>
+  <li>Plus qu’une ou deux cartes ? Crie « Chromo ! ». Tombé à une carte sans crier, n’importe qui peut t’attraper avant que le suivant joue. Deux cartes de pénalité.</li>
+  <li>Le gagnant marque la valeur des cartes restées chez les autres. Le chiffre pour un nombre, 20 pour Passe, Sens et +2, 50 pour les jokers. Les robots, eux, attrapent ceux qui oublient de crier.</li>
+</ul>`,
   kems: `<h3>Kems</h3>
-    <p><b>But :</b> réunir quatre cartes de même valeur, un carré, et le faire savoir à ton partenaire sans que les adversaires s'en aperçoivent.</p>
-    <ul>
-      <li><b>Deux équipes de deux</b>, partenaires face à face. Avant de commencer, chaque équipe convient d'un signal discret : un clin d'œil, une main dans les cheveux, un mot glissé dans la conversation.</li>
-      <li><b>Pas de tour de jeu :</b> tout le monde échange en même temps. Touche une carte de ta main puis une carte du milieu, elle est à toi si personne ne l'a prise avant. Tu peux échanger autant de fois que tu veux.</li>
-      <li><b>Je passe :</b> quand tu ne veux plus rien. Dès que les quatre passent, les cartes du milieu sont remplacées. L'hôte peut aussi renouveler le milieu si plus rien ne bouge.</li>
-      <li><b>« Kems ! » :</b> quand tu crois avoir vu le signal de ton partenaire. S'il a bien un carré, <b>1 point</b> pour vous, 2 si tu en avais un aussi. Sinon, 1 point pour les adversaires.</li>
-      <li><b>« Contre-Kems ! » :</b> quand tu penses qu'un adversaire a un carré. Vrai : 1 point pour vous. Faux : 1 point pour eux.</li>
-    </ul>
-    <p>Une erreur coûte un point, alors les deux boutons demandent un second toucher pour confirmer. La partie se joue en 5 points par défaut. Les signaux ne passent pas par l'application : Kems se joue autour d'une table, ou en visio.</p>
-    <p class="fine">Les robots complètent une table. Un robot avec un carré fait un signal que seul son partenaire voit apparaître sur son écran ; il remarque aussi le tien au bout d'un moment.</p>`,
+<p>Deux équipes de deux, partenaires face à face. Réunis un carré, quatre cartes de même valeur, et fais-le savoir à ton partenaire sans que ceux d’en face s’en aperçoivent.</p>
+<ul>
+  <li>Avant de jouer, chaque équipe convient d’un signal discret. Un clin d’œil, une main dans les cheveux, un mot glissé dans la conversation. Il ne passe pas par l’application, Kems se joue autour d’une table ou en visio.</li>
+  <li>Pas de tour de jeu. Tout le monde échange en même temps une carte de sa main contre une du milieu, autant de fois qu’il veut. Premier arrivé, premier servi.</li>
+  <li>Plus rien ne te tente ? « Je passe ». Quand les quatre passent, le milieu change. L’hôte peut aussi le renouveler si plus rien ne bouge.</li>
+  <li>Tu crois voir le signal de ton partenaire ? « Kems ! » S’il a bien un carré, 1 point pour vous, 2 si tu en as un aussi. Sinon, 1 point pour ceux d’en face. Tu flaires un carré chez un adversaire ? « Contre-Kems ! » Juste, 1 point pour vous. Faux, 1 point pour eux.</li>
+  <li>Une erreur coûte un point, alors chaque annonce demande un second toucher. Partie en 5 points par défaut. Un robot qui tient un carré fait un signe que seul son partenaire voit à l’écran, et il finit par remarquer le tien.</li>
+</ul>`,
   camembert: `<h3>Camembert</h3>
     <p><b>But :</b> compléter ton fromage avec les six parts de couleur, puis réussir la question finale.</p>
     <ul>
@@ -1615,43 +1662,40 @@ const HELP = {
     <p>Les six couleurs : Géographie, Divertissement (ciné, séries, musique, jeux vidéo), Histoire, Arts &amp; Littérature, Sciences &amp; Nature, Sports &amp; Loisirs. Une question déjà posée ne revient pas d'une soirée à l'autre tant qu'il en reste. Si une question est fausse, l'hôte peut compter la réponse comme juste.</p>
     <p class="fine">Partie courte : dans le salon, choisis 3 ou 4 parts au lieu de 6.</p>`,
   mirage: `<h3>Mirage</h3>
-    <p><b>But :</b> donner des indices ni trop clairs ni trop obscurs, et deviner la carte des autres.</p>
-    <ul>
-      <li><b>Le conteur</b> choisit une carte de sa main et donne un indice : un mot, une phrase, une chanson, un bruit… tapé dans l'app ou dit à voix haute.</li>
-      <li><b>Les autres</b> choisissent dans leur main la carte qui colle le mieux à l'indice, pour faire croire que c'est la leur.</li>
-      <li><b>Le vote :</b> toutes les cartes sont mélangées, chacun (sauf le conteur) vote pour celle qu'il pense être celle du conteur. Pas pour la sienne.</li>
-      <li><b>Jokers :</b> chacun en a 3 pour la partie. Touche une carte de ta main, puis « Joker » : 5 cartes te sont proposées, tu en gardes une à la place.</li>
-      <li><b>Points :</b> si tout le monde trouve, ou si personne ne trouve, le conteur marque 0 et les autres 2. Sinon le conteur et ceux qui ont trouvé marquent 3. Chaque vote reçu sur sa carte rapporte 1 point, 3 au maximum.</li>
-    </ul>
-    <p>Touche une carte pour la voir en grand. Les cartes sont des tableaux, gravures et estampes du domaine public : Redon, Goya, Blake, Doré, Hokusai et d'autres. Celles déjà vues lors des soirées précédentes sortent en dernier.</p>
-    <p class="fine">À trois joueurs ça marche, à cinq ou six c'est le meilleur. Partie en 30 points, réglable.</p>`,
+<p>Le conteur choisit une image et lance un indice, ni trop clair ni trop obscur. Les autres glissent une carte qui colle, puis chacun cherche celle du conteur.</p>
+<ul>
+  <li>L’indice se tape dans l’app ou se dit à voix haute. Un mot, une phrase, une chanson, un bruit.</li>
+  <li>Au vote, les cartes sont mélangées. Chacun, sauf le conteur, vote pour celle du conteur. Jamais la sienne.</li>
+  <li>Tout le monde trouve, ou personne ? Le conteur marque 0, les autres 2. Sinon, le conteur et ceux qui ont trouvé marquent 3.</li>
+  <li>Chaque vote attrapé par ta carte rapporte 1 point, 3 au maximum.</li>
+  <li>Une carte ne te plaît pas ? Ouvre-la et sors un joker. 5 cartes te sont proposées, tu en gardes une. 3 jokers par partie, réglable.</li>
+</ul>`,
   douze: `<h3>Douze</h3>
-    <p><b>But :</b> finir chaque manche avec le total le plus bas. Douze cartes face cachée devant toi, en trois lignes de quatre.</p>
-    <ul>
-      <li><b>Début de manche :</b> chacun retourne deux cartes. Le plus haut total visible commence.</li>
-      <li><b>À ton tour :</b> pioche une carte, ou prends le dessus de la défausse. Une carte piochée se pose sur une de tes cartes (visible ou cachée, l'ancienne part à la défausse), ou se défausse : tu retournes alors une carte cachée. Une carte prise dans la défausse se pose obligatoirement.</li>
-      <li><b>Colonnes :</b> trois cartes identiques face visible dans une même colonne, et la colonne disparaît. Idéal avec des 12.</li>
-      <li><b>Fin de manche :</b> quand un joueur a tout retourné, les autres jouent un dernier tour, puis tout est révélé. Celui qui a fermé sans avoir strictement le plus petit total voit son score doubler.</li>
-    </ul>
-    <p><b>Cartes :</b> de -2 à 12. Les négatifs sont précieux, les rouges à fuir. La partie s'arrête quand quelqu'un atteint 100 points : le plus bas gagne.</p>
-    <p class="fine">Les robots complètent une table : pratique pour tester seul.</p>`,
+<p>Douze cartes face cachée devant toi, en trois lignes de quatre. À chaque manche, vise le total le plus bas.</p>
+<ul>
+  <li>Pour commencer, chacun retourne deux cartes. Le plus haut total visible ouvre le bal.</li>
+  <li>À ton tour, pioche ou prends le dessus de la défausse. Une carte piochée remplace une de tes cartes, visible ou cachée, et l’ancienne part à la défausse. Ou tu la défausses et tu retournes une carte cachée. Une carte prise dans la défausse se pose, pas le choix.</li>
+  <li>Trois cartes identiques face visible dans une colonne, et la colonne disparaît. Idéal avec des 12.</li>
+  <li>Quand quelqu’un a tout retourné, les autres jouent un dernier tour, puis tout se révèle. Celui qui a fermé sans avoir strictement le plus petit total voit son score doubler.</li>
+  <li>Les cartes vont de -2 à 12. Les négatifs sont précieux, les rouges à fuir. La partie s’arrête quand quelqu’un atteint le seuil choisi, 100 points par défaut. Le plus bas gagne. Les robots complètent la table, pratique pour tester seul.</li>
+</ul>`,
   petitbac: `<h3>Petit Brevet</h3>
-    <p><b>But :</b> trouver, pour chaque catégorie, un mot qui commence par la lettre tirée.</p>
-    <ul>
-      <li><b>Écrire :</b> remplis tes catégories avant la fin du chrono. Les articles ne comptent pas : « La Rochelle » vaut pour R.</li>
-      <li><b>Stop :</b> quand tu as tout rempli, touche « Stop ! ». Les autres ont encore trois secondes, puis tout le monde pose son stylo. Si l'hôte a désactivé le stop, chacun touche « J'ai fini » et la manche s'arrête quand tout le monde a fini, ou à la fin du chrono.</li>
-      <li><b>Vérifier :</b> toutes les réponses s'affichent. Touche une réponse douteuse pour la contester : elle est refusée si la moitié des autres joueurs la conteste. L'hôte peut trancher.</li>
-      <li><b>Points :</b> 10 pour une réponse que personne d'autre n'a, 5 si quelqu'un a la même, 0 si elle est vide, refusée ou ne commence pas par la bonne lettre.</li>
-    </ul>`,
+<p>Une lettre, des catégories. Pour chacune, trouve un mot qui commence par cette lettre.</p>
+<ul>
+  <li>Remplis tout avant la fin du chrono. Les articles ne comptent pas, « La Rochelle » vaut pour R.</li>
+  <li>Tout rempli ? Crie « Stop ! ». Les autres ont encore trois secondes, puis tout le monde pose son stylo. Si l’hôte a coupé le stop, chacun touche « J’ai fini » et la manche s’arrête quand tout le monde a fini, ou à la fin du chrono.</li>
+  <li>À la vérification, touche une réponse douteuse pour la contester. Elle saute si la moitié des autres la conteste. L’hôte peut trancher.</li>
+  <li>10 points pour une réponse que personne d’autre n’a, 5 si quelqu’un a la même, 0 si elle est vide, refusée ou pas à la bonne lettre.</li>
+</ul>`,
   loupgarou: `<h3>Loup-Garou</h3>
-    <p>Le village contre les loups-garous cachés parmi vous. L'application fait le meneur : elle réveille chaque rôle à son tour, annonce les morts et compte les votes.</p>
+    <p>Le village contre les loups-garous cachés parmi vous. Pas besoin de meneur&nbsp;: l’application réveille chaque rôle, annonce les morts et compte les votes.</p>
     <ul>
-      <li><b>Ton rôle :</b> maintiens la carte appuyée pour le voir, relâche pour le cacher. Ne le montre à personne.</li>
-      <li><b>La nuit :</b> tout le monde ferme les yeux. Ton téléphone vibre quand c'est à ton rôle d'agir ; les autres voient un écran de nuit. Chaque étape dure un moment, même si le rôle est mort : sa durée ne trahit rien.</li>
-      <li><b>Le jour :</b> les morts de la nuit sont annoncés avec leur rôle. Débattez de vive voix, puis votez sur votre téléphone. Le plus désigné est éliminé ; en cas d'égalité, on revote entre les ex æquo, puis personne.</li>
-      <li><b>Victoire :</b> le village quand tous les loups sont morts, les loups quand il ne reste que des loups, un couple d'amoureux de camps différents s'il reste seul.</li>
-    </ul>
-    <p class="fine">Les morts gardent le silence. Les rôles de chacun sont détaillés dans la page Règles des jeux.</p>`,
+      <li><b>Ton rôle.</b> Maintiens la carte appuyée pour le voir, relâche pour le cacher. Ne le montre à personne.</li>
+      <li><b>La nuit.</b> Yeux fermés. Ton téléphone vibre quand ton rôle se réveille, les autres voient l’écran de nuit. Chaque étape dure un moment, même si le rôle est mort&nbsp;: sa durée ne trahit rien.</li>
+      <li><b>Le jour.</b> Les morts de la nuit sont annoncés avec leur rôle. Débattez à voix haute, puis votez sur le téléphone. Le plus désigné est éliminé. Égalité&nbsp;? On revote entre les ex æquo, puis plus personne.</li>
+      <li><b>Victoire.</b> Le village quand tous les loups sont morts, les loups quand il ne reste que des loups, deux amoureux de camps différents s’ils restent seuls.</li>
+      <li>Les morts se taisent. Chaque rôle est détaillé dans les Règles des jeux.</li>
+    </ul>`,
   limite: `<h3>Hors Limite</h3>
     <p>Une phrase à trous, dix cartes en main. Complète-la avec la carte la plus drôle, ou la plus limite. Premier au score fixé, gagné.</p>
     <ul>
@@ -1661,73 +1705,81 @@ const HELP = {
       <li>Main pourrie ? Change-la entière contre 1 point. La version soft retire les cartes épicées.</li>
     </ul>`,
   solitaire: `<h3>Solitaire</h3>
-    <p>La patience classique, en course : tout le monde reçoit exactement la même donne et joue sur son écran. Le premier qui monte les 52 cartes sur les fondations gagne.</p>
+    <p>La patience classique, en course. Même donne pour tout le monde, chacun sur son écran. Le premier qui monte les 52 cartes sur les fondations gagne.</p>
     <ul>
-      <li><b>Toucher une carte</b> l'envoie au meilleur endroit, la fondation d'abord. S'il y a plusieurs colonnes possibles, elles s'allument : touche celle que tu veux.</li>
-      <li><b>Ou fais-la glisser</b> toi-même : prends une carte (ou une suite de la colonne) et lâche-la sur la colonne ou la fondation de ton choix.</li>
-      <li>Dans les colonnes, on descend en alternant rouge et noir. Seul un roi va sur une colonne vide.</li>
-      <li>La pioche en haut à gauche : touche-la pour tourner une ou trois cartes. Vide, elle se recharge avec le talon.</li>
-      <li>Annuler est illimité ou presque. Au bout du temps, le classement se fait sur les cartes montées.</li>
+      <li>Touche une carte, elle file au meilleur endroit, la fondation d’abord. Plusieurs colonnes possibles ? Elles s’allument, tu choisis.</li>
+      <li>Tu préfères la main ? Fais glisser une carte, ou une suite de la colonne, là où tu veux.</li>
+      <li>Dans les colonnes, on descend en alternant rouge et noir. Une colonne vide n’accepte qu’un roi.</li>
+      <li>La pioche tourne une ou trois cartes. Vide, elle reprend le talon.</li>
+      <li>Annuler ne coûte rien. Au bout du temps, on classe sur les cartes montées.</li>
     </ul>`,
   duel: `<h3>Duel des Cités</h3>
-    <p>À deux, bâtissez la plus grande cité de l'Antiquité en trois âges. Les cartes de chaque âge sont posées en pyramide ; seules celles que rien ne recouvre peuvent être prises.</p>
+    <p>À deux, bâtis la plus grande cité de l’Antiquité en trois âges. Les cartes forment une pyramide, et seules celles que rien ne recouvre se prennent.</p>
     <ul>
-      <li><b>À ton tour,</b> prends une carte libre et construis-la (paye son coût), défausse-la pour des pièces, ou glisse-la sous une de tes merveilles pour la bâtir.</li>
-      <li><b>Ressources :</b> ce que ta cité ne produit pas s'achète 2 pièces, plus 1 par exemplaire que ton adversaire produit.</li>
-      <li><b>Enchaînements :</b> certaines cartes sont gratuites si tu possèdes le symbole indiqué.</li>
-      <li><b>Victoires :</b> militaire si le pion atteint la capitale adverse, scientifique avec 6 symboles différents, sinon le plus de points à la fin de l'âge III.</li>
+      <li>À ton tour, tu prends une carte libre. Tu la construis en payant son coût, tu la défausses pour des pièces, ou tu la glisses sous une merveille pour la bâtir.</li>
+      <li>Une ressource que ta cité ne produit pas s’achète 2 pièces, plus 1 par exemplaire que produit ton rival.</li>
+      <li>Certaines cartes sont gratuites si tu as déjà le symbole indiqué. C’est l’enchaînement.</li>
+      <li>Le pion atteint la capitale adverse, victoire militaire. Six symboles scientifiques différents, victoire scientifique. Sinon, le plus de points à la fin de l’âge III.</li>
     </ul>`,
   diapason: `<h3>Diapason</h3>
-    <p>Se mettre sur la même longueur d'onde. Une carte donne deux extrêmes, par exemple « Froid ↔ Chaud ». Seul le médium voit où se cache la cible sur le cadran.</p>
-    <ul>
-      <li><b>Le médium</b> donne un indice qui situe la cible entre les deux : un mot, un nom, un film… Pour « Froid ↔ Chaud », « une douche en été » tombe plutôt vers le milieu.</li>
-      <li><b>Les autres</b> placent l'aiguille au jugé. Plein centre : 4 points, puis 3, puis 2.</li>
-      <li><b>Chacun pour soi :</b> chacun place sa propre aiguille, et le médium gagne la moyenne des points des autres.</li>
-      <li><b>En équipes :</b> l'équipe déplace ensemble une aiguille commune, puis l'équipe adverse parie « plus à gauche » ou « plus à droite » pour 1 point.</li>
-    </ul>`,
+<p>Se mettre sur la même longueur d’onde. Une carte donne deux extrêmes, « Froid ↔ Chaud » par exemple, et seul le médium voit où se cache la cible.</p>
+<ul>
+  <li>Le médium lance un indice qui la situe entre les deux. Un mot, un nom, un film. Pour « Froid ↔ Chaud », « une douche en été » tombe plutôt vers le milieu.</li>
+  <li>Les autres placent l’aiguille au jugé. Plein centre 4 points, puis 3, puis 2.</li>
+  <li>Chacun pour soi, chacun place sa propre aiguille et le médium gagne la moyenne des points des autres.</li>
+  <li>En équipes, l’équipe bouge ensemble une aiguille commune. L’équipe adverse parie ensuite « plus à gauche » ou « plus à droite », pour 1 point.</li>
+</ul>`,
   poker: `<h3>Poker</h3>
-    <p>Texas Hold'em avec des jetons fictifs. Tu reçois deux cartes cachées, cinq cartes communes arrivent au milieu : la meilleure main de cinq cartes parmi les sept gagne le pot.</p>
+    <p>Texas Hold’em, avec des jetons pour de faux. Deux cartes cachées pour toi, cinq communes au milieu. La meilleure main de cinq cartes parmi les sept ramasse le pot.</p>
     <ul>
-      <li><b>À ton tour :</b> te coucher, parler (si personne n'a misé), suivre, ou relancer avec le curseur. Tapis quand tu mises tout.</li>
-      <li><b>Les tours :</b> avant le flop, puis flop (3 cartes), turn (1) et river (1). Les blindes tournent et montent au fil des mains.</li>
-      <li><b>Mains, de la plus faible à la plus forte :</b> carte haute, paire, double paire, brelan, quinte, couleur, full, carré, quinte flush.</li>
-    </ul>
-    <p>Sans jetons, tu es éliminé. Le dernier en jeu rafle tout.</p>`,
-  naufrages: `<h3>Naufragés</h3>
-    <p>Échoués sur une île, il faut construire un radeau et partir avant l'ouragan. Chaque soir, chacun mange un poisson et boit une ration d'eau.</p>
-    <ul>
-      <li><b>Chaque jour :</b> choisis en secret pêcher, chercher de l'eau (selon la météo), couper du bois (et tenter ta chance pour en couper plus, au risque d'une morsure de serpent), ou fouiller l'épave (un objet secret).</li>
-      <li><b>Le soir :</b> s'il manque de quoi manger ou boire, le camp vote pour sacrifier quelqu'un, jusqu'à ce que les réserves suffisent.</li>
-      <li><b>Le radeau :</b> 4 morceaux de bois par place. Quand il y a une place et des vivres pour chacun, l'hôte peut lancer le départ. L'ouragan force le départ : ceux qui n'ont pas de place restent.</li>
-    </ul>
-    <p>Ceux qui embarquent gagnent. Les objets de l'épave sont secrets : conserve, gourde, hache, pistolet, talisman…</p>`,
-  memes: `<h3>Mème pas vrai</h3>
-    <p>Une situation s'affiche. Chacun pose le mème ou le GIF de sa main qui y répond le mieux.</p>
-    <ul>
-      <li><b>Avec un juge :</b> à tour de rôle, un joueur ne joue pas et choisit son mème préféré, qui marque 1 point.</li>
-      <li><b>Tout le monde vote :</b> chacun vote pour le meilleur mème, jamais le sien ; chaque vote reçu vaut 1 point.</li>
-      <li>Touche un mème pour le voir en grand avec la phrase. Rien ne va dans ta main ? Échange-la toute entière contre 1 point.</li>
+      <li>À ton tour, tu te couches, tu parles si personne n’a misé, tu suis, ou tu relances avec le curseur. Tapis, tu mises tout.</li>
+      <li>Avant le flop, puis le flop (3 cartes), le turn (1) et la river (1). Les blindes tournent et montent au fil des mains.</li>
+      <li>De la plus faible à la plus forte : carte haute, paire, double paire, brelan, quinte, couleur, full, carré, quinte flush.</li>
+      <li>Plus de jetons, tu sors. Le dernier à table rafle tout.</li>
     </ul>`,
-  geo: `<h3>Boussole</h3>
-    <p>Une photo 360° prise dans une rue, quelque part. Regarde autour de toi : panneaux, langue, végétation, côté de circulation, plaques. Puis pose ton épingle sur la carte et valide.</p>
+  naufrages: `<h3>Naufragés</h3>
+    <p>Échoués sur une île, il faut construire un radeau et partir avant l’ouragan. Chaque soir, chacun mange un poisson et boit une ration d’eau.</p>
     <ul>
-      <li><b>Déplacement libre :</b> avance le long de la rue avec les flèches de l'image.</li>
-      <li><b>Sans bouger :</b> tu peux tourner et zoomer, mais pas avancer.</li>
-      <li><b>Ni bouger ni zoomer :</b> une seule vue fixe, pour les experts.</li>
+      <li><b>Chaque jour,</b> choisis en secret&nbsp;: pêcher, chercher de l’eau (selon la météo), couper du bois ou fouiller l’épave, qui cache des objets secrets.</li>
+      <li><b>Le bois.</b> Tente ta chance pour en couper plus. Gare au serpent&nbsp;: mordu, tu ne rapportes rien et tu es malade deux jours.</li>
+      <li><b>Le soir.</b> S’il manque de quoi manger ou boire, le camp vote pour sacrifier quelqu’un, jusqu’à ce que les réserves suffisent.</li>
+      <li><b>Le radeau.</b> 4 morceaux de bois par place. Une place et des vivres pour chacun, et l’hôte peut lancer le départ. L’ouragan, lui, force le départ&nbsp;: ceux qui n’ont pas de place restent.</li>
+      <li>Ceux qui embarquent gagnent. Dans l’épave&nbsp;: conserve, gourde, hache, pistolet, talisman, et d’autres surprises.</li>
+    </ul>`,
+  memes: `<h3>Mème pas vrai</h3>
+<p>Une situation s’affiche. Chacun pose le mème ou le GIF de sa main qui y répond le mieux.</p>
+<ul>
+  <li>Avec un juge, un joueur différent à chaque manche ne joue pas et garde son préféré. 1 point pour son auteur.</li>
+  <li>Tout le monde vote ? Chacun vote pour son préféré, jamais le sien. Chaque vote reçu vaut 1 point.</li>
+  <li>Touche un mème pour le voir en grand, avec la phrase.</li>
+  <li>Main pourrie ? Change-la entière contre 1 point.</li>
+</ul>`,
+  geo: `<h3>Boussole</h3>
+    <p>Une photo à 360° prise dans une rue, quelque part. Regarde autour de toi, puis plante ton épingle sur la carte et valide.</p>
+    <ul>
+      <li>Tout est indice. Les panneaux, la langue, la végétation, le côté de circulation, les plaques.</li>
+      <li><b>Déplacement libre&nbsp;:</b> tu avances le long de la rue avec les flèches de l’image.</li>
+      <li><b>Sans bouger&nbsp;:</b> tu tournes et tu zoomes, mais tu n’avances pas. <b>Ni bouger ni zoomer&nbsp;:</b> une seule vue fixe, pour les experts.</li>
+      <li>Jusqu’à 5&nbsp;000 points par manche selon la distance, rapportée à la taille de la carte.</li>
+      <li>La manche s’arrête quand tout le monde a validé, ou au bout du chrono.</li>
     </ul>
-    <p><b>Points :</b> jusqu'à 5 000 par manche selon la distance, rapportée à la taille de la carte. La manche se termine quand tout le monde a validé ou à la fin du chrono.</p>
     <p class="fine">Images Mapillary, prises par des contributeurs. Carte OpenStreetMap.</p>`,
   undercover: `<h3>Undercover</h3>
-    <p>Tout le monde reçoit le même mot secret, sauf les <b>undercovers</b> qui ont un mot voisin, sans le savoir. Avec l'option <b>Mister White</b>, un joueur n'a aucun mot et le sait.</p>
+    <p>Tout le monde a le même mot secret, sauf les <b>undercovers</b>&nbsp;: leur mot est voisin, et ils ne le savent pas. Avec <b>Mister White</b>, un joueur n’a aucun mot, et lui le sait.</p>
     <ul>
-      <li><b>Indices :</b> chacun à son tour dit un mot ou une courte expression à voix haute, sans jamais dire son mot. Tu peux aussi l'écrire : tout ce qui a été dit est rappelé au moment du vote.</li>
-      <li><b>Vote :</b> tout le monde vote sur son téléphone. Le plus désigné est éliminé et son rôle est révélé. En cas d'égalité, on revote entre les ex æquo.</li>
-      <li><b>Mister White éliminé</b> tente de deviner le mot des civils. S'il trouve, il marque 5 points ; il reste éliminé et la manche continue.</li>
-    </ul>
-    <p><b>Fin de manche :</b> les civils gagnent quand tous les intrus sont éliminés. Les intrus gagnent s'il ne reste plus qu'un civil.</p>
-    <p><b>Points :</b> civil gagnant 2, undercover gagnant 10, Mister White gagnant 6. On joue plusieurs manches avec de nouveaux mots.</p>`,
-  hub: `<h3>Boîte à jeux</h3><p>Une personne crée la partie et partage le code. Les autres ouvrent la même adresse et tapent ce code. L'hôte choisit ensuite le jeu.</p>
-    <p>L'hôte garde son téléphone ouvert : c'est lui qui fait tourner la partie.</p>`,
+      <li><b>Indices.</b> Chacun son tour, un mot ou une courte expression à voix haute. Jamais ton mot. Tu peux aussi l’écrire, tout est rappelé au vote.</li>
+      <li><b>Vote.</b> Chacun vote sur son téléphone. Le plus désigné est éliminé et son rôle révélé. Égalité&nbsp;? On revote entre les ex æquo.</li>
+      <li><b>Mister White démasqué</b> devine le mot des civils. Trouvé, c’est 5 points. Il reste éliminé, la manche continue.</li>
+      <li>Les civils gagnent quand tous les intrus sont éliminés. Les intrus, quand il ne reste qu’un civil.</li>
+      <li><b>Points.</b> Civil gagnant 2, undercover gagnant 10, Mister White gagnant 6. Nouveaux mots à chaque manche.</li>
+    </ul>`,
+  hub: `<h3>Boîte à jeux</h3>
+    <p>Quelqu’un crée la partie et donne le code à la table. Les autres ouvrent la même adresse, tapent le code, et c’est parti.</p>
+    <ul>
+      <li>L’hôte choisit le jeu et ses réglages ; tout le monde les voit en direct.</li>
+      <li>Garde l’écran de l’hôte allumé : c’est lui qui fait tourner la soirée.</li>
+      <li>Seul ? Ajoute des robots pour tester n’importe quel jeu.</li>
+    </ul>`,
 };
 
 // ============================================================ diagnostic réseau
@@ -1957,7 +2009,7 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'sprint', decades, jv, anime, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
   }
   if (pick === 'sablier') {
-    if ((view?.players || []).filter(p => p.online).length + botsOpt('sab') < 2) { toast('Sablier se joue à deux minimum, par équipes : ajoute des robots'); return; }
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('sab') < 2) { toast('Sablier se joue à deux minimum, par équipes. Ajoute des robots.'); return; }
     const roundTypes = [...$('#opt-sab-rounds').querySelectorAll('input:checked')].map(i => i.value);
     if (!roundTypes.length) { toast('Choisis au moins une manche'); return; }
     const decks = [...$('#opt-sab-decks').querySelectorAll('input:checked')].map(i => i.value);
@@ -1966,19 +2018,19 @@ $('#btn-start').onclick = () => {
     act({ t: 'start', opts: { mode: 'sablier', decks, settings, bots: botsOpt('sab') } });
   }
   if (pick === 'undercover') {
-    if ((view?.players || []).filter(p => p.online).length + botsOpt('uc') < 3) { toast('Undercover se joue à trois minimum : ajoute des robots'); return; }
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('uc') < 3) { toast('Undercover se joue à trois minimum. Ajoute des robots.'); return; }
     act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked, bots: botsOpt('uc') } });
   }
   if (pick === 'chromo') {
     const humans = (view?.players || []).filter(p => p.online).length, bots = +$('#opt-ch-bots').value;
-    if (humans + bots < 2) { toast('Chromo se joue à deux minimum : ajoute un robot ou invite un ami'); return; }
-    if (humans + bots > 10) { toast('Dix joueurs au maximum, robots compris'); return; }
+    if (humans + bots < 2) { toast('Chromo se joue à deux minimum. Ajoute un robot ou invite un ami.'); return; }
+    if (humans + bots > 10) { toast('Dix joueurs au maximum, robots compris.'); return; }
     act({ t: 'start', opts: { mode: 'chromo', rounds: +$('#opt-ch-rounds').value, stack: $('#opt-ch-stack').checked, zero: $('#opt-ch-zero').checked, bots } });
   }
   if (pick === 'kems') {
     const online = (view?.players || []).filter(p => p.online), bots = $('#opt-km-bots').checked;
     const t = Kems.split(online, kmTeamPick);
-    if (!bots && (t[0].length < 2 || t[1].length < 2)) { toast('Kems se joue à quatre, deux par équipe : invite des amis ou complète avec des robots'); return; }
+    if (!bots && (t[0].length < 2 || t[1].length < 2)) { toast('Kems se joue à quatre, deux par équipe. Invite des amis ou complète avec des robots.'); return; }
     if (t.extra.length) toast(`${t.extra.map(p => p.name).join(', ')} regarder${t.extra.length > 1 ? 'ont' : 'a'} cette partie`);
     const teams = {}; online.forEach(p => { if (kmTeamPick[p.id] === 0 || kmTeamPick[p.id] === 1) teams[p.id] = kmTeamPick[p.id]; });
     act({ t: 'start', opts: { mode: 'kems', target: +$('#opt-km-target').value, teams, bots } });
@@ -1992,7 +2044,7 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'mirage') {
     (async () => {
-      if ((view?.players || []).filter(p => p.online).length + botsOpt('mi') < 3) { toast('Mirage se joue à trois minimum : ajoute des robots'); return; }
+      if ((view?.players || []).filter(p => p.online).length + botsOpt('mi') < 3) { toast('Mirage se joue à trois minimum : ajoute des robots'); return; }
       await Mirage.load(ASSET_V);
       const cardset = $('#opt-mi-cards').value;
       if (Mirage.count(cardset) < 40) { toast('Cartes introuvables'); return; }
@@ -2001,8 +2053,8 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'douze') {
     const humans = (view?.players || []).filter(p => p.online).length, bots = +$('#opt-dz-bots').value;
-    if (humans + bots < 2) { toast('Douze se joue à deux minimum : ajoute un robot ou invite un ami'); return; }
-    if (humans + bots > 8) { toast('Huit joueurs au maximum, robots compris'); return; }
+    if (humans + bots < 2) { toast('Douze se joue à deux minimum. Ajoute un robot ou invite un ami.'); return; }
+    if (humans + bots > 8) { toast('Huit joueurs au maximum, robots compris.'); return; }
     act({ t: 'start', opts: { mode: 'douze', target: +$('#opt-dz-target').value, bots } });
   }
   if (pick === 'limite') {
@@ -2017,7 +2069,7 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'diapason') {
     const n = (view?.players || []).filter(p => p.online).length + botsOpt('dp'), dpMode = $('#opt-dp-mode').value;
-    if (n < 2) { toast('Diapason se joue à deux minimum : ajoute un robot'); return; }
+    if (n < 2) { toast('Diapason se joue à deux minimum : ajoute un robot'); return; }
     if (dpMode === 'teams' && n < 4) { toast('En équipes, il faut au moins quatre joueurs'); return; }
     act({ t: 'start', opts: { mode: 'diapason', dpMode, tours: +$('#opt-dp-tours').value, target: +$('#opt-dp-target').value, bots: botsOpt('dp') } });
   }
@@ -2029,19 +2081,19 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'naufrages') {
     const bots = +$('#opt-nf-bots').value;
-    if ((view?.players || []).filter(p => p.online).length + bots < 3) { toast('Naufragés se joue à trois minimum : ajoute des robots'); return; }
+    if ((view?.players || []).filter(p => p.online).length + bots < 3) { toast('Naufragés se joue à trois minimum. Ajoute des robots.'); return; }
     act({ t: 'start', opts: { mode: 'naufrages', length: $('#opt-nf-length').value, bots } });
   }
   if (pick === 'memes') {
     (async () => {
-      if ((view?.players || []).filter(p => p.online).length + botsOpt('mm') < 3) { toast('Mème pas vrai se joue à trois minimum : ajoute des robots'); return; }
+      if ((view?.players || []).filter(p => p.online).length + botsOpt('mm') < 3) { toast('Mème pas vrai se joue à trois minimum : ajoute des robots'); return; }
       await Memes.load(ASSET_V);
-      if (Memes.count() < 60) { toast('Mèmes introuvables : memes.json manque'); return; }
+      if (Memes.count() < 60) { toast('Mèmes introuvables : memes.json manque'); return; }
       act({ t: 'start', opts: { mode: 'memes', target: +$('#opt-mm-target').value, judge: $('#opt-mm-mode').value, kinds: $('#opt-mm-kinds').value, bots: botsOpt('mm') } });
     })();
   }
   if (pick === 'loupgarou') {
-    if ((view?.players || []).filter(p => p.online).length + botsOpt('lw') < 5) { toast('Loup-Garou se joue à cinq minimum : ajoute des robots'); return; }
+    if ((view?.players || []).filter(p => p.online).length + botsOpt('lw') < 5) { toast('Loup-Garou se joue à cinq minimum. Ajoute des robots.'); return; }
     const roles = {}; LoupGarou.SPECIALS.forEach(r => { roles[r] = !!$('#opt-lw-' + r)?.checked; });
     try { localStorage.setItem('lw-voice', $('#opt-lw-voice').checked ? '1' : '0'); } catch { }
     if ($('#opt-lw-voice').checked && window.speechSynthesis) { try { speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch { } }   // débloque la voix sur iPhone
@@ -2055,10 +2107,10 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'geo') {
     (async () => {
-      if (!window.MAPILLARY_TOKEN) { toast('Jeton Mapillary manquant : il faut le coller dans geo-config.js'); return; }
+      if (!window.MAPILLARY_TOKEN) { toast('Jeton Mapillary manquant. Colle-le dans geo-config.js.'); return; }
       const map = $('#opt-geo-map').value;
       await Geo.loadPlaces();
-      if (!Geo.count(map)) { toast('Aucun lieu prêt pour cette carte'); return; }
+      if (!Geo.count(map)) { toast('Aucun lieu prêt pour cette carte. Choisis-en une autre.'); return; }
       act({ t: 'start', opts: { mode: 'geo', map, geoMode: $('#opt-geo-mode').value, rounds: +$('#opt-geo-rounds').value, seconds: +$('#opt-geo-seconds').value } });
     })();
   }

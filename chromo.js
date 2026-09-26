@@ -101,7 +101,7 @@ const Chromo = (() => {
     room.discard.push(first); room.color = first.c;
     room.dir = 1; room.turn = 0; room.pending = 0; room.drew = null;
     room.called = {}; room.vulnerable = null; room.vulnerableAt = 0; room.playSeq = 0;
-    room.log = [`Manche ${room.round} : ${cardLabel(first)} pour commencer.`];
+    room.log = [`Manche ${room.round}. On ouvre sur un ${cardLabel(first)}.`];
     room.result = null; room.phase = 'play';
     skipOfflineTurn(room);
   }
@@ -113,7 +113,7 @@ const Chromo = (() => {
 
   function play(room, pid, cardId, color) {
     if (room.phase !== 'play') return null;
-    if (currentId(room) !== pid) return "Ce n'est pas ton tour";
+    if (currentId(room) !== pid) return 'Ce n’est pas ton tour';
     const p = pl(room, pid), idx = p.hand.findIndex(c => c.id === cardId);
     if (idx < 0) return null;
     const card = p.hand[idx];
@@ -123,7 +123,7 @@ const Chromo = (() => {
     closeCatchWindow(room, pid);
     p.hand.splice(idx, 1);
     room.discard.push(card); room.color = card.c === 'w' ? color : card.c; room.playSeq += 1;
-    let text = `${p.name} joue ${cardLabel(card)}` + (card.c === 'w' ? `, couleur ${COLOR_NAME[color]}` : '');
+    let text = `${p.name} pose un ${cardLabel(card)}` + (card.c === 'w' ? ` et choisit le ${COLOR_NAME[color]}` : '');
     if (p.hand.length === 1 && !room.called[pid]) { room.vulnerable = pid; room.vulnerableAt = Date.now(); }
 
     if (p.hand.length === 0) {                          // manche gagnée : les pioches dues s'appliquent d'abord
@@ -132,7 +132,7 @@ const Chromo = (() => {
         if (victim && victim !== pid) { drawCards(room, victim, n); text += `, ${pl(room, victim).name} pioche ${n}`; }
         room.pending = 0;
       }
-      room.log.push(text + ' et gagne la manche !'); trimLog(room);
+      room.log.push(`${text}. ${p.name} gagne la manche !`); trimLog(room);
       return endRound(room, pid);
     }
 
@@ -142,7 +142,7 @@ const Chromo = (() => {
       const n = seats.length, step = room.dir === 1 ? 1 : -1;
       seats.forEach((id, i) => { pl(room, seats[((i + step) % n + n) % n]).hand = hands[i]; });
       room.called = {}; room.vulnerable = null;
-      text += ' : règle du zéro, chacun passe sa main à son voisin';
+      text += ', les mains tournent d’un cran (règle du zéro)';
     }
     if (card.v === 'skip') {
       text += `, ${pl(room, peekNext(room, 1)).name} passe son tour`; advance(room, 2);
@@ -152,7 +152,7 @@ const Chromo = (() => {
       else { text += ', le sens change'; advance(room, 1); }
     } else if (card.v === '+2' || card.v === '+4') {
       const add = card.v === '+2' ? 2 : 4;
-      if (room.settings.stack) { room.pending += add; text += ` : +${room.pending} en jeu`; advance(room, 1); }
+      if (room.settings.stack) { room.pending += add; text += `, +${room.pending} en jeu`; advance(room, 1); }
       else { const victim = peekNext(room, 1); drawCards(room, victim, add); text += `, ${pl(room, victim).name} pioche ${add} et passe son tour`; advance(room, 2); }
     } else advance(room, 1);
     room.log.push(text); trimLog(room);
@@ -161,7 +161,7 @@ const Chromo = (() => {
 
   function draw(room, pid) {
     if (room.phase !== 'play') return null;
-    if (currentId(room) !== pid) return "Ce n'est pas ton tour";
+    if (currentId(room) !== pid) return 'Ce n’est pas ton tour';
     if (room.drew) return 'Joue la carte piochée ou passe';
     closeCatchWindow(room, pid);
     const p = pl(room, pid);
@@ -186,7 +186,7 @@ const Chromo = (() => {
     if (room.phase !== 'play' || !p || !p.inRound || p.hand.length > 2 || room.called[pid]) return null;
     room.called[pid] = true;
     if (room.vulnerable === pid) room.vulnerable = null;
-    room.log.push(`${p.name} crie « Chromo ! »`); trimLog(room);
+    room.log.push(`${p.name} crie « Chromo ! »`); trimLog(room);
     return null;
   }
 
@@ -194,7 +194,7 @@ const Chromo = (() => {
     const v = room.vulnerable, me = pl(room, pid);
     if (room.phase !== 'play' || !v || v === pid || !me?.inRound) return null;
     room.vulnerable = null; drawCards(room, v, 2);
-    room.log.push(`${me.name} attrape ${pl(room, v).name}, qui n'a pas crié « Chromo ! » : 2 cartes de pénalité`); trimLog(room);
+    room.log.push(`${me.name} attrape ${pl(room, v).name}, qui a oublié de crier. Deux cartes de pénalité`); trimLog(room);
     return null;
   }
 
@@ -203,7 +203,7 @@ const Chromo = (() => {
     const cur = pl(room, currentId(room)); if (!cur || cur.bot) return null;
     const n = room.pending || 1; room.pending = 0; room.drew = null;
     drawCards(room, cur.id, n);
-    room.log.push(`L'hôte fait passer ${cur.name}, qui pioche ${n}`); trimLog(room); advance(room, 1);
+    room.log.push(`L’hôte fait passer ${cur.name}, qui pioche ${n}`); trimLog(room); advance(room, 1);
     return null;
   }
 
@@ -312,9 +312,14 @@ const Chromo = (() => {
 })();
 
 // ============================================================ écran
+// Voix du meneur (voir DESIGN.md) : une phrase courte qui dit ce qui se passe à la table.
+// La table ronde (sièges, tapis, pioche et défausse) reste l'objet du jeu ; tout le reste est sobre.
 let chPendingWild = null, chLastSeq = -1, chLastRound = null, chTurnKey = null, chTurnSince = 0, chSkipTimer = null;
 const CH_COLOR_WORD = { r: 'Rouge', y: 'Jaune', g: 'Vert', b: 'Bleu' };
+const CH_COLOR_DU = { r: 'Du rouge', y: 'Du jaune', g: 'Du vert', b: 'Du bleu' };
 const chSymbol = v => v === 'skip' ? '⊘' : v === 'rev' ? '⇄' : v === 'wild' ? '✦' : v;
+const chSymbolWord = v => /^[0-9]$/.test(v) ? `un ${v}` : v === 'skip' ? 'un Passe' : v === 'rev' ? 'un Sens' : v === '+2' ? 'un +2' : 'un joker';
+const chDot = t => /[.!?»]$/.test(t) ? t : t + '.';
 
 function chCardHTML(c) {
   const sym = chSymbol(c.v);
@@ -331,31 +336,25 @@ function renderChromo(v) {
   if (v.round !== chLastRound) { chLastRound = v.round; chPendingWild = null; chLastSeq = -1; }
   const me = v.me, host = v.isHost;
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
+  const say = list => list[(v.round + v.playSeq) % list.length];      // une réplique stable pendant tout un tour
+  const cur = v.players.find(p => p.id === v.currentId), C = esc(cur?.name || '');
+  const vul = v.phase === 'play' && v.vulnerable && v.vulnerable.id !== net.me && me.inRound ? esc(v.vulnerable.name) : '';
 
-  root.appendChild(el('div', 'ch-head', `<span class="eyebrow">Manche ${v.round}/${v.rounds}${v.stack ? ' · cumul des +2 et +4' : ''}${v.zero ? ' · règle du zéro' : ''}</span>`));
+  const rules = (v.stack ? ' · cumul des +2 et +4' : '') + (v.zero ? ' · règle du zéro' : '');
+  root.appendChild(el('p', 'mj-meta', v.phase === 'play' ? `Manche ${v.round} sur ${v.rounds}${rules}` : v.phase === 'result' ? `Fin de la manche ${v.round} sur ${v.rounds}` : `Partie terminée · ${v.rounds} manche${v.rounds > 1 ? 's' : ''}`));
 
-  const seatHTML = p => `<span class="ch-seat-name">${p.bot && v.phase === 'play' ? '🤖 ' : ''}${esc(p.name)}${p.bot && v.phase !== 'play' ? ' <small>robot</small>' : ''}</span><span class="ch-seat-count"><i class="ch-mini"></i>${p.count} carte${p.count > 1 ? 's' : ''}</span>`
-    + (p.count === 1 && v.phase === 'play' ? `<span class="ch-flag${p.called ? '' : ' warn'}">${p.called ? 'Chromo !' : '1 carte'}</span>` : '');
-  const seats = el('div', 'ch-players');
-  if (v.phase !== 'play') v.players.forEach(p => {
-    const d = el('div', 'ch-seat' + (p.id === v.currentId && v.phase === 'play' ? ' now' : '') + (p.online ? '' : ' off') + (p.id === net.me ? ' me' : ''));
-    d.innerHTML = `<span class="ch-seat-name">${esc(p.name)}${p.bot ? ' <small>robot</small>' : ''}</span><span class="ch-seat-count"><i class="ch-mini"></i>${p.count} carte${p.count > 1 ? 's' : ''}</span>`
-      + (p.count === 1 && v.phase === 'play' ? `<span class="ch-flag${p.called ? '' : ' warn'}">${p.called ? 'Chromo !' : '1 carte'}</span>` : '');
-    seats.appendChild(d);
-  });
-  if (seats.children.length) root.appendChild(seats);
-
+  // la table : les joueurs assis dans l'ordre du jeu, toi en bas, la flèche montre le sens
   if (v.phase === 'play') {
-    const cur = v.players.find(p => p.id === v.currentId);
+    const seatHTML = p => `<span class="ch-seat-name">${p.bot ? '🤖 ' : ''}${esc(p.name)}</span><span class="ch-seat-count"><i class="ch-mini"></i>${p.count} carte${p.count > 1 ? 's' : ''}</span>`
+      + (p.count === 1 ? `<span class="ch-flag${p.called ? '' : ' warn'}">${p.called ? 'Chromo !' : '1 carte'}</span>` : '');
     const table = el('div', 'ch-table col-' + v.color);
     const pile = el('button', 'ch-card ch-back big' + (v.myTurn && !v.drewId ? ' can' : ''), '<span class="ch-oval"><b>Chromo</b></span>');
-    pile.type = 'button'; pile.title = 'Piocher';
+    pile.type = 'button'; pile.title = 'Piocher'; pile.setAttribute('aria-label', 'Piocher');
     pile.onclick = () => { if (v.myTurn && !v.drewId) act({ t: 'ch:draw' }); };
     const topEl = el('div', 'ch-card big col-' + v.top.c + (v.playSeq !== chLastSeq ? ' pop' : ''), chCardHTML(v.top));
     chLastSeq = v.playSeq;
     table.append(pile, topEl);
     table.appendChild(el('div', 'ch-color', `<i class="ch-dot col-${v.color}"></i>${CH_COLOR_WORD[v.color]}${v.pending ? ` <b class="ch-pending">+${v.pending}</b>` : ''}`));
-    // la table : les joueurs assis dans l'ordre du jeu, toi en bas, la flèche montre le sens
     const ring = el('div', 'ch-ring n' + Math.min(v.players.length, 10));
     const n = v.players.length, meIdx = Math.max(0, v.players.findIndex(p => p.id === net.me));
     v.players.forEach((p, i) => {
@@ -370,46 +369,72 @@ function renderChromo(v) {
     felt.appendChild(table);
     ring.appendChild(felt);
     root.appendChild(ring);
+  }
 
-    root.appendChild(el('p', 'ch-status' + (v.myTurn ? ' mine' : ''),
-      v.myTurn ? (v.pending ? `À toi : pioche ${v.pending}${v.stack ? ' ou contre' : ''}` : v.drewId ? 'Joue la carte piochée ou passe' : 'À toi de jouer')
-        : `${esc(cur?.name || '')} joue…`));
+  // ce qui se passe, dit par le meneur
+  let title = '', line = '', hot = false;
+  if (v.phase === 'play') {
+    const need = `${CH_COLOR_DU[v.color]}, ou ${chSymbolWord(v.top.v)}.`;
+    if (!me.inRound) { title = `${C} joue.`; line = 'Tu regardes cette manche, tu joueras à la suivante.'; }
+    else if (v.myTurn) {
+      title = 'À toi.'; hot = true;
+      if (v.pending) line = me.playable.length ? say([`Un +${v.pending} te tombe dessus. Contre, ou encaisse.`, `+${v.pending} pour toi, sauf si tu contres.`])
+        : say([`+${v.pending} pour toi, et rien pour contrer.`, `${v.pending} cartes pour toi. Courage.`]);
+      else if (v.drewId) line = say(['La carte piochée passe. Tu la poses, ou tu la gardes.', 'Bonne pioche. Tu la poses ?']);
+      else if (!me.playable.length) line = say([`${need} Rien de tout ça en main, direction la pioche.`, `${need} Tu n’as rien, il faut piocher.`]);
+      else line = `${need} ` + say(['Allège-toi.', 'Les autres comptent tes cartes.', 'Pas de pitié.', 'Vide ta main.']);
+      if (me.hand.length <= 2 && !me.called && !v.pending) line += ' Et pense à crier.';
+    } else {
+      title = `${C} joue.`;
+      line = v.pending ? `${C} a un +${v.pending} sur le dos.`
+        : cur?.bot ? say(['Le robot calcule. Enfin, il fait semblant.', 'Laisse-le réfléchir, il a des circuits.', 'Surveille ses cartes.'])
+          : say(['Surveille ses cartes.', 'Croise les doigts, pas de +4 pour toi.', 'Prépare ta riposte.']);
+    }
+    if (vul) { line = `${vul} n’a plus qu’une carte et n’a rien crié. Vite, attrape.`; hot = true; }
+    else if (v.vulnerable?.id === net.me) line = 'Une carte et pas un mot ? Crie, vite.';
+  } else if (v.phase === 'result' && v.result) {
+    const r = v.result, mine = r.winnerId === net.me, W = esc(r.winnerName);
+    title = mine ? 'Tu gagnes la manche.' : `${W} gagne la manche.`;
+    line = r.points ? `${r.points} point${r.points > 1 ? 's' : ''} pour ${mine ? 'toi' : W}, la valeur des cartes restées chez les autres.` : 'Zéro point, les autres n’avaient que des 0 en main.';
+  } else if (v.phase === 'over') {
+    const w = v.scores[0], mine = w?.id === net.me;
+    title = mine ? 'Tu gagnes la partie.' : `${esc(w?.name || '')} gagne la partie.`;
+    line = `${w?.score || 0} points au total. Revanche ? Tout se passe au salon.`;
+  }
+  root.appendChild(el('div', 'mj-status' + (hot ? ' ch-hot' : ''), `<h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>`));
 
+  if (v.phase === 'play') {
     const acts = el('div', 'ch-actions');
-    if (v.vulnerable && v.vulnerable.id !== net.me && me.inRound) acts.appendChild(btn('danger', `Attraper ${esc(v.vulnerable.name)} !`, () => act({ t: 'ch:catch' })));
-    if (me.inRound && me.hand.length <= 2 && !me.called) acts.appendChild(btn('primary', 'Chromo !', () => act({ t: 'ch:call' })));
-    if (v.myTurn && !v.drewId) acts.appendChild(btn('', v.pending ? `Piocher ${v.pending}` : 'Piocher', () => act({ t: 'ch:draw' })));
+    if (vul) acts.appendChild(btn('danger', `Attraper ${vul} !`, () => act({ t: 'ch:catch' })));
+    if (me.inRound && me.hand.length <= 2 && !me.called) acts.appendChild(btn('primary', 'Crier « Chromo ! »', () => act({ t: 'ch:call' })));
+    if (v.myTurn && !v.drewId) acts.appendChild(btn('', v.pending ? `Piocher ${v.pending} cartes` : 'Piocher', () => act({ t: 'ch:draw' })));
     if (v.myTurn && v.drewId) acts.appendChild(btn('', 'Garder et passer', () => act({ t: 'ch:pass' })));
     // l'hôte peut débloquer un joueur absent, mais seulement s'il ne joue pas depuis 20 secondes
     const turnKey = `${v.round}|${v.currentId}|${v.playSeq}|${v.log.length}|${v.drewId}`;
     if (turnKey !== chTurnKey) { chTurnKey = turnKey; chTurnSince = Date.now(); clearTimeout(chSkipTimer); if (host) chSkipTimer = setTimeout(() => { if (view?.chromo) renderChromo(view.chromo); }, 20500); }
-    if (host && !v.myTurn && cur && !cur.bot && Date.now() - chTurnSince > 20000) acts.appendChild(btn('ghost small', `${esc(cur.name)} ne joue pas ? Passer son tour`, () => act({ t: 'ch:skip' })));
+    if (host && !v.myTurn && cur && !cur.bot && Date.now() - chTurnSince > 20000) acts.appendChild(btn('ghost small', `${C} traîne ? Passer son tour`, () => act({ t: 'ch:skip' })));
     if (acts.children.length) root.appendChild(acts);
 
     if (me.inRound) {
-      root.appendChild(el('p', 'fine ch-hand-title', `Ta main · ${me.hand.length} carte${me.hand.length > 1 ? 's' : ''}`));
+      root.appendChild(el('p', 'mj-side-title ch-hand-title', `Ta main · ${me.hand.length} carte${me.hand.length > 1 ? 's' : ''}`));
       const hand = el('div', 'ch-hand');
       me.hand.forEach(c => {
         const ok = v.myTurn && me.playable.includes(c.id);
         const b = el('button', `ch-card col-${c.c}` + (v.myTurn ? (ok ? ' ok' : ' no') : '') + (c.id === v.drewId ? ' drawn' : ''), chCardHTML(c));
-        b.type = 'button';
+        b.type = 'button'; b.setAttribute('aria-label', Chromo.cardLabel(c));
         b.onclick = () => {
-          if (!v.myTurn) { toast("Ce n'est pas ton tour"); return; }
-          if (!ok) { toast(v.pending ? `Pioche ${v.pending} cartes${v.stack ? ' ou contre avec un +2 ou un +4' : ''}` : 'Même couleur ou même symbole'); return; }
+          if (!v.myTurn) { toast('Attends ton tour.'); return; }
+          if (!ok) { toast(v.pending ? `Pioche ${v.pending} cartes${v.stack ? `, ou contre avec ${v.top.v === '+4' ? 'un +4' : 'un +2 ou un +4'}` : ''}.` : v.drewId ? 'Seule la carte piochée peut partir.' : 'Même couleur ou même symbole.'); return; }
           if (c.c === 'w') { chPendingWild = c.id; renderChromo(view.chromo); return; }
           act({ t: 'ch:play', card: c.id });
         };
         hand.appendChild(b);
       });
       root.appendChild(hand);
-    } else root.appendChild(el('p', 'note', 'Une manche est en cours : tu entres à la suivante.'));
-
-    const log = el('ul', 'ch-log');
-    v.log.slice().reverse().forEach(t => log.appendChild(el('li', '', esc(t))));
-    root.appendChild(log);
+    }
 
     if (chPendingWild && v.myTurn && me.hand.some(c => c.id === chPendingWild)) {
-      const sheet = el('div', 'ch-picker', '<p class="ch-picker-title">Quelle couleur ?</p>');
+      const sheet = el('div', 'ch-picker', '<p class="ch-picker-title">Quelle couleur ?</p>');
       const row = el('div', 'ch-picker-row');
       Chromo.COLORS.forEach(k => {
         const s = el('button', 'ch-swatch col-' + k, CH_COLOR_WORD[k]); s.type = 'button';
@@ -424,22 +449,47 @@ function renderChromo(v) {
 
   if (v.phase === 'result' || v.phase === 'over') {
     const r = v.result;
-    if (r) {
-      root.appendChild(el('div', 'ch-verdict', `<span class="eyebrow">Fin de la manche ${v.round}</span><p class="ch-big">${esc(r.winnerName)} gagne</p><p class="fine">+${r.points} points : la valeur des cartes restées chez les autres</p>`));
-      const list = el('div', 'ch-hands');
-      r.hands.filter(h => h.id !== r.winnerId).sort((a, b) => b.points - a.points).forEach(h => {
-        const row = el('div', 'ch-hand-row', `<div class="ch-hand-row-head"><b>${esc(h.name)}</b><span>${h.points} pts</span></div>`);
+    const left = r ? r.hands.filter(h => h.id !== r.winnerId && h.cards.length).sort((a, b) => b.points - a.points) : [];
+    if (left.length) {
+      const box = el('div', 'ch-hands');
+      box.appendChild(el('p', 'mj-side-title', 'Ce qui restait en main'));
+      const list = el('div', 'mj-list');
+      left.forEach(h => {
+        const row = el('div', 'mj-row ch-hand-row', `<div class="ch-hand-row-head"><b>${esc(h.name)}</b><span>${h.points} pt${h.points > 1 ? 's' : ''}</span></div>`);
         const mini = el('div', 'ch-hand mini');
         h.cards.forEach(c => mini.appendChild(el('div', 'ch-card col-' + c.c, chCardHTML(c))));
         row.appendChild(mini); list.appendChild(row);
       });
-      root.appendChild(list);
+      box.appendChild(list); root.appendChild(box);
     }
-    root.appendChild(el('div', 'ch-scores', `<span class="eyebrow">${v.phase === 'over' ? 'Classement final' : 'Scores'}</span>`
-      + v.scores.map((s, i) => `<span class="${i === 0 && v.phase === 'over' ? 'lead' : ''}">${esc(s.name)} <b>${s.score}</b></span>`).join('')));
     if (host) root.appendChild(v.phase === 'over'
       ? btn('primary lg', 'Retour au salon', () => act({ t: 'restart' }))
       : btn('primary lg', v.round >= v.rounds ? 'Voir le classement' : 'Manche suivante', () => act({ t: 'ch:next' })));
-    else root.appendChild(el('p', 'note', "L'hôte lance la suite."));
+    else root.appendChild(el('p', 'note', 'L’hôte lance la suite.'));
+  }
+
+  // les joueurs et les scores (colonne de droite sur PC ; sur téléphone, la table les montre déjà pendant la manche)
+  const side = el('div', 'ch-players' + (v.phase === 'play' ? ' in-play' : ''));
+  side.appendChild(el('p', 'mj-side-title', v.phase === 'over' ? 'Classement final' : 'Scores'));
+  const list = el('div', 'mj-list');
+  if (v.phase === 'play') v.players.forEach(p => {
+    const tag = p.id === v.currentId ? '<i class="now">joue</i>' : p.count === 1 ? `<i class="${p.called ? 'ok' : 'warn'}">${p.called ? 'Chromo !' : '1 carte'}</i>` : '';
+    list.appendChild(el('div', 'mj-row ch-row' + (p.id === v.currentId ? ' now' : '') + (p.online ? '' : ' off') + (p.id === net.me ? ' me' : ''),
+      `<span class="ch-row-name">${p.bot ? '🤖 ' : ''}${esc(p.name)}${p.id === net.me ? ' <small>toi</small>' : ''}${tag}</span><span class="ch-row-sub">${p.count} carte${p.count > 1 ? 's' : ''}</span><b class="ch-row-score">${p.score}</b>`));
+  });
+  else v.scores.forEach((s, i) => {
+    const gain = v.phase === 'result' && v.result?.winnerId === s.id && v.result.points ? ` <em>+${v.result.points}</em>` : '';
+    list.appendChild(el('div', 'mj-row ch-row' + (i === 0 && v.phase === 'over' ? ' lead' : '') + (s.id === net.me ? ' me' : ''),
+      `<span class="ch-row-name">${s.bot ? '🤖 ' : ''}${esc(s.name)}${s.id === net.me ? ' <small>toi</small>' : ''}</span><b class="ch-row-score">${s.score}${gain}</b>`));
+  });
+  side.appendChild(list);
+  root.appendChild(side);
+
+  // le fil de la partie
+  if (v.log.length) {
+    const lg = el('ul', 'ch-log');
+    lg.appendChild(el('li', 'mj-side-title', 'Ce qui s’est passé'));
+    v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(chDot(t)))));
+    root.appendChild(lg);
   }
 }

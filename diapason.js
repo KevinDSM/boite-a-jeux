@@ -1,6 +1,6 @@
 /* Diapason — l'équivalent maison de Wavelength : se mettre sur la même longueur d'onde.
 
-   Une carte donne deux extrêmes (« Froid ↔ Chaud »). Le médium est seul à voir où se cache la cible
+   Une carte donne deux extrêmes (« Froid ↔ Chaud »). Le médium est seul à voir où se cache la cible
    sur le cadran ; il donne un indice (un mot, un nom, n'importe quoi) qui la situe entre les deux.
    Les autres placent l'aiguille au jugé : plein centre 4 points, puis 3, puis 2.
 
@@ -10,7 +10,7 @@
    - En équipes (la règle d'origine) : l'équipe du médium déplace une aiguille commune, en direct sur
      tous les écrans, puis l'équipe adverse parie que la cible est plus à gauche ou plus à droite
      (1 point, sauf en plein centre). Une équipe en retard qui fait un 4 rejoue aussitôt.
-   Même modèle que les autres jeux : la salle vit chez l'hôte (net.game.dp), actions « dp:… ».
+   Même modèle que les autres jeux : la salle vit chez l'hôte (net.game.dp), actions « dp:… ».
    Chargé après app.js et diapason-cartes.js : réutilise $, el, act, esc, toast, shuffle, net et view. */
 
 'use strict';
@@ -84,7 +84,8 @@ const Diapason = (() => {
       const psy = pl(room, room.psychicId); if (psy) psy.score += psyGain;
       room.result = { guesses: list.sort((a, b) => b.pts - a.pts || d(a.value) - d(b.value)), psyGain };
       const best = list.filter(g => g.pts === 4).map(g => g.name);
-      log(room, best.length ? `Plein centre pour ${best.join(', ')} !` : `Manche ${room.round} : ${list.length ? 'meilleur score ' + (list[0]?.pts || 0) : 'personne n’a joué'}.`);
+      const who = best.length > 1 ? best.slice(0, -1).join(', ') + ' et ' + best[best.length - 1] : best[0];
+      log(room, best.length ? `Plein centre pour ${who}.` : `Manche ${room.round}, ${list.length ? 'meilleur score ' + (list[0]?.pts || 0) : 'personne n’a joué'}.`);
     } else {
       const pts = points(d(room.dial)), act = room.teams[room.active], other = room.teams[1 - room.active];
       act.score += pts;
@@ -92,7 +93,7 @@ const Diapason = (() => {
       if (room.side) { sideOk = pts < 4 && ((room.side === 'left' && room.pos < room.dial) || (room.side === 'right' && room.pos > room.dial)); if (sideOk) other.score += 1; }
       if (pts === 4 && act.score < other.score) room.again = true;
       room.result = { pts, sideOk, again: room.again, dial: room.dial };
-      log(room, `Équipe ${act.name} : ${pts} point${pts > 1 ? 's' : ''}${sideOk ? `, et 1 point pour ${other.name}` : ''}.`);
+      log(room, `Équipe ${act.name}, ${pts} point${pts > 1 ? 's' : ''}.${sideOk ? ` 1 point pour ${other.name}.` : ''}`);
     }
     room.phase = 'reveal'; room.turnAt = Date.now(); room.seq += 1;
     return null;
@@ -131,7 +132,7 @@ const Diapason = (() => {
         if (room.phase !== 'clue' || !isPsy) return null;
         room.clue = String(m.text || '').trim().slice(0, 80);
         room.phase = 'guess'; room.turnAt = Date.now(); room.seq += 1;
-        log(room, room.clue ? `Indice de ${me.name} : « ${room.clue} »` : `${me.name} donne son indice à voix haute.`);
+        log(room, room.clue ? `${me.name} lance « ${room.clue} ».` : `${me.name} donne son indice à voix haute.`);
         if (room.mode === 'solo') checkGuesses(room);
         return null;
       case 'dp:guess':
@@ -160,8 +161,9 @@ const Diapason = (() => {
   }
   // les robots : un indice qui dit à peu près où est la cible, et des aiguilles posées au jugé autour
   function botClue(room) {
-    const [l, r] = DP_CARDS[room.card], p = room.pos;
-    return p < 15 ? `Complètement « ${l} »` : p < 33 ? `Plutôt « ${l} »` : p < 45 ? `Un peu « ${l} »` : p <= 55 ? 'Pile entre les deux' : p <= 67 ? `Un peu « ${r} »` : p <= 85 ? `Plutôt « ${r} »` : `Complètement « ${r} »`;
+    const low = t => /^\p{Lu}\p{Ll}/u.test(t) ? t[0].toLowerCase() + t.slice(1) : t;    // « Mal payé » devient « plutôt mal payé »
+    const [l, r] = DP_CARDS[room.card].map(low), p = room.pos;
+    return p < 15 ? `Complètement ${l}` : p < 33 ? `Plutôt ${l}` : p < 45 ? `Un peu ${l}` : p <= 55 ? 'Pile entre les deux' : p <= 67 ? `Un peu ${r}` : p <= 85 ? `Plutôt ${r}` : `Complètement ${r}`;
   }
   function botGuess(room) {
     const noise = (Math.random() + Math.random() + Math.random() - 1.5) * 16;
@@ -222,8 +224,10 @@ const Diapason = (() => {
 })();
 
 // ============================================================ écran
+// Voix du meneur (voir DESIGN.md) : une phrase courte qui dit ce qui se passe à la table.
 let dpKey = null, dpLocal = null, dpLocalUntil = 0, dpDragging = false, dpSendAt = 0, dpSendTimer = null, dpClue = '', dpSkipTimer = null;
 const DP_SKIP_MS = 60000;
+const dpNames = list => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' et ' + list[list.length - 1];
 const dpAngle = v => Math.PI * (1 - v / 100);
 const dpPt = (v, r) => [100 + r * Math.cos(dpAngle(v)), 100 - r * Math.sin(dpAngle(v))].map(n => n.toFixed(2));
 function dpWedge(a, b, r) {
@@ -278,25 +282,56 @@ function renderDiapason(v) {
   const hadFocus = document.activeElement?.id === 'dp-clue';
   root.innerHTML = ''; clearTimeout(dpSkipTimer);
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
-  const teams = v.mode === 'teams', left = v.card[0], right = v.card[1];
+  const teams = v.mode === 'teams', left = v.card[0], right = v.card[1], P = esc(v.psychicName);
+  const A = teams ? esc(v.teams[v.active].name) : '', B = teams ? esc(v.teams[1 - v.active].name) : '';
+  const say = list => list[(v.round - 1) % list.length];          // une réplique stable pendant toute la manche
 
-  // en-tête et scores
-  const head = teams ? `Équipe ${esc(v.teams[v.active].name)} joue · ${v.target} points pour gagner` : `Manche ${v.round} / ${v.rounds}`;
-  root.appendChild(el('div', 'dp-head', `<span class="eyebrow">${head}</span><span class="dp-psy">${v.isPsychic ? 'Tu es le médium' : `Médium : <b>${esc(v.psychicName)}</b>`}</span>`));
-  if (teams) {
-    const sc = el('div', 'dp-teams dp-scores');
-    v.teams.forEach((t, i) => sc.appendChild(el('div', `dp-team t${i}${i === v.active ? ' on' : ''}${v.myTeam === i ? ' mine' : ''}`, `<span class="dp-team-name">${esc(t.name)}${v.myTeam === i ? ' · toi' : ''}</span><b>${t.score}</b><small>${t.members.map(esc).join(', ')}</small>`)));
-    root.appendChild(sc);
-  } else {
-    const sc = el('div', 'dp-players dp-scores');
-    v.players.forEach(p => sc.appendChild(el('div', `dp-player${p.me ? ' me' : ''}${p.psychic ? ' psy' : ''}${p.done ? ' done' : ''}${p.online ? '' : ' off'}`, `<span>${esc(p.name)}</span><b>${p.score}</b>${p.psychic ? '<i>médium</i>' : p.done ? '<i>✓</i>' : ''}`)));
-    root.appendChild(sc);
-  }
-
-  // la carte et l'indice
+  // la ligne d'info, la carte et l'indice
+  root.appendChild(el('p', 'mj-meta', teams ? `Manche ${v.round} · premier à ${v.target} · équipe ${A} au cadran` : `Manche ${v.round} sur ${v.rounds} · médium ${P}`));
   root.appendChild(el('div', 'dp-card', `<span class="dp-l">← ${esc(left)}</span><span class="dp-r">${esc(right)} →</span>`));
-  if (v.phase === 'clue') root.appendChild(el('p', 'dp-clue-show wait', v.isPsychic ? 'Seul ton écran montre la cible : cache-le bien !' : `${esc(v.psychicName)} cherche un indice…`));
-  else root.appendChild(el('p', 'dp-clue-show', v.clue ? `« ${esc(v.clue)} »` : `${esc(v.psychicName)} a donné l’indice à voix haute`));
+  if (v.phase !== 'clue' && v.phase !== 'over') root.appendChild(el('p', 'dp-clue-show' + (v.clue ? '' : ' spoken'), v.clue ? `« ${esc(v.clue)} »` : `${P} a donné l’indice à voix haute.`));
+
+  // ce qui se passe, dit par le meneur
+  let title = '', line = '', prog = null;
+  if (v.phase === 'clue') {
+    if (v.isPsychic) {
+      title = 'Tu es le médium.';
+      line = say(['Seul ton écran montre la cible. Cache-le bien.', 'Toi seul vois la cible. Garde ton écran contre toi.']) + ' Un mot, un nom, un film. Pas de nombre.';
+    } else {
+      title = `${P} cherche un indice.`;
+      line = say(['Pas touche à son écran.', 'Prépare ton meilleur regard de télépathe.', 'Laisse le médium se concentrer.']);
+    }
+  } else if (v.phase === 'guess') {
+    if (!teams) {
+      const done = v.players.filter(p => p.done).length;
+      prog = [done, done + v.waiting.length];
+      if (v.canGuess) { title = 'À toi de viser.'; line = say(['Place ton aiguille où l’indice te semble tomber.', 'Fie-toi au médium. Ou pas.', 'Vise le plein centre.']); }
+      else if (v.isPsychic) { title = 'Ils cherchent.'; line = say(['Pas un mot, pas une grimace.', 'Garde ton air mystérieux.']); }
+      else { title = 'Aiguille posée.'; line = v.waiting.length ? `Plus que ${esc(dpNames(v.waiting))}.` : 'Tout le monde a visé.'; }
+    } else if (v.canDial) { title = `À vous, équipe ${A}.`; line = 'Discutez et bougez l’aiguille ensemble. Tout le monde la voit bouger.'; }
+    else if (v.isPsychic) { title = 'Ton équipe cherche.'; line = say(['Pas un mot, pas une grimace.', 'Garde ton air mystérieux.']); }
+    else { title = `L’équipe ${A} cherche.`; line = 'Préparez votre pari, plus à gauche ou plus à droite.'; }
+  } else if (v.phase === 'side') {
+    if (v.canSide) { title = 'À vous de parier.'; line = 'La cible, plus à gauche ou plus à droite de leur aiguille ? 1 point si vous avez raison.'; }
+    else { title = `L’équipe ${B} parie.`; line = say(['Plus à gauche ou plus à droite. Suspense.', 'Ils hésitent. Normal.']); }
+  } else if (v.phase === 'reveal' && v.result) {
+    const r = v.result;
+    if (teams) {
+      title = r.pts === 4 ? 'Plein centre !' : r.pts ? `${r.pts} points pour l’équipe ${A}.` : `Raté pour l’équipe ${A}.`;
+      const bits = [];
+      if (r.pts === 4) bits.push(`4 points pour l’équipe ${A}.`);
+      if (r.sideOk !== null && v.side) bits.push(`${esc(v.sideBy)} a parié plus à ${v.side === 'left' ? 'gauche' : 'droite'}. ${r.sideOk ? `Gagné, 1 point pour ${B}.` : `Perdu pour ${B}.`}`);
+      if (r.again) bits.push('En retard et plein centre, l’équipe rejoue tout de suite.');
+      line = bits.join(' ') || say(['Le cadran a parlé.', 'On se rapproche.']);
+    } else {
+      const bull = r.guesses.filter(g => g.pts === 4).map(g => g.name);
+      title = !r.guesses.length ? 'Personne n’a visé.' : bull.length ? `Plein centre pour ${esc(dpNames(bull))} !` : r.guesses[0].pts ? `${esc(r.guesses[0].name)} vise le mieux.` : 'Personne dans la cible.';
+      line = r.guesses.length ? `${P}, le médium, prend +${r.psyGain}, la moyenne des autres.` : 'Le médium repart bredouille.';
+    }
+  } else if (v.phase === 'over') { title = `${esc(v.winnerName)} gagne la partie.`; line = 'Revanche ? Tout se passe au salon.'; }
+  const status = el('div', 'mj-status', `<h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>`);
+  if (prog && prog[1] > 0) status.appendChild(el('div', 'mj-prog', `${Array.from({ length: prog[1] }, (_, i) => `<i${i < prog[0] ? ' class="f"' : ''}></i>`).join('')}<span>${prog[0]} sur ${prog[1]}</span>`));
+  root.appendChild(status);
 
   // le cadran
   const interactive = v.canGuess || v.canDial;
@@ -318,71 +353,63 @@ function renderDiapason(v) {
     svg.onpointerup = end; svg.onpointercancel = end;
     const nudge = el('div', 'dp-nudge');
     const step = d => { const cur = dpLocal ?? (teams ? v.dial : 50); set(Math.max(0, Math.min(100, cur + d))); if (!dpDragging) renderDiapason(view.dp); };
-    nudge.append(btn('ghost small', '◀', () => step(-1)), el('span', 'dp-nudge-hint', 'Fais glisser l’aiguille'), btn('ghost small', '▶', () => step(1)));
+    const l = btn('ghost small', '◀', () => step(-1)), r = btn('ghost small', '▶', () => step(1));
+    l.setAttribute('aria-label', 'Un cran vers la gauche'); r.setAttribute('aria-label', 'Un cran vers la droite');
+    nudge.append(l, el('span', 'dp-nudge-hint', 'Fais glisser l’aiguille'), r);
     root.appendChild(nudge);
   }
 
-  // ce que chacun doit faire
+  // les actions du moment
   const zone = el('div', 'dp-zone');
-  if (v.phase === 'clue') {
-    if (v.isPsychic) {
-      zone.appendChild(el('p', 'dp-hint', `Trouve un indice qui place la cible entre « ${esc(left)} » et « ${esc(right)} ». Un mot, un nom, un film, ce que tu veux… mais pas un nombre !`));
-      const input = el('input'); input.id = 'dp-clue'; input.type = 'text'; input.maxLength = 80; input.placeholder = 'Ton indice (ou dis-le à voix haute)'; input.autocomplete = 'off'; input.value = dpClue;
-      input.oninput = () => { dpClue = input.value; };
-      input.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); act({ t: 'dp:clue', text: input.value }); } };
-      zone.appendChild(input);
-      const row = el('div', 'dp-row');
-      row.append(btn('primary lg', 'Donner l’indice', () => act({ t: 'dp:clue', text: $('#dp-clue').value })));
-      if (v.rerolls > 0) row.append(btn('ghost', `Autre carte (${v.rerolls})`, () => act({ t: 'dp:reroll' })));
-      zone.appendChild(row);
-      if (hadFocus) setTimeout(() => { const i = $('#dp-clue'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }, 0);
-    }
+  if (v.phase === 'clue' && v.isPsychic) {
+    const input = el('input'); input.id = 'dp-clue'; input.type = 'text'; input.maxLength = 80; input.placeholder = 'Ton indice, ou rien si tu le dis'; input.autocomplete = 'off'; input.value = dpClue;
+    input.oninput = () => { dpClue = input.value; };
+    input.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); act({ t: 'dp:clue', text: input.value }); } };
+    zone.appendChild(input);
+    const row = el('div', 'dp-row');
+    row.append(btn('primary lg', 'Donner l’indice', () => act({ t: 'dp:clue', text: $('#dp-clue').value })));
+    if (v.rerolls > 0) row.append(btn('ghost', `Autre carte, encore ${v.rerolls}`, () => act({ t: 'dp:reroll' })));
+    zone.appendChild(row);
+    if (hadFocus) setTimeout(() => { const i = $('#dp-clue'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }, 0);
   }
   if (v.phase === 'guess') {
-    if (v.canGuess) {
-      zone.appendChild(el('p', 'dp-hint', 'Place ton aiguille où l’indice te semble tomber, puis valide.'));
-      zone.appendChild(btn('primary lg', 'Valider ma position', () => act({ t: 'dp:guess', value: dpLocal ?? 50 })));
-    } else if (!teams) zone.appendChild(el('p', 'dp-hint', v.isPsychic ? `Les autres cherchent… on attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.` : `Position validée. On attend ${v.waiting.map(esc).join(', ') || 'plus personne'}.`));
-    if (v.canDial) {
-      zone.appendChild(el('p', 'dp-hint', 'Discutez et déplacez l’aiguille ensemble : chacun la voit bouger en direct. Validez quand vous êtes d’accord.'));
-      zone.appendChild(btn('primary lg', 'On valide cette position', () => act({ t: 'dp:lock', value: dpLocal !== null && Date.now() < dpLocalUntil ? dpLocal : v.dial })));
-    } else if (teams) zone.appendChild(el('p', 'dp-hint', v.isPsychic ? 'Ton équipe place l’aiguille… pas un mot, pas une grimace !' : `L’équipe ${esc(v.teams[v.active].name)} place son aiguille. Préparez votre pari : plus à gauche ou plus à droite ?`));
+    if (v.canGuess) zone.appendChild(btn('primary lg', 'Poser mon aiguille', () => act({ t: 'dp:guess', value: dpLocal ?? 50 })));
+    if (v.canDial) zone.appendChild(btn('primary lg', 'On valide cette aiguille', () => act({ t: 'dp:lock', value: dpLocal !== null && Date.now() < dpLocalUntil ? dpLocal : v.dial })));
   }
-  if (v.phase === 'side') {
-    if (v.canSide) {
-      zone.appendChild(el('p', 'dp-hint', 'La cible est-elle plus à gauche ou plus à droite de leur aiguille ? 1 point si vous avez raison.'));
-      const row = el('div', 'dp-row two');
-      row.append(btn('primary lg', '◀ Plus à gauche', () => act({ t: 'dp:side', dir: 'left' })), btn('primary lg', 'Plus à droite ▶', () => act({ t: 'dp:side', dir: 'right' })));
-      zone.appendChild(row);
-    } else zone.appendChild(el('p', 'dp-hint', `L’équipe ${esc(v.teams[1 - v.active].name)} parie : plus à gauche ou plus à droite ?`));
+  if (v.phase === 'side' && v.canSide) {
+    const row = el('div', 'dp-row two');
+    row.append(btn('primary lg', '◀ Plus à gauche', () => act({ t: 'dp:side', dir: 'left' })), btn('primary lg', 'Plus à droite ▶', () => act({ t: 'dp:side', dir: 'right' })));
+    zone.appendChild(row);
   }
   if (v.phase === 'reveal' && v.result) {
-    const r = v.result;
-    if (teams) {
-      const ok = r.sideOk === null ? '' : r.sideOk ? ` · pari gagné pour ${esc(v.teams[1 - v.active].name)} (+1)` : ` · pari perdu pour ${esc(v.teams[1 - v.active].name)}`;
-      zone.appendChild(el('p', 'dp-verdict', `${r.pts === 4 ? 'Plein centre ! ' : ''}Équipe ${esc(v.teams[v.active].name)} : +${r.pts}${ok}`));
-      if (v.side) zone.appendChild(el('p', 'note', `${esc(v.sideBy)} a parié « plus à ${v.side === 'left' ? 'gauche' : 'droite'} ».`));
-      if (r.again) zone.appendChild(el('p', 'dp-again', 'En retard et plein centre : l’équipe rejoue tout de suite !'));
-    } else {
-      const bull = r.guesses.filter(g => g.pts === 4).map(g => esc(g.name));
-      zone.appendChild(el('p', 'dp-verdict', !r.guesses.length ? 'Personne n’a placé d’aiguille' : bull.length ? `Plein centre pour ${bull.join(' et ')} !` : r.guesses[0].pts ? `Meilleure aiguille : ${esc(r.guesses[0].name)}, +${r.guesses[0].pts}` : 'Personne dans la cible !'));
-      if (r.guesses.length) zone.appendChild(el('p', 'dp-psygain', `${esc(v.psychicName)}, le médium, gagne +${r.psyGain} (la moyenne des autres)`));
-      const list = el('ol', 'dp-results');
-      r.guesses.forEach(g => list.appendChild(el('li', g.pts ? 'hit p' + g.pts : '', `<span>${esc(g.name)}</span><b>+${g.pts}</b>`)));
-      zone.appendChild(list);
-    }
+    if (!teams && v.result.guesses.length) zone.appendChild(el('ol', 'mj-list dp-results', v.result.guesses.map(g => `<li class="mj-row${g.pts ? ' hit p' + g.pts : ''}"><span>${esc(g.name)}</span><b>+${g.pts}</b></li>`).join('')));
     if (v.isHost || v.isPsychic) zone.appendChild(btn('primary lg', v.mode === 'solo' && v.round >= v.rounds ? 'Voir le classement' : 'Manche suivante', () => act({ t: 'dp:next' })));
     else zone.appendChild(el('p', 'note', 'L’hôte ou le médium lance la suite.'));
   }
   if (v.phase === 'over') {
-    const rows = teams ? v.teams.map(t => ({ name: `${t.name} (${t.members.join(', ')})`, score: t.score })).sort((a, b) => b.score - a.score) : v.players;
-    zone.appendChild(el('div', 'dp-final', `<span class="eyebrow">Partie terminée</span><p class="dp-verdict">${esc(v.winnerName)} gagne</p><ol class="dp-ranking">${rows.map(p => `<li${p.me ? ' class="me"' : ''}><span>${esc(p.name)}</span><b>${p.score}</b></li>`).join('')}</ol>`));
+    const rows = teams ? v.teams.map(t => ({ name: t.name, sub: t.members.join(', '), score: t.score })).sort((a, b) => b.score - a.score) : v.players;
+    zone.appendChild(el('ol', 'mj-list hm-rank', rows.map((p, i) => `<li class="mj-row${p.me ? ' me' : ''}"><span><i>${i + 1}</i>${esc(p.name)}${p.sub ? ` <small>${esc(p.sub)}</small>` : ''}</span><b>${p.score}</b></li>`).join('')));
     if (v.isHost) zone.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
   }
   if (v.isHost && ['clue', 'guess', 'side'].includes(v.phase)) {
-    if (v.quiet > DP_SKIP_MS) zone.appendChild(btn('ghost small', v.phase === 'clue' ? 'Le médium ne répond pas ? Passer son tour' : v.phase === 'guess' ? 'Quelqu’un bloque ? Révéler maintenant' : 'Passer le pari', () => act({ t: 'dp:skip' })));
+    if (v.quiet > DP_SKIP_MS) zone.appendChild(btn('ghost small', v.phase === 'clue' ? 'Le médium s’est endormi ? Passer son tour' : v.phase === 'guess' ? 'Quelqu’un traîne ? Révéler maintenant' : 'Passer le pari', () => act({ t: 'dp:skip' })));
     else dpSkipTimer = setTimeout(() => { if (view?.dp && !dpDragging && document.activeElement?.id !== 'dp-clue') renderDiapason(view.dp); }, DP_SKIP_MS - v.quiet + 200);
   }
   root.appendChild(zone);
-  const lg = el('ul', 'dp-log'); v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t)))); root.appendChild(lg);
+
+  // les scores (colonne de droite sur PC) et le fil de la partie
+  const sc = el('div', 'dp-scores hm-players');
+  sc.appendChild(el('span', 'mj-side-title', 'Scores'));
+  const me = v.players.find(p => p.me)?.name;
+  if (teams) v.teams.forEach((t, i) => sc.appendChild(el('div', `hm-player dp-tm t${i}${i === v.active ? ' lead' : ''}`,
+    `<span class="hm-name">${esc(t.name)}</span>${i === v.active && v.phase !== 'over' ? '<i>au cadran</i>' : ''}<span class="hm-score">${t.score}</span><small class="hm-members">${t.members.map(n => esc(n) + (n === me ? ' (toi)' : '')).join(', ')}</small>`)));
+  else v.players.forEach(p => sc.appendChild(el('div', `hm-player${p.psychic ? ' lead' : ''}${p.online ? '' : ' off'}${p.me ? ' me' : ''}`,
+    `<span class="hm-name">${esc(p.name)}</span>${p.psychic ? '<i>médium</i>' : p.done ? '<i class="ok">a visé</i>' : ''}<span class="hm-score">${p.score}</span>`)));
+  root.appendChild(sc);
+  if (v.log.length) {
+    const lg = el('ul', 'dp-log hm-log');
+    lg.appendChild(el('li', 'mj-side-title', 'Ce qui s’est passé'));
+    v.log.slice().reverse().forEach(t => lg.appendChild(el('li', '', esc(t))));
+    root.appendChild(lg);
+  }
 }

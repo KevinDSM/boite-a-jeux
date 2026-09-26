@@ -3183,3 +3183,892 @@ input,select{font-family:var(--font);border-radius:12px}
   .rules-chip .gart{width:30px;height:30px;transform:scale(.52)}
   .rules-chip .gname{font-size:14.5px}
 }
+
+/* podiums du salon, en liste (charte) */
+.hist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.hist-head .btn.small{min-height:32px;padding:4px 10px}
+.hist-row{padding:10px 14px;border-top:1px solid var(--line)}
+.hist-row:first-child{border-top:0}
+.hist-row .hist-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.hist-row .hist-top b{font-size:15px;font-weight:600}
+.hist-row .hist-top small{font-size:12.5px;color:var(--mute);white-space:nowrap}
+.hist-who{margin:3px 0 0;display:flex;flex-wrap:wrap;gap:2px 12px;font-size:13.5px;color:var(--ink-2)}
+.hist-p i{font-style:normal;color:var(--mute);font-variant-numeric:tabular-nums}
+.hist-p.first{color:var(--ink);font-weight:600}
+.hist-low{color:var(--mute)}
+/* Éclair en thème clair : texte foncé sur le bouton vert citron, lisible */
+[data-theme="light"][data-game="eclair"]{--on-acc:oklch(0.22 0.05 140)}
+
+/* ------------------------------------------------------------ charte, groupe musique */
+/* Charte 2026, lot 2 : groupe musique. Fusionné dans style.css à la fin du lot.
+   Décennies (#s-game), Éclair (#s-eclair), Sprint (#s-sprint) et l'écran de fin (#s-end).
+   Le bandeau devient la voix du meneur (.mj-*), les scores passent en liste groupée,
+   et sur PC ils partent dans la colonne de droite (muDesk dans app.js, même mécanique que desk.js).
+   Les objets de jeu gardent leur dessin : vinyle, éclair et paliers, chrono, cartes de la frise. */
+
+/* ------------------------------------------------ le bandeau : voix du meneur */
+#turn-banner,#e-banner,#sp-banner{font:inherit;min-height:0;letter-spacing:0;text-transform:none;line-height:1.45}
+.mu-timer{display:inline-block;margin-left:2px;padding:2px 10px;border-radius:99px;background:color-mix(in oklab, var(--acc) 18%, transparent);color:var(--acc-soft);font-size:.6em;font-weight:700;line-height:1.3;vertical-align:.2em;font-variant-numeric:tabular-nums;letter-spacing:0}
+
+/* ------------------------------------------------ scores : une liste groupée, en bas sur téléphone */
+#scoreboard,#e-scoreboard,#sp-scoreboard{display:block;margin:0;padding:0;overflow:visible;order:10}
+.mu-row{min-height:54px;padding:8px 14px}
+.mu-row.on{background:color-mix(in oklab, var(--acc) 11%, var(--surface))}
+.mu-row.off{opacity:.5}
+.mu-who{display:flex;flex-direction:column;gap:1px;min-width:0}
+.mu-who b{font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mu-who b i,#ranking li span i{font-style:normal;font-weight:500;font-size:13px;color:var(--mute)}
+.mu-who small{font-size:13px;line-height:1.3;color:var(--ink-2)}
+.mu-score{flex:0 0 auto;font-size:17px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mu-score small{font-size:13px;font-weight:500;color:var(--mute)}
+
+/* sur PC la colonne de droite est rangée par muDesk ; revenu sur un petit écran, les deux blocs s'empilent */
+:is(#s-game,#s-eclair,#s-sprint)>:is(.desk-main,.desk-side){display:flex;flex-direction:column;gap:15px;min-width:0}
+@media (min-width: 1100px){
+  .screen.play:is(#s-game,#s-eclair,#s-sprint).desk-split{max-width:1120px;padding-left:28px;padding-right:28px}
+  :is(#s-game,#s-eclair,#s-sprint) .desk-side{background:var(--surface-2);border-radius:16px;padding:18px 18px 16px}
+  :is(#s-game,#s-eclair,#s-sprint) .desk-side .mj-list{background:var(--surface)}
+}
+
+/* ------------------------------------------------ scène et objets */
+:is(#s-game,#s-eclair,#s-sprint) .track-info{font-weight:600;font-size:15px}
+:is(#s-game,#s-eclair,#s-sprint) .track-info small{font-size:13.5px}
+:is(#s-game,#s-eclair,#s-sprint) .track-info .big{font-family:var(--font);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+#e-info .big,#sp-info .big{font-size:28px;line-height:1.12;margin-bottom:2px}
+#e-info small{color:var(--ink-2)}
+#tl-owner{font-size:13px;font-weight:600;color:var(--mute)}
+#timeline .tcard b{font-family:var(--font);font-weight:800;letter-spacing:-.02em}
+.segbar i.open::after{font-size:11px}
+
+/* Éclair et Sprint criaient en capitales : on garde la couleur et les angles, pas les majuscules */
+#s-eclair .btn,#s-end .btn{text-transform:none;letter-spacing:0;font-size:16px}
+#s-eclair .btn.lg,#s-end .btn.lg{font-size:17px}
+#s-eclair .btn.small{font-size:14px}
+[data-game="sprint"] .crumb{text-transform:none;letter-spacing:0}
+
+/* actions */
+:is(#s-game,#s-eclair,#s-sprint) .note{font-size:13.5px}
+.tokline{font-size:13.5px}
+
+/* ------------------------------------------------ écran de fin : classement */
+#s-end .endhero{text-align:left;align-items:flex-start;gap:0;padding:8px 0 0}
+#s-end .endhero .mj-meta,#s-end .endhero .eyebrow{margin:0;font-size:14px;font-weight:400;color:var(--mute)}
+#end-winner{margin:4px 0 0;font:700 32px/1.12 var(--font);letter-spacing:-.02em;text-transform:none;color:var(--ink)}
+#end-sub{margin:4px 0 0;max-width:40ch;font-size:17px;line-height:1.4;color:var(--ink-2)}
+#ranking{gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#ranking li{min-height:52px;padding:11px 16px;gap:12px;background:none;border:0;border-top:1px solid var(--line);border-radius:0;animation:none;font-size:15px}
+#ranking li:first-child{border-top:0;background:color-mix(in oklab, var(--acc) 11%, var(--surface))}
+#ranking li::before{width:20px;font:700 15px var(--font);color:var(--mute);font-variant-numeric:tabular-nums}
+#ranking li:first-child::before{color:var(--acc-soft)}
+#ranking li b{font:700 16px var(--font);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (min-width: 700px){ #end-winner{font-size:38px} }
+
+/* ------------------------------------------------------------ charte, groupe cartes-a */
+/* Charte 2026, lot 2 : groupe cartes-a. Fusionné dans style.css à la fin du lot. */
+/* Chromo, Kems, Douze : bloc d'état du meneur (.mj-*), listes groupées, police du système partout
+   sauf sur les objets du jeu (cartes, tapis). Chargé après style.css : à spécificité égale, ces règles gagnent. */
+
+/* ------------------------------------------------------------ commun aux trois jeux */
+/* --ca-ok : le vert « c'est fait » des listes, assez foncé pour rester lisible sur les thèmes clairs */
+/* --ca-hi : l'accent pour les petits textes (tags, meneur de classement), foncé d'un cran sur les thèmes clairs */
+#ch-main,#km-main,#dz-main{--ca-ok:var(--pos);--ca-hi:var(--acc)}
+[data-theme="light"] #ch-main,[data-theme="light"] #km-main,[data-theme="light"] #dz-main{--ca-ok:oklch(0.50 0.13 150);--ca-hi:color-mix(in oklab, var(--acc) 68%, var(--ink))}
+#ch-main .btn,#km-main .btn,#dz-main .btn{white-space:normal;line-height:1.2;text-align:center}
+#ch-main .btn.small,#km-main .btn.small,#dz-main .btn.small{min-height:44px;padding:10px 14px}
+#ch-main .mj-status.ch-hot .mj-title,#km-main .mj-status.km-hot .mj-title,#dz-main .mj-status.dz-hot .mj-title{color:var(--acc)}
+#ch-main .note,#km-main .note,#dz-main .note{font-size:14px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){
+  #ch-main .btn.danger,#ch-main .ch-back.can,#dz-main .dz-pile.can .dz-card{animation:none}
+}
+
+/* ------------------------------------------------------------ Chromo */
+/* la table ronde reste l'objet du jeu ; on la tasse un peu sur téléphone pour que la main tienne à l'écran */
+.ch-ring{aspect-ratio:1/.92;margin:0 auto}
+.ch-flag{font:600 11.5px/1 var(--font);padding:3px 7px}
+.ch-color{font:600 15px/1 var(--font)}
+.ch-pending{font-weight:700}
+.ch-actions{gap:8px}
+.ch-actions .btn{font:600 16px/1.2 var(--font);min-width:132px}
+.ch-actions .btn.primary{font-weight:700}
+.ch-hand-title{margin:4px 0 -4px;text-align:center}
+.ch-picker-title{font:700 21px/1.2 var(--font)}
+.ch-swatch{font:600 16px/1 var(--font)}
+.ch-swatch.col-y{color:oklch(0.26 0.05 80);text-shadow:none}
+
+/* scores et joueurs : une liste groupée ; pendant la manche, sur téléphone, la table suffit */
+.ch-players{display:block;margin:0;padding:0;overflow:visible}
+.ch-players.in-play{display:none}
+.desk-side .ch-players.in-play{display:block}
+.ch-row{padding:10px 14px;min-height:46px}
+.ch-row-name{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-row-name small{font-size:12.5px;font-weight:500;color:var(--mute)}
+.ch-row-name i{margin-left:7px;font-style:normal;font-size:12.5px;font-weight:600;color:var(--mute)}
+.ch-row-name i.now{color:var(--ca-hi)}
+.ch-row-name i.ok{color:var(--ca-ok)}
+.ch-row-name i.warn{color:var(--neg)}
+.ch-row-sub{font-size:13.5px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ch-row-score{min-width:2.4em;text-align:right;font-weight:650;font-variant-numeric:tabular-nums;color:var(--ink)}
+.ch-row-score em{font-style:normal;font-weight:600;font-size:13.5px;color:var(--ca-ok)}
+.ch-row.now{background:color-mix(in oklab, var(--acc) 10%, var(--surface))}
+.ch-row.off{opacity:.5}
+.ch-row.lead .ch-row-name,.ch-row.lead .ch-row-score{color:var(--ca-hi)}
+
+/* ce qui restait en main à la fin de la manche */
+.ch-hands{display:flex;flex-direction:column}
+.ch-hand-row{flex-direction:column;align-items:stretch;gap:8px;background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:11px 14px 13px}
+.ch-hand-row:first-child{border-top:0}
+.ch-hand-row-head{font-size:15px}
+.ch-hand-row-head span{font-size:14px}
+.ch-hands .ch-hand.mini{padding:0}
+
+/* le fil de la partie */
+.ch-log{text-align:left;font-size:13.5px;gap:4px;color:var(--mute)}
+.ch-log li:first-child{font-size:13px;color:var(--mute)}
+.ch-log li:nth-child(2){color:var(--ink-2);font-size:14px}
+.ch-log li.mj-side-title{margin:0}
+
+@media (min-width: 700px){
+  .ch-ring{aspect-ratio:1/.88}
+}
+@media (min-width: 1100px){
+  .ch-ring{aspect-ratio:1.5/1}
+}
+
+/* ------------------------------------------------------------ Kems */
+.km-zone-title{margin:2px 0 -6px;text-align:center}
+.km-table{padding:16px 10px}
+.km-calls .btn{font:700 18px/1.15 var(--font);letter-spacing:0}
+.km-calls .btn.armed{font:600 15px/1.2 var(--font)}
+.km-calls .btn.danger{animation:none}                     /* le bouton reste à l'écran toute la donne : il ne clignote pas */
+.km-actions .btn{min-width:150px}
+
+/* la table : une liste groupée en deux colonnes, partenaires en diagonale */
+.km-seats{display:block}
+.km-seat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.km-seat{background:none;border:0;border-radius:0;padding:10px 14px;min-height:58px;justify-content:center;gap:1px}
+.km-seat:nth-child(odd){border-right:1px solid var(--line)}
+.km-seat:nth-child(n+3){border-top:1px solid var(--line)}
+.km-seat.pass{background:none}
+.km-seat.me{background:color-mix(in oklab, var(--acc) 9%, var(--surface))}
+.km-seat-name{font-size:15px;font-weight:600}
+.km-seat-sub{font-size:13px;color:var(--mute)}
+.km-seat.me .km-seat-sub,.km-seat.mate .km-seat-sub{color:var(--ink-2)}
+.km-seat-sub i{font-style:normal;font-weight:600;color:var(--ca-ok)}
+
+/* scores : une ligne par équipe */
+.km-score{display:block;background:none;border:0;border-radius:0;padding:0}
+.km-score.in-play{display:none}
+.desk-side .km-score.in-play{display:block}
+.km-score-row{padding:10px 14px}
+.km-score-row.mine{background:color-mix(in oklab, var(--acc) 9%, var(--surface))}
+.km-score-name{display:flex;flex-direction:column;gap:1px;min-width:0;font:inherit;white-space:normal}
+.km-score-name b{font-weight:600;font-size:15px;color:var(--ink)}
+.km-score-name small{font-size:13px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.km-score-pts{font:700 21px/1 var(--font);font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.km-score-pts em{font-style:normal;font-size:14px;font-weight:600;color:var(--ca-ok)}
+
+/* les mains révélées */
+.km-reveal{display:block}
+.km-reveal-row{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 14px;flex-direction:row;align-items:center;gap:12px}
+.km-reveal-row:first-child{border-top:0}
+.km-reveal-row.carre{box-shadow:none;background:color-mix(in oklab, var(--acc) 9%, var(--surface))}
+.km-reveal-head{flex:1;min-width:0;font-size:15px;gap:2px}
+.km-reveal-head b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.km-reveal-head span{font-size:13px;color:var(--mute)}
+.km-reveal-row.carre .km-reveal-head span{color:var(--ca-hi);font-weight:600}
+.km-reveal .km-hand.mini{flex:0 0 auto}
+
+/* le fil de la partie */
+.km-log{text-align:left;font-size:13.5px;gap:4px}
+.km-log li:first-child{font-size:13px;color:var(--mute)}
+.km-log li:nth-child(2){color:var(--ink-2);font-size:14px}
+.km-log li.mj-side-title{margin:0}
+
+/* salon : le choix des équipes en liste groupée */
+.km-picklist{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.km-pickrow{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:6px 8px 6px 14px;min-height:56px}
+.km-pickrow:first-child{border-top:0}
+.km-segbtn{min-height:44px;padding:8px 12px;font-size:13.5px}
+.km-pickline{margin:2px 0 0;line-height:1.55}
+
+/* ------------------------------------------------------------ Douze */
+.dz-pile-label{font-size:13px}
+.dz-sum{margin:0;text-align:center;font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+
+/* les grilles de la table et le résultat de la manche : une liste groupée, la mini-grille à droite */
+.dz-players,.dz-verdict,.dz-scores{display:block;margin:0;padding:0;overflow:visible;background:none;border:0;border-radius:0}
+.dz-rows{display:block}
+.dz-row{background:none;border-radius:0;padding:10px 14px;gap:12px;align-items:center}
+.dz-row.doubled{box-shadow:none}
+.dz-row.now{background:color-mix(in oklab, var(--acc) 10%, var(--surface))}
+.dz-row.off{opacity:.5}
+.dz-row-head{flex:1;min-width:0;font-size:15px;gap:2px}
+.dz-row-head b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dz-row-head b small{font-size:12.5px;font-weight:500;color:var(--mute)}
+.dz-row-head b i{margin-left:7px;font-style:normal;font-size:12.5px;font-weight:600;color:var(--mute)}
+.dz-row-head b i.now{color:var(--ca-hi)}
+.dz-row-head span{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.dz-row-head span.neg{color:var(--neg);font-weight:600}
+.dz-row-pts{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);min-width:2ch;text-align:right}
+.dz-row.doubled .dz-row-pts{color:var(--neg)}
+.dz-row .dz-mini-grid{width:76px;flex:0 0 auto}
+.dz-verdict .dz-row .dz-mini-grid{width:96px}
+
+/* les totaux */
+.dz-score-row{padding:10px 14px}
+.dz-score-name{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dz-score-name small{font-size:12.5px;font-weight:500;color:var(--mute)}
+.dz-score-last{font-size:13.5px;color:var(--mute);font-variant-numeric:tabular-nums}
+.dz-score-total{min-width:2.6em;text-align:right;font-weight:650;font-variant-numeric:tabular-nums;color:var(--ink)}
+.dz-score-row.lead .dz-score-name,.dz-score-row.lead .dz-score-total{color:var(--ca-hi)}
+
+/* le fil de la partie */
+.dz-log{text-align:left;font-size:13.5px;gap:4px}
+.dz-log li:first-child{font-size:13px;color:var(--mute)}
+.dz-log li:nth-child(2){color:var(--ink-2);font-size:14px}
+.dz-log li.mj-side-title{margin:0}
+@media (min-width: 700px){ .dz-row .dz-mini-grid{width:88px} .dz-verdict .dz-row .dz-mini-grid{width:112px} }
+
+/* ------------------------------------------------------------ charte, groupe cartes-b */
+/* Charte 2026, lot 2 : groupe cartes-b. Fusionné dans style.css à la fin du lot.
+   Poker, Solitaire, Duel des Cités : la table ovale, le plateau et la pyramide gardent leur dessin ;
+   autour, l'ossature du meneur (.mj-meta, .mj-status, .mj-list, .mj-side-title). */
+
+/* ------------------------------------------------------------ communs aux trois jeux */
+.pk-log,.du-log{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13.5px;line-height:1.4;color:var(--mute);text-align:left}
+.pk-log li.mj-side-title,.du-log li.mj-side-title{margin:0;color:var(--mute)}
+.pk-log li.mj-side-title+li,.du-log li.mj-side-title+li{color:var(--ink-2)}
+.pk-log li:first-child:not(.mj-side-title){color:var(--mute)}
+.desk-side .pk-log,.desk-side .du-log{margin-top:6px}
+
+/* ------------------------------------------------------------ Poker */
+.pk-status{margin-bottom:2px}
+.pk-ring{margin-top:34px}                 /* le siège du haut déborde de la table : place pour lui sous le meneur */
+@media (min-width: 700px){ .pk-ring{margin-top:46px} }
+.pk-seat{font-family:var(--font)}
+.pk-name{font-weight:600}
+.pk-tag{font-size:11.5px;text-transform:none;letter-spacing:0;color:var(--mute)}
+.pk-tag.win{font-size:12.5px}
+.pk-bet::before{content:none}
+.pk-pot{font-family:var(--font)}
+.pk-myinfo{gap:3px}
+.pk-myinfo b{font:700 19px/1.15 var(--font)}
+.pk-myinfo span{font-size:14.5px;font-weight:600;color:var(--acc-soft)}
+.pk-actions .btn{min-height:52px;font-size:16px}
+.pk-quick .btn{font-size:14px}
+.pk-result{display:flex;flex-direction:column;gap:0;padding:0;background:none;border:0;border-radius:0}
+.pk-show{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n c" "h c";column-gap:12px;row-gap:1px;align-items:center;padding:10px 14px;border-radius:0;background:none}
+.pk-show.win{background:color-mix(in oklab, var(--pos) 12%, transparent)}
+.pk-show-name{grid-area:n;font-size:15px;font-weight:600;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-show-hand{grid-area:h;font-size:13.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pk-show.win .pk-show-hand{color:var(--pos);font-weight:600}
+.pk-show-cards{grid-area:c;display:flex;gap:3px}
+[data-theme="light"] .pk-show.win .pk-show-hand,[data-theme="light"] .pk-tag.win{color:color-mix(in oklab, var(--pos) 45%, var(--ink))}
+.pk-rank{font-variant-numeric:tabular-nums}
+.pk-rank-n{flex:0 0 18px;color:var(--mute);font-size:13.5px}
+.pk-rank-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-rank.me .pk-rank-name{font-weight:600}
+.pk-rank b{font-weight:600}
+@media (max-width: 699px){
+  .pk-status .mj-title{font-size:24px}
+  .pk-status .mj-say{font-size:16px}
+}
+
+/* ------------------------------------------------------------ Solitaire */
+.so-meta{font-variant-numeric:tabular-nums}
+.so-status{margin-bottom:2px}
+.so-race{display:flex;flex-direction:column;gap:0}
+.so-runner{display:grid;grid-template-columns:16px minmax(0,1fr) 30% auto;align-items:center;gap:10px;padding:10px 14px;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;font-size:15px}
+.so-runner:first-child{border-top:0}
+.so-runner.me{border-color:var(--line);background:color-mix(in oklab, var(--acc) 9%, transparent)}
+.so-runner.me:not(:first-child){border-top:1px solid var(--line)}
+.so-runner.me .so-name{font-weight:700}
+.so-rank{font-size:13.5px}
+.so-name{font-weight:600}
+.so-bar{background:var(--line)}
+.so-count{font-size:13.5px}
+.so-runner.done .so-count{color:var(--pos);font-weight:600}
+[data-theme="light"] .so-runner.done .so-count{color:color-mix(in oklab, var(--pos) 45%, var(--ink))}
+.so-tools{margin-top:2px}
+.so-tools .btn.small{min-height:44px}
+.so-moves{font-size:13.5px}
+.so-again .btn{flex:1 1 150px;min-height:52px}
+.so-end{align-self:center}
+.btn.so-end{min-height:44px}
+
+/* ------------------------------------------------------------ Duel des Cités */
+.du-status{margin-bottom:2px}
+/* les cités : une liste groupée, une ligne par rubrique */
+.du-city{display:flex;flex-direction:column;gap:0;padding:0;border-radius:14px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:none}
+.du-city.turn{border-color:var(--line);box-shadow:none}
+.du-city-head{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.du-city-name{flex:1;min-width:0;font:600 16px/1.25 var(--font);letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.du-city-name small{font:500 13px var(--font);color:var(--mute)}
+.du-city-turn{flex:0 0 auto;font-size:13px;font-weight:600;color:var(--on-acc);background:var(--acc);padding:2px 9px;border-radius:99px}
+.du-coins{font-size:16px}
+.du-score{font:600 14.5px var(--font);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.du-city-row{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;padding:9px 14px 10px;border-top:1px solid var(--line)}
+.du-lbl{font-size:13px;font-weight:600;color:var(--mute)}
+.du-wonders{display:flex;flex-direction:column;gap:0}
+.du-w{display:flex;flex-direction:row;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:32px;padding:5px 0;border:0;border-radius:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.du-w+.du-w{border-top:1px dashed color-mix(in oklab, var(--line) 80%, transparent)}
+.du-w b{font-size:14.5px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.du-w span{flex:0 0 auto;font-size:13.5px;color:var(--ink-2)}
+.du-w.built{border-color:color-mix(in oklab, var(--line) 80%, transparent);background:none}
+.du-w.built b{font-weight:700}
+.du-w.built span{color:var(--acc-soft);font-weight:600}
+.du-w.lost{opacity:.5}
+.du-pills{gap:4px}
+.du-pill{font-size:12.5px;padding:3px 8px;border-radius:5px}
+.du-res,.du-sci{font-size:13.5px}
+.du-tok.small{font-size:14px}
+@media (min-width: 1100px){
+  .desk-side .du-city+.du-city{margin-top:12px}
+  .desk-side .du-w{min-height:28px;padding:3px 0}
+}
+/* la piste et les jetons gardent leur dessin, l'écriture passe à la police du système */
+.du-cap{font-family:var(--font)}
+.du-tok small{font-family:var(--font);font-size:10.5px}
+/* le panneau d'action */
+.du-sheet{gap:10px}
+.du-detail{border-radius:14px;padding:13px 15px;gap:6px}
+.du-dhead b{font:700 19px/1.2 var(--font);letter-spacing:-.01em}
+.du-dhead small{font-size:13px}
+.du-detail p{font-size:15px;line-height:1.45}
+.du-detail .du-dcost{font-size:15px;color:var(--ink)}
+.du-actions .btn{min-height:50px;font-size:15.5px}
+.du-actions .wbtn{border:1px solid var(--line)}
+.du-wlist,.du-choices{display:flex;flex-direction:column;gap:0}
+.du-wcard,.du-choice{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;width:100%;padding:12px 14px;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;color:var(--ink);font:inherit;text-align:left}
+.du-wcard:first-child,.du-choice:first-child{border-top:0}
+button.du-wcard:hover,.du-choice:hover{border-color:var(--line);background:color-mix(in oklab, var(--acc) 9%, transparent)}
+button.du-wcard:hover:first-child,.du-choice:hover:first-child{border-top:0}
+.du-wcard b,.du-choice b{font:600 16px/1.25 var(--font);letter-spacing:0}
+.du-wcost{font-size:14px}
+.du-wtxt,.du-choice span{font-size:14px;color:var(--ink-2);line-height:1.4}
+/* le décompte */
+.du-final{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;background:none;border:0;border-radius:0}
+.du-table{font-size:15px}
+.du-table th,.du-table td{padding:8px 14px}
+.du-table th{font-size:13px;font-weight:600;color:var(--mute)}
+.du-table tr.tot td{font-size:16px;font-weight:700}
+
+/* ------------------------------------------------------------ charte, groupe humour */
+/* Charte 2026, lot 2 : groupe humour. Fusionné dans style.css à la fin du lot.
+   Mirage, Mème pas vrai, Diapason, Petit Brevet. Chargé après style.css : à spécificité égale, ces règles gagnent.
+   Composants partagés du groupe (préfixe hm-) :
+   .hm-players / .hm-player : scores en ligne sur téléphone, liste à filets dans la colonne de droite sur PC
+   .hm-log : le fil de la partie ; .hm-rank : classement final dans une .mj-list */
+
+/* ------------------------------------------------------------ joueurs, fil, classement (les quatre jeux) */
+.hm-players{display:flex;flex-wrap:wrap;overflow:visible;margin:0;padding:0;gap:4px 14px;align-items:baseline}
+.hm-players>.mj-side-title{flex-basis:100%;margin:0 0 2px}
+.hm-player{display:flex;align-items:baseline;gap:6px;min-width:0}
+.hm-name{font-size:14.5px;font-weight:600;color:var(--ink);overflow-wrap:anywhere}
+.hm-player.me .hm-name::after{content:" (toi)";color:var(--mute);font-weight:400}
+.hm-player.lead .hm-name{color:var(--acc)}
+.hm-player.off{opacity:.5}
+.hm-player i{font-style:normal;font-size:12.5px;color:var(--mute)}
+.hm-player i.ok{color:var(--pos)}
+.hm-player small{font-size:12.5px;color:var(--mute)}
+.hm-score{font-size:14.5px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hm-score b{color:var(--pos);font-weight:700}
+.hm-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13.5px;line-height:1.4;color:var(--mute);text-align:left}
+.hm-log>.mj-side-title{margin:0}
+.hm-rank{list-style:none;margin:0;padding:0;width:100%}
+.hm-rank .mj-row span{display:flex;align-items:baseline;gap:10px;min-width:0;overflow-wrap:anywhere}
+.hm-rank .mj-row i{font-style:normal;min-width:1.1em;color:var(--mute);font-variant-numeric:tabular-nums}
+.hm-rank .mj-row b{font-weight:700;font-variant-numeric:tabular-nums}
+.hm-rank .mj-row.me span{font-weight:600;color:var(--acc)}
+.hm-rank .mj-row:first-child{background:color-mix(in oklab, var(--acc) 10%, var(--surface))}
+@media (min-width: 1100px){
+  .desk-side .hm-players{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:0}
+  .desk-side .hm-player{justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)}
+  .desk-side .hm-players>.mj-side-title+.hm-player{border-top:0}
+  .desk-side .hm-name{flex:1}
+}
+
+/* ------------------------------------------------------------ Mème pas vrai */
+/* la situation : une légende de mème, en gras, dans le cadre jaune du jeu */
+.mm-prompt{margin:0;padding:18px 20px 20px;border-radius:16px;background:var(--surface);border:2px solid var(--acc);font:700 24px/1.22 var(--font);letter-spacing:-.015em;text-transform:none;text-align:left;color:var(--ink);text-wrap:pretty}
+.mm-zone{gap:12px}
+.mm-gif{letter-spacing:0;font:700 10.5px/1 var(--font)}
+.mm-tag{font:600 12px/1 var(--font);padding:5px 8px}
+.mm-light-prompt{font:700 22px/1.25 var(--font);text-transform:none;letter-spacing:-.01em;text-wrap:pretty}
+.mm-light-cap{font-size:13px}
+@media (min-width: 700px){ .mm-prompt{font-size:29px;padding:22px 24px 24px} .mm-light-prompt{font-size:26px} }
+
+/* ------------------------------------------------------------ Mirage */
+/* l'indice du conteur : un cartouche sous les tableaux, en or pâle */
+.mi-clue{margin:0;padding:16px 20px 18px;border-radius:16px;background:var(--surface);border:1px solid var(--line);font:700 26px/1.2 var(--font);font-style:normal;letter-spacing:-.015em;color:var(--acc);text-wrap:pretty}
+.mi-clue.spoken{font-size:17px;font-weight:500;letter-spacing:0;color:var(--ink-2)}
+.mi-zone{gap:12px}
+.mi-clue-form{gap:10px}
+.mi-clue-in{font:500 18px var(--font);font-style:normal;min-height:52px;border-radius:12px}
+.mi-jokers{justify-content:flex-start;text-align:left;font-size:14px;line-height:1.4;color:var(--ink-2)}
+.mi-joker-dots{flex:0 0 auto}
+.mi-offer{border-radius:16px}
+.mi-offer-title,.mi-offer-head .mi-offer-title{font:600 17px/1.3 var(--font);font-style:normal}
+.mi-joker-btn{font-weight:600}
+.mi-owner,.mi-tag{font:600 12px/1 var(--font);padding:5px 8px}
+.mi-votes{font:500 12px/1.3 var(--font)}
+.mi-votes::before{content:"votes\00a0: "}
+.mi-light-cap{font:600 16px/1.35 var(--font);font-style:normal}
+.mi-light-cap small{font-size:12.5px}
+@media (min-width: 700px){ .mi-clue{font-size:30px;padding:20px 24px 22px} }
+.mi-card figcaption{font-family:var(--font)}
+/* à la révélation : à qui est la carte en haut, qui a voté pour elle en bas, sans chevauchement */
+.mi-owner{max-width:calc(100% - 12px);line-height:1.2;border-radius:8px}
+.mi-votes{top:auto;bottom:24px;left:6px;right:6px;max-width:none;text-align:left;border-radius:8px}
+
+/* ------------------------------------------------------------ Diapason */
+/* la carte aux deux extrêmes et le cadran gardent leur dessin ; le texte passe à la police du système */
+.dp-card{font:700 17px/1.2 var(--font);letter-spacing:-.005em}
+.dp-clue-show{margin:0;padding:14px 18px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-align:left;font:700 clamp(22px,6.2vw,28px)/1.18 var(--font);letter-spacing:-.015em;color:var(--ink);text-wrap:pretty}
+.dp-clue-show.spoken{font-size:17px;font-weight:500;letter-spacing:0;color:var(--ink-2)}
+.dp-nudge .btn{min-width:48px;min-height:44px}
+.dp-nudge-hint{font-size:13.5px}
+.dp-zone{gap:12px}
+.dp-zone input[type=text]{font:500 18px var(--font);min-height:52px;border-radius:12px}
+.dp-row .btn.ghost{border-color:var(--line)}
+/* résultats de la manche : liste groupée, une pastille de la couleur de la zone touchée */
+.dp-results{display:block;gap:0}
+.dp-results li{padding:11px 14px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+.dp-results li:first-child{border-top:0}
+.dp-results li.p4,.dp-results li.p3,.dp-results li.p2{border-color:var(--line);background:transparent}
+.dp-results li b{display:inline-flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.dp-results li.hit b::before{content:"";width:10px;height:10px;border-radius:3px}
+.dp-results li.p4 b::before{background:oklch(0.55 0.13 245)}
+.dp-results li.p3 b::before{background:oklch(0.74 0.17 50)}
+.dp-results li.p2 b::before{background:oklch(0.86 0.14 88)}
+/* scores des équipes : nom, score, puis les membres sur une deuxième ligne */
+.dp-scores .hm-player.dp-tm{flex-basis:100%;flex-wrap:wrap;column-gap:6px}
+.dp-scores .hm-player.dp-tm .hm-name{display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
+.dp-scores .hm-player.dp-tm .hm-name::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--dp-r)}
+.dp-scores .hm-player.dp-tm.t1 .hm-name::before{background:var(--dp-l)}
+.dp-scores .hm-members{flex-basis:100%;font-size:12.5px;color:var(--mute)}
+.hm-rank .mj-row small{font-size:12.5px;font-weight:400;color:var(--mute)}
+@media (min-width: 700px){ .dp-card{font-size:20px} }
+
+/* ------------------------------------------------------------ Petit Brevet */
+/* la lettre tamponnée et la feuille d'écolier restent des objets du jeu ; tout le reste passe à l'ossature */
+.pb-head{flex-direction:row;align-items:center;gap:16px;text-align:left}
+.pb-head .mj-status{flex:1;min-width:0}
+.pb-head .pb-letter{flex:0 0 auto;width:76px;height:76px;font-size:52px}
+.pb-halt .mj-title{color:var(--neg)}
+.mj-prog.pb-done{margin:14px 0 0;font:inherit;font-size:13.5px;color:var(--mute);text-align:left}
+.pb-cat{font:600 13px/1.2 var(--font);letter-spacing:0;text-transform:none;color:oklch(0.48 0.05 255)}
+.pb-stopbtn,.pb-donebtn{font:700 19px var(--font);letter-spacing:0;min-height:56px}
+#pb-main .btn.danger.pb-stopbtn{animation:none}
+.pb-hint{text-align:left}
+/* la vérification : une liste groupée par catégorie, une ligne par joueur */
+.pb-board{gap:18px}
+.pb-block{padding:0;background:none;border:0;border-radius:0}
+.pb-block-cat{margin:0 0 6px 2px;font:600 13px/1.2 var(--font);letter-spacing:0;text-transform:none;color:var(--mute)}
+.pb-lines{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pb-line+.pb-line{margin-top:0;border-top:1px solid var(--line)}
+.pb-ans{min-height:50px;padding:9px 14px;border:0;border-radius:0;background:transparent}
+button.pb-ans:active{transform:none;background:var(--surface-2)}
+.pb-who{font-size:13px}
+.pb-word{font:600 17px/1.2 var(--font)}
+.pb-why{font-size:12.5px}
+.pb-ans.ko{background:color-mix(in oklab, var(--neg) 12%, var(--surface))}
+.pb-ans.contested{background:color-mix(in oklab, var(--neg) 20%, var(--surface))}
+.pb-ans.contested .pb-why{color:var(--ink-2)}
+.pb-ans.empty .pb-word{font-weight:400;color:var(--mute)}
+.pb-ans.me{box-shadow:none}
+.pb-ans.me .pb-who{color:var(--acc);font-weight:600}
+.pb-force{flex:0 0 48px;min-height:50px;border:0;border-left:1px solid var(--line);border-radius:0;background:transparent;font-size:18px}
+.pb-totals.hm-players,.pb-scores.hm-players{border-top:0;padding-top:0;font-size:inherit;color:inherit}
+.pb-totals .me,.pb-scores .me{color:inherit}
+.pb-actions{flex-direction:column;align-items:stretch;gap:8px}
+.pb-actions .fine{margin:0;text-align:left}
+.pb-force{font-family:var(--font)}
+
+/* ------------------------------------------------------------ thèmes clairs : les verts et ors des palettes sombres manquent de contraste sur fond clair */
+[data-theme="light"] .hm-score b,[data-theme="light"] .hm-player i.ok{color:oklch(0.50 0.13 150)}
+[data-theme="light"] .pb-ans.ok .pb-pts{color:oklch(0.50 0.13 150)}
+[data-theme="light"] .pb-ans.dup .pb-pts{color:oklch(0.52 0.12 70)}
+
+/* ------------------------------------------------------------ charte, groupe roles */
+/* Charte 2026, lot 2 : groupe roles (Undercover, Loup-Garou, Naufragés). Fusionné dans style.css à la fin du lot.
+   Chargé après style.css : à spécificité égale, ces règles gagnent. Les objets de jeu gardent leur style
+   (dossier secret d'Undercover, carte de rôle et écran de nuit du Loup-Garou, île, calendrier et cartes des
+   Naufragés) ; l'interface autour suit l'ossature commune (.mj-*). */
+
+/* ------------------------------------------------------------ pièces communes aux trois jeux
+   .rl-block   : un intitulé discret (.mj-side-title) puis une liste groupée (.mj-list > .mj-row)
+                 à plat dans la colonne de droite sur PC, comme les scores de Hors Limite
+   .rl-choices : une liste de boutons (voter, désigner, choisir une action), une ligne par choix */
+.rl-block{display:flex;flex-direction:column;gap:0;margin:0}
+.rl-block>.mj-list{margin:0;padding:0;list-style:none}
+.rl-block .mj-row{min-height:44px;padding:9px 14px}
+.rl-name{flex:1;min-width:0;font-weight:500;color:var(--ink);overflow-wrap:anywhere}
+.rl-name small{font-size:13px;font-weight:400;color:var(--mute)}
+.rl-tag{flex:0 0 auto;font-size:13px;font-style:normal;color:var(--mute);text-align:right}
+.rl-tag.ok{color:var(--pos)}
+.rl-tag.bad{color:var(--neg)}
+.rl-score{flex:0 0 auto;min-width:2ch;text-align:right;font-weight:650;font-variant-numeric:tabular-nums;color:var(--ink)}
+.rl-num{flex:0 0 auto;min-width:1.2em;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.mj-row.off{opacity:.5}
+.mj-row.out .rl-name{color:var(--mute)}
+.desk-side .rl-block>.mj-list{background:none;border:0;border-radius:0;overflow:visible}
+.desk-side .rl-block .mj-row{padding:9px 0}
+
+.rl-choices{display:grid;grid-template-columns:minmax(0,1fr)}
+.rl-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;margin:0;padding:10px 14px;border:0;border-top:1px solid var(--line);border-radius:0;
+  background:transparent;box-shadow:none;color:var(--ink);font:inherit;font-size:16px;line-height:1.3;text-align:left;cursor:pointer;transition:background-color .15s;-webkit-tap-highlight-color:transparent}
+.rl-choices>.rl-opt:first-child{border-top:0}
+.rl-opt:active{background:var(--surface-2);transform:none}
+.rl-opt.on{border-color:var(--line);background:color-mix(in oklab, var(--acc) 15%, var(--surface));box-shadow:inset 0 0 0 2px var(--acc);color:var(--ink)}
+.rl-opt.on .rl-tag{color:var(--ink);font-weight:600}
+.rl-opt:disabled{opacity:.42;cursor:default}
+.rl-opt:focus-visible{outline:2px solid var(--acc);outline-offset:-3px}
+@media (hover:hover){ .rl-opt:not(:disabled):not(.on):hover{background:color-mix(in oklab, var(--ink) 5%, var(--surface))} }
+.rl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rl-main b{font-size:16px;font-weight:600;color:var(--ink)}
+.rl-main small,.rl-main>span{font-size:13.5px;line-height:1.35;color:var(--ink-2);overflow-wrap:anywhere}
+@media (min-width: 700px){
+  .rl-choices.cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rl-choices.cols>.rl-opt:nth-child(2){border-top:0}
+  .rl-choices.cols>.rl-opt:nth-child(odd){border-right:1px solid var(--line)}
+  .rl-choices.cols>.rl-opt:nth-child(odd):last-child{border-right:0}
+}
+@media (prefers-reduced-motion:reduce){ .rl-opt{transition:none} }
+
+/* ------------------------------------------------------------ Undercover
+   Le dossier (mot secret, éliminé, mots de la manche) garde le papier kraft, la machine à écrire et les tampons. */
+#uc-main .uc-label{font:14px/1.2 "Special Elite","Courier New",monospace;letter-spacing:0;text-transform:none;opacity:.78}
+#uc-main .uc-file .fine{font-size:14px}
+#uc-main .uc-secret{min-height:150px}
+#uc-main .uc-elim .uc-stamp{font-size:19px}
+#uc-main .uc-words>div{gap:4px}
+#uc-main .uc-said,#uc-main .uc-recap .mj-row span{font-family:var(--font);letter-spacing:0}
+#uc-main .uc-said i{font-style:normal;color:var(--mute)}
+
+/* les listes : à table, ordre de parole, indices, scores */
+#uc-main .uc-roster,#uc-main .uc-scores,#uc-main .uc-recap,#uc-main .uc-order{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:0;padding:0;margin:0;border:0;background:none;font-size:15px;color:var(--ink)}
+#uc-main .uc-roster .mj-row{justify-content:flex-start}
+#uc-main .uc-roster .uc-role{flex:0 0 auto;font-size:13.5px;font-weight:600}
+#uc-main .uc-roster .uc-civil .uc-role{color:var(--pos)}
+#uc-main .uc-roster .uc-undercover .uc-role{color:var(--neg)}
+#uc-main .uc-roster .uc-white .uc-role{color:var(--ink-2)}
+#uc-main .uc-scores .me .rl-name{font-weight:650}
+#uc-main .uc-recap .mj-row{display:grid;grid-template-columns:minmax(84px,38%) minmax(0,1fr);align-items:baseline;font-size:14.5px}
+#uc-main .uc-recap .uc-said{color:var(--ink);overflow-wrap:anywhere}
+#uc-main .uc-recap .out{opacity:.6}
+
+/* l'ordre de parole : en ligne sur téléphone, en liste sur PC */
+#uc-main .uc-order .mj-list{display:flex;flex-wrap:wrap;gap:6px 16px;background:none;border:0;border-radius:0;overflow:visible;counter-reset:none}
+#uc-main .uc-order .mj-list .mj-row{min-height:0;padding:0;border:0;border-radius:0;background:none;gap:5px;font-size:15px;color:var(--ink-2);counter-increment:none}
+#uc-main .uc-order .mj-list .mj-row::before{content:none}
+#uc-main .uc-order .mj-row .rl-name{flex:0 1 auto;font-weight:500;color:inherit}
+#uc-main .uc-order .mj-row .rl-tag{display:none}
+#uc-main .uc-order .mj-list .mj-row.done{opacity:.5}
+#uc-main .uc-order .mj-list .mj-row.now{opacity:1;color:var(--ink)}
+#uc-main .uc-order .mj-row.now .rl-name{font-weight:700}
+#uc-main .uc-order .mj-row.now .rl-num{color:var(--acc);font-weight:700}
+#uc-main .desk-side .uc-order .mj-list{display:block}
+#uc-main .desk-side .uc-order .mj-list .mj-row{display:flex;justify-content:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+#uc-main .desk-side .uc-order .mj-list .mj-row:first-child{border-top:0}
+#uc-main .desk-side .uc-order .mj-row .rl-name{flex:1}
+#uc-main .desk-side .uc-order .mj-row .rl-tag{display:inline}
+
+/* le vote : une ligne par suspect, ses indices dessous */
+#uc-main .uc-vote{display:grid;gap:0}
+#uc-main .uc-target{flex-direction:row;align-items:center;min-height:60px;padding:10px 14px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none}
+#uc-main .uc-vote>.uc-target:first-child{border-top:0}
+#uc-main .uc-target:active{transform:none;background:var(--surface-2)}
+#uc-main .uc-target.on{background:color-mix(in oklab, var(--acc) 15%, var(--surface));box-shadow:inset 0 0 0 2px var(--acc)}
+#uc-main .uc-target b{font-size:16px}
+#uc-main .uc-clue-form input,#uc-main .uc-guess input{min-height:50px}
+#uc-main .uc-file{margin-top:14px}
+#uc-main .uc-words{margin-top:2px}
+
+/* ------------------------------------------------------------ Loup-Garou
+   La carte de rôle, le rôle qu'on maintient appuyé et l'écran de nuit gardent la gothique et la nuit bleue. */
+#lw-main .lw-meta{display:flex;align-items:center;gap:8px}
+#lw-main .lw-meta .lw-moon{flex:0 0 auto;width:13px;height:13px;box-shadow:0 0 8px oklch(0.93 0.06 90/.5),inset -3px -1px 0 oklch(0.8 0.05 90)}
+#lw-main .lw-meta .lw-moon.sun{box-shadow:0 0 8px oklch(0.86 0.15 80/.55)}
+#lw-main .lw-sleep{flex-direction:column;gap:14px;padding:38px 16px 42px}
+#lw-main .lw-sleep .lw-moon{width:34px;height:34px}
+#lw-main .lw-zz{letter-spacing:.02em}
+#lw-main .lw-peek{min-height:56px;border-radius:14px}
+#lw-main .lw-peek .lw-face.back{font-size:14.5px}
+
+/* les choix : une ligne par joueur, deux colonnes sur grand écran */
+#lw-main .lw-pick{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+#lw-main .lw-opt{font-weight:600}
+#lw-main .lw-opt:disabled .rl-tag{color:var(--mute)}
+@media (min-width: 700px){ #lw-main .lw-pick.cols{grid-template-columns:repeat(2,minmax(0,1fr))} }
+#lw-main .lw-act{margin:0 0 8px;text-align:left;font-size:14.5px;color:var(--ink-2)}
+#lw-main .lw-potion{min-height:54px;white-space:normal}
+#lw-main .lw-meute .rl-tag{color:var(--ink-2)}
+#lw-main .lw-meute .me .rl-name{font-weight:650}
+#lw-main .lw-reveal-card{gap:6px;padding:22px 16px;border-radius:16px}
+#lw-main .lw-reveal-card b{font:700 26px/1.15 var(--font);letter-spacing:-.01em}
+#lw-main .lw-reveal-card span{font-size:15.5px}
+#lw-main .lw-actions{flex-direction:column;align-items:stretch}
+
+/* les morts de l'annonce */
+#lw-main .lw-deaths .mj-row{justify-content:flex-start;gap:12px;padding:12px 14px;animation:pop .4s var(--ease)}
+#lw-main .lw-deaths .lw-ico{width:30px;height:30px;color:var(--blood)}
+#lw-main .lw-deaths .rl-name{display:flex;flex-direction:column;gap:1px}
+#lw-main .lw-deaths .rl-name b{font-size:17px;font-weight:650}
+#lw-main .lw-deaths .rl-name small{font-size:13.5px;color:var(--mute)}
+#lw-main .lw-death-role{font-size:14px;font-weight:600;color:var(--ink-2)}
+#lw-main .lw-votes{margin:0;line-height:1.6}
+
+/* le village : une ligne par joueur, son rôle quand on le connaît */
+#lw-main .lw-village{display:flex;flex-direction:column;gap:0;margin:0}
+#lw-main .lw-village .lw-p{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;min-width:0;padding:8px 14px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none;text-align:left}
+#lw-main .lw-village .lw-p:first-child{border-top:0}
+#lw-main .lw-village .lw-ico{width:22px;height:22px;color:var(--ink-2)}
+#lw-main .lw-village .lw-ico.q{width:22px;height:22px;font:600 12px var(--font);border-width:1.5px}
+#lw-main .lw-village .lw-p.me .rl-name{font-weight:650}
+#lw-main .lw-village .lw-p.dead{opacity:.55}
+#lw-main .lw-village .lw-p.dead .rl-name{text-decoration:line-through}
+#lw-main .lw-village .lw-p.win .rl-name{font-weight:700}
+#lw-main .lw-village .lw-p.win .rl-tag{color:var(--pos)}
+#lw-main .lw-village .lw-p.off .rl-name::after{content:" (absent)";font-weight:400;color:var(--mute)}
+#lw-main .desk-side .lw-village .lw-p{padding:8px 0}
+
+/* le journal, commun à Loup-Garou et Naufragés */
+.rl-log{display:block;margin:0;text-align:left}
+.rl-log ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13.5px;line-height:1.4;color:var(--mute)}
+.rl-log li:first-child{color:var(--ink-2)}
+#lw-main .lw-log{display:block;text-align:left;font-size:13.5px}
+
+/* ------------------------------------------------------------ Naufragés
+   L'île (scène SVG), le calendrier et les cartes des naufragés gardent leur dessin ; tout le reste suit l'ossature. */
+#nf-main .nf-island{display:flex;flex-direction:column;gap:8px}
+#nf-main .nf-scene{border-radius:14px}
+#nf-main .nf-weather{margin:0;font:600 15px/1.35 var(--font);letter-spacing:0;color:var(--ink)}
+#nf-main .desk-main .nf-scene{max-width:560px}
+#nf-main .nf-flash{padding:11px 14px;border-radius:12px;background:var(--surface-2);text-align:left}
+#nf-main .nf-flash p{margin:0;font:650 16px/1.35 var(--font);letter-spacing:0;color:var(--ink)}
+#nf-main .nf-flash small{display:block;margin-top:3px;font-size:13px;color:var(--mute)}
+
+/* le choix du jour, et le pari sur le bois (contrôle segmenté) */
+#nf-main .nf-do{min-height:60px}
+#nf-main .nf-gamble{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+#nf-main .nf-gamble-label{font-size:15px;color:var(--ink-2)}
+#nf-main .nf-seg{display:flex;gap:2px;padding:3px;background:var(--surface-2);border-radius:11px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+#nf-main .nf-seg-opt{min-width:42px;min-height:40px;padding:6px 10px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font:600 14px var(--font);font-variant-numeric:tabular-nums;cursor:pointer}
+#nf-main .nf-seg-opt[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px oklch(0 0 0/.22)}
+#nf-main .nf-seg-opt:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+#nf-main .nf-gamble-note{flex-basis:100%;margin:0;font-size:13.5px;line-height:1.4;color:var(--mute)}
+
+/* le compte rendu du soir, les réserves, les objets */
+#nf-main .nf-report,#nf-main .nf-camp,#nf-main .nf-items{display:flex;flex-direction:column;gap:0;padding:0;border:0;border-radius:0;background:none}
+#nf-main .nf-report .mj-row{align-items:baseline}
+#nf-main .nf-report .rl-name{font-weight:400;color:var(--ink-2)}
+#nf-main .nf-report .rl-name b{font-weight:600;color:var(--ink)}
+#nf-main .nf-secret{color:var(--ink);font-weight:600}
+#nf-main .nf-camp .rl-tag{text-align:right}
+#nf-main .nf-thing{flex-wrap:wrap;align-items:center}
+#nf-main .nf-thing .btn{flex:0 0 auto}
+#nf-main .nf-thing .nf-target{flex-basis:100%}
+#nf-main .nf-peek{margin:0;text-align:left;font-size:14.5px;color:var(--ink-2)}
+#nf-main .nf-row{flex-direction:column;align-items:stretch}
+
+/* les cartes des naufragés : une grille d'objets du jeu, sous un intitulé */
+#nf-main .nf-people{display:block}
+#nf-main .nf-people .mj-side-title{margin-bottom:8px}
+#nf-main .nf-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+#nf-main .desk-side .nf-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+#nf-main .nf-log{display:block;text-align:left}
+
+/* ------------------------------------------------------------ charte, groupe sablier-geo */
+/* Charte 2026, lot 2 : groupe sablier-geo. Fusionné dans style.css à la fin du lot.
+   Sablier et Boussole : police du système, voix du meneur (.mj-*), listes groupées plutôt que
+   cartes. Les objets de jeu gardent leur dessin : la carte de papier du Sablier, sa toile, la
+   photo et la carte de Boussole. */
+
+/* ============================================================ Sablier */
+/* ossature : colonne du jeu + colonne des équipes (grille .desk-split de style.css sur PC) */
+.sab-body,.sab-col,.sab-side{display:flex;flex-direction:column;gap:15px;min-width:0}
+.sab-side .mj-side-title{margin:4px 0 -9px}
+.sab-side>.mj-side-title:first-child{margin-top:0}
+
+/* fil d'étapes : sobre, et seulement pendant la préparation */
+#s-sablier .steps{gap:6px;font:600 13px var(--font);letter-spacing:0;text-transform:none;color:var(--mute)}
+#s-sablier .steps span{padding-top:7px;border-top-width:3px;border-radius:0}
+#s-sablier .steps[data-step="3"]{display:none}
+
+/* textes et boutons */
+#s-sablier .btn.small{min-height:44px}
+#s-sablier .note{margin:0}
+#s-sablier .error{font-size:14.5px;line-height:1.4}
+.sab-rule{margin:0;padding:12px 14px;border-radius:12px;background:var(--surface);font-size:15px;line-height:1.45;color:var(--ink-2)}
+.sab-rule b{color:var(--ink);font-weight:650}
+.sab-tools-row{display:flex;flex-wrap:wrap;gap:8px}
+.sab-tools-row .btn{flex:1 1 auto}
+
+/* choix du mode d'équipes : contrôle segmenté */
+.sab-seg{display:flex;width:fit-content;max-width:100%;gap:2px;padding:3px;background:var(--surface-2);border-radius:11px}
+.sab-seg button{min-height:40px;padding:6px 16px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font:600 15px var(--font);cursor:pointer}
+.sab-seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px oklch(0 0 0/.22)}
+
+/* listes d'équipes (composition, scores) */
+.sab-dot{flex:0 0 auto;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 2px color-mix(in oklab, var(--tc) 25%, transparent)}
+.sab-team{width:100%;margin:0;border-left:0;border-right:0;border-bottom:0;border-radius:0;background:transparent;color:var(--ink);font:inherit;text-align:left;align-items:center;min-height:58px}
+.sab-team:first-child{border-top:0}
+button.sab-team{cursor:pointer;transition:background .15s}
+button.sab-team:active{background:var(--surface-2)}
+.sab-team.mine,.sab-team.active{background:color-mix(in oklab, var(--acc) 11%, var(--surface))}
+.sab-team-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.sab-team-name{display:flex;align-items:center;gap:8px;font-weight:650;font-size:16px}
+.sab-team-name em{font-style:normal;font-weight:600;font-size:12.5px;color:var(--acc)}
+.sab-team-players{display:block;font-size:14px;line-height:1.4;color:var(--ink-2);padding-left:18px}
+.sab-orphans .sab-team-players{padding-left:0}
+.sab-p+.sab-p::before{content:", ";color:var(--mute)}
+.sab-p.me{color:var(--ink);font-weight:600}
+.sab-p.off{opacity:.5;text-decoration:line-through}
+.sab-p.speaks{color:var(--acc);font-weight:700}
+.sab-p.none{color:var(--mute)}
+.sab-p small{font-size:12px;color:var(--mute)}
+.sab-team-detail{padding-left:18px;font-size:12.5px;color:var(--mute);font-variant-numeric:tabular-nums}
+.sab-team-count{font-size:13px;color:var(--mute);white-space:nowrap}
+.sab-team-total{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;min-width:2ch;text-align:right}
+
+/* qui a fini de trier, récap du tour d'avant */
+.sab-roster .mj-row,.sab-recap .mj-row{min-height:46px}
+.sab-roster .mj-row.me{font-weight:600}
+.sab-roster .mj-row.off{opacity:.5}
+.sab-rname{display:flex;align-items:center;gap:8px;min-width:0}
+.sab-tag{font-style:normal;font-size:13px;color:var(--mute);white-space:nowrap}
+.sab-tag.ok{color:var(--pos);font-weight:600}
+.sab-recap{display:flex;flex-direction:column;gap:13px}
+.sab-none{color:var(--mute)}
+
+/* question du gong, pour l'hôte */
+.sab-ask{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:color-mix(in oklab, var(--gold) 13%, var(--surface));border:1px solid color-mix(in oklab, var(--gold) 45%, var(--line))}
+.sab-ask h3{margin:0;font:700 21px/1.2 var(--font);letter-spacing:-.01em}
+.sab-ask p{margin:0;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.sab-ask .row.split{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sab-ask .btn{min-width:0;white-space:normal;padding-left:10px;padding-right:10px}
+
+/* les cartes en main : le papier reste, la typo passe au système */
+.hand-card{min-height:104px;border-radius:13px}
+.hc-cat,.game-card-cat{font:600 12.5px var(--font);letter-spacing:0;text-transform:none;color:oklch(0.47 0.09 55)}
+.hc-name{font:700 16.5px/1.2 var(--font);letter-spacing:-.01em}
+.hand-card.discarded::after{content:"écartée";top:auto;bottom:9px;right:10px;font:600 12.5px var(--font);letter-spacing:0;text-transform:none}
+.dots{letter-spacing:1px}
+
+/* le chrono et la carte du tour */
+#s-sablier .timer-wrap{margin-top:0;gap:8px}
+#s-sablier .timer{font:700 56px/1 var(--font);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.game-card{border-radius:20px}
+.game-card-name{font:800 clamp(28px,8vw,40px)/1.1 var(--font);letter-spacing:-.025em;font-variation-settings:normal}
+.game-card.mini .game-card-name{font-size:clamp(20px,5.5vw,26px)}
+.game-card-diff{font-size:12px}
+.play-actions .btn{font-family:var(--font)}
+.btn.guess{font-size:18px;font-weight:700}
+.sab-tally{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin:0;font-size:14px;color:var(--mute)}
+.sab-tally b{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);margin-right:3px}
+.sab-tally .ok b{color:var(--pos)}
+.sab-tally .pass b{color:var(--gold)}
+.sab-tally .pass.bump{display:inline-block;animation:bump .45s ease}
+.sab-found{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;margin:0;font-size:15px;color:var(--ink-2)}
+.sab-found .mj-side-title{flex-basis:100%;text-align:center;margin:0}
+.sab-found span:not(.mj-side-title){animation:pop .25s var(--ease)}
+
+/* la toile et ses outils */
+#sab-tools{display:flex;flex-direction:column;gap:8px}
+#sab-tools .tools{display:flex;flex-wrap:wrap;gap:6px}
+#sab-tools .tools .btn{min-height:40px;padding:6px 11px;font-size:14px}
+.swatches .sw{width:30px;height:30px}
+
+/* galerie des dessins et correction */
+.gallery-wrap{display:flex;flex-direction:column;gap:10px}
+.gallery-wrap .mj-side-title{margin:4px 0 -2px}
+.gallery figure{border-radius:12px}
+.gallery figcaption{font:600 14px/1.3 var(--font)}
+.gallery figcaption small{font-size:12.5px;margin-top:1px}
+.gallery.missed figure{border-color:color-mix(in oklab, var(--neg) 60%, var(--line))}
+.amend{border-radius:14px;padding:12px 14px;font-size:15px}
+.amend summary{min-height:24px;font-weight:600}
+.amend-list label{min-height:40px}
+.amend-list small{font-size:13px}
+
+/* réactions : les emojis restent, le bouton suit la grille de 44 px */
+.react-btn{width:44px;height:44px}
+
+@media (min-width: 700px){ .sab-ask h3{font-size:24px} }
+@media (min-width: 1100px){
+  #s-sablier:has(.sab-body.desk-split){max-width:1120px;padding-left:28px;padding-right:28px}
+  .sab-body.desk-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;column-gap:28px;align-items:start}
+  /* la toile à gauche, ses outils en colonne à droite : tout tient sans défiler */
+  .sab-draw{flex-direction:row;align-items:flex-start;justify-content:center;gap:12px}
+  #sab-canvas{flex:1 1 auto;min-width:0;width:auto}
+  .sab-draw.readonly #sab-canvas{flex:0 1 500px}
+  #sab-tools:not([hidden]){flex:0 0 172px}
+  #sab-tools .swatches{justify-content:flex-start}
+  #sab-tools .tools{display:grid;grid-template-columns:1fr 1fr}
+  #sab-tools .tools .btn{width:100%}
+  .sab-side.desk-side{background:var(--surface-2);border-radius:16px;padding:18px 18px 20px;gap:15px}
+  .sab-side .mj-list{background:var(--surface)}
+  .sab-side .sab-team-total{font-size:21px}
+}
+
+/* ============================================================ Boussole */
+.geo-hud{gap:6px}
+.geo-hud-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.geo-hud .mj-status{min-width:0}
+.geo-hud .mj-title{font-size:23px}
+.geo-hud .mj-say{font-size:15.5px}
+.geo-hud .mj-prog{margin-top:8px}
+.geo-timer{font:700 28px/1 var(--font);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.geo-timer.hot{color:var(--neg)}
+@media (max-width: 899px){
+  #geo-pano{height:calc(100dvh - 435px);min-height:220px}
+  .geo-bigmap #geo-map{height:calc(70dvh - 245px)}
+  .revealing #geo-map{height:calc(100dvh - 420px);min-height:260px}
+}
+@media (min-width: 900px){
+  #geo-pano,.geo-bigmap #geo-pano{height:calc(100dvh - 262px);min-height:300px}
+  #s-geo:not(.revealing) #geo-bar{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;max-width:none}
+  #s-geo:not(.revealing) .geo-actions{width:540px;max-width:100%}
+}
+.leaflet-tooltip.geo-tip{font:600 12.5px/1.3 var(--font)}
+#geo-bar .note{margin:0}
+.geo-actions .btn{font-family:var(--font)}
+.geo-actions .geo-toggle{font-size:15px}
+
+/* résultats de la manche et classement */
+.geo-results{display:block;counter-reset:none}
+.geo-results .mj-row{display:grid;grid-template-columns:18px 12px minmax(0,1fr) auto auto;gap:10px;min-height:48px;padding:10px 14px;background:none;border-radius:0}
+.geo-results .mj-row::before{content:none}
+.geo-rk{font-size:14px;font-weight:600;color:var(--mute);font-variant-numeric:tabular-nums}
+.geo-results .mj-row i{width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 2px oklch(0.98 0.005 210)}
+.geo-results .mj-row b{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.geo-results .mj-row span{font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.geo-results .mj-row em{font-style:normal;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+.geo-results .mj-row.none{opacity:.6}
+.geo-results .mj-row.me b{color:var(--ink)}
+.geo-scores{display:block;border:0;padding:0}
+.geo-scores .mj-row{min-height:46px}
+.geo-scores .mj-row b{font-variant-numeric:tabular-nums}
+.geo-scores .mj-row.me span{font-weight:600}
+.geo-block{display:flex;flex-direction:column;gap:6px}
+.geo-link{margin:0;text-align:center;font-size:14px}
+
+/* sur PC, à la révélation : la carte à gauche, résultats et classement à droite */
+@media (min-width: 1100px){
+  #s-geo.revealing{display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-rows:auto 1fr;column-gap:24px;row-gap:14px;align-items:start}
+  #s-geo.revealing .geo-hud{grid-column:1 / -1}
+  #s-geo.revealing .geo-stage{grid-column:1;grid-row:2}
+  #s-geo.revealing #geo-bar{grid-column:2;grid-row:2;max-width:none;margin:0;background:var(--surface-2);border-radius:16px;padding:18px;gap:14px}
+  #s-geo.revealing #geo-bar .mj-list{background:var(--surface)}
+  #s-geo.revealing #geo-map,#s-geo.revealing #geo-map:hover{height:calc(100dvh - 250px)}
+  .geo-hud .mj-title{font-size:27px}
+}
+
+/* ------------------------------------------------------------ charte, retouches globales du lot 2 */
+[data-game] h1,[data-game] .banner{font-family:var(--font);font-weight:700;text-transform:none;letter-spacing:-.02em}
+/* Crème : un orange un peu plus profond, pour un bouton principal lisible (contraste AA) */
+[data-theme="light"]{--acc:oklch(0.575 0.165 50);--acc-soft:oklch(0.5 0.15 48)}
+/* plus de police d'affichage pour l'ossature : --font-d retombe sur la police du système hors des jeux */
+:root{--font-d:var(--font)}
+.km-pip{font-family:var(--font)}

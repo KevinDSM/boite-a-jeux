@@ -135,7 +135,7 @@ function soAutoFinish() {
 }
 function soChanged() {
   const n = soFoundCount();
-  if (n >= 52 && !so.won) { so.won = true; toast('Bravo, patience réussie !'); }
+  if (n >= 52 && !so.won) { so.won = true; toast('Patience réussie !'); }
   const key = n + '|' + so.moves;
   if (key !== soSent) { soSent = key; clearTimeout(soTimer); soTimer = setTimeout(() => act({ t: 'so:progress', found: n, moves: so.moves }), n >= 52 ? 0 : 400); }
   soRender();
@@ -154,27 +154,60 @@ function renderSolitaire(v) {
   soRender();
 }
 let soV = null, soClock = null;
+
+/** Ce que dit le meneur : [titre, réplique]. Les variantes suivent la graine de la donne : stables pendant toute la partie. */
+function soVoice(v, me) {
+  const say = list => list[v.seed % list.length];
+  const solo = v.players.length === 1, lead = v.players[0], n = me?.found ?? soFoundCount();
+  const cartes = k => `${k} carte${k > 1 ? 's' : ''}`;
+  if (v.phase === 'over') {
+    if (solo) {
+      if (lead?.done) return ['Patience réussie.', `En ${soFmt(lead.time)} et ${lead.moves} coups. ${say(['Propre.', 'Les cartes n’ont rien pu faire.', 'Joli travail.'])}`];
+      if (lead?.gaveUp) return ['Partie abandonnée.', `${cartes(lead.found)} montées sur 52. ${say(['La prochaine sera la bonne.', 'Les cartes gagnent cette fois.'])}`];
+      return ['Temps écoulé.', `${cartes(lead?.found || 0)} montées sur 52. ${say(['La prochaine sera la bonne.', 'Le chrono gagne cette fois.'])}`];
+    }
+    const who = lead?.me ? 'Tu gagnes.' : `${esc(lead?.name || '')} gagne.`;
+    return [who, lead?.done ? `Patience terminée en ${soFmt(lead.time)}. ${say(['Chapeau.', 'Les autres peuvent ranger leurs cartes.'])}`
+      : `${cartes(lead?.found || 0)} montées, personne n’a fini. ${say(['Ça suffit pour gagner.', 'Victoire aux points.'])}`];
+  }
+  if (so.won) return ['Patience réussie.', `${so.moves} coups.${solo ? ' Joli travail.' : ' Les autres rament encore.'}`];
+  if (me?.gaveUp) return ['Tu as abandonné.', 'Tes cartes montées comptent quand même. Regarde les autres suer.'];
+  const pick = soSel ? 'Plusieurs places possibles. Choisis la tienne.' : null;
+  if (solo) return [n ? `${cartes(n)} montée${n > 1 ? 's' : ''}.` : 'La donne est servie.',
+    pick || (v.minutes ? say(['Le chrono tourne. Pas le temps de rêvasser.', 'Chaque seconde compte, chaque as aussi.']) : say(['Personne ne regarde. Annuler est ton ami.', 'Prends ton temps, rien ne presse.', 'Une patience, ça se mérite.']))];
+  if (!lead || !lead.found) return ['Même donne pour tous.', pick || say(['Pas d’excuse, tout le monde a les mêmes cartes.', 'Que le plus patient gagne.', 'Tout le monde part de zéro. Ça ne va pas durer.'])];
+  if (lead.me) return ['Tu mènes.', pick || say(['Ne te retourne pas.', 'Garde le rythme.', 'Les autres surveillent ta barre.'])];
+  if (lead.found === n) return ['Égalité en tête.', pick || say(['Ça se joue à une carte.', 'Personne ne lâche rien.'])];
+  return [`${esc(lead.name)} mène.`, pick || `${cartes(lead.found - n)} d’avance sur toi. ${say(['Accélère.', 'Rien n’est joué.', 'Respire, et remonte.'])}`];
+}
+
 function soRender() {
   const v = soV; if (!v) return;
   if (soDrag?.on) { soDirty = true; return; }                  // pas de reconstruction pendant qu'une carte est tenue
   const root = $('#so-main'); root.innerHTML = ''; clearInterval(soClock);
   const btn = (cls, label, fn) => { const b = el('button', 'btn ' + cls, label); b.type = 'button'; b.onclick = fn; return b; };
-  const me = v.players.find(p => p.me);
+  const me = v.players.find(p => p.me), solo = v.players.length === 1;
 
-  // la course
-  const race = el('div', 'so-race');
-  v.players.forEach((p, i) => race.appendChild(el('div', 'so-runner' + (p.me ? ' me' : '') + (p.done ? ' done' : '') + (p.online ? '' : ' off'),
-    `<span class="so-rank">${i + 1}</span><span class="so-name">${esc(p.name)}</span><span class="so-bar"><i style="width:${(p.found / 52 * 100).toFixed(1)}%"></i></span><span class="so-count">${p.done ? '✓ ' + soFmt(p.time) : p.gaveUp ? 'abandon' : p.found + '/52'}</span>`)));
-  root.appendChild(race);
-  const clock = el('p', 'so-clock'); root.appendChild(clock);
-  const paint = () => { const t0 = Date.now() - (soV._at || Date.now()); clock.textContent = v.phase === 'over' ? 'Partie terminée' : v.left !== null ? `Temps restant ${soFmt(v.left - t0)}` : `Temps ${soFmt(v.elapsed + t0)}`; };
+  // ce qui se passe, dit par le meneur ; le chrono vit dans la ligne d'info
+  const meta = el('p', 'mj-meta so-meta', `Pioche ${v.draw === 3 ? 'de trois cartes' : 'd’une carte'} · <span class="so-time"></span>`);
+  root.appendChild(meta);
+  const clock = meta.querySelector('.so-time');
+  const paint = () => { const t0 = Date.now() - (soV._at || Date.now()); clock.textContent = v.phase === 'over' ? 'partie terminée' : v.left !== null ? `il reste ${soFmt(v.left - t0)}` : `${soFmt(v.elapsed + t0)} de jeu`; };
   soV._at = soV._at || Date.now(); paint(); soClock = setInterval(paint, 1000);
+  const [title, line] = soVoice(v, me);
+  const status = el('div', 'mj-status so-status', `<h3 class="mj-title">${title}</h3><p class="mj-say">${line}</p>`);
+  if (!solo && v.phase === 'play' && (so.won || me?.gaveUp)) {
+    const on = v.players.filter(p => p.online), done = on.filter(p => p.done || p.gaveUp).length;
+    status.appendChild(el('div', 'mj-prog', `${on.map((p, i) => `<i${i < done ? ' class="f"' : ''}></i>`).join('')}<span>${done} sur ${on.length}</span>`));
+  }
+  root.appendChild(status);
 
   if (v.phase === 'play' || (v.phase === 'over' && !so.won)) {
     const board = el('div', 'so-board' + (v.phase === 'over' ? ' frozen' : ''));
     const top = el('div', 'so-top');
     // pioche et talon
     const stock = el('button', 'so-slot so-stock', so.stock.length ? soCard({ up: false }) + `<span class="so-left">${so.stock.length}</span>` : '<span class="so-recycle">↻</span>'); stock.type = 'button';
+    stock.setAttribute('aria-label', so.stock.length ? `Pioche, ${so.stock.length} cartes` : 'Recycler le talon');
     stock.onclick = () => { if (v.phase === 'play') soStock(); };
     const waste = el('div', 'so-slot so-waste');
     const shown = so.waste.slice(-Math.min(so.draw, 3));
@@ -207,22 +240,26 @@ function soRender() {
     };
     board.onpointerdown = e => { if (v.phase === 'play') soDragStart(e); };
     root.appendChild(board);
-    const tools = el('div', 'so-tools');
     if (v.phase === 'play') {
-      const u = btn('ghost small', '↶ Annuler', soUndo); u.disabled = !so.undo.length; tools.appendChild(u);
-      if (soCanAuto() && !so.won) tools.appendChild(btn('primary', 'Finir automatiquement', soAutoFinish));
-      if (!me?.done && !me?.gaveUp) tools.appendChild(btn('ghost small', 'Abandonner', () => askConfirm('Abandonner', 'Tu gardes tes cartes montées pour le classement, mais tu ne joues plus.', 'Abandonner', () => act({ t: 'so:giveup' }))));
+      const tools = el('div', 'so-tools');
+      const u = btn('ghost small', 'Annuler le coup', soUndo); u.disabled = !so.undo.length; tools.appendChild(u);
+      if (soCanAuto() && !so.won) tools.appendChild(btn('primary', 'Finir la patience', soAutoFinish));
+      if (!me?.done && !me?.gaveUp) tools.appendChild(btn('ghost small', 'Abandonner', () => askConfirm('Abandonner', 'Tes cartes montées comptent pour le classement, mais tu ne joues plus.', 'Abandonner', () => act({ t: 'so:giveup' }))));
       tools.appendChild(el('span', 'so-moves', `${so.moves} coup${so.moves > 1 ? 's' : ''}`));
+      root.appendChild(tools);
     }
-    root.appendChild(tools);
-    if (soSel) root.appendChild(el('p', 'so-hint', 'Plusieurs colonnes possibles : touche celle que tu veux.'));
   }
-  if (so.won && v.phase === 'play') root.appendChild(el('div', 'so-win', `<b>Patience réussie !</b><span>${so.moves} coups. On attend les autres…</span>`));
+
+  // la course (colonne de droite sur PC)
+  const race = el('div', 'so-race');
+  race.appendChild(el('span', 'mj-side-title', solo ? 'Ta partie' : 'La course'));
+  race.appendChild(el('div', 'mj-list', v.players.map((p, i) => `<div class="mj-row so-runner${p.me ? ' me' : ''}${p.done ? ' done' : ''}${p.online ? '' : ' off'}"><span class="so-rank">${i + 1}</span><span class="so-name">${esc(p.name)}</span><span class="so-bar"><i style="width:${(p.found / 52 * 100).toFixed(1)}%"></i></span><span class="so-count">${p.done ? `fini en ${soFmt(p.time)}` : p.gaveUp ? 'abandon' : `${p.found} sur 52`}</span></div>`).join('')));
+  root.appendChild(race);
+
   if (v.phase === 'over') {
-    const w = v.players[0];
-    root.appendChild(el('div', 'so-win', `<b>${esc(w?.name || '')} gagne</b><span>${w?.done ? `patience terminée en ${soFmt(w.time)}` : `${w?.found || 0} cartes montées`}</span>`));
-    if (v.isHost) { const r = el('div', 'so-tools'); r.append(btn('primary', 'Nouvelle donne', () => act({ t: 'so:again' })), btn('ghost', 'Retour au salon', () => act({ t: 'restart' }))); root.appendChild(r); }
-  } else if (v.isHost) root.appendChild(btn('ghost small so-end', 'Arrêter la course et classer', () => askConfirm('Arrêter la course', 'Le classement se fait sur les cartes montées à cet instant.', 'Arrêter', () => act({ t: 'so:end' }))));
+    if (v.isHost) { const r = el('div', 'so-tools so-again'); r.append(btn('primary', 'Nouvelle donne', () => act({ t: 'so:again' })), btn('ghost', 'Retour au salon', () => act({ t: 'restart' }))); root.appendChild(r); }
+    else root.appendChild(el('p', 'note so-end', 'L’hôte choisit la suite.'));
+  } else if (v.isHost) root.appendChild(btn('ghost small so-end', solo ? 'Arrêter la partie' : 'Arrêter la course et classer', () => askConfirm(solo ? 'Arrêter la partie' : 'Arrêter la course', solo ? 'Tu t’arrêtes sur les cartes montées à cet instant.' : 'Le classement se fait sur les cartes montées à cet instant.', 'Arrêter', () => act({ t: 'so:end' }))));
 }
 
 // ============================================================ glisser-déposer
