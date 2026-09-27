@@ -358,6 +358,24 @@ const RULES = [
     ['Victoire', `<p>La première équipe dont tous les agents sont retournés gagne, même si c’est l’adversaire qui a retourné le dernier. Entre deux grilles, les espions changent et l’équipe perdante commence.</p>`],
     ['Réglages et robots', `<p>Les équipes sont tirées au sort ; avant de lancer, chacun peut changer d’équipe ou se proposer comme espion. Les robots savent jouer les deux rôles : un robot espion donne un thème en indice, un robot agent retourne les mots de ce thème. De 4 à 12 joueurs, robots compris.</p>`],
   ] },
+  { key: 'bataille', parts: [
+    ['Le principe', `<p>Le jeu de cartes de la cour de récré, de 2 à 6 joueurs. Les 52 cartes sont distribuées, face cachée. Personne ne regarde son tas : on retourne la carte du dessus, et la plus forte gagne.</p>`],
+    ['Un pli', `<ul>
+      <li>Tout le monde retourne sa carte du dessus.</li>
+      <li>La plus forte rafle toutes les cartes posées. L’ordre : as, roi, dame, valet, 10, et ainsi de suite jusqu’au 2. La couleur ne compte pas.</li>
+      <li>Les cartes gagnées passent sous le tas du gagnant, mélangées.</li></ul>`],
+    ['La bataille', `<ul>
+      <li>Si deux joueurs ou plus ont la carte la plus forte, c’est la bataille.</li>
+      <li>Ils posent chacun une carte face cachée, puis en retournent une autre. La plus forte rafle tout ce qui est sur la table.</li>
+      <li>Nouvelle égalité : double bataille, et on recommence.</li>
+      <li>Un joueur qui n’a plus qu’une carte la retourne directement, sans carte cachée.</li></ul>`],
+    ['La fin', `<ul>
+      <li>Qui n’a plus de cartes est éliminé. Le dernier qui en a gagne.</li>
+      <li>Une bataille peut durer des heures : l’hôte choisit 5, 10 ou 20 minutes, ou jusqu’au bout. À la fin du temps, le pli en cours se termine et le plus gros tas gagne.</li></ul>`],
+    ['Astuces', `<ul>
+      <li>Touche ton tas ou le bouton Retourner. Si tu traînes, ta carte part toute seule au bout de quelques secondes.</li>
+      <li>« Retourner tout seul » fait jouer ta main automatiquement. Pratique pour regarder la partie défiler.</li></ul>`],
+  ] },
 ];
 
 let rulesBuilt = false;

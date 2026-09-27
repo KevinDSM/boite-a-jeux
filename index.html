@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=55">
-<link rel="apple-touch-icon" href="icon-180.png?v=55">
+<link rel="manifest" href="manifest.json?v=56">
+<link rel="apple-touch-icon" href="icon-180.png?v=56">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Special+Elite&family=Lilita+One&family=Alfa+Slab+One&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=55">
+<link rel="stylesheet" href="style.css?v=56">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -73,7 +73,7 @@
       </svg>
     </div>
     <h1>Boîte à jeux</h1>
-    <p class="lede">Vingt et un jeux pour la soirée. Sortez les téléphones.</p>
+    <p class="lede">Vingt-deux jeux pour la soirée. Sortez les téléphones.</p>
   </div>
 
   <form class="stack" id="f-home">
@@ -99,7 +99,7 @@
   <div class="hub-foot">
     <button class="btn ghost" id="btn-solo">Jouer seul, pour tester</button>
     <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne se connecte pas ? Diagnostic</button>
-    <p class="fine">21 jeux, et d’autres en route.</p>
+    <p class="fine">22 jeux, et d’autres en route.</p>
   </div>
 </section>
 
@@ -212,6 +212,12 @@
         <span class="gname">Solitaire</span>
         <span class="gdesc">La patience, mais en course. Même donne pour tout le monde.</span>
         <span class="gmeta"><b>1 à 12</b><i>10 min</i></span>
+      </button>
+      <button class="gcard g-bataille" type="button" data-game="bataille">
+        <span class="gart" aria-hidden="true"><span class="btart"><i class="l">R<b>♠</b></i><i class="r">A<b>♥</b></i></span></span>
+        <span class="gname">Bataille</span>
+        <span class="gdesc">La plus forte carte rafle tout. Égalité ? Bataille.</span>
+        <span class="gmeta"><b>2 à 6</b><i>10 min</i></span>
       </button>
       <button class="gcard g-poker" type="button" data-game="poker">
         <span class="gart" aria-hidden="true"><span class="pkart"><i></i><i></i><i></i></span></span>
@@ -390,6 +396,11 @@
       <label class="field row"><span>Rythme</span><select id="opt-td-speed"><option value="relax">Détendu</option><option value="normal" selected>Normal</option><option value="rapide">Rapide</option></select></label>
       <label class="field row"><span>Longueur des carnets</span><select id="opt-td-length"><option value="complet" selected>Un tour de table complet</option><option value="court">Court, 5 étapes au plus</option></select></label>
       <p class="fine">Chacun dessine sur son écran. Les robots gribouillent, mais ils essaient.</p>
+    </div>
+    <div class="opts" id="opts-bataille" hidden>
+      <label class="field row"><span>Robots à table</span><select id="opt-bt-bots"><option value="0">Aucun</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+      <label class="field row"><span>Durée</span><select id="opt-bt-length"><option value="court">5 minutes</option><option value="normal" selected>10 minutes</option><option value="long">20 minutes</option><option value="fin">Jusqu’au bout</option></select></label>
+      <p class="fine">Une bataille peut durer des heures. À la fin du temps, le pli se termine et on compte les tas.</p>
     </div>
     <div class="opts" id="opts-nomcode" hidden>
       <label class="field row"><span>Robots à table</span><select id="opt-nc-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
@@ -596,6 +607,11 @@
   <div class="stack" id="td-main"></div>
 </section>
 
+<!-- ====================== BATAILLE ====================== -->
+<section class="screen play bataille" id="s-bataille" hidden>
+  <div class="stack" id="bt-main"></div>
+</section>
+
 <!-- ====================== NOM DE CODE ====================== -->
 <section class="screen play nomcode" id="s-nomcode" hidden>
   <div class="stack" id="nc-main"></div>
@@ -656,33 +672,34 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=55"></script>
-<script src="app.js?v=55"></script>
-<script src="toile.js?v=55"></script>
-<script src="sablier-ui.js?v=55"></script>
-<script src="undercover.js?v=55"></script>
-<script src="geo-config.js?v=55"></script>
-<script src="geo.js?v=55"></script>
-<script src="chromo.js?v=55"></script>
-<script src="kems.js?v=55"></script>
-<script src="mirage.js?v=55"></script>
-<script src="douze.js?v=55"></script>
-<script src="petitbac.js?v=55"></script>
-<script src="loupgarou.js?v=55"></script>
-<script src="naufrages.js?v=55"></script>
-<script src="memes.js?v=55"></script>
-<script src="limite-cartes.js?v=55"></script>
-<script src="limite.js?v=55"></script>
-<script src="solitaire.js?v=55"></script>
-<script src="poker.js?v=55"></script>
-<script src="diapason-cartes.js?v=55"></script>
-<script src="diapason.js?v=55"></script>
-<script src="duel-cartes.js?v=55"></script>
-<script src="duel.js?v=55"></script>
-<script src="teldes.js?v=55"></script>
-<script src="nomcode-mots.js?v=55"></script>
-<script src="nomcode.js?v=55"></script>
-<script src="desk.js?v=55"></script>
-<script src="regles.js?v=55"></script>
+<script src="sablier-engine.js?v=56"></script>
+<script src="app.js?v=56"></script>
+<script src="toile.js?v=56"></script>
+<script src="sablier-ui.js?v=56"></script>
+<script src="undercover.js?v=56"></script>
+<script src="geo-config.js?v=56"></script>
+<script src="geo.js?v=56"></script>
+<script src="chromo.js?v=56"></script>
+<script src="kems.js?v=56"></script>
+<script src="mirage.js?v=56"></script>
+<script src="douze.js?v=56"></script>
+<script src="petitbac.js?v=56"></script>
+<script src="loupgarou.js?v=56"></script>
+<script src="naufrages.js?v=56"></script>
+<script src="memes.js?v=56"></script>
+<script src="limite-cartes.js?v=56"></script>
+<script src="limite.js?v=56"></script>
+<script src="solitaire.js?v=56"></script>
+<script src="poker.js?v=56"></script>
+<script src="bataille.js?v=56"></script>
+<script src="diapason-cartes.js?v=56"></script>
+<script src="diapason.js?v=56"></script>
+<script src="duel-cartes.js?v=56"></script>
+<script src="duel.js?v=56"></script>
+<script src="teldes.js?v=56"></script>
+<script src="nomcode-mots.js?v=56"></script>
+<script src="nomcode.js?v=56"></script>
+<script src="desk.js?v=56"></script>
+<script src="regles.js?v=56"></script>
 </body>
 </html>
