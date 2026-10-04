@@ -183,7 +183,7 @@ function drawInvite({ name = '', emoji = '', code = '', game = '', faces = [] } 
 function inviteData() {
   const me = view?.players?.find(p => p.id === net.me);
   const name = me?.base || net.name || 'Quelqu’un';
-  const u = new URL(location.pathname, location.origin);
+  const u = new URL(location.pathname.replace(/index.html$/, ''), location.origin);
   u.searchParams.set('c', net.code); u.searchParams.set('de', name);
   return {
     name, emoji: me?.emoji || net.emoji, code: net.code, url: u.href,
