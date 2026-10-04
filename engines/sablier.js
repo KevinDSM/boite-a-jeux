@@ -11,7 +11,7 @@
 
 'use strict';
 
-window.Sablier = (() => {
+const Sablier = (() => {
 
   const TEAM_PRESETS = [
     { name: 'Rouge', color: '#e5484d' },
