@@ -115,6 +115,9 @@
   .mi-game .codes { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-2); margin: 0 0 10px; }
   .mi-game .codes a { color: var(--acc); }
   .mi-game .codes b { color: var(--ink); letter-spacing: .06em; }
+  .mi-game .codes { align-items: center; }
+  .mi-del { margin-left: auto; min-height: 34px; padding: 4px 10px; font-size: 13px; }
+  .mi-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 6px; color: var(--ink-2); font-size: 14px; }
   .mi-table-wrap { overflow-x: auto; margin-bottom: 12px; }
   .mi-table { border-collapse: collapse; font-size: 13px; min-width: 100%; }
   .mi-table th, .mi-table td { border-top: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
@@ -362,12 +365,16 @@ async function loadMiroir() {
   if (!j) { box.innerHTML = '<p class="empty">Les parties Miroir ne sont pas disponibles.</p>'; return; }
   box.querySelectorAll('details[open]').forEach(d => miOpen.add(d.dataset.code));
   if (!j.parties.length) { box.innerHTML = '<p class="empty">Aucune partie Miroir pour l’instant.</p>'; return; }
-  box.innerHTML = j.parties.map(p => {
+  const done = j.parties.filter(p => p.phase === 'resultats').length;
+  box.innerHTML = `<div class="mi-tools"><span>${plural(j.parties.length, 'partie', 'parties')}, dont ${done} terminée${done > 1 ? 's' : ''}</span>`
+    + (done ? `<button class="btn danger" type="button" data-mdel-done="${done}">${done > 1 ? `Supprimer les ${done} parties terminées` : 'Supprimer la partie terminée'}</button>` : '') + '</div>'
+    + j.parties.map(p => {
     const people = p.joueurs, byPid = Object.fromEntries(people.map(x => [x.pid, x]));
     const A = {}; p.reponses.forEach(x => { (A[x.pid] = A[x.pid] || {})[x.q] = x.v; });
     const fin = people.filter(x => Object.values(A[x.pid] || {}).filter(v => v[x.pid] !== undefined).length >= p.questions.length).length;
     const head = `<summary><span class="code">${esc(p.code)}</span><span class="when">${esc(fDay.format(p.cree))}, ${fTime.format(p.cree)} · chez ${esc(byPid[p.createur]?.emoji || '')} ${esc(byPid[p.createur]?.nom || '?')} · ${esc(MI_PHASE[p.phase] || p.phase)} · ${plural(people.length, 'inscrit', 'inscrits')}, ${fin} miroir${fin > 1 ? 's' : ''} fait${fin > 1 ? 's' : ''}</span></summary>`;
-    const codes = `<div class="codes"><span>Code <b>${esc(p.code)}</b></span><span>Hôte <b>${esc(p.hote)}</b> · <a href="/miroir?h=${esc(p.hote)}" target="_blank" rel="noopener">ouvrir en hôte</a></span>${p.resultat ? `<span>Résultats <b>${esc(p.resultat)}</b> · <a href="/miroir?r=${esc(p.resultat)}" target="_blank" rel="noopener">voir</a></span>` : ''}</div>`;
+    const codes = `<div class="codes"><span>Code <b>${esc(p.code)}</b></span><span>Hôte <b>${esc(p.hote)}</b> · <a href="/miroir?h=${esc(p.hote)}" target="_blank" rel="noopener">ouvrir en hôte</a></span>${p.resultat ? `<span>Résultats <b>${esc(p.resultat)}</b> · <a href="/miroir?r=${esc(p.resultat)}" target="_blank" rel="noopener">voir</a></span>` : ''}<span>${plural(p.reponses.length, 'ligne de réponses', 'lignes de réponses')}</span>`
+      + `<button class="btn ghost danger mi-del" type="button" data-mdel="${esc(p.code)}" data-encours="${p.phase === 'resultats' ? '' : '1'}">Supprimer cette partie</button></div>`;
     const progress = `<div class="chips">${people.map(x => { const own = Object.values(A[x.pid] || {}).filter(v => v[x.pid] !== undefined).length; const g = people.filter(o => o.pid !== x.pid && Object.values(A[x.pid] || {}).filter(v => v[o.pid] !== undefined).length >= p.questions.length).length; return `<span class="chip">${esc(x.emoji)} ${esc(x.nom)} · miroir ${own}/${p.questions.length} · a deviné ${g}/${people.length - 1}</span>`; }).join('')}</div>`;
     const table = p.questions.length && people.length ? `<div class="mi-table-wrap"><table class="mi-table"><thead><tr><th>Question</th>${people.map(x => `<th>${esc(x.emoji)} ${esc(x.nom)}</th>`).join('')}</tr></thead><tbody>${p.questions.map((q, qi) => `<tr><td class="q">${qi + 1}. ${esc(q.q)}<small>${esc(q.l)} ‹ › ${esc(q.r)} · ${esc(q.cn || q.c)}</small></td>${people.map(x => {
       const v = A[x.pid]?.[qi]; if (!v) return '<td class="v none">·</td>';
@@ -408,6 +415,22 @@ async function wipe(q, title, text) {
   if (!r || !r.ok) { alert('Effacement impossible.'); return; }
   data = await load(); draw();
 }
+// supprimer une partie Miroir, ou toutes celles dont le résultat est lancé : libère la place dans la base
+$('miroir').addEventListener('click', async e => {
+  const one = e.target.closest('[data-mdel]'), all = e.target.closest('[data-mdel-done]');
+  if (!one && !all) return;
+  e.preventDefault();
+  const q = one ? 'code=' + encodeURIComponent(one.dataset.mdel) : 'terminees=1';
+  const ok = one
+    ? await ask(`Supprimer la partie ${one.dataset.mdel}`, one.dataset.encours
+      ? 'Cette partie est encore en cours : ses inscrits, leurs réponses et le lien de la partie disparaissent pour de bon.'
+      : 'Ses inscrits, leurs réponses et le résultat disparaissent pour de bon. Le code des résultats ne marchera plus.')
+    : await ask('Supprimer les parties terminées', `${all.dataset.mdelDone > 1 ? `Les ${all.dataset.mdelDone} parties dont le résultat est lancé disparaissent pour de bon, avec leurs réponses.` : 'La partie dont le résultat est lancé disparaît pour de bon, avec ses réponses.'} Les parties en cours restent.`);
+  if (!ok) return;
+  const r = await fetch(`/stats/miroir?${q}`, { method: 'POST', headers: { authorization: `Bearer ${mdp}` } }).catch(() => null);
+  if (!r || !r.ok) { alert('Suppression impossible.'); return; }
+  loadMiroir();
+});
 $('salons').addEventListener('click', e => {
   const b = e.target.closest('[data-del]'); if (!b) return;
   wipe('salon=' + encodeURIComponent(b.dataset.del), `Effacer le salon ${b.dataset.code}`, 'Ses joueurs et ses parties disparaissent des statistiques. Pratique pour retirer une partie de test.');

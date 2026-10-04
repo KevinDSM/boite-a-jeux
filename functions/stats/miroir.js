@@ -19,3 +19,20 @@ export async function onRequestGet({ request, env }) {
     })),
   });
 }
+
+// POST /stats/miroir?code=ABCDE : supprime une partie Miroir (inscrits et réponses compris), en cours ou terminée.
+// POST /stats/miroir?terminees=1 : supprime toutes celles dont le résultat est lancé. Libère la place dans la base.
+export async function onRequestPost({ request, env }) {
+  const no = await refuse(request, env); if (no) return no;
+  const q = new URL(request.url).searchParams;
+  const del = where => ['miroir_reponses', 'miroir_joueurs'].map(t => env.DB.prepare(`DELETE FROM ${t} WHERE partie IN (SELECT code FROM miroir_parties WHERE ${where.sql})`).bind(...where.args))
+    .concat(env.DB.prepare(`DELETE FROM miroir_parties WHERE ${where.sql}`).bind(...where.args));
+  if (q.get('terminees') === '1') {
+    const r = await env.DB.batch(del({ sql: "phase = 'resultats'", args: [] }));
+    return json({ ok: true, parties: r[2].meta?.changes ?? 0 });
+  }
+  const code = q.get('code') || '';
+  if (!/^[A-Z]{5}$/.test(code)) return json({ erreur: 'Partie inconnue.' }, 400);
+  const r = await env.DB.batch(del({ sql: 'code = ?', args: [code] }));
+  return json({ ok: true, parties: r[2].meta?.changes ?? 0 });
+}
