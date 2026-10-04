@@ -352,7 +352,8 @@ function draw() {
 }
 
 // ---------------------------------------------------------------- Miroir, en direct
-const MI_PHASE = { inscriptions: 'inscriptions ouvertes', reponses: 'réponses en cours', resultats: 'résultat lancé' };
+const MI_PHASE = { ouverte: 'en cours', inscriptions: 'en cours', reponses: 'en cours', resultats: 'résultat lancé' };
+const miVal = v => v === -1 ? 'passé' : v;
 const miOpen = new Set();
 async function loadMiroir() {
   const box = $('miroir');
@@ -364,17 +365,17 @@ async function loadMiroir() {
   box.innerHTML = j.parties.map(p => {
     const people = p.joueurs, byPid = Object.fromEntries(people.map(x => [x.pid, x]));
     const A = {}; p.reponses.forEach(x => { (A[x.pid] = A[x.pid] || {})[x.q] = x.v; });
-    const fin = people.filter(x => x.fini).length;
-    const head = `<summary><span class="code">${esc(p.code)}</span><span class="when">${esc(fDay.format(p.cree))}, ${fTime.format(p.cree)} · chez ${esc(byPid[p.createur]?.emoji || '')} ${esc(byPid[p.createur]?.nom || '?')} · ${esc(MI_PHASE[p.phase] || p.phase)} · ${plural(people.length, 'inscrit', 'inscrits')}, ${fin} fini${fin > 1 ? 's' : ''}</span></summary>`;
+    const fin = people.filter(x => Object.values(A[x.pid] || {}).filter(v => v[x.pid] !== undefined).length >= p.questions.length).length;
+    const head = `<summary><span class="code">${esc(p.code)}</span><span class="when">${esc(fDay.format(p.cree))}, ${fTime.format(p.cree)} · chez ${esc(byPid[p.createur]?.emoji || '')} ${esc(byPid[p.createur]?.nom || '?')} · ${esc(MI_PHASE[p.phase] || p.phase)} · ${plural(people.length, 'inscrit', 'inscrits')}, ${fin} miroir${fin > 1 ? 's' : ''} fait${fin > 1 ? 's' : ''}</span></summary>`;
     const codes = `<div class="codes"><span>Code <b>${esc(p.code)}</b></span><span>Hôte <b>${esc(p.hote)}</b> · <a href="/miroir?h=${esc(p.hote)}" target="_blank" rel="noopener">ouvrir en hôte</a></span>${p.resultat ? `<span>Résultats <b>${esc(p.resultat)}</b> · <a href="/miroir?r=${esc(p.resultat)}" target="_blank" rel="noopener">voir</a></span>` : ''}</div>`;
-    const progress = `<div class="chips">${people.map(x => { const n = Object.keys(A[x.pid] || {}).length; return `<span class="chip">${esc(x.emoji)} ${esc(x.nom)} · ${x.fini ? 'fini' : `${n}/${p.questions.length}`}</span>`; }).join('')}</div>`;
+    const progress = `<div class="chips">${people.map(x => { const own = Object.values(A[x.pid] || {}).filter(v => v[x.pid] !== undefined).length; const g = people.filter(o => o.pid !== x.pid && Object.values(A[x.pid] || {}).filter(v => v[o.pid] !== undefined).length >= p.questions.length).length; return `<span class="chip">${esc(x.emoji)} ${esc(x.nom)} · miroir ${own}/${p.questions.length} · a deviné ${g}/${people.length - 1}</span>`; }).join('')}</div>`;
     const table = p.questions.length && people.length ? `<div class="mi-table-wrap"><table class="mi-table"><thead><tr><th>Question</th>${people.map(x => `<th>${esc(x.emoji)} ${esc(x.nom)}</th>`).join('')}</tr></thead><tbody>${p.questions.map((q, qi) => `<tr><td class="q">${qi + 1}. ${esc(q.q)}<small>${esc(q.l)} ‹ › ${esc(q.r)} · ${esc(q.cn || q.c)}</small></td>${people.map(x => {
       const v = A[x.pid]?.[qi]; if (!v) return '<td class="v none">·</td>';
-      const others = people.filter(o => o.pid !== x.pid && v[o.pid] !== undefined).map(o => `${esc(o.emoji || o.nom)}${NB}${v[o.pid]}`).join(' ');
-      return `<td class="v"><b>${v[x.pid] ?? '·'}</b><span>${others}</span></td>`;
+      const others = people.filter(o => o.pid !== x.pid && v[o.pid] !== undefined).map(o => `${esc(o.nom)}${NB}${miVal(v[o.pid])}`).join(' · ');
+      return `<td class="v"><b>${miVal(v[x.pid] ?? '·')}</b><span>${others}</span></td>`;
     }).join('')}</tr>`).join('')}</tbody></table></div>` : '';
     return `<details class="mi-game" data-code="${esc(p.code)}"${miOpen.has(p.code) ? ' open' : ''}>${head}${codes}${progress}${table}</details>`;
-  }).join('') + '<p class="peak">En gras, la vraie réponse de chacun. Dessous, où il a placé les autres. Ouvre une partie pour la suivre, elle se met à jour avec « Actualiser ».</p>';
+  }).join('') + '<p class="peak">En gras, la vraie réponse de chacun, de 0 (pôle de gauche) à 100 (pôle de droite). Dessous, où il a placé les autres. Ouvre une partie pour la suivre, elle se met à jour avec « Actualiser ».</p>';
 }
 
 function columns(items, left, right) {

@@ -1,9 +1,10 @@
 /* Miroir : qui te connaît le mieux ?
-   Un jeu à part de la Boîte à jeux, sans salon en direct : chacun joue de son côté, à son rythme.
+   Un jeu à part de la Boîte à jeux, sans salon en direct. Comme dans Prisme, chacun avance à son rythme :
    1. Quelqu'un crée la partie : il reçoit le code à partager et un code hôte, gardé pour lui.
-   2. Chacun s'inscrit avec le code. Quand tout le monde est là, l'hôte ferme la liste.
-   3. 25 questions à deux pôles. Pour chacune, on place sa propre barre, puis là où l'on pense que
-      chaque autre a mis la sienne.
+   2. Chacun s'inscrit avec le code et répond tout de suite pour lui : c'est son miroir, 25 questions à
+      deux pôles, une par écran, avec le curseur et les graduations de Prisme.
+   3. Il devine ensuite les autres, un par un, quand il veut : où chacun a-t-il placé la barre ? Ceux qui
+      arrivent plus tard s'ajoutent à la liste ; on revient les deviner.
    4. Quand l'hôte le décide, il lance le résultat et reçoit un code des résultats à envoyer à tous :
       qui connaît le mieux qui, qui est le plus facile à deviner, et toutes les réponses.
    Les données vivent dans la base Cloudflare (functions/api/miroir/). Les questions sont tirées côté
@@ -14,6 +15,7 @@ const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const NB = ' ';
+const PASSE = -1;
 const EMOJIS = ['🦊', '🐼', '🐸', '🐙', '🦄', '🐯', '🦁', '🐵', '🐧', '🦉', '🐢', '🐝', '🦋', '🐳', '🦀', '🐨', '🐷', '🦖', '🐬', '🐻', '🦔', '🐞', '🦒', '🍕', '🍩', '🍉', '🍒', '🥑', '🌵', '🌻', '🍄', '🍀', '🔥', '⚡', '🌈', '⭐', '🌙', '🎸', '🎲', '🚀', '👻', '👽', '💎', '🎩', '👑'];
 const store = {
   get(k, d = null) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } },
@@ -23,6 +25,7 @@ const store = {
 const tok = (() => { let t = store.get('mi-tok'); if (!/^[a-z0-9]{20}$/.test(t || '')) { t = [...crypto.getRandomValues(new Uint8Array(20))].map(x => 'abcdefghijklmnopqrstuvwxyz0123456789'[x % 36]).join(''); store.set('mi-tok', t); } return t; })();
 let myEmoji = EMOJIS.includes(store.get('dc-emo')) ? store.get('dc-emo') : EMOJIS[Math.random() * EMOJIS.length | 0];
 const myName = () => store.get('dc-name', '');
+const TOUCH = !!(window.matchMedia && matchMedia('(hover: none)').matches);
 
 // thème : celui de la Boîte à jeux (clair ou sombre)
 (() => { const t = store.get('dc-theme'); document.documentElement.dataset.theme = t === 'light' || t === 'lavande' ? 'light' : 'dark'; })();
@@ -57,13 +60,12 @@ function remember(code, extra = {}) {
 const hostOf = code => mine().find(p => p.code === code)?.hote || null;
 
 // ---------------------------------------------------------------- navigation
-const params = new URLSearchParams(location.search);
 let poll = null, cur = null;
 function go(q) { history.pushState(null, '', q ? '?' + q : location.pathname); route(); }
 window.addEventListener('popstate', () => route());
 function stopPoll() { clearInterval(poll); poll = null; }
 function route() {
-  stopPoll(); cur = null;
+  stopPoll(); cur = null; window.scrollTo(0, 0);
   const p = new URLSearchParams(location.search);
   const h = (p.get('h') || '').toUpperCase(), c = (p.get('c') || '').toUpperCase(), r = (p.get('r') || '').toUpperCase();
   if (r) return showResults({ r });
@@ -72,21 +74,23 @@ function route() {
   home();
 }
 const main = () => $('#mr-main');
-const crumb = t => { $('#mr-crumb').textContent = t; document.title = t === 'Miroir' ? 'Miroir · Boîte à jeux' : `${t} · Miroir`; };
+const crumb = t => { $('#mr-crumb').textContent = t; document.title = t === 'Miroir' ? 'Miroir · Boîte à jeux' : `${t} · Boîte à jeux`; };
+const fresh = () => { const m = main(); m.innerHTML = ''; window.scrollTo(0, 0); return m; };
 
 // ---------------------------------------------------------------- accueil de Miroir
 async function home() {
   crumb('Miroir');
-  const m = main(); m.innerHTML = '';
+  const m = fresh();
   m.appendChild(el('section', 'mr-hero', `
     <div class="mr-mark" aria-hidden="true"><span>🪞</span></div>
     <span class="eyebrow">Boîte à jeux</span>
     <h1>Miroir</h1>
-    <p class="lede">Qui te connaît le mieux${NB}? Chacun répond pour soi, puis devine où chacun des autres a placé la barre.</p>
+    <p class="lede">Qui te connaît le mieux${NB}? Chacun répond pour soi, puis devine où les autres ont placé la barre.</p>
     <ol class="mr-steps">
       <li><b>Crée la partie</b> et envoie le code à tes amis.</li>
-      <li><b>Chacun s’inscrit</b>, puis répond à 25 questions, de son côté, quand il veut.</li>
-      <li><b>Tu lances le résultat</b> quand tout le monde a fini${NB}: qui connaît le mieux qui.</li>
+      <li><b>Chacun répond pour lui</b>, tout de suite, à son rythme${NB}: 25 questions, cinq minutes.</li>
+      <li><b>Puis devine les autres</b>, un par un, quand il veut, même des jours plus tard.</li>
+      <li><b>Tu lances le résultat</b>${NB}: qui connaît le mieux qui.</li>
     </ol>`));
 
   const themes = await api('themes').catch(() => ({ themes: [] }));
@@ -112,29 +116,25 @@ async function home() {
   };
   m.appendChild(create);
 
-  const join = el('form', 'mr-card');
-  join.innerHTML = `<h2>Rejoindre une partie</h2><p class="fine">Le code à cinq lettres que l’hôte t’a envoyé.</p>
-    <div class="join-row"><input name="code" maxlength="5" placeholder="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie" class="mr-code-in"><button class="btn" type="submit">Rejoindre</button></div>`;
-  join.code.oninput = () => { join.code.value = join.code.value.toUpperCase().replace(/[^A-Z]/g, ''); };
-  join.onsubmit = e => { e.preventDefault(); const c = join.code.value; if (c.length === 5) go('c=' + c); else toast('Le code fait cinq lettres.'); };
-  m.appendChild(join);
-
-  const res = el('form', 'mr-card');
-  res.innerHTML = `<h2>Voir des résultats</h2><p class="fine">Le code à six lettres envoyé par l’hôte quand il a lancé le résultat.</p>
-    <div class="join-row"><input name="code" maxlength="6" placeholder="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code des résultats" class="mr-code-in"><button class="btn" type="submit">Voir</button></div>`;
-  res.code.oninput = () => { res.code.value = res.code.value.toUpperCase().replace(/[^A-Z]/g, ''); };
-  res.onsubmit = e => { e.preventDefault(); const c = res.code.value; if (c.length === 6) go('r=' + c); else toast('Le code des résultats fait six lettres.'); };
-  m.appendChild(res);
+  const codeForm = (title, sub, len, label, onGo) => {
+    const f = el('form', 'mr-card');
+    f.innerHTML = `<h2>${title}</h2><p class="fine">${sub}</p>
+      <div class="join-row"><input name="code" maxlength="${len}" placeholder="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="${label}" class="mr-code-in"><button class="btn" type="submit">${len === 5 ? 'Rejoindre' : 'Voir'}</button></div>`;
+    f.code.oninput = () => { f.code.value = f.code.value.toUpperCase().replace(/[^A-Z]/g, ''); };
+    f.onsubmit = e => { e.preventDefault(); if (f.code.value.length === len) onGo(f.code.value); else toast(`Le code fait ${len === 5 ? 'cinq' : 'six'} lettres.`); };
+    return f;
+  };
+  m.appendChild(codeForm('Rejoindre une partie', 'Le code à cinq lettres que l’hôte t’a envoyé.', 5, 'Code de la partie', c => go('c=' + c)));
+  m.appendChild(codeForm('Voir des résultats', 'Le code à six lettres envoyé par l’hôte quand il a lancé le résultat.', 6, 'Code des résultats', c => go('r=' + c)));
 
   const list = mine();
   if (list.length) {
     const box = el('section', 'mr-card mr-mine', '<h2>Tes parties</h2><div class="mr-list"></div>');
-    const ul = box.querySelector('.mr-list');
     list.forEach(p => {
       const row = el('button', 'mr-row-link'); row.type = 'button';
       row.innerHTML = `<span><b>${esc(p.code)}</b><small>${p.hote ? 'tu es l’hôte' : 'participant'} · ${new Date(p.quand).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</small></span><span aria-hidden="true">›</span>`;
       row.onclick = () => go(p.hote ? 'h=' + p.hote : 'c=' + p.code);
-      ul.appendChild(row);
+      box.querySelector('.mr-list').appendChild(row);
     });
     m.appendChild(box);
   }
@@ -143,9 +143,9 @@ async function home() {
 function bindEmoji(root) {
   const b = root.querySelector('.emo-btn'); if (!b) return;
   b.onclick = () => {
+    const old = root.querySelector('.mr-emo-pop'); if (old) { old.remove(); return; }
     const pop = el('div', 'mr-emo-pop'); pop.setAttribute('role', 'group'); pop.setAttribute('aria-label', 'Emojis');
     EMOJIS.forEach(e => { const x = el('button', 'emo' + (e === myEmoji ? ' on' : ''), e); x.type = 'button'; x.onclick = () => { myEmoji = e; store.set('dc-emo', e); b.textContent = e; pop.remove(); }; pop.appendChild(x); });
-    const old = root.querySelector('.mr-emo-pop'); if (old) { old.remove(); return; }
     b.closest('.field').after(pop);
   };
 }
@@ -157,8 +157,7 @@ async function openHost(h) {
     const s = await api(`hote?h=${h}&tok=${tok}`);
     remember(s.code, { hote: h });
     cur = { code: s.code, hote: h, s };
-    renderGame();
-    startPoll();
+    renderHub(); startPoll();
   } catch (e) { fail(e.message); }
 }
 async function openGame(code) {
@@ -169,93 +168,153 @@ async function openGame(code) {
     const s = await api(`etat?c=${code}&tok=${tok}`);
     cur = { code, s };
     if (s.moi) remember(code);
-    renderGame();
-    startPoll();
+    renderHub(); startPoll();
   } catch (e) { fail(e.message); }
 }
-async function refresh() {
+async function refresh(redraw = true) {
   if (!cur) return;
   try {
     const s = cur.hote ? await api(`hote?h=${cur.hote}&tok=${tok}`) : await api(`etat?c=${cur.code}&tok=${tok}`);
-    const changed = JSON.stringify([s.phase, s.participants, s.moi, s.resultat]) !== JSON.stringify([cur.s.phase, cur.s.participants, cur.s.moi, cur.s.resultat]);
+    const before = JSON.stringify([cur.s.phase, cur.s.participants, cur.s.moi, cur.s.resultat]);
+    // les réponses en attente d'envoi restent prioritaires sur celles du serveur
+    s.mesReponses = mergeLocal(s.mesReponses || {});
     cur.s = s;
-    if (changed && !cur.answering) renderGame();
-    else if (changed && cur.answering && s.phase !== 'reponses') renderGame();
+    if (cur.run && s.phase === 'resultats') { cur.run = null; renderHub(); return; }
+    if (redraw && !cur.run && before !== JSON.stringify([s.phase, s.participants, s.moi, s.resultat])) renderHub();
   } catch { }
 }
-function startPoll() { stopPoll(); poll = setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 5000); }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+function startPoll() { stopPoll(); poll = setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 6000); }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { flush(); refresh(); } });
 function fail(msg) {
-  const m = main(); m.innerHTML = '';
+  const m = fresh();
   m.appendChild(el('section', 'mr-card', `<h2>Partie introuvable</h2><p>${esc(msg)}</p><button class="btn primary" type="button">Retour à Miroir</button>`)).querySelector('button').onclick = () => go('');
 }
 
 const isHost = () => !!cur?.hote;
 const meP = () => cur.s.participants.find(p => p.pid === cur.s.moi);
+const others = () => cur.s.participants.filter(p => p.pid !== cur.s.moi);
 const who = p => `<span class="mr-emo" aria-hidden="true">${esc(p.emoji || '·')}</span>${esc(p.nom)}`;
+// combien de questions j'ai faites sur une personne (moi compris), d'après mes propres réponses
+const doneOn = pid => cur.s.questions ? cur.s.questions.filter((_, q) => cur.s.mesReponses?.[q]?.[pid] !== undefined).length : 0;
 
-function renderGame() {
-  const s = cur.s, m = main(); m.innerHTML = ''; cur.answering = false;
-  crumb(`Miroir · ${s.code}`);
-  const head = el('section', 'mr-head', `<span class="eyebrow">Partie de ${esc(s.createur)}</span><h1>Miroir</h1>`);
-  m.appendChild(head);
-  if (s.phase === 'inscriptions') return renderSignup(m);
-  if (s.phase === 'reponses') {
-    const me = meP();
-    if (me && !me.fini) return renderQuestion(m);
-    return renderWaiting(m);
-  }
-  return renderResultsGate(m);
+// ---------------------------------------------------------------- envoi des réponses
+// Chaque réponse part tout de suite, sans faire attendre : si le réseau flanche, elle reste sur le
+// téléphone et repart à la prochaine occasion.
+const pendKey = () => `mi-draft-${cur.code}`;
+function mergeLocal(server) {
+  const pend = store.json(pendKey(), []);
+  const out = JSON.parse(JSON.stringify(server));
+  pend.forEach(x => { (out[x.q] = out[x.q] || {})[x.cible] = x.val; });
+  return out;
+}
+function saveAnswer(cible, q, val) {
+  (cur.s.mesReponses[q] = cur.s.mesReponses[q] || {})[cible] = val;
+  const pend = store.json(pendKey(), []).filter(x => !(x.cible === cible && x.q === q));
+  pend.push({ cible, q, val });
+  store.set(pendKey(), JSON.stringify(pend));
+  flush();
+}
+let flushing = false;
+async function flush() {
+  if (flushing || !cur) return; flushing = true;
+  try {
+    let pend = store.json(pendKey(), []);
+    while (pend.length) {
+      const x = pend[0];
+      try { await api('repondre', { c: cur.code, tok, ...x }); }
+      catch (e) { if (e.status >= 400 && e.status < 500) { if (e.status === 409) toast(e.message, 3600); } else break; }
+      pend = store.json(pendKey(), []).filter(y => !(y.cible === x.cible && y.q === x.q && y.val === x.val));
+      store.set(pendKey(), JSON.stringify(pend));
+    }
+  } finally { flushing = false; }
 }
 
-// --- inscriptions
-function renderSignup(m) {
-  const s = cur.s, me = meP();
-  if (isHost()) m.appendChild(shareBox());
-  if (!me) {
-    const f = el('form', 'mr-card');
-    f.innerHTML = `<h2>Inscris-toi</h2><p class="fine">Ton prénom, tel que tes amis te connaissent.</p>
-      <div class="field"><div class="name-row"><button class="emo-btn" type="button" aria-label="Choisir ton emoji">${myEmoji}</button><input name="nom" maxlength="14" placeholder="Prénom" autocomplete="off" required value="${esc(myName())}"></div></div>
-      <button class="btn primary lg" type="submit">Je m’inscris</button><p class="err" role="alert"></p>`;
-    bindEmoji(f);
-    f.onsubmit = async e => {
-      e.preventDefault(); const nom = f.nom.value.trim(); if (!nom) return;
-      store.set('dc-name', nom);
-      try { await api('inscrire', { c: s.code, nom, emoji: myEmoji, tok }); remember(s.code); await refresh(); renderGame(); }
-      catch (ex) { f.querySelector('.err').textContent = ex.message; }
-    };
-    m.appendChild(f);
-  } else {
-    m.appendChild(el('section', 'mr-status', `<h3 class="mr-title">${isHost() ? 'On attend les autres.' : 'Tu es inscrit.'}</h3>
-      <p class="mr-say">${isHost() ? 'Envoie le code. Quand tout le monde est inscrit, ferme la liste pour ouvrir les questions.' : `L’hôte ouvrira les questions quand tout le monde sera là. Tu peux fermer cette page et revenir avec le code ${s.code}.`}</p>`));
-  }
-  const list = el('section', 'mr-card');
-  list.innerHTML = `<h2>${s.participants.length} inscrit${s.participants.length > 1 ? 's' : ''}</h2><div class="mr-people"></div>`;
-  const box = list.querySelector('.mr-people');
-  s.participants.forEach(p => {
-    const row = el('div', 'mr-person', `<span>${who(p)}${p.pid === s.moi ? ' <i>toi</i>' : ''}${p.pid === s.createurPid ? ' <i>hôte</i>' : ''}</span>`);
-    if (isHost() && p.pid !== s.createurPid) {
-      const x = el('button', 'btn ghost small', 'Retirer'); x.type = 'button';
-      x.onclick = async () => { if (await ask(`Retirer ${p.nom}`, `${p.nom} disparaît de la liste. Il pourra se réinscrire tant que la liste est ouverte.`, 'Retirer')) { await hostAct('retirer', { pid: p.pid }); } };
-      row.appendChild(x);
-    }
-    box.appendChild(row);
+// ---------------------------------------------------------------- la page de la partie
+function renderHub() {
+  const s = cur.s, m = fresh(); cur.run = null;
+  crumb(`Miroir · ${s.code}`);
+  m.appendChild(el('section', 'mr-head', `<span class="eyebrow">Partie de ${esc(s.createur)}</span><h1>Miroir</h1>`));
+  if (s.phase === 'resultats') return renderResultsGate(m);
+  const me = meP();
+  if (!me) { m.appendChild(signupForm()); if (isHost()) m.appendChild(shareBox()); m.appendChild(progressCard()); return; }
+
+  const selfDone = doneOn(me.pid), N = s.n, todo = others().filter(p => doneOn(p.pid) < N);
+  const title = selfDone < N ? (selfDone ? 'Reprends ton miroir.' : 'Commence par ton miroir.')
+    : !others().length ? 'Ton miroir est prêt.' : todo.length ? `Ton miroir est prêt. ${todo.length > 1 ? `Il reste ${todo.length} personnes à deviner.` : `Il reste ${todo[0].nom} à deviner.`}` : 'Tu as tout fait.';
+  const say = selfDone < N ? '25 questions, une par écran, environ cinq minutes. Tu peux t’arrêter et revenir quand tu veux.'
+    : !others().length ? 'Personne d’autre n’est encore inscrit. Envoie le code, puis reviens deviner ceux qui arrivent.'
+    : todo.length ? 'Devine où chacun a placé la barre. Ceux qui s’inscrivent plus tard apparaîtront ici.'
+    : isHost() ? 'Lance le résultat quand tout le monde a joué. Si quelqu’un s’inscrit encore, tu pourras le deviner.' : 'L’hôte lancera le résultat et t’enverra un code pour le voir. Si quelqu’un s’inscrit encore, reviens le deviner.';
+  m.appendChild(el('section', 'mr-status', `<h3 class="mr-title">${esc(title)}</h3><p class="mr-say">${esc(say)}</p>`));
+
+  // ton miroir
+  const mirror = el('section', 'mr-card mr-task' + (selfDone >= N ? ' done' : ''));
+  mirror.innerHTML = `<div class="mr-task-head"><span class="mr-task-ic" aria-hidden="true">🪞</span><span><b>Ton miroir</b><small>${selfDone >= N ? 'Fait. Tu peux revoir tes réponses.' : `Tes propres réponses · ${selfDone} sur ${N}`}</small></span></div>
+    <span class="mr-bar" aria-hidden="true"><i style="width:${selfDone / N * 100}%"></i></span>`;
+  const mb = el('button', 'btn ' + (selfDone >= N ? '' : 'primary lg'), selfDone >= N ? 'Revoir mes réponses' : selfDone ? 'Reprendre' : 'Commencer'); mb.type = 'button';
+  mb.onclick = () => startRun(me.pid);
+  mirror.appendChild(mb);
+  m.appendChild(mirror);
+
+  // les autres à deviner
+  const guess = el('section', 'mr-card');
+  guess.innerHTML = `<h2>Devine les autres</h2>${others().length ? '' : '<p class="fine">Personne d’autre pour l’instant. Dès que quelqu’un s’inscrit, il apparaît ici.</p>'}<div class="mr-people"></div>`;
+  others().forEach(p => {
+    const d = doneOn(p.pid);
+    const row = el('div', 'mr-person mr-guess-row' + (d >= N ? ' done' : ''), `<span class="mr-gwho">${who(p)}<small>${d >= N ? 'deviné' : d ? `${d} sur ${N}` : 'à deviner'}</small></span>`);
+    const b = el('button', 'btn small' + (d < N && selfDone >= N ? ' primary' : ''), d >= N ? 'Revoir' : d ? 'Reprendre' : 'Deviner'); b.type = 'button';
+    b.onclick = () => startRun(p.pid);
+    row.appendChild(b);
+    guess.querySelector('.mr-people').appendChild(row);
   });
-  m.appendChild(list);
+  m.appendChild(guess);
+
+  if (isHost()) m.appendChild(shareBox());
+  m.appendChild(progressCard());
   if (isHost()) {
-    const b = el('button', 'btn primary lg mr-cta', 'Fermer la liste et ouvrir les questions'); b.type = 'button';
-    b.disabled = s.participants.length < 2;
+    const ready = s.participants.filter(p => p.n > 0).length >= 2 && s.participants.some(p => Object.keys(p.g || {}).length);
+    const b = el('button', 'btn primary lg mr-cta', 'Lancer le résultat'); b.type = 'button'; b.disabled = !ready;
     b.onclick = async () => {
-      if (await ask('Fermer la liste', `${s.participants.map(p => p.nom).join(', ')} : personne ne pourra plus s’inscrire. Chacun pourra répondre aux 25 questions.`, 'Fermer et ouvrir')) await hostAct('fermer');
+      const late = s.participants.filter(p => p.n < N || Object.values(p.g || {}).filter(x => x >= N).length < s.participants.length - 1).map(p => p.nom);
+      const ok = await ask('Lancer le résultat', late.length ? `${late.join(', ')} ${late.length > 1 ? 'n’ont' : 'n’a'} pas tout fait. Ce qui est déjà répondu compte, et personne ne pourra plus répondre.` : 'Tout le monde a tout fait. Personne ne pourra plus répondre, et tu recevras un code à envoyer à tous.', 'Lancer');
+      if (ok) { try { await api('hote', { h: cur.hote, action: 'reveler' }); await refresh(false); renderHub(); } catch (e) { toast(e.message, 3600); } }
     };
     m.appendChild(b);
-    if (b.disabled) m.appendChild(el('p', 'fine mr-center', 'Il faut au moins deux inscrits, toi compris.'));
+    if (!ready) m.appendChild(el('p', 'fine mr-center', 'Il faut au moins deux joueurs qui ont répondu pour eux, et quelqu’un qui en a deviné un autre.'));
     m.appendChild(hostCodeBox());
   }
 }
-async function hostAct(action, extra = {}) {
-  try { const r = await api('hote', { h: cur.hote, action, ...extra }); await refresh(); renderGame(); return r; }
-  catch (e) { toast(e.message, 3600); return null; }
+
+function signupForm() {
+  const s = cur.s, f = el('form', 'mr-card');
+  f.innerHTML = `<h2>Inscris-toi</h2><p class="fine">Ton prénom, tel que tes amis te connaissent. Tu réponds ensuite tout de suite pour toi.</p>
+    <div class="field"><div class="name-row"><button class="emo-btn" type="button" aria-label="Choisir ton emoji">${myEmoji}</button><input name="nom" maxlength="14" placeholder="Prénom" autocomplete="off" required value="${esc(myName())}"></div></div>
+    <button class="btn primary lg" type="submit">Je m’inscris</button><p class="err" role="alert"></p>`;
+  bindEmoji(f);
+  f.onsubmit = async e => {
+    e.preventDefault(); const nom = f.nom.value.trim(); if (!nom) return;
+    store.set('dc-name', nom);
+    try { await api('inscrire', { c: s.code, nom, emoji: myEmoji, tok }); remember(s.code); await refresh(false); renderHub(); }
+    catch (ex) { f.querySelector('.err').textContent = ex.message; }
+  };
+  return f;
+}
+
+function progressCard() {
+  const s = cur.s, N = s.n, total = s.participants.length;
+  const box = el('section', 'mr-card', `<h2>Où en est chacun · ${total} inscrit${total > 1 ? 's' : ''}</h2><div class="mr-people"></div>`);
+  s.participants.forEach(p => {
+    const guessed = Object.values(p.g || {}).filter(x => x >= N).length;
+    const sub = `${p.n >= N ? 'miroir fait' : `miroir ${p.n} sur ${N}`} · ${total > 1 ? `a deviné ${guessed} sur ${total - 1}` : 'personne à deviner'}`;
+    const row = el('div', 'mr-person mr-progress', `<span class="mr-gwho">${who(p)}${p.pid === s.moi ? ' <i>toi</i>' : ''}${p.pid === s.createurPid ? ' <i>hôte</i>' : ''}<small>${esc(sub)}</small></span>`);
+    if (isHost() && p.pid !== s.createurPid) {
+      const x = el('button', 'btn ghost small', 'Retirer'); x.type = 'button';
+      x.onclick = async () => { if (await ask(`Retirer ${p.nom}`, `${p.nom} et ses réponses disparaissent de la partie.`, 'Retirer')) { try { await api('hote', { h: cur.hote, action: 'retirer', pid: p.pid }); await refresh(false); renderHub(); } catch (e) { toast(e.message, 3600); } } };
+      row.appendChild(x);
+    }
+    box.querySelector('.mr-people').appendChild(row);
+  });
+  return box;
 }
 function linkFor(q) { return `${location.origin}${location.pathname}?${q}`; }
 function shareBox() {
@@ -263,7 +322,7 @@ function shareBox() {
   const box = el('section', 'mr-card mr-share');
   box.innerHTML = `<h2>Le code à envoyer</h2><div class="mr-bigcode">${esc(s.code)}</div><p class="fine">${esc(url.replace(/^https?:\/\//, ''))}</p>
     <div class="mr-acts"><button class="btn primary" type="button" data-a="share">Envoyer le lien</button><button class="btn" type="button" data-a="copy">Copier le lien</button></div>`;
-  const text = `${s.createur} t’invite à jouer à Miroir : qui te connaît le mieux${NB}? Code ${s.code} : ${url}`;
+  const text = `${s.createur} t’invite à jouer à Miroir${NB}: qui te connaît le mieux${NB}? Code ${s.code}${NB}: ${url}`;
   box.querySelector('[data-a=share]').hidden = !navigator.share;
   box.querySelector('[data-a=share]').onclick = () => navigator.share({ title: 'Miroir', text, url }).catch(() => { });
   box.querySelector('[data-a=copy]').onclick = () => navigator.clipboard.writeText(url).then(() => toast('Lien copié'), () => toast('Copie impossible'));
@@ -272,132 +331,119 @@ function shareBox() {
 function hostCodeBox() {
   const box = el('section', 'mr-card mr-hostcode');
   box.innerHTML = `<h2>Ton code hôte</h2><div class="mr-bigcode small">${esc(cur.hote)}</div>
-    <p class="fine">Garde-le pour toi${NB}: il sert à fermer la liste et à lancer le résultat. Ce téléphone s’en souvient. Pour gérer la partie ailleurs, ouvre Miroir avec ce lien.</p>
+    <p class="fine">Garde-le pour toi${NB}: il sert à lancer le résultat. Ce téléphone s’en souvient. Pour gérer la partie ailleurs, ouvre Miroir avec ce lien.</p>
     <button class="btn small" type="button">Copier le lien hôte</button>`;
   box.querySelector('button').onclick = () => navigator.clipboard.writeText(linkFor('h=' + cur.hote)).then(() => toast('Lien hôte copié. Ne l’envoie à personne.'), () => toast('Copie impossible'));
   return box;
 }
 
-// --- le questionnaire
-const draftKey = () => `mi-draft-${cur.code}`;
-function renderQuestion(m, index) {
-  const s = cur.s, qs = s.questions, me = meP();
-  cur.answering = true;
-  const answered = s.mesReponses || {};
-  const draft = store.json(draftKey(), {});
-  let i = index ?? qs.findIndex((_, k) => !answered[k]);
-  if (i < 0) i = qs.length - 1;
-  const q = qs[i];
-  const order = [me, ...s.participants.filter(p => p.pid !== me.pid)];
-  const vals = { ...(answered[i] || {}), ...(draft[i] || {}) };
+// ---------------------------------------------------------------- le questionnaire, façon Prisme
+// Une question par écran. Le curseur part du milieu ; une graduation touchée répond d'un coup et passe
+// à la suite. Trois parties, avec une pause entre chacune.
+const partsFor = n => { const a = Math.ceil(n / 3), b = Math.ceil((n - a) / 2); return [[0, a], [a, a + b], [a + b, n]]; };
+const lower = s => s && /^[A-ZÀ-Ý][a-zà-ÿ’' ]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s;
+function labelFor(v, q) {
+  if (v === undefined || v === null) return 'Entre les deux';
+  if (v <= 12) return `${q.l}, sans hésiter`;
+  if (v < 40) return `Plutôt ${lower(q.l)}`;
+  if (v <= 60) return 'Entre les deux';
+  if (v < 88) return `Plutôt ${lower(q.r)}`;
+  return `${q.r}, sans hésiter`;
+}
 
-  const wrap = el('section', 'mr-q');
-  const done = Object.keys(answered).length;
-  wrap.innerHTML = `<p class="mj-meta">Question ${i + 1} sur ${qs.length} · ${esc(q.cn)}</p>
-    <div class="mr-prog" aria-hidden="true"><i style="width:${(done / qs.length) * 100}%"></i></div>
-    <h2 class="mr-question">${esc(q.q)}</h2>
-    <div class="mr-board">
-      <div class="mr-poles"><span></span><span class="mr-pole l">${esc(q.l)}</span><span class="mr-pole r">${esc(q.r)}</span></div>
-      <div class="mr-rows"></div>
-    </div>
-    <p class="mr-hint" aria-live="polite"></p>
-    <div class="mr-nav"><button class="btn ghost" type="button" data-a="prev">Précédente</button><button class="btn primary lg" type="button" data-a="next"></button></div>`;
-  const rows = wrap.querySelector('.mr-rows');
-  order.forEach((p, k) => {
-    const r = el('div', 'mr-row' + (k === 0 ? ' me' : '')); r.dataset.pid = p.pid; r.dataset.nom = p.nom;
-    r.innerHTML = `<span class="mr-who">${who(p)}${k === 0 ? '<small>ta réponse</small>' : ''}</span>`;
-    r.appendChild(slider(vals[p.pid], v => { vals[p.pid] = v; const d = store.json(draftKey(), {}); d[i] = { ...(d[i] || {}), [p.pid]: v }; store.set(draftKey(), JSON.stringify(d)); update(); },
-      k === 0 ? `Ta réponse : ${q.q}` : `Où ${p.nom} a mis la barre : ${q.q}`));
-    rows.appendChild(r);
-  });
-  const next = wrap.querySelector('[data-a=next]'), hint = wrap.querySelector('.mr-hint'), last = i === qs.length - 1;
-  function update() {
-    const missing = order.filter(p => vals[p.pid] === undefined).length;
-    next.disabled = missing > 0;
-    next.textContent = last ? 'Envoyer mes réponses' : 'Suivante';
-    hint.textContent = missing ? (vals[me.pid] === undefined ? 'Place ta barre, puis celle de chacun.' : `Encore ${missing} barre${missing > 1 ? 's' : ''} à placer.`) : '';
-  }
-  update();
-  const prev = wrap.querySelector('[data-a=prev]'); prev.disabled = i === 0;
-  prev.onclick = () => { main().innerHTML = ''; main().appendChild(headFor()); renderQuestion(main(), i - 1); window.scrollTo(0, 0); };
-  next.onclick = async () => {
-    next.disabled = true;
-    try {
-      await api('repondre', { c: s.code, tok, q: i, v: vals });
-      cur.s.mesReponses = { ...(cur.s.mesReponses || {}), [i]: { ...vals } };
-      const d = store.json(draftKey(), {}); delete d[i]; store.set(draftKey(), JSON.stringify(d));
-      const remaining = qs.findIndex((_, k) => !cur.s.mesReponses[k]);
-      if (remaining < 0 || last) {
-        if (remaining >= 0) { main().innerHTML = ''; main().appendChild(headFor()); renderQuestion(main(), remaining); toast('Il reste des questions sans réponse.'); return; }
-        await api('terminer', { c: s.code, tok }); toast('Réponses envoyées');
-        await refresh(); renderGame(); window.scrollTo(0, 0); return;
-      }
-      main().innerHTML = ''; main().appendChild(headFor()); renderQuestion(main(), i + 1); window.scrollTo(0, 0);
-    } catch (e) { toast(e.message, 3600); next.disabled = false; }
+function startRun(target, at) {
+  const qs = cur.s.questions, N = qs.length;
+  const first = qs.findIndex((_, q) => cur.s.mesReponses?.[q]?.[target] === undefined);
+  cur.run = { target, i: at ?? (first < 0 ? 0 : first), review: first < 0 };
+  renderRun();
+}
+function renderRun(dir) {
+  const s = cur.s, run = cur.run, qs = s.questions, N = qs.length, q = qs[run.i];
+  const me = meP(), self = run.target === me.pid, t = s.participants.find(p => p.pid === run.target);
+  if (!t) { toast('Ce joueur n’est plus dans la partie.'); renderHub(); return; }
+  crumb(self ? 'Ton miroir' : `Deviner ${t.nom}`);
+  const m = fresh();
+  const parts = partsFor(N), pi = parts.findIndex(([a, b]) => run.i >= a && run.i < b);
+  const saved = s.mesReponses?.[run.i]?.[run.target];
+  let value = saved !== undefined && saved !== PASSE ? saved : 50, touched = saved !== undefined && saved !== PASSE;
+
+  const wrap = el('section', 'mr-run');
+  wrap.innerHTML = `
+    <div class="mr-run-top"><span class="mr-run-who">${self ? '<span class="mr-emo" aria-hidden="true">🪞</span>Ton miroir' : `${who(t)}`}</span><span class="mr-count"><b>${run.i + 1}</b>${NB}/${NB}${N}</span></div>
+    <div class="mr-parts" aria-hidden="true">${parts.map(([a, b], k) => `<i><b style="width:${k < pi ? 100 : k === pi ? (run.i - a) / (b - a) * 100 : 0}%"></b></i>`).join('')}</div>
+    <p class="mr-part">Partie ${pi + 1} sur ${parts.length} · ${esc(q.cn)}</p>
+    <article class="mr-qcard${dir === 'back' ? ' back' : ''}">
+      <p class="mr-kicker">${self ? 'Et toi, où places-tu la barre ?' : `D’après toi, où ${esc(t.nom)} place la barre ?`}</p>
+      <h2 class="mr-qtext">${esc(q.q)}</h2>
+      <div class="mr-slider">
+        <div class="mr-bubble" aria-hidden="true"></div>
+        <div class="mr-rail" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(self ? `Ta réponse : ${q.q}` : `${t.nom} : ${q.q}`)}"><span class="mr-knob"></span></div>
+        <div class="mr-ticks">${[0, 25, 50, 75, 100].map(v => `<button type="button" class="mr-tick${v === 50 ? ' mid' : ''}" data-v="${v}" aria-label="${esc(labelFor(v, q))}"></button>`).join('')}</div>
+        <div class="mr-ends" aria-hidden="true"><span>${esc(q.l)}</span><span>${esc(q.r)}</span></div>
+      </div>
+    </article>
+    <div class="mr-actions"><button class="btn ghost" type="button" data-a="prev">Précédent</button><button class="btn ghost" type="button" data-a="skip">${self ? 'Passer' : 'Je ne sais pas'}</button><button class="btn primary" type="button" data-a="next">${run.i === N - 1 ? 'Terminer' : 'Suivant'}</button></div>
+    <p class="mr-hint">${TOUCH ? 'Touche une graduation pour répondre d’un coup, ou fais glisser le curseur.' : 'Clic sur une graduation pour répondre d’un coup · flèches ← → pour ajuster · Entrée pour valider'}</p>
+    <button class="btn ghost small mr-center mr-quit" type="button">Revenir à la partie</button>`;
+  const rail = wrap.querySelector('.mr-rail'), knob = wrap.querySelector('.mr-knob'), bubble = wrap.querySelector('.mr-bubble');
+  const paint = () => {
+    const pos = `calc(var(--pad) + (100% - 2 * var(--pad)) * ${value / 100})`;
+    knob.style.left = pos; bubble.style.left = pos;
+    bubble.textContent = labelFor(touched ? value : 50, q);
+    rail.setAttribute('aria-valuenow', String(value)); rail.setAttribute('aria-valuetext', bubble.textContent);
+    wrap.querySelector('.mr-slider').classList.toggle('touched', touched);
   };
-  m.appendChild(wrap);
-  if (isHost()) { const b = el('button', 'btn ghost mr-center', 'Voir où en est chacun'); b.type = 'button'; b.onclick = () => { cur.answering = false; main().innerHTML = ''; main().appendChild(headFor()); renderWaiting(main()); }; m.appendChild(b); }
-}
-function headFor() { return el('section', 'mr-head', `<span class="eyebrow">Partie de ${esc(cur.s.createur)}</span><h1>Miroir</h1>`); }
-
-// un curseur : on touche ou glisse sur la ligne ; vide tant qu'on n'a rien placé ; flèches au clavier
-function slider(value, onChange, label) {
-  const t = el('div', 'mr-track' + (value === undefined ? ' unset' : ''));
-  t.tabIndex = 0; t.setAttribute('role', 'slider'); t.setAttribute('aria-label', label);
-  t.setAttribute('aria-valuemin', '0'); t.setAttribute('aria-valuemax', '100');
-  t.innerHTML = '<i class="mr-mid" aria-hidden="true"></i><span class="mr-thumb" aria-hidden="true"></span><span class="mr-tap" aria-hidden="true">Touche la ligne</span>';
-  const thumb = t.querySelector('.mr-thumb');
-  const set = (v, fire = true) => {
-    v = Math.max(0, Math.min(100, Math.round(v)));
-    t.classList.remove('unset'); thumb.style.left = `calc(var(--pad) + (100% - 2 * var(--pad)) * ${v / 100})`;
-    t.setAttribute('aria-valuenow', String(v)); t.setAttribute('aria-valuetext', v < 20 ? 'tout à gauche' : v > 80 ? 'tout à droite' : v >= 45 && v <= 55 ? 'au milieu' : v < 50 ? 'plutôt à gauche' : 'plutôt à droite');
-    if (fire) onChange(v);
+  const at = e => { const r = rail.getBoundingClientRect(), pad = parseFloat(getComputedStyle(rail).getPropertyValue('--pad')) || 15; return Math.max(0, Math.min(100, Math.round((e.clientX - r.left - pad) / (r.width - 2 * pad) * 100))); };
+  rail.addEventListener('pointerdown', e => { rail.setPointerCapture(e.pointerId); rail.classList.add('drag'); value = at(e); touched = true; paint(); });
+  rail.addEventListener('pointermove', e => { if (rail.hasPointerCapture(e.pointerId)) { value = at(e); paint(); } });
+  const end = () => rail.classList.remove('drag');
+  rail.addEventListener('pointerup', end); rail.addEventListener('pointercancel', end);
+  const commit = (val, d = 1) => {
+    saveAnswer(run.target, run.i, val);
+    const nx = run.i + d;
+    if (d > 0 && parts.some(([a]) => a === nx) && nx < N && !run.review) { run.i = nx; renderBreak(parts, parts.findIndex(([a]) => a === nx)); return; }
+    if (nx >= N) { finishRun(); return; }
+    run.i = Math.max(0, nx); renderRun(d < 0 ? 'back' : undefined);
   };
-  if (value !== undefined) set(value, false);
-  // une marge touchable de chaque côté : les deux bouts de la ligne s'atteignent d'un simple toucher
-  const at = e => { const r = t.getBoundingClientRect(), pad = parseFloat(getComputedStyle(t).getPropertyValue('--pad')) || 14; return (e.clientX - r.left - pad) / (r.width - 2 * pad) * 100; };
-  t.addEventListener('pointerdown', e => { t.setPointerCapture(e.pointerId); t.classList.add('drag'); set(at(e)); });
-  t.addEventListener('pointermove', e => { if (t.hasPointerCapture(e.pointerId)) set(at(e)); });
-  const end = () => t.classList.remove('drag');
-  t.addEventListener('pointerup', end); t.addEventListener('pointercancel', end);
-  t.addEventListener('keydown', e => {
-    const v = +(t.getAttribute('aria-valuenow') ?? 50);
-    const step = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5, PageDown: -20, PageUp: 20 }[e.key];
-    if (step !== undefined) { e.preventDefault(); set((t.classList.contains('unset') ? 50 : v) + step); }
-    else if (e.key === 'Home') { e.preventDefault(); set(0); } else if (e.key === 'End') { e.preventDefault(); set(100); }
-  });
-  return t;
+  wrap.querySelectorAll('.mr-tick').forEach(b => b.onclick = () => { value = +b.dataset.v; touched = true; paint(); setTimeout(() => commit(value), 180); });
+  wrap.querySelector('[data-a=next]').onclick = () => commit(value);
+  wrap.querySelector('[data-a=skip]').onclick = () => commit(PASSE);
+  const prev = wrap.querySelector('[data-a=prev]'); prev.disabled = run.i === 0;
+  prev.onclick = () => { run.i -= 1; renderRun('back'); };
+  wrap.querySelector('.mr-quit').onclick = () => { cur.run = null; renderHub(); refresh(false); };
+  const keys = e => {
+    if (cur?.run !== run || document.querySelector('dialog[open]')) { document.removeEventListener('keydown', keys); return; }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); value = Math.max(0, Math.min(100, value + (e.key === 'ArrowLeft' ? -5 : 5))); touched = true; paint(); }
+    else if (e.key === 'Enter' && !e.target.closest('button')) { e.preventDefault(); document.removeEventListener('keydown', keys); commit(value); }
+  };
+  document.addEventListener('keydown', keys);
+  m.appendChild(wrap); paint();
+  rail.focus({ preventScroll: true });
+}
+function renderBreak(parts, k) {
+  const run = cur.run, N = cur.s.questions.length, t = cur.s.participants.find(p => p.pid === run.target), self = run.target === cur.s.moi;
+  const m = fresh();
+  const [a, b] = parts[k], left = N - a;
+  const card = el('article', 'mr-qcard mr-break', `<p class="mr-break-k">Partie ${k} sur ${parts.length} terminée</p>
+    <h2 class="mr-break-t">${k === parts.length - 1 ? 'Dernière ligne droite.' : ['Première étape franchie.', 'Beau rythme, continue.'][Math.min(k - 1, 1)]}</h2>
+    <p class="mr-break-next"><b>Ensuite${NB}: ${b - a} questions</b>, environ ${Math.max(1, Math.round((b - a) * 12 / 60))} min.${self ? '' : ` Toujours sur ${esc(t.nom)}.`}<br><span>Il en reste ${left} en tout.</span></p>`);
+  const go2 = el('button', 'btn primary lg', 'Continuer'); go2.type = 'button'; go2.onclick = () => renderRun();
+  card.appendChild(go2); m.appendChild(card); go2.focus({ preventScroll: true });
+}
+function finishRun() {
+  const run = cur.run, s = cur.s, self = run.target === s.moi, t = s.participants.find(p => p.pid === run.target);
+  cur.run = null; flush();
+  const m = fresh(); crumb(`Miroir · ${s.code}`);
+  const next = others().find(p => p.pid !== run.target && doneOn(p.pid) < s.n);
+  const card = el('article', 'mr-qcard mr-break', `<p class="mr-break-k">${self ? 'Ton miroir' : `Deviner ${esc(t.nom)}`}</p>
+    <h2 class="mr-break-t">${self ? 'Ton miroir est prêt.' : `C’est fait pour ${esc(t.nom)}${NB}!`}</h2>
+    <p class="mr-break-next">${next ? `À toi de deviner les autres. On commence par ${esc(next.nom)}${NB}?` : others().length ? 'Tu as deviné tout le monde. Reviens si quelqu’un d’autre s’inscrit.' : 'Personne d’autre n’est encore inscrit. Envoie le code, et reviens deviner ceux qui arrivent.'}</p>`);
+  if (next) { const b = el('button', 'btn primary lg', `Deviner ${esc(next.nom)}`); b.type = 'button'; b.onclick = () => startRun(next.pid); card.appendChild(b); }
+  const back = el('button', 'btn' + (next ? ' ghost' : ' primary lg'), 'Revenir à la partie'); back.type = 'button'; back.onclick = () => { renderHub(); refresh(false); };
+  card.appendChild(back); m.appendChild(card);
 }
 
-// --- attente pendant les réponses
-function renderWaiting(m) {
-  const s = cur.s, me = meP(), total = s.n;
-  const done = s.participants.filter(p => p.fini).length;
-  if (me) m.appendChild(el('section', 'mr-status', `<h3 class="mr-title">${done === s.participants.length ? 'Tout le monde a fini.' : 'Tes réponses sont parties.'}</h3>
-    <p class="mr-say">${isHost() ? (done === s.participants.length ? 'Tu peux lancer le résultat.' : 'Lance le résultat quand tu veux, même si quelqu’un n’a pas tout fini.') : 'L’hôte lancera le résultat et t’enverra un code pour le voir.'}</p>`));
-  else m.appendChild(el('section', 'mr-status', `<h3 class="mr-title">La liste est fermée.</h3><p class="mr-say">${isHost() ? 'Tu gères la partie sans y jouer depuis ce téléphone.' : 'Les inscriptions sont terminées pour cette partie. Demande à l’hôte d’en créer une nouvelle.'}</p>`));
-  const list = el('section', 'mr-card', `<h2>Où en est chacun</h2><div class="mr-people"></div>`);
-  s.participants.forEach(p => {
-    list.querySelector('.mr-people').appendChild(el('div', 'mr-person mr-progress', `<span>${who(p)}${p.pid === s.moi ? ' <i>toi</i>' : ''}</span>
-      <span class="mr-bar" aria-hidden="true"><i style="width:${Math.min(100, p.n / total * 100)}%"></i></span><span class="mr-n">${p.fini ? 'fini' : `${p.n}/${total}`}</span>`));
-  });
-  m.appendChild(list);
-  if (me && !isHost()) { const b = el('button', 'btn ghost', 'Revoir mes réponses'); b.type = 'button'; b.onclick = () => { cur.s.participants = cur.s.participants.map(p => p.pid === me.pid ? { ...p, fini: false } : p); main().innerHTML = ''; main().appendChild(headFor()); renderQuestion(main(), 0); }; m.appendChild(b); }
-  if (isHost()) {
-    const b = el('button', 'btn primary lg mr-cta', 'Lancer le résultat'); b.type = 'button';
-    b.disabled = s.participants.filter(p => p.n > 0).length < 2;
-    b.onclick = async () => {
-      const late = s.participants.filter(p => !p.fini).map(p => p.nom);
-      const ok = await ask('Lancer le résultat', late.length ? `${late.join(', ')} ${late.length > 1 ? 'n’ont' : 'n’a'} pas fini. Les réponses déjà données comptent, et plus personne ne pourra répondre.` : 'Plus personne ne pourra modifier ses réponses. Tu recevras un code à envoyer à tout le monde.', 'Lancer');
-      if (ok) await hostAct('reveler');
-    };
-    m.appendChild(b);
-    if (me && !me.fini) { const c = el('button', 'btn', 'Reprendre mes réponses'); c.type = 'button'; c.onclick = () => { main().innerHTML = ''; main().appendChild(headFor()); renderQuestion(main()); }; m.appendChild(c); }
-    m.appendChild(hostCodeBox());
-  }
-}
-
-// --- résultats
+// ---------------------------------------------------------------- résultats
 function renderResultsGate(m) {
   if (isHost()) { showResults({ h: cur.hote, into: m }); return; }
   const f = el('form', 'mr-card');
@@ -410,7 +456,7 @@ function renderResultsGate(m) {
 
 async function showResults({ r, h, into }) {
   stopPoll();
-  const m = into || main(); if (!into) { m.innerHTML = ''; crumb('Miroir · résultats'); }
+  const m = into || fresh(); if (!into) crumb('Miroir · résultats');
   let d;
   try { d = await api(r ? `resultats?r=${r}` : `resultats?h=${h}`); }
   catch (e) { if (!into) fail(e.message); else m.appendChild(el('p', 'err', esc(e.message))); return; }
@@ -421,7 +467,7 @@ async function showResults({ r, h, into }) {
     box.innerHTML = `<h2>Le code des résultats à envoyer</h2><div class="mr-bigcode">${esc(d.resultat)}</div><p class="fine">Tout le monde peut voir le résultat avec ce code, ou avec le lien.</p>
       <div class="mr-acts"><button class="btn primary" type="button" data-a="share">Envoyer le lien</button><button class="btn" type="button" data-a="copy">Copier le lien</button></div>`;
     box.querySelector('[data-a=share]').hidden = !navigator.share;
-    box.querySelector('[data-a=share]').onclick = () => navigator.share({ title: 'Miroir · le résultat', text: `Le résultat de Miroir est là${NB}! Code ${d.resultat} : ${url}`, url }).catch(() => { });
+    box.querySelector('[data-a=share]').onclick = () => navigator.share({ title: 'Miroir · le résultat', text: `Le résultat de Miroir est là${NB}! Code ${d.resultat}${NB}: ${url}`, url }).catch(() => { });
     box.querySelector('[data-a=copy]').onclick = () => navigator.clipboard.writeText(url).then(() => toast('Lien copié'), () => toast('Copie impossible'));
     m.appendChild(box);
   }
@@ -443,18 +489,29 @@ function compute(d) {
   })));
   const mean = list => list.length ? list.reduce((a, e) => a + (100 - e.err), 0) / list.length : null;
   const K = {}; ids.forEach(g => { K[g] = {}; ids.forEach(t => { if (g !== t) K[g][t] = mean(pair[g][t]); }); });
-  const by = (key) => ids.map(id => { const list = all.filter(e => e[key] === id); return { pid: id, score: mean(list), n: list.length, mille: list.filter(e => e.err <= 5).length }; }).filter(x => x.score !== null).sort((a, b) => b.score - a.score);
+  const by = key => ids.map(id => { const list = all.filter(e => e[key] === id); return { pid: id, score: mean(list), n: list.length, mille: list.filter(e => e.err <= 5).length }; }).filter(x => x.score !== null).sort((a, b) => b.score - a.score);
   const spread = d.questions.map((qq, q) => { const v = ids.map(t => truth(t, q)).filter(x => x !== undefined); const m = v.reduce((a, x) => a + x, 0) / (v.length || 1); return { q, n: v.length, sd: v.length > 1 ? Math.sqrt(v.reduce((a, x) => a + (x - m) ** 2, 0) / v.length) : null }; }).filter(x => x.sd !== null);
   let duo = null;
   ids.forEach((a, i) => ids.slice(i + 1).forEach(b => { if (K[a][b] == null || K[b][a] == null) return; const s = (K[a][b] + K[b][a]) / 2; if (!duo || s > duo.s) duo = { a, b, s }; }));
   return { A, truth, K, all, guessers: by('g'), targets: by('t'), spread: spread.sort((a, b) => b.sd - a.sd), duo, worst: [...all].sort((a, b) => b.err - a.err)[0] };
 }
 
+// des étiquettes « emoji + prénom » posées sur une ligne, réparties sur plusieurs rangs pour ne pas se chevaucher
+function axisLabels(items, cls) {
+  const rows = [];
+  [...items].sort((a, b) => a.x - b.x).forEach(it => {
+    let r = rows.findIndex(last => it.x - last >= 22); if (r < 0) { r = rows.length; rows.push(-100); }
+    rows[r] = it.x; it.row = r;
+  });
+  const h = Math.max(1, rows.length);
+  return { h, html: items.map(it => `<span class="mr-pill ${cls}${it.extra ? ' ' + it.extra : ''}" style="left:${it.x}%;--x:${it.x};--row:${it.row}" title="${esc(it.title || '')}">${it.html}</span><i class="mr-mark-x ${cls}" style="left:${it.x}%"></i>`).join('') };
+}
+
 function resultsView(d) {
   const c = compute(d), P = Object.fromEntries(d.participants.map(p => [p.pid, p])), name = id => P[id]?.nom || '?', pw = id => who(P[id] || { nom: '?' });
   const pct = x => x == null ? '·' : Math.round(x) + ' %';
   const box = el('div', 'mr-results');
-  if (!c.all.length) { box.appendChild(el('section', 'mr-card', '<h2>Pas assez de réponses</h2><p>Il faut au moins deux personnes ayant répondu aux mêmes questions.</p>')); return box; }
+  if (!c.all.length) { box.appendChild(el('section', 'mr-card', '<h2>Pas assez de réponses</h2><p>Il faut au moins une personne qui a répondu pour elle et une autre qui l’a devinée.</p>')); return box; }
 
   // 1. qui connaît le mieux les autres
   const top = c.guessers[0];
@@ -467,7 +524,7 @@ function resultsView(d) {
   const grid = el('section', 'mr-card');
   grid.innerHTML = `<h2>Qui connaît qui</h2><p class="fine">Chaque ligne, celui qui devine. Chaque colonne, celui qui est deviné. Plus la case est foncée, plus il a visé juste.</p>`;
   const tbl = el('div', 'mr-grid-wrap');
-  tbl.innerHTML = `<table class="mr-grid"><thead><tr><th scope="col"><span class="sr">Devine ↓, deviné →</span></th>${ids.map(t => `<th scope="col" title="${esc(name(t))}"><span class="mr-emo">${esc(P[t].emoji || '·')}</span><small>${esc(name(t))}</small></th>`).join('')}</tr></thead><tbody>${ids.map(g => `<tr><th scope="row">${pw(g)}</th>${ids.map(t => {
+  tbl.innerHTML = `<table class="mr-grid"><thead><tr><th scope="col"><span class="sr">Devine ↓, deviné →</span></th>${ids.map(t => `<th scope="col"><span class="mr-emo">${esc(P[t].emoji || '·')}</span><span class="mr-gname">${esc(name(t))}</span></th>`).join('')}</tr></thead><tbody>${ids.map(g => `<tr><th scope="row">${pw(g)}</th>${ids.map(t => {
     if (g === t) return '<td class="self" aria-label="soi-même">·</td>';
     const v = c.K[g][t]; if (v == null) return '<td class="nil">·</td>';
     const k = Math.max(0, Math.min(1, (v - 40) / 55));
@@ -481,7 +538,7 @@ function resultsView(d) {
     const list = ids.filter(g => g !== t && c.K[g]?.[t] != null).map(g => ({ g, v: c.K[g][t] })).sort((a, b) => b.v - a.v);
     if (!list.length) return;
     const best = list[0], worst = list[list.length - 1];
-    each.querySelector('.mr-people').appendChild(el('div', 'mr-person mr-each', `<span>${pw(t)}</span><span class="mr-each-txt">le mieux cerné par <b>${esc(name(best.g))}</b> ${pct(best.v)}${list.length > 1 ? `<small>le moins bien par ${esc(name(worst.g))}, ${pct(worst.v)}</small>` : ''}</span>`));
+    each.querySelector('.mr-people').appendChild(el('div', 'mr-person mr-each', `<span>${pw(t)}</span><span class="mr-each-txt">le mieux cerné par <b>${esc(name(best.g))}</b>, ${pct(best.v)}${list.length > 1 ? `<small>le moins bien par ${esc(name(worst.g))}, ${pct(worst.v)}</small>` : ''}</span>`));
   });
   box.appendChild(each);
 
@@ -493,17 +550,22 @@ function resultsView(d) {
   if (c.worst && c.worst.err >= 40) { const w = c.worst, q = d.questions[w.q]; facts.push(['Le plus gros malentendu', `Pour «${NB}${esc(q.q)}${NB}», ${esc(name(w.g))} voyait ${esc(name(w.t))} ${side(w.guess, q)}. En vrai, ${side(w.real, q)}.`]); }
   if (facts.length) box.appendChild(el('section', 'mr-card mr-facts', `<h2>Faits marquants</h2>${facts.map(([t, x]) => `<div class="mr-fact"><b>${t}</b><p>${x}</p></div>`).join('')}`));
 
-  // 5. toutes les réponses
-  const allBox = el('section', 'mr-card', `<h2>Toutes les réponses</h2><p class="fine">Pour chaque question, la vraie réponse de chacun, en grand, et où les autres l’avaient placée, en petit.</p>`);
+  // 5. toutes les réponses, avec les prénoms
+  const allBox = el('section', 'mr-card', `<h2>Toutes les réponses</h2><p class="fine">Pour chaque question, d’abord la vraie réponse de chacun. Puis, personne par personne, où les autres l’avaient placée.</p>`);
   d.questions.forEach((q, qi) => {
     const det = el('details', 'mr-ans');
-    const rowsHtml = ids.map(t => {
+    const reals = ids.filter(t => c.truth(t, qi) !== undefined).map(t => ({ x: c.truth(t, qi), html: who(P[t]), title: `${name(t)} : ${labelFor(c.truth(t, qi), q)}` }));
+    const top = axisLabels(reals, 'real');
+    const per = ids.map(t => {
       const real = c.truth(t, qi); if (real === undefined) return '';
-      const guesses = ids.filter(g => g !== t && c.A[g]?.[qi]?.[t] !== undefined).map(g => ({ g, v: c.A[g][qi][t] }));
-      return `<div class="mr-line"><span class="mr-who">${pw(t)}</span><div class="mr-axis">${guesses.map(x => `<span class="mr-dot guess" style="left:${x.v}%" title="${esc(`${name(x.g)} pensait ${x.v}`)}">${esc(P[x.g].emoji || '·')}</span>`).join('')}<span class="mr-dot real" style="left:${real}%" title="${esc(`${name(t)} : ${real}`)}">${esc(P[t].emoji || '·')}</span></div></div>`;
+      const guesses = ids.filter(g => g !== t && c.A[g]?.[qi]?.[t] !== undefined).map(g => ({ x: c.A[g][qi][t], html: who(P[g]), title: `${name(g)} pensait : ${labelFor(c.A[g][qi][t], q)}`, extra: Math.abs(c.A[g][qi][t] - real) <= 10 ? 'near' : '' }));
+      if (!guesses.length) return '';
+      const lab = axisLabels([{ x: real, html: `${esc(P[t].emoji || '')} ${esc(name(t))}`, title: `${name(t)} : ${labelFor(real, q)}`, extra: 'self' }, ...guesses], 'guess');
+      return `<div class="mr-line"><p class="mr-line-t">Sur ${esc(name(t))}${NB}:</p><div class="mr-axis" style="--rows:${lab.h}">${lab.html}</div></div>`;
     }).join('');
     det.innerHTML = `<summary><span class="mr-qn">${qi + 1}</span><span>${esc(q.q)}<small>${esc(q.cn)}</small></span></summary>
-      <div class="mr-poles"><span></span><span class="mr-pole l">${esc(q.l)}</span><span class="mr-pole r">${esc(q.r)}</span></div>${rowsHtml}`;
+      <div class="mr-ends top" aria-hidden="true"><span>${esc(q.l)}</span><span>${esc(q.r)}</span></div>
+      <div class="mr-line"><p class="mr-line-t">Les vraies réponses${NB}:</p><div class="mr-axis" style="--rows:${top.h}">${top.html}</div></div>${per}`;
     allBox.appendChild(det);
   });
   box.appendChild(allBox);
