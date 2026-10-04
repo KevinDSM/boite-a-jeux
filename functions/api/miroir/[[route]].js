@@ -110,7 +110,8 @@ export async function onRequest({ request, env, params }) {
       const list = await joueurs(db, p.code), moi = list.find(j => j.tok === b.tok);
       if (route === 'inscrire') {
         const nom = cleanName(b.nom); if (!nom) return err('Il faut un prénom.');
-        if (list.some(j => j.tok !== b.tok && j.nom.toLowerCase() === nom.toLowerCase())) return err(`Quelqu’un s’appelle déjà ${nom} dans cette partie. Ajoute une initiale.`);
+        const twin = list.find(j => j.tok !== b.tok && j.nom.toLowerCase() === nom.toLowerCase());
+        if (twin) return err(`Quelqu’un s’appelle déjà ${twin.nom} dans cette partie. Ajoute une initiale.`);
         if (moi) { await db.prepare('UPDATE miroir_joueurs SET nom = ?, emoji = ? WHERE partie = ? AND pid = ?').bind(nom, cleanEmoji(b.emoji), p.code, moi.pid).run(); return json({ pid: moi.pid }); }
         if (p.phase !== 'inscriptions') return err('La liste est fermée : l’hôte a lancé les réponses.', 409);
         if (list.length >= MAX_JOUEURS) return err(`La partie est complète (${MAX_JOUEURS} joueurs).`, 409);
