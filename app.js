@@ -183,7 +183,10 @@ function serverOpen(code, create) {
       let m; try { m = JSON.parse(e.data); } catch { return; }
       if (m.t === 'no-room' || m.t === 'code-taken') { finish(new Error(m.t)); return; }
       if (m.t === 'kicked') { finish(new Error('kicked')); onKicked(); return; }
-      if (m.t === 'state' && !settled) { net.ws = ws; net.hostConn = conn; net.server = true; net.code = code; setNet(true, 'connecté'); finish(); }
+      if (m.t === 'state' && !settled) {
+        net.ws = ws; net.hostConn = conn; net.server = true; net.code = code; setNet(true, 'connecté'); finish();
+        $('#lobby-keep').textContent = 'Donne ce code à la table. Ton téléphone peut se mettre en veille, la partie continue sans lui.';
+      }
       if (net.ws === ws || m.t === 'state') onServerMessage(m);
     };
     ws.onclose = () => { finish(new Error('no-room')); if (net.ws === ws) { net.ws = null; serverLost(); } };
@@ -1186,7 +1189,7 @@ const HELP = {
     <p>Quelqu’un crée la partie et donne le code à la table. Les autres ouvrent la même adresse, tapent le code, et c’est parti.</p>
     <ul>
       <li>L’hôte choisit le jeu et ses réglages ; tout le monde les voit en direct.</li>
-      <li>Garde l’écran de l’hôte allumé : c’est lui qui fait tourner la soirée.</li>
+      <li>${SALON_WS ? 'Les téléphones peuvent se mettre en veille : la partie continue sans eux, et chacun la retrouve en revenant.' : 'Garde l’écran de l’hôte allumé : c’est lui qui fait tourner la soirée.'}</li>
       <li>Seul ? Ajoute des robots pour tester n’importe quel jeu.</li>
     </ul>`,
 };
