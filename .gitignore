@@ -5,3 +5,12 @@ geo-build.log
 build-jv.log
 build-anime.log
 *.cache.json
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
+dist/
+.wrangler/

@@ -1,0 +1,8 @@
+// Cloudflare Pages : boite-a-jeux.pages.dev. Déploiement : python deploy.py
+{
+  "name": "boite-a-jeux",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2026-09-01",
+  // images d'invitation des salons (« Kevin vous invite à jouer »), gardées deux jours
+  "kv_namespaces": [{ "binding": "INVITES", "id": "3dc088bc971f4af79ad22bd48d37bcdc" }]
+}

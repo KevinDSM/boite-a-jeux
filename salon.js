@@ -176,7 +176,7 @@ function drawInvite({ name = '', emoji = '', code = '', game = '', faces = [] } 
     ctx.font = `600 26px ${INV_FONT}`; ctx.fillStyle = INV.mute;
     ctx.fillText('Gratuit, sans compte, sans rien installer.', 78, 470);
   }
-  ctx.font = `500 21px ${INV_FONT}`; ctx.fillStyle = INV.mute; ctx.fillText('kevindsm.github.io/boite-a-jeux', 78, 596);
+  ctx.font = `500 21px ${INV_FONT}`; ctx.fillStyle = INV.mute; ctx.fillText(location.host + location.pathname.replace(/\/(index\.html)?$/, ''), 78, 596);
   return c;
 }
 
@@ -198,6 +198,9 @@ async function openInvite() {
   const canvas = drawInvite(d);
   const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
   invFile = new File([blob], `invitation-${d.code}.png`, { type: 'image/png' });
+  // Sur Cloudflare, l'image part aussi au serveur, en JPEG léger : c'est elle que les messageries
+  // affichent sous le lien. Ailleurs (GitHub Pages, serveur local), l'envoi échoue sans bruit.
+  if (!/github\.io$/.test(location.hostname)) canvas.toBlob(j => { if (j) fetch(`/api/invite/${d.code}`, { method: 'PUT', body: j, headers: { 'content-type': 'image/jpeg' } }).catch(() => { }); }, 'image/jpeg', 0.86);
   if (invUrl) URL.revokeObjectURL(invUrl);
   invUrl = URL.createObjectURL(blob);
   $('#invite-img').src = invUrl;
