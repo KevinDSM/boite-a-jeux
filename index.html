@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#221c17">
+<meta name="robots" content="noindex">
+<title>Boîte à jeux · nouvelle adresse</title>
+<meta name="description" content="La Boîte à jeux a changé d’adresse : boite-a-jeux.pages.dev">
+<meta property="og:title" content="Boîte à jeux">
+<meta property="og:description" content="22 jeux pour la soirée, chacun sur son téléphone. Nouvelle adresse : boite-a-jeux.pages.dev">
+<meta property="og:image" content="https://boite-a-jeux.pages.dev/og.jpg">
+<meta property="og:url" content="https://boite-a-jeux.pages.dev/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://boite-a-jeux.pages.dev/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
+<style>
+  :root { --bg: oklch(0.17 0.018 62); --surface: oklch(0.225 0.020 62); --line: oklch(0.32 0.024 62); --ink: oklch(0.95 0.014 80);
+    --ink-2: oklch(0.78 0.020 74); --mute: oklch(0.63 0.022 70); --acc: oklch(0.78 0.155 68); --acc-soft: oklch(0.86 0.110 72);
+    --on-acc: oklch(0.20 0.040 62); --pos: oklch(0.83 0.135 165); --ease: cubic-bezier(.2,.8,.2,1); color-scheme: dark; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: oklch(0.96 0.014 78); --surface: oklch(0.99 0.008 78); --line: oklch(0.88 0.018 76); --ink: oklch(0.23 0.028 62);
+      --ink-2: oklch(0.44 0.028 64); --mute: oklch(0.55 0.024 66); --acc: oklch(0.62 0.170 52); --acc-soft: oklch(0.70 0.140 58);
+      --on-acc: oklch(0.99 0.010 78); --pos: oklch(0.55 0.130 160); color-scheme: light; }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+    display: grid; place-items: center; padding: 24px 20px; -webkit-font-smoothing: antialiased; }
+  main { width: 100%; max-width: 440px; }
+  .gamebox { width: 132px; height: 110px; margin: 0 0 22px -6px; filter: drop-shadow(0 18px 24px oklch(0 0 0 / .35)); }
+  .gamebox svg { display: block; overflow: visible; }
+  .gb-shadow { fill: oklch(0 0 0 / .28); }
+  .gb-top { fill: oklch(0.36 0.026 62); } .gb-side { fill: oklch(0.24 0.02 62); } .gb-front { fill: oklch(0.30 0.022 62); }
+  .gb-band { fill: var(--acc); } .gb-band2 { fill: var(--acc-soft); }
+  .gb-lid { transform-origin: 14px 44px; animation: lid 3s var(--ease) infinite; }
+  .gb-lid-top { fill: var(--acc); } .gb-lid-edge { fill: oklch(0.52 0.15 60); } .gb-lid-edge2 { fill: oklch(0.62 0.15 64); }
+  .gb-lid-mark { fill: oklch(0.99 0.01 80 / .85); }
+  .gb-die { animation: hop 3s var(--ease) infinite; }
+  .die-top { fill: oklch(0.99 0.01 80); } .die-left { fill: oklch(0.86 0.015 80); } .die-right { fill: oklch(0.93 0.012 80); } .die-pip { fill: oklch(0.22 0.03 62); }
+  .gb-meeple { fill: var(--pos); animation: hop 3s .2s var(--ease) infinite; }
+  @keyframes lid { 0%, 40%, 100% { transform: rotate(0); } 60%, 80% { transform: rotate(-8deg); } }
+  @keyframes hop { 0%, 40%, 100% { transform: translateY(0); } 60%, 80% { transform: translateY(-6px); } }
+  .eyebrow { font-size: 14px; font-weight: 600; color: var(--mute); margin: 0 0 6px; }
+  h1 { margin: 0 0 12px; font-size: clamp(30px, 8vw, 38px); line-height: 1.08; letter-spacing: -.02em; font-weight: 700; }
+  p { margin: 0 0 12px; color: var(--ink-2); font-size: 17px; }
+  .addr { display: inline-block; margin: 4px 0 20px; padding: 10px 14px; border-radius: 11px; background: var(--surface); border: 1px solid var(--line);
+    font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; word-break: break-all; }
+  .bar { height: 6px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; margin: 2px 0 10px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--acc); border-radius: 99px; animation: fill 3s linear forwards; }
+  @keyframes fill { to { width: 100%; } }
+  .status { font-size: 15px; color: var(--mute); margin: 0 0 22px; font-variant-numeric: tabular-nums; }
+  .btn { display: flex; align-items: center; justify-content: center; min-height: 54px; border-radius: 13px; background: var(--acc); color: var(--on-acc);
+    font-weight: 700; font-size: 17px; text-decoration: none; }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible, .addr:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+  .fine { font-size: 13.5px; color: var(--mute); margin: 16px 0 0; }
+  @media (prefers-reduced-motion: reduce) { .gb-lid, .gb-die, .gb-meeple { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="gamebox">
+<svg viewBox="0 0 120 100" width="132" height="110" aria-hidden="true">
+        <!-- ombre au sol -->
+        <ellipse class="gb-shadow" cx="60" cy="90" rx="46" ry="7"/>
+        <!-- corps de la boîte, vue de trois quarts -->
+        <g class="gb-body">
+          <polygon class="gb-side" points="18,52 60,70 60,92 18,74"/>
+          <polygon class="gb-front" points="60,70 102,52 102,74 60,92"/>
+          <polygon class="gb-top" points="18,52 60,34 102,52 60,70"/>
+          <!-- bande de couleur sur le côté -->
+          <polygon class="gb-band" points="18,64 60,82 60,88 18,70"/>
+          <polygon class="gb-band2" points="60,82 102,64 102,70 60,88"/>
+        </g>
+        <!-- couvercle entrouvert -->
+        <g class="gb-lid">
+          <polygon class="gb-lid-top" points="14,44 60,24 106,44 60,64"/>
+          <polygon class="gb-lid-edge" points="14,44 60,64 60,69 14,49"/>
+          <polygon class="gb-lid-edge2" points="60,64 106,44 106,49 60,69"/>
+          <polygon class="gb-lid-mark" points="44,42 60,35 76,42 60,49"/>
+        </g>
+        <!-- ce qui dépasse : un dé et un pion -->
+        <g class="gb-die">
+          <polygon class="die-top" points="86,20 98,14 110,20 98,26"/>
+          <polygon class="die-left" points="86,20 98,26 98,40 86,34"/>
+          <polygon class="die-right" points="98,26 110,20 110,34 98,40"/>
+          <circle class="die-pip" cx="98" cy="20" r="1.8"/>
+          <circle class="die-pip" cx="90" cy="26" r="1.5"/><circle class="die-pip" cx="94" cy="32" r="1.5"/>
+          <circle class="die-pip" cx="102" cy="32" r="1.5"/><circle class="die-pip" cx="106" cy="26" r="1.5"/>
+        </g>
+        <g class="gb-meeple">
+          <circle cx="24" cy="24" r="6"/>
+          <path d="M14 46 L16 34 Q24 26 32 34 L34 46 Z"/>
+        </g>
+      </svg>
+  </div>
+  <p class="eyebrow">Boîte à jeux</p>
+  <h1>La Boîte à jeux a changé d’adresse</h1>
+  <p>Les mêmes jeux, et les parties ne tombent plus quand l’hôte verrouille son téléphone. On t’emmène à la nouvelle adresse&nbsp;:</p>
+  <a class="addr" id="addr" href="https://boite-a-jeux.pages.dev/">boite-a-jeux.pages.dev</a>
+  <div class="bar" aria-hidden="true"><i></i></div>
+  <p class="status" id="status" aria-live="polite">Redirection en cours, dans 3 secondes.</p>
+  <a class="btn" id="go" href="https://boite-a-jeux.pages.dev/">Y aller tout de suite</a>
+  <p class="fine">Tu avais ajouté la Boîte à jeux à ton écran d’accueil&nbsp;? Ajoute la nouvelle adresse à la place, l’ancienne ne servira plus qu’à te rediriger.</p>
+</main>
+<script>
+  // garde la suite de l'adresse : un lien d'invitation (?c=CODE) ou /stats arrive au même endroit
+  (function () {
+    var base = 'https://boite-a-jeux.pages.dev';
+    var path = location.pathname.replace(/^\/boite-a-jeux/, '').replace(/\/index\.html$/, '/') || '/';
+    var to = base + path + location.search + location.hash;
+    document.getElementById('go').href = to;
+    document.getElementById('addr').href = to;
+    var left = 3, status = document.getElementById('status');
+    var t = setInterval(function () {
+      left -= 1;
+      if (left > 0) status.textContent = 'Redirection en cours, dans ' + left + (left > 1 ? ' secondes.' : ' seconde.');
+      else { clearInterval(t); status.textContent = 'Redirection en cours.'; location.replace(to); }
+    }, 1000);
+  })();
+</script>
+</body>
+</html>
