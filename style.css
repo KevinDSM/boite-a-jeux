@@ -1683,6 +1683,8 @@ body.doodling .doodle-canvas{pointer-events:auto;cursor:crosshair;touch-action:n
 /* ============================================================ règles des jeux */
 .rules-entry{display:flex;align-items:center;gap:14px;width:100%;margin-top:18px;padding:14px 16px;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);cursor:pointer;transition:transform .14s var(--ease),border-color .2s}
 .rules-entry:hover{border-color:var(--acc)}
+a.rules-entry{text-decoration:none;margin-top:10px}
+.mi-entry .rules-entry-icon{font-size:22px;background:color-mix(in oklab, oklch(0.84 0.075 232) 18%, var(--surface))}
 .rules-entry:active{transform:scale(.985)}
 .rules-entry-icon{flex:0 0 auto;width:42px;height:42px;border-radius:var(--r-s);display:grid;place-items:center;background:color-mix(in oklab, var(--acc) 16%, var(--surface));color:var(--acc)}
 .rules-entry-text{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}

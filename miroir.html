@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr" data-game="miroir">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151a26">
+<title>Miroir · Boîte à jeux</title>
+<meta name="description" content="Qui te connaît le mieux ? Chacun répond pour soi, puis devine où chacun des autres a placé la barre.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Boîte à jeux">
+<meta property="og:title" content="Miroir · qui te connaît le mieux ?">
+<meta property="og:description" content="25 questions, chacun répond pour soi et devine les autres. À la fin, on voit qui connaît le mieux qui.">
+<meta property="og:image" content="https://boite-a-jeux.pages.dev/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23a9c4e8'/><circle cx='50' cy='50' r='28' fill='%23151a26'/><circle cx='50' cy='50' r='8' fill='%23eef3fb'/></svg>">
+<link rel="stylesheet" href="style.css?v=62">
+<link rel="stylesheet" href="miroir.css?v=62">
+</head>
+<body>
+<header class="topbar mr-top">
+  <a class="ic" href="./" aria-label="Retour à la Boîte à jeux" id="mr-back">‹</a>
+  <span class="crumb" id="mr-crumb">Miroir</span>
+</header>
+<main class="mr-wrap" id="mr-main" aria-live="polite"></main>
+<div class="toast" id="toast" role="status"></div>
+<dialog class="mr-dialog" id="mr-confirm"><h3 id="mr-c-title"></h3><p id="mr-c-text"></p><div class="mr-dialog-acts"><button class="btn ghost" type="button" value="non">Annuler</button><button class="btn primary" type="button" value="oui" id="mr-c-ok">Confirmer</button></div></dialog>
+<script src="miroir.js?v=62"></script>
+</body>
+</html>

@@ -105,6 +105,26 @@
   .tag.live { color: var(--acc); background: color-mix(in oklab, var(--acc) 16%, transparent); }
   .more { margin-top: 10px; }
 
+  /* Miroir en direct */
+  .mi-game { border-top: 1px solid var(--line); }
+  .mi-game:first-child { border-top: 0; }
+  .mi-game summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 11px 0; cursor: pointer; list-style: none; }
+  .mi-game summary::-webkit-details-marker { display: none; }
+  .mi-game summary .code { font-weight: 700; letter-spacing: .08em; }
+  .mi-game summary .when { color: var(--ink-2); font-size: 14px; }
+  .mi-game .codes { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-2); margin: 0 0 10px; }
+  .mi-game .codes a { color: var(--acc); }
+  .mi-game .codes b { color: var(--ink); letter-spacing: .06em; }
+  .mi-table-wrap { overflow-x: auto; margin-bottom: 12px; }
+  .mi-table { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+  .mi-table th, .mi-table td { border-top: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .mi-table thead th { border-top: 0; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  .mi-table td.q { min-width: 200px; max-width: 320px; }
+  .mi-table td.q small { display: block; color: var(--mute); }
+  .mi-table td.v { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .mi-table td.v b { font-size: 14px; }
+  .mi-table td.v span { display: block; color: var(--mute); font-size: 12px; }
+  .mi-table td.v.none { color: var(--mute); }
   .note { color: var(--mute); font-size: 13px; line-height: 1.5; margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; }
 
   #login { max-width: 380px; margin: 12vh auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
@@ -158,6 +178,7 @@
       <section><h2>À quelle heure on lance une partie</h2><div id="hours"></div></section>
       <section><h2>Joueurs</h2><div class="rows" id="players"></div></section>
       <section><h2>Salons</h2><div id="salons"></div></section>
+      <section class="wide"><h2>Miroir, en direct</h2><div id="miroir"></div></section>
     </div>
     <div class="note">
       <span>Une partie compte dès qu’elle est lancée depuis le salon. « Au bout » : au moins une manche terminée avec un podium. Les salons ouverts sur kevindsm.github.io ne sont pas comptés.</span>
@@ -215,6 +236,7 @@ async function enter() {
     data = await load();
     try { sessionStorage.setItem('stats-mdp', mdp); } catch { }
     $('login').hidden = true; $('page').hidden = false; draw();
+    loadMiroir();
   } catch (e) {
     $('page').hidden = true; $('login').hidden = false;
     if (e.status === 401) { try { sessionStorage.removeItem('stats-mdp'); } catch { } }
@@ -327,6 +349,32 @@ function draw() {
   }).join('') : '<p class="empty">Aucun salon sur cette période.</p>')
     + (c.salons.length > 15 ? `<button class="btn more" type="button" id="all">${showAll ? 'Voir moins' : `Voir les ${c.salons.length} salons`}</button>` : '');
   $('all')?.addEventListener('click', () => { showAll = !showAll; draw(); });
+}
+
+// ---------------------------------------------------------------- Miroir, en direct
+const MI_PHASE = { inscriptions: 'inscriptions ouvertes', reponses: 'réponses en cours', resultats: 'résultat lancé' };
+const miOpen = new Set();
+async function loadMiroir() {
+  const box = $('miroir');
+  const r = await fetch('/stats/miroir', { headers: { authorization: `Bearer ${mdp}` }, cache: 'no-store' }).catch(() => null);
+  const j = r && r.ok ? await r.json().catch(() => null) : null;
+  if (!j) { box.innerHTML = '<p class="empty">Les parties Miroir ne sont pas disponibles.</p>'; return; }
+  box.querySelectorAll('details[open]').forEach(d => miOpen.add(d.dataset.code));
+  if (!j.parties.length) { box.innerHTML = '<p class="empty">Aucune partie Miroir pour l’instant.</p>'; return; }
+  box.innerHTML = j.parties.map(p => {
+    const people = p.joueurs, byPid = Object.fromEntries(people.map(x => [x.pid, x]));
+    const A = {}; p.reponses.forEach(x => { (A[x.pid] = A[x.pid] || {})[x.q] = x.v; });
+    const fin = people.filter(x => x.fini).length;
+    const head = `<summary><span class="code">${esc(p.code)}</span><span class="when">${esc(fDay.format(p.cree))}, ${fTime.format(p.cree)} · chez ${esc(byPid[p.createur]?.emoji || '')} ${esc(byPid[p.createur]?.nom || '?')} · ${esc(MI_PHASE[p.phase] || p.phase)} · ${plural(people.length, 'inscrit', 'inscrits')}, ${fin} fini${fin > 1 ? 's' : ''}</span></summary>`;
+    const codes = `<div class="codes"><span>Code <b>${esc(p.code)}</b></span><span>Hôte <b>${esc(p.hote)}</b> · <a href="/miroir?h=${esc(p.hote)}" target="_blank" rel="noopener">ouvrir en hôte</a></span>${p.resultat ? `<span>Résultats <b>${esc(p.resultat)}</b> · <a href="/miroir?r=${esc(p.resultat)}" target="_blank" rel="noopener">voir</a></span>` : ''}</div>`;
+    const progress = `<div class="chips">${people.map(x => { const n = Object.keys(A[x.pid] || {}).length; return `<span class="chip">${esc(x.emoji)} ${esc(x.nom)} · ${x.fini ? 'fini' : `${n}/${p.questions.length}`}</span>`; }).join('')}</div>`;
+    const table = p.questions.length && people.length ? `<div class="mi-table-wrap"><table class="mi-table"><thead><tr><th>Question</th>${people.map(x => `<th>${esc(x.emoji)} ${esc(x.nom)}</th>`).join('')}</tr></thead><tbody>${p.questions.map((q, qi) => `<tr><td class="q">${qi + 1}. ${esc(q.q)}<small>${esc(q.l)} ‹ › ${esc(q.r)} · ${esc(q.cn || q.c)}</small></td>${people.map(x => {
+      const v = A[x.pid]?.[qi]; if (!v) return '<td class="v none">·</td>';
+      const others = people.filter(o => o.pid !== x.pid && v[o.pid] !== undefined).map(o => `${esc(o.emoji || o.nom)}${NB}${v[o.pid]}`).join(' ');
+      return `<td class="v"><b>${v[x.pid] ?? '·'}</b><span>${others}</span></td>`;
+    }).join('')}</tr>`).join('')}</tbody></table></div>` : '';
+    return `<details class="mi-game" data-code="${esc(p.code)}"${miOpen.has(p.code) ? ' open' : ''}>${head}${codes}${progress}${table}</details>`;
+  }).join('') + '<p class="peak">En gras, la vraie réponse de chacun. Dessous, où il a placé les autres. Ouvre une partie pour la suivre, elle se met à jour avec « Actualiser ».</p>';
 }
 
 function columns(items, left, right) {

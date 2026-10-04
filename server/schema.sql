@@ -25,3 +25,28 @@ CREATE TABLE IF NOT EXISTS parties (
 CREATE INDEX IF NOT EXISTS salons_cree ON salons (cree);
 CREATE INDEX IF NOT EXISTS parties_salon ON parties (salon);
 CREATE INDEX IF NOT EXISTS joueurs_salon ON joueurs (salon);
+
+-- Miroir (jeu à part, chacun à son rythme) : lu et écrit par functions/api/miroir/.
+CREATE TABLE IF NOT EXISTS miroir_parties (
+  code TEXT PRIMARY KEY,            -- code à partager pour s'inscrire et répondre
+  hote TEXT NOT NULL UNIQUE,        -- code hôte : fermer la liste, lancer le résultat
+  resultat TEXT UNIQUE,             -- code des résultats, créé quand l'hôte lance le résultat
+  cree INTEGER NOT NULL, maj INTEGER,
+  phase TEXT NOT NULL,              -- inscriptions, reponses, resultats
+  createur TEXT,                    -- pid du créateur
+  cats TEXT,                        -- JSON : thèmes choisis
+  questions TEXT NOT NULL           -- JSON : les 25 questions tirées [{ c, cn, q, l, r }]
+);
+CREATE TABLE IF NOT EXISTS miroir_joueurs (
+  partie TEXT NOT NULL, pid TEXT NOT NULL,
+  tok TEXT NOT NULL,                -- secret du téléphone (jamais renvoyé aux autres)
+  nom TEXT NOT NULL, emoji TEXT, arrive INTEGER, fini INTEGER,
+  PRIMARY KEY (partie, pid), UNIQUE (partie, tok)
+);
+CREATE TABLE IF NOT EXISTS miroir_reponses (
+  partie TEXT NOT NULL, pid TEXT NOT NULL, q INTEGER NOT NULL,
+  v TEXT NOT NULL,                  -- JSON : { pid visé : 0 à 100 } ; le sien = sa vraie réponse
+  maj INTEGER,
+  PRIMARY KEY (partie, pid, q)
+);
+CREATE INDEX IF NOT EXISTS miroir_parties_cree ON miroir_parties (cree);
