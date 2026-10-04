@@ -87,10 +87,10 @@ async function home() {
     <h1>Miroir</h1>
     <p class="lede">Qui te connaît le mieux${NB}? Chacun répond pour soi, puis devine où les autres ont placé la barre.</p>
     <ol class="mr-steps">
-      <li><b>Crée la partie</b> et envoie le code à tes amis.</li>
-      <li><b>Chacun répond pour lui</b>, tout de suite, à son rythme${NB}: 25 questions, cinq minutes.</li>
-      <li><b>Puis devine les autres</b>, un par un, quand il veut, même des jours plus tard.</li>
-      <li><b>Tu lances le résultat</b>${NB}: qui connaît le mieux qui.</li>
+      <li><span><b>Crée la partie</b> et envoie le code à tes amis.</span></li>
+      <li><span><b>Chacun répond pour lui</b>, tout de suite, à son rythme${NB}: 25 questions, cinq minutes.</span></li>
+      <li><span><b>Puis devine les autres</b>, un par un, quand il veut, même des jours plus tard.</span></li>
+      <li><span><b>Tu lances le résultat</b>${NB}: qui connaît le mieux qui.</span></li>
     </ol>`));
 
   const themes = await api('themes').catch(() => ({ themes: [] }));

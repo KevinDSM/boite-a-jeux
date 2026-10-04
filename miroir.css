@@ -30,6 +30,7 @@
 .mr-hero { display: flex; flex-direction: column; gap: 8px; padding: 10px 0 4px; }
 .mr-mark { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; font-size: 34px; margin-bottom: 6px;
   background: linear-gradient(135deg, var(--surface-2), var(--surface)); border: 1px solid var(--line); box-shadow: 0 10px 30px var(--mr-glow); }
+.mr-hero .lede { max-width: 46ch; }
 .mr-hero h1 { background: linear-gradient(100deg, var(--ink) 30%, var(--acc) 60%, var(--ink) 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .mr-steps { margin: 8px 0 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; }
 .mr-steps li { counter-increment: s; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: baseline; color: var(--ink-2); font-size: 15.5px; }
@@ -43,7 +44,7 @@
 .mr-cats legend { font-size: 13px; color: var(--ink-2); font-weight: 500; margin-bottom: 6px; padding: 0; }
 .mr-cats label { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 99px; background: var(--surface-2); border: 1px solid transparent; font-size: 14px; cursor: pointer; user-select: none; }
 .mr-cats label:has(:checked) { border-color: var(--acc); background: color-mix(in oklab, var(--acc) 16%, var(--surface)); }
-.mr-cats input { accent-color: var(--acc); margin: 0; }
+.mr-cats input { accent-color: var(--acc); margin: 0; width: 18px; height: 18px; min-height: 0; padding: 0; border: 0; box-shadow: none; flex: 0 0 auto; }
 .mr-code-in { font-weight: 700; font-size: 22px; letter-spacing: .3em; text-transform: uppercase; text-align: center; flex: 1; min-width: 0; padding-left: .3em; }
 .mr-emo-pop { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; padding: 8px; background: var(--surface-2); border-radius: 12px; }
 .mr-emo-pop .emo { min-height: 46px; font-size: 24px; background: var(--surface); }
