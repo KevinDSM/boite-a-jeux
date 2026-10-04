@@ -60,7 +60,7 @@ $('#players-sheet').onclick = e => { if (e.target.id === 'players-sheet') $('#pl
 // L'hôte est prévenu une fois quand un joueur ne revient pas : il peut le retirer pour débloquer la table.
 const offNagged = new Set();
 setInterval(() => {
-  if (!net.isHost || !view?.players) return;
+  if (!isHostPlayer() || !view?.players) return;
   const gone = view.players.filter(p => !p.online && !p.kicked && !p.host);
   $('#btn-players').classList.toggle('alert', gone.length > 0);
   view.players.forEach(p => { if (p.online) offNagged.delete(p.id); });
@@ -231,8 +231,8 @@ $('#invite').onclick = e => { if (e.target.id === 'invite') $('#invite').hidden 
 // ------------------------------------------------ accueil : arrivée par un lien d'invitation
 (function homeFromLink() {
   const q = new URLSearchParams(location.search);
-  if (q.get('retire')) {
-    $('#home-err').textContent = 'L’hôte t’a retiré de son salon.';
+  if (q.get('retire') || q.get('ferme')) {
+    $('#home-err').textContent = q.get('retire') ? 'L’hôte t’a retiré de son salon.' : 'Le salon s’est fermé. Crée une nouvelle partie, ou demande le nouveau code.';
     history.replaceState(null, '', location.pathname);
     return;
   }

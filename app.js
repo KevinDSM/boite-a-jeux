@@ -36,7 +36,7 @@ function show(id) {
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
   $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair' || id === 's-sprint');
-  $('#btn-players').hidden = !(net.isHost && !['s-home', 's-rules', 's-lobby'].includes(id));
+  $('#btn-players').hidden = !(isHostPlayer() && !['s-home', 's-rules', 's-lobby'].includes(id));
   if ($('#btn-vol').hidden) $('#vol-bar').hidden = true;
   $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux' : id === 's-rules' ? 'Les règles'
     : id === 's-lobby' ? 'Salon' + (net.code ? ' · ' + net.code : '')
@@ -139,7 +139,8 @@ async function reviveHost() {
 // retour sur la page : on vérifie tout de suite que la partie est encore joignable
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return;
-  if (net.isHost) reviveHost();
+  if (net.server) { if (!net.ws) serverLost(0); }
+  else if (net.isHost) reviveHost();
   else if (net.code && !net.hostConn?.open) joinGame(net.code).catch(() => { });
 });
 
@@ -156,6 +157,68 @@ function makePeer(id, timeoutMs = 12000) {
     });
   });
 }
+
+// ============================================================ salons sur le serveur (Cloudflare)
+// Sur boite-a-jeux.pages.dev, la partie tourne sur un serveur Cloudflare (server/) et non plus sur le
+// téléphone de l'hôte : tout le monde s'y connecte en WebSocket, l'hôte compris. S'il verrouille son
+// écran, la partie continue sans lui. Ailleurs (GitHub Pages, tests), l'hôte fait tourner la partie.
+// Pour les tests : localStorage 'dc-server' = adresse du serveur, ou 'off'.
+const SALON_WS = (() => {
+  try { const o = localStorage.getItem('dc-server'); if (o) return o === 'off' ? null : o; } catch { }
+  return /(^|\.)boite-a-jeux\.pages\.dev$/.test(location.hostname) ? 'wss://boite-a-jeux-salons.musee-tuile.workers.dev' : null;
+})();
+const assets = new Map();          // grosses images reçues une seule fois (dessins), remises en place dans l'état
+const unstrip = v => typeof v === 'string' ? (v.startsWith('\u0001asset:') ? assets.get(v.slice(7)) || '' : v)
+  : Array.isArray(v) ? v.map(unstrip) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, unstrip(x)])) : v;
+
+function serverOpen(code, create) {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(`${SALON_WS}/salon/${code}${create ? '?create=1' : ''}`);
+    let settled = false;
+    const finish = e => { if (settled) return; settled = true; clearTimeout(timer); e ? reject(e) : resolve(); };
+    const timer = setTimeout(() => { try { ws.close(); } catch { } finish(new Error('timeout')); }, 12000);
+    const conn = { get open() { return ws.readyState === 1; }, send: m => { try { ws.send(JSON.stringify(m)); } catch { } } };
+    ws.onopen = () => conn.send({ t: 'hello', pid: net.me, name: net.name, emoji: net.emoji });
+    ws.onmessage = e => {
+      let m; try { m = JSON.parse(e.data); } catch { return; }
+      if (m.t === 'no-room' || m.t === 'code-taken') { finish(new Error(m.t)); return; }
+      if (m.t === 'kicked') { finish(new Error('kicked')); onKicked(); return; }
+      if (m.t === 'state' && !settled) { net.ws = ws; net.hostConn = conn; net.server = true; net.code = code; setNet(true, 'connecté'); finish(); }
+      if (net.ws === ws || m.t === 'state') onServerMessage(m);
+    };
+    ws.onclose = () => { finish(new Error('no-room')); if (net.ws === ws) { net.ws = null; serverLost(); } };
+  });
+}
+function onServerMessage(m) {
+  if (m.t === 'asset') assets.set(m.id, m.data);
+  else if (m.t === 'state') { view = unstrip(m.s); render(); }
+  else if (m.t === 'err' || m.t === 'toast') toast(m.msg);
+  else if (m.t === 'kicked') onKicked();
+  else if (m.t === 'closed') { net.kicked = true; location.replace(location.pathname + '?ferme=1'); }
+  else sabOnMessage(m);
+}
+// connexion coupée (écran verrouillé, réseau) : on revient dès que possible, le salon nous attend
+let serverRetry = null;
+function serverLost(delay = 1000) {
+  if (net.kicked || !net.code) return;
+  setNet(false, 'reconnexion');
+  clearTimeout(serverRetry);
+  serverRetry = setTimeout(() => {
+    serverOpen(net.code, false).catch(e => {
+      if (e.message === 'no-room' && navigator.onLine !== false && !net.ws) { net.kicked = true; location.replace(location.pathname + '?ferme=1'); return; }
+      serverLost(Math.min(delay * 2, 15000));
+    });
+  }, delay);
+}
+async function serverHost() {
+  // le téléphone de l'hôte garde les listes de chansons et de cartes pour ses réglages
+  await Promise.all([loadSongs(), loadSongsE(), loadSongsJV(), loadDecks(), loadSongsAnime()]);
+  for (let i = 0; i < 6; i++) {
+    try { await serverOpen(genCode(), true); return; } catch (e) { if (e.message !== 'code-taken') throw e; }
+  }
+  throw new Error('Impossible de créer la salle');
+}
+async function serverJoin(code) { await serverOpen(code, false); }
 
 async function hostGame() {
   const [songs, songsE, songsJV, , songsAnime] = await Promise.all([loadSongs(), loadSongsE(), loadSongsJV(), loadDecks(), loadSongsAnime()]);
@@ -216,7 +279,7 @@ function act(m) {
   else if (net.hostConn?.open) net.hostConn.send({ ...m, pid: net.me });
   else toast('Pas connecté à l\'hôte');
 }
-const isHostPlayer = () => net.isHost;
+const isHostPlayer = () => net.server ? view?.players?.[0]?.id === net.me : net.isHost;
 
 
 // ============================================================ rendu
@@ -1278,20 +1341,20 @@ $('#f-home').addEventListener('submit', async e => {
   if (!name) { err.textContent = 'Il faut un prénom.'; return; }
   try { localStorage.setItem('dc-name', name); } catch { }
   net.name = name;
-  if (typeof Peer === 'undefined') { err.textContent = 'Le module réseau est bloqué. Sur iPhone : Réglages, Safari, désactive les bloqueurs de contenu pour ce site, ou passe par Chrome.'; return; }
+  if (!SALON_WS && typeof Peer === 'undefined') { err.textContent = 'Le module réseau est bloqué. Sur iPhone : Réglages, Safari, désactive les bloqueurs de contenu pour ce site, ou passe par Chrome.'; return; }
   e.submitter.disabled = true;
   try {
-    if (mode === 'create') { await hostGame(); keepAwake(); }
-    else { if (code.length !== 4) { err.textContent = 'Le code fait 4 lettres.'; return; } await joinGame(code); keepAwake(); }
+    if (mode === 'create') { await (SALON_WS ? serverHost() : hostGame()); keepAwake(); }
+    else { if (code.length !== 4) { err.textContent = 'Le code fait 4 lettres.'; return; } await (SALON_WS ? serverJoin(code) : joinGame(code)); keepAwake(); }
   } catch (ex) {
     err.textContent = ex.message === 'no-room' || ex.type === 'peer-unavailable'
-      ? 'Aucune partie avec ce code. Vérifie les 4 lettres, et demande à l\'hôte de rouvrir la page du jeu sur son téléphone.'
+      ? (SALON_WS ? 'Aucune partie avec ce code. Vérifie les 4 lettres.' : 'Aucune partie avec ce code. Vérifie les 4 lettres, et demande à l\'hôte de rouvrir la page du jeu sur son téléphone.')
       : 'Connexion impossible : ' + (ex.message || ex.type || ex);
   } finally { e.submitter.disabled = false; }
 });
 $('#btn-solo').onclick = async () => {
   net.name = $('#in-name').value.trim() || 'Moi';
-  try { await hostGame(); keepAwake(); } catch (ex) { $('#home-err').textContent = 'Connexion impossible : ' + (ex.message || ex); }
+  try { await (SALON_WS ? serverHost() : hostGame()); keepAwake(); } catch (ex) { $('#home-err').textContent = 'Connexion impossible : ' + (ex.message || ex); }
 };
 document.querySelectorAll('.gcard').forEach(b => b.onclick = () => act({ t: 'pick', key: b.dataset.game }));
 

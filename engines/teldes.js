@@ -115,21 +115,23 @@ const TelDes = (() => {
   const ranking = room => room.order.map(id => ({ id, name: pl(room, id)?.name || '?', hearts: heartsOf(room, id) })).sort((a, b) => b.hearts - a.hearts);
 
   // ------------------------------------------------------------ robots
+  // Le gribouillis d'un robot : une tache et quelques traits, tirés du texte à dessiner. En SVG, pour
+  // qu'il se fabrique aussi bien sur le téléphone de l'hôte que sur le serveur (pas de canevas).
   function botDrawing(text) {
-    const W = 800, H = 600, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    const g = cv.getContext('2d'); g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+    const W = 800, H = 600;
     let seed = [...String(text || 'x')].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
     const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
     const cols = ['#1f2430', '#e5484d', '#3e63dd', '#2fa96b', '#f97316', '#8e4ec6'];
-    g.lineCap = 'round'; g.lineJoin = 'round';
-    g.fillStyle = cols[1 + Math.floor(rnd() * 5)]; g.beginPath(); g.arc(250 + rnd() * 300, 220 + rnd() * 160, 60 + rnd() * 90, 0, Math.PI * 2); g.fill();
+    const r1 = n => Math.round(n);
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#ffffff"/>`;
+    svg += `<circle cx="${r1(250 + rnd() * 300)}" cy="${r1(220 + rnd() * 160)}" r="${r1(60 + rnd() * 90)}" fill="${cols[1 + Math.floor(rnd() * 5)]}"/>`;
     for (let k = 0; k < 5; k++) {
-      g.strokeStyle = cols[Math.floor(rnd() * cols.length)]; g.lineWidth = 6 + rnd() * 14; g.beginPath();
-      let x = 100 + rnd() * 600, y = 100 + rnd() * 400; g.moveTo(x, y);
-      for (let j = 0; j < 14; j++) { x = Math.max(20, Math.min(W - 20, x + (rnd() - .5) * 140)); y = Math.max(20, Math.min(H - 20, y + (rnd() - .5) * 120)); g.lineTo(x, y); }
-      g.stroke();
+      const col = cols[Math.floor(rnd() * cols.length)], w = (6 + rnd() * 14).toFixed(1);
+      let x = 100 + rnd() * 600, y = 100 + rnd() * 400; const pts = [`${r1(x)},${r1(y)}`];
+      for (let j = 0; j < 14; j++) { x = Math.max(20, Math.min(W - 20, x + (rnd() - .5) * 140)); y = Math.max(20, Math.min(H - 20, y + (rnd() - .5) * 120)); pts.push(`${r1(x)},${r1(y)}`); }
+      svg += `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
     }
-    return cv.toDataURL('image/jpeg', 0.6);
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg + '</svg>');
   }
   function tick(room) {
     const now = Date.now();

@@ -14,3 +14,4 @@ build-anime.log
 !.env.example
 dist/
 .wrangler/
+server/src/runtime.js

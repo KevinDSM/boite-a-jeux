@@ -27,7 +27,7 @@ const lwProg = (done, total) => total > 0 ? el('div', 'mj-prog', `${Array.from({
 
 /** Le narrateur parle sur le téléphone de l'hôte, s'il l'a demandé dans le salon. */
 function lwSay(text) {
-  if (!net.isHost || !window.speechSynthesis || !lwVoiceOn()) return;
+  if (!isHostPlayer() || !window.speechSynthesis || !lwVoiceOn()) return;
   text = String(text).replace(/\p{Extended_Pictographic}\uFE0F?\u00a0?/gu, '');   // la voix ne lit pas les emojis des joueurs
   try { const u = new SpeechSynthesisUtterance(text); u.lang = 'fr-FR'; u.rate = 0.95; u.pitch = 0.9; speechSynthesis.speak(u); } catch { }
 }

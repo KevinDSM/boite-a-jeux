@@ -1,0 +1,11 @@
+// Les salons de la Boîte à jeux. Déploiement : python deploy.py (ou, à la main : python server/build.py
+// puis npx wrangler deploy -c server/wrangler.jsonc). Test local : wrangler dev -c server/wrangler.jsonc
+{
+  "name": "boite-a-jeux-salons",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  "durable_objects": { "bindings": [{ "name": "SALONS", "class_name": "Salon" }] },
+  // offre gratuite : seules les salles stockées en SQLite sont permises
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Salon"] }],
+  "observability": { "enabled": true }
+}
