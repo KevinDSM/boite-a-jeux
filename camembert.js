@@ -303,7 +303,7 @@ function cmBoard(v) {
     list.forEach((p, k) => {
       const ang = (k / list.length) * Math.PI * 2, off = list.length > 1 ? 9 : 0;
       const px = x + off * Math.cos(ang), py = y + off * Math.sin(ang);
-      s += `<g class="cm-token p${p.i % 8}${p.active ? ' active' : ''}${p.online ? '' : ' off'}"><circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="10"/><text x="${px.toFixed(1)}" y="${(py + 4).toFixed(1)}" text-anchor="middle">${esc((p.name[0] || '?').toUpperCase())}</text></g>`;
+      s += `<g class="cm-token p${p.i % 8}${p.active ? ' active' : ''}${p.online ? '' : ' off'}"><circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="10"/><text x="${px.toFixed(1)}" y="${(py + 4).toFixed(1)}" text-anchor="middle">${esc(glyph0(p.name))}</text></g>`;
     });
   });
   // le centre : le dé, ou le nom du jeu

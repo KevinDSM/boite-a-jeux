@@ -408,7 +408,7 @@ function nfPersonCard(p, v) {
   const state = p.winner ? { k: 'win', t: '⛵ sur le radeau' } : !p.alive ? { k: 'dead', t: '✝ ' + (p.fate || 'hors jeu') } : p.sick ? { k: 'sick', t: `🤒 malade, ${p.sick} j` }
     : v.phase === 'day' ? { k: p.done ? 'done' : 'wait', t: p.done ? 'a choisi' : 'hésite' } : v.phase === 'vote' ? { k: p.done ? 'done' : 'wait', t: p.done ? 'a voté' : 'hésite' } : { k: 'ok', t: 'en forme' };
   const hue = [...p.name].reduce((a, c) => a + c.charCodeAt(0), 0) * 47 % 360;
-  return `<div class="nf-card ${state.k}${p.me ? ' me' : ''}${p.online ? '' : ' off'}"><span class="nf-avatar" style="--h:${hue}">${esc((p.name[0] || '?').toUpperCase())}</span>`
+  return `<div class="nf-card ${state.k}${p.me ? ' me' : ''}${p.online ? '' : ' off'}"><span class="nf-avatar" style="--h:${hue}">${esc(glyph0(p.name))}</span>`
     + `<span class="nf-card-name">${p.bot ? '🤖 ' : ''}${esc(p.name)}${p.me ? ' <small>(toi)</small>' : ''}</span><span class="nf-card-state">${esc(state.t)}</span>`
     + `<span class="nf-card-items">${'<i></i>'.repeat(Math.min(p.items, 5))}${p.items ? `<small>${p.items} objet${p.items > 1 ? 's' : ''}</small>` : ''}</span></div>`;
 }

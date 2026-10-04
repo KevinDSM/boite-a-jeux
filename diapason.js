@@ -251,7 +251,7 @@ function dpDialSVG(v, needle, markers) {
     s += '</g>';
   }
   for (let k = 0; k <= 20; k++) { const [x1, y1] = dpPt(k * 5, R + 1), [x2, y2] = dpPt(k * 5, R - (k % 5 ? 3 : 6)); s += `<line class="dp-tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`; }
-  (markers || []).forEach(m => { const [x, y] = dpPt(m.value, R - 26); s += `<g class="dp-mark${m.me ? ' me' : ''}"><circle cx="${x}" cy="${y}" r="6.5"/><text x="${x}" y="${(+y + 2.4).toFixed(2)}">${esc((m.name[0] || '?').toUpperCase())}</text></g>`; });
+  (markers || []).forEach(m => { const [x, y] = dpPt(m.value, R - 26); s += `<g class="dp-mark${m.me ? ' me' : ''}"><circle cx="${x}" cy="${y}" r="6.5"/><text x="${x}" y="${(+y + 2.4).toFixed(2)}">${esc(glyph0(m.name))}</text></g>`; });
   if (needle !== null && needle !== undefined) s += `<g class="dp-needle" style="transform:rotate(${(-180 * (1 - needle / 100)).toFixed(2)}deg)"><line x1="100" y1="100" x2="186" y2="100"/><circle cx="186" cy="100" r="3.2"/></g>`;
   s += `<circle class="dp-hub" cx="100" cy="100" r="9"/></svg>`;
   return s;

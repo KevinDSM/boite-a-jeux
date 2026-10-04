@@ -8,14 +8,25 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=56">
-<link rel="apple-touch-icon" href="icon-180.png?v=56">
+<link rel="manifest" href="manifest.json?v=57">
+<link rel="apple-touch-icon" href="icon-180.png?v=57">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
+<meta name="description" content="22 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Boîte à jeux">
+<meta property="og:title" content="Boîte à jeux">
+<meta property="og:description" content="22 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta property="og:url" content="https://kevindsm.github.io/boite-a-jeux/">
+<meta property="og:image" content="https://kevindsm.github.io/boite-a-jeux/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Special+Elite&family=Lilita+One&family=Alfa+Slab+One&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=56">
+<link rel="stylesheet" href="style.css?v=57">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -26,6 +37,7 @@
   <button class="ic" id="btn-back" type="button" aria-label="Retour" hidden>‹</button>
   <span class="crumb" id="crumb">Boîte à jeux</span>
   <span class="net" id="net" aria-live="polite"></span>
+  <button class="ic" id="btn-players" type="button" aria-label="Joueurs" title="Joueurs" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c.7-3.4 3.2-5.3 6.2-5.3s5.5 1.9 6.2 5.3"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2"/><path d="M17.6 14.6c1.9.7 3.2 2.4 3.6 4.9"/></svg></button>
   <button class="ic" id="btn-vol" type="button" aria-label="Volume" hidden>🔊</button>
   <button class="ic" id="btn-help" type="button" aria-label="Règles" hidden>?</button>
   <button class="ic" id="btn-theme" type="button" aria-label="Choisir le thème" aria-haspopup="menu">☾</button>
@@ -77,16 +89,21 @@
   </div>
 
   <form class="stack" id="f-home">
-    <label class="field">
-      <span>Ton prénom</span>
-      <input id="in-name" maxlength="14" autocomplete="off" placeholder="Prénom" required>
-    </label>
+    <p class="invite-banner" id="invite-banner" hidden></p>
+    <div class="field">
+      <span id="lbl-name">Ton prénom et ton emoji</span>
+      <div class="name-row">
+        <button class="emo-btn" id="btn-emo" type="button" aria-label="Choisir ton emoji" title="Choisir ton emoji"></button>
+        <input id="in-name" maxlength="14" autocomplete="off" placeholder="Prénom" required aria-labelledby="lbl-name">
+      </div>
+    </div>
     <button class="btn primary lg" type="submit" data-act="create">Créer une partie</button>
     <p class="join-label">Tu as un code ?</p>
     <div class="join-row">
       <input id="in-code" maxlength="4" placeholder="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie">
       <button class="btn" type="submit" data-act="join">Rejoindre</button>
     </div>
+    <button class="btn ghost" id="btn-own" type="button" hidden>Créer ma propre partie</button>
     <p class="err" id="home-err" role="alert"></p>
   </form>
 
@@ -260,6 +277,7 @@
       <div class="code" id="lobby-code">····</div>
     </div>
     <p class="fine">Donne ce code à la table. Et garde cet écran allumé : c’est lui qui fait tourner la soirée.</p>
+    <button class="btn small" id="btn-invite" type="button">Inviter par message</button>
   </div>
 
   <div class="players" id="lobby-players"></div>
@@ -654,6 +672,32 @@
   <button class="btn ghost small" id="btn-diag" type="button">Diagnostic réseau</button>
   </div>
 </div>
+<div class="modal" id="emo-pick" hidden>
+  <div class="sheet">
+    <div class="sheet-top"><span class="eyebrow">Ton emoji</span><button class="btn ghost small" id="emo-close" type="button">Fermer</button></div>
+    <div class="emo-grid" id="emo-grid" role="group" aria-label="Emojis"></div>
+    <p class="fine" id="emo-note"></p>
+  </div>
+</div>
+<div class="modal" id="players-sheet" hidden>
+  <div class="sheet">
+    <div class="sheet-top"><span class="eyebrow">Joueurs</span><button class="btn ghost small" id="players-close" type="button">Fermer</button></div>
+    <div class="pl-list" id="players-list"></div>
+    <p class="fine">Un joueur retiré quitte le salon et ne peut plus y revenir. La partie continue sans lui, comme après un départ.</p>
+  </div>
+</div>
+<div class="modal" id="invite" hidden>
+  <div class="sheet">
+    <div class="sheet-top"><span class="eyebrow">Inviter</span><button class="btn ghost small" id="invite-close" type="button">Fermer</button></div>
+    <img class="invite-img" id="invite-img" alt="">
+    <p class="invite-url" id="invite-url"></p>
+    <div class="invite-acts">
+      <button class="btn primary lg" id="invite-share" type="button">Partager l’invitation</button>
+      <div class="invite-row"><button class="btn" id="invite-copy" type="button">Copier le lien</button><button class="btn" id="invite-copy-img" type="button">Copier l’image</button></div>
+    </div>
+    <p class="fine">Le lien ouvre la Boîte à jeux avec le code du salon déjà rempli.</p>
+  </div>
+</div>
 <div class="modal" id="confirm" hidden>
   <div class="sheet">
     <div class="sheet-top"><span class="eyebrow" id="confirm-title">Quitter</span><button class="btn ghost small" id="confirm-close">Annuler</button></div>
@@ -672,34 +716,35 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="sablier-engine.js?v=56"></script>
-<script src="app.js?v=56"></script>
-<script src="toile.js?v=56"></script>
-<script src="sablier-ui.js?v=56"></script>
-<script src="undercover.js?v=56"></script>
-<script src="geo-config.js?v=56"></script>
-<script src="geo.js?v=56"></script>
-<script src="chromo.js?v=56"></script>
-<script src="kems.js?v=56"></script>
-<script src="mirage.js?v=56"></script>
-<script src="douze.js?v=56"></script>
-<script src="petitbac.js?v=56"></script>
-<script src="loupgarou.js?v=56"></script>
-<script src="naufrages.js?v=56"></script>
-<script src="memes.js?v=56"></script>
-<script src="limite-cartes.js?v=56"></script>
-<script src="limite.js?v=56"></script>
-<script src="solitaire.js?v=56"></script>
-<script src="poker.js?v=56"></script>
-<script src="bataille.js?v=56"></script>
-<script src="diapason-cartes.js?v=56"></script>
-<script src="diapason.js?v=56"></script>
-<script src="duel-cartes.js?v=56"></script>
-<script src="duel.js?v=56"></script>
-<script src="teldes.js?v=56"></script>
-<script src="nomcode-mots.js?v=56"></script>
-<script src="nomcode.js?v=56"></script>
-<script src="desk.js?v=56"></script>
-<script src="regles.js?v=56"></script>
+<script src="sablier-engine.js?v=57"></script>
+<script src="app.js?v=57"></script>
+<script src="toile.js?v=57"></script>
+<script src="sablier-ui.js?v=57"></script>
+<script src="undercover.js?v=57"></script>
+<script src="geo-config.js?v=57"></script>
+<script src="geo.js?v=57"></script>
+<script src="chromo.js?v=57"></script>
+<script src="kems.js?v=57"></script>
+<script src="mirage.js?v=57"></script>
+<script src="douze.js?v=57"></script>
+<script src="petitbac.js?v=57"></script>
+<script src="loupgarou.js?v=57"></script>
+<script src="naufrages.js?v=57"></script>
+<script src="memes.js?v=57"></script>
+<script src="limite-cartes.js?v=57"></script>
+<script src="limite.js?v=57"></script>
+<script src="solitaire.js?v=57"></script>
+<script src="poker.js?v=57"></script>
+<script src="bataille.js?v=57"></script>
+<script src="diapason-cartes.js?v=57"></script>
+<script src="diapason.js?v=57"></script>
+<script src="duel-cartes.js?v=57"></script>
+<script src="duel.js?v=57"></script>
+<script src="teldes.js?v=57"></script>
+<script src="nomcode-mots.js?v=57"></script>
+<script src="nomcode.js?v=57"></script>
+<script src="desk.js?v=57"></script>
+<script src="regles.js?v=57"></script>
+<script src="salon.js?v=57"></script>
 </body>
 </html>

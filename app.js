@@ -10,7 +10,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const d = document.createElement(tag); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
 const ROOM_PREFIX = 'decennies-v1-';
-const ASSET_V = '56';
+const ASSET_V = '57';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -52,6 +52,12 @@ const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.r
 const genCode = () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; let c = ''; for (let i = 0; i < 4; i++) c += A[Math.random() * A.length | 0]; return c; };
 const uid = () => { let u = null; try { u = localStorage.getItem('dc-uid'); } catch { } if (!u) { u = Math.random().toString(36).slice(2, 10); try { localStorage.setItem('dc-uid', u); } catch { } } return u; };
 const fmtS = v => (v + '').replace('.', ',') + ' s';
+// L'emoji de chaque joueur, choisi à l'accueil : il précède son prénom partout (salon, tables, podiums).
+// Un seul caractère chacun (pas de séquences composées), pour qu'il tienne aussi dans une pastille.
+const EMOJIS = ['🦊', '🐼', '🐸', '🐙', '🦄', '🐯', '🦁', '🐵', '🐧', '🦉', '🐢', '🐝', '🦋', '🐳', '🦀', '🐨', '🐷', '🦖', '🐬', '🐻', '🦔', '🐞', '🦒', '🍕', '🍩', '🍉', '🍒', '🥑', '🌵', '🌻', '🍄', '🍀', '🔥', '⚡', '🌈', '⭐', '🌙', '🎸', '🎲', '🚀', '👻', '👽', '💎', '🎩', '👑'];
+const glyph0 = s => ([...(s || '')][0] || '?').toUpperCase();
+const withEmoji = p => p.emoji ? p.emoji + '\u00a0' + p.base : p.base;
+const myEmoji = () => { let e = null; try { e = localStorage.getItem('dc-emo'); } catch { } if (!EMOJIS.includes(e)) { e = EMOJIS[Math.random() * EMOJIS.length | 0]; try { localStorage.setItem('dc-emo', e); } catch { } } return e; };
 
 let toastTimer;
 function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms); }
@@ -70,6 +76,7 @@ function show(id) {
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
   $('#btn-vol').hidden = !(id === 's-game' || id === 's-eclair' || id === 's-sprint');
+  $('#btn-players').hidden = !(net.isHost && !['s-home', 's-rules', 's-lobby'].includes(id));
   if ($('#btn-vol').hidden) $('#vol-bar').hidden = true;
   $('#crumb').textContent = id === 's-home' ? 'Boîte à jeux' : id === 's-rules' ? 'Les règles'
     : id === 's-lobby' ? 'Salon' + (net.code ? ' · ' + net.code : '')
@@ -105,6 +112,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 class Game {
   constructor(code, songs, songsE, songsJV, songsAnime) {
     this.songs = songs; this.songsE = songsE; this.songsJV = songsJV || []; this.songsAnime = songsAnime || []; this.seq = 0;
+    this.banned = new Set();          // joueurs retirés par l'hôte : ils ne peuvent plus revenir dans ce salon
     this.state = {
       code, phase: 'lobby', pick: null, mode: 'timeline', players: [],
       // Décennies
@@ -122,10 +130,11 @@ class Game {
   player(id) { return this.s.players.find(p => p.id === id); }
   get active() { return this.s.players[this.s.turn % this.s.players.length]; }
 
-  addPlayer(id, name, host = false) {
+  addPlayer(id, name, host = false, emoji = '') {
     let p = this.player(id);
-    if (p) { p.online = true; p.name = name || p.name; if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.hl) HorsLimite.join(this.hl, id, p.name); if (this.so) Solitaire.join(this.so, id, p.name); if (this.pk) Poker.join(this.pk, id, p.name); if (this.dp) Diapason.join(this.dp, id, p.name); if (this.du) Duel.join(this.du, id, p.name); if (this.td) TelDes.join(this.td, id, p.name); if (this.nc) NomCode.join(this.nc, id, p.name); if (this.bt) Bataille.join(this.bt, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
-    p = { id, name, tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
+    if (p) { p.online = true; p.offAt = 0; p.base = name || p.base; p.emoji = this.freeEmoji(emoji || p.emoji, id); p.name = withEmoji(p); if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.hl) HorsLimite.join(this.hl, id, p.name); if (this.so) Solitaire.join(this.so, id, p.name); if (this.pk) Poker.join(this.pk, id, p.name); if (this.dp) Diapason.join(this.dp, id, p.name); if (this.du) Duel.join(this.du, id, p.name); if (this.td) TelDes.join(this.td, id, p.name); if (this.nc) NomCode.join(this.nc, id, p.name); if (this.bt) Bataille.join(this.bt, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    p = { id, base: name, emoji: this.freeEmoji(emoji, id), tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
+    p.name = name = withEmoji(p);
     this.s.players.push(p);
     if (this.s.phase !== 'lobby' && this.s.phase !== 'end' && this.s.mode === 'timeline') p.timeline = [this.card()];
     if (this.uc) Undercover.join(this.uc, id, name);
@@ -150,7 +159,20 @@ class Game {
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
-  setOffline(id) { const p = this.player(id); if (p) p.online = false; if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); if (this.hl) HorsLimite.setOnline(this.hl, id, false); if (this.so) Solitaire.setOnline(this.so, id, false); if (this.pk) Poker.setOnline(this.pk, id, false); if (this.dp) Diapason.setOnline(this.dp, id, false); if (this.du) Duel.setOnline(this.du, id, false); if (this.td) TelDes.setOnline(this.td, id, false); if (this.nc) NomCode.setOnline(this.nc, id, false); if (this.bt) Bataille.setOnline(this.bt, id, false); }
+  // deux joueurs n'ont jamais le même emoji : le second reçoit un emoji libre
+  freeEmoji(want, id) {
+    const taken = new Set(this.s.players.filter(p => p.id !== id && !p.kicked).map(p => p.emoji));
+    if (EMOJIS.includes(want) && !taken.has(want)) return want;
+    const free = EMOJIS.filter(e => !taken.has(e));
+    return free.length ? free[Math.random() * free.length | 0] : (EMOJIS.includes(want) ? want : EMOJIS[0]);
+  }
+  setEmoji(pid, e) {
+    const p = this.player(pid); if (!p || !EMOJIS.includes(e)) return 'silent';
+    if (this.s.phase !== 'lobby') return 'L\u2019emoji se change au salon, entre deux parties.';
+    if (this.s.players.some(q => q.id !== pid && !q.kicked && q.emoji === e)) return `${e} est déjà pris.`;
+    p.emoji = e; p.name = withEmoji(p); return null;
+  }
+  setOffline(id) { const p = this.player(id); if (p) { p.online = false; p.offAt = Date.now(); } if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); if (this.hl) HorsLimite.setOnline(this.hl, id, false); if (this.so) Solitaire.setOnline(this.so, id, false); if (this.pk) Poker.setOnline(this.pk, id, false); if (this.dp) Diapason.setOnline(this.dp, id, false); if (this.du) Duel.setOnline(this.du, id, false); if (this.td) TelDes.setOnline(this.td, id, false); if (this.nc) NomCode.setOnline(this.nc, id, false); if (this.bt) Bataille.setOnline(this.bt, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -561,6 +583,7 @@ class Game {
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
+    s.players = s.players.filter(p => !p.kicked);     // les joueurs retirés pendant la partie quittent la liste
     s.players.forEach(p => { p.timeline = []; p.score = 0; p.tokens = TOKEN_START; });
   }
 
@@ -578,7 +601,7 @@ class Game {
 }
 
 // ============================================================ réseau
-const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game: null, me: uid(), name: '', code: '' };
+const net = { peer: null, conns: new Map(), hostConn: null, isHost: false, game: null, me: uid(), name: '', emoji: myEmoji(), code: '', kicked: false };
 let view = null, songsCache = null, songsECache = null, songsJVCache = null, songsAnimeCache = null;
 
 async function loadSongs() { if (!songsCache) songsCache = await (await fetch('songs.json?v=' + ASSET_V)).json(); return songsCache; }
@@ -675,7 +698,7 @@ async function hostGame() {
   for (let i = 0; i < 5; i++) { code = genCode(); try { peer = await makePeer(ROOM_PREFIX + code); break; } catch (e) { if (e.message !== 'code-taken') throw e; } }
   if (!peer) throw new Error('Impossible de créer la salle');
   net.peer = peer; net.isHost = true; net.code = code; net.game = new Game(code, songs, songsE, songsJV, songsAnime);
-  net.game.addPlayer(net.me, net.name, true);
+  net.game.addPlayer(net.me, net.name, true, net.emoji);
   attachHost(peer);
   setNet(true, 'hôte');
   setInterval(() => { const g = net.game, before = g.s.phase; g.tick(); const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false) || (g.td ? TelDes.tick(g.td) : false) || (g.nc ? NomCode.tick(g.nc) : false) || (g.bt ? Bataille.tick(g.bt) : false) || (g.hl ? HorsLimite.tick(g.hl) : false) || (g.mm ? Memes.tick(g.mm) : false) || (g.mi ? Mirage.tick(g.mi) : false) || (g.uc ? Undercover.tick(g.uc) : false) || (g.dp ? Diapason.tick(g.dp) : false); if (sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play') broadcast(); }, 500);
@@ -683,11 +706,25 @@ async function hostGame() {
 }
 
 function handleClientMessage(conn, m) {
-  if (m.t === 'hello') { conn.metadata = { pid: m.pid }; net.conns.set(m.pid, conn); net.game.addPlayer(m.pid, m.name); if (net.game.sab) { try { conn.send({ t: 'sab-full', strokes: net.game.sab.strokes }); } catch { } } broadcast(); return; }
+  if (net.game.banned.has(m.pid)) { if (m.t === 'hello') sendKicked(conn); return; }
+  if (m.t === 'hello') { conn.metadata = { pid: m.pid }; net.conns.set(m.pid, conn); net.game.addPlayer(m.pid, m.name, false, m.emoji); if (net.game.sab) { try { conn.send({ t: 'sab-full', strokes: net.game.sab.strokes }); } catch { } } broadcast(); return; }
   const err = applyAction(m.pid, m);
   if (err === 'silent') return;
   if (err) { try { conn.send({ t: 'err', msg: err }); } catch { } }
   broadcast();
+}
+// L'hôte retire un joueur : il sort du salon (ou, en pleine partie, devient un joueur parti pour de bon)
+// et ne peut plus revenir avec ce téléphone.
+function sendKicked(conn) { try { conn.send({ t: 'kicked' }); } catch { } setTimeout(() => { try { conn.close(); } catch { } }, 400); }
+function kickPlayer(pid, id) {
+  const g = net.game, p = g.player(id);
+  if (pid !== g.s.players[0]?.id || !p || p.host) return 'silent';
+  g.banned.add(id);
+  const c = net.conns.get(id); net.conns.delete(id); if (c) sendKicked(c);
+  g.setOffline(id); sabOffline(id);
+  if (g.s.phase === 'lobby') g.s.players = g.s.players.filter(q => q.id !== id); else p.kicked = true;
+  toast(`${p.base} a quitté le salon.`);
+  return null;
 }
 function applyAction(pid, m) {
   const g = net.game;
@@ -718,6 +755,8 @@ function applyAction(pid, m) {
     case 'start': if (pid === g.s.players[0]?.id) g.start(m.opts); return null;
     case 'restart': if (pid === g.s.players[0]?.id) g.restart(); return null;
     case 'history-clear': if (pid === g.s.players[0]?.id) g.s.history = []; return null;
+    case 'emoji': return g.setEmoji(pid, m.e);
+    case 'kick': return kickPlayer(pid, m.id);
     case 'place': return g.place(pid, m.idx);
     case 'claim': return g.claim(pid);
     case 'bet-place': return g.betPlace(pid, m.idx);
@@ -756,9 +795,9 @@ async function joinGame(code, tries = 3) {
       await new Promise((resolve, reject) => {
         const conn = peer.connect(ROOM_PREFIX + code, { reliable: true });
         const timer = setTimeout(() => reject(new Error('no-room')), 9000);
-        conn.on('open', () => { clearTimeout(timer); net.hostConn = conn; conn.send({ t: 'hello', pid: net.me, name: net.name }); setNet(true, 'connecté'); resolve(); });
-        conn.on('data', m => { if (m.t === 'state') { view = m.s; render(); } else if (m.t === 'err') toast(m.msg); else sabOnMessage(m); });
-        conn.on('close', () => { setNet(false, 'reconnexion'); setTimeout(() => joinGame(code).catch(() => { }), 2500); });
+        conn.on('open', () => { clearTimeout(timer); net.hostConn = conn; conn.send({ t: 'hello', pid: net.me, name: net.name, emoji: net.emoji }); setNet(true, 'connecté'); resolve(); });
+        conn.on('data', m => { if (m.t === 'state') { view = m.s; render(); } else if (m.t === 'err') toast(m.msg); else if (m.t === 'kicked') onKicked(); else sabOnMessage(m); });
+        conn.on('close', () => { if (net.kicked) return; setNet(false, 'reconnexion'); setTimeout(() => joinGame(code).catch(() => { }), 2500); });
         peer.on('error', e => { clearTimeout(timer); reject(e.type === 'peer-unavailable' ? new Error('no-room') : e); });
       });
       return;
@@ -769,6 +808,13 @@ async function joinGame(code, tries = 3) {
       await new Promise(r => setTimeout(r, 2500));
     }
   }
+}
+
+// retiré par l'hôte : retour à l'accueil, sans tenter de se reconnecter
+function onKicked() {
+  if (net.kicked) return; net.kicked = true;
+  try { net.peer?.destroy(); } catch { }
+  location.replace(location.pathname + '?retire=1');
 }
 
 function act(m) {
@@ -962,6 +1008,7 @@ function render() {
     const n = document.getElementById(keep.id);
     if (n && n !== ae) { n.value = keep.v; n.focus({ preventScroll: true }); try { n.setSelectionRange(keep.a, keep.b); } catch { } n.dispatchEvent(new Event('input')); }
   }
+  salonAfterRender();
 }
 
 // ------------------------------------------------ réglages partagés
@@ -1035,8 +1082,12 @@ function renderLobby(s) {
   const wrap = $('#lobby-players'); wrap.innerHTML = '';
   wrap.appendChild(el('span', 'eyebrow players-title', 'À table'));
   s.players.forEach(p => {
-    const c = el('div', 'chip' + (p.host ? ' host' : '') + (p.online ? '' : ' off'));
-    c.innerHTML = `<span class="dot">${esc((p.name[0] || '?').toUpperCase())}</span><span class="pname">${esc(p.name)}</span>${p.host ? '<i>hôte</i>' : p.online ? '' : '<i>parti</i>'}`;
+    const me = p.id === net.me;
+    const c = el('div', 'chip' + (p.host ? ' host' : '') + (p.online ? '' : ' off') + (me ? ' me' : ''));
+    const tag = p.host ? '<i>hôte</i>' : !p.online ? '<i>hors ligne</i>' : me ? '<i>toi</i>' : '';
+    c.innerHTML = `<span class="pemo" aria-hidden="true">${esc(p.emoji || glyph0(p.name))}</span><span class="pname">${esc(p.base || p.name)}</span>${tag}`;
+    if (me) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.title = 'Changer d\u2019emoji'; c.onclick = () => openEmojiPicker(); c.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEmojiPicker(); } }; }
+    if (isHostPlayer() && !p.host) { const x = el('button', 'chip-x', '×'); x.type = 'button'; x.setAttribute('aria-label', `Retirer ${p.base || p.name}`); x.onclick = e => { e.stopPropagation(); askKick(p); }; c.appendChild(x); }
     wrap.appendChild(c);
   });
   document.querySelectorAll('.gcard').forEach(b => {
