@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#221c17">
+<title>Statistiques · Boîte à jeux</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23f0a030'/><circle cx='50' cy='50' r='28' fill='%23221c17'/><circle cx='50' cy='50' r='8' fill='%23f7efe2'/></svg>">
+<!-- Statistiques de la Boîte à jeux (04/10/2026) : qui a joué, dans quels salons, à quels jeux, quand.
+     Données : base D1 « boite-a-jeux-stats », remplie par le serveur des salons (server/src/worker.js),
+     lue par functions/stats/donnees.js avec le mot de passe STATS_MDP. Seulement sur boite-a-jeux.pages.dev. -->
+<style>
+  :root {
+    --bg: oklch(0.17 0.018 62); --surface: oklch(0.225 0.020 62); --surface-2: oklch(0.27 0.022 62);
+    --line: oklch(0.32 0.024 62); --ink: oklch(0.95 0.014 80); --ink-2: oklch(0.78 0.020 74); --mute: oklch(0.63 0.022 70);
+    --acc: oklch(0.78 0.155 68); --acc-soft: oklch(0.86 0.110 72); --on-acc: oklch(0.20 0.040 62);
+    --track: oklch(0.255 0.020 62); --pos: oklch(0.83 0.135 165); --neg: oklch(0.70 0.185 18);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: oklch(0.96 0.014 78); --surface: oklch(0.99 0.008 78); --surface-2: oklch(0.94 0.014 76);
+    --line: oklch(0.88 0.018 76); --ink: oklch(0.23 0.028 62); --ink-2: oklch(0.44 0.028 64); --mute: oklch(0.55 0.024 66);
+    --acc: oklch(0.62 0.170 52); --acc-soft: oklch(0.52 0.150 50); --on-acc: oklch(0.99 0.010 78);
+    --track: oklch(0.935 0.014 76); --pos: oklch(0.52 0.130 160); --neg: oklch(0.55 0.180 20);
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 22px 20px 60px; }
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 20px; margin-bottom: 20px; }
+  .eyebrow { font-size: 13px; font-weight: 600; color: var(--mute); }
+  h1 { margin: 2px 0 0; font-size: 32px; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; }
+  h2 { margin: 0 0 12px; font-size: 13px; font-weight: 600; color: var(--mute); }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .seg { display: inline-flex; background: var(--surface-2); border-radius: 11px; padding: 3px; }
+  .seg button { font: 600 14px var(--font); color: var(--ink-2); background: none; border: 0; border-radius: 8px; padding: 8px 12px; min-height: 36px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px oklch(0 0 0 / .18); }
+  .btn { font: 600 14px var(--font); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 8px 14px; min-height: 40px; cursor: pointer; }
+  .btn:hover { border-color: var(--mute); }
+  .btn.primary { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
+  .btn.ghost { background: none; border-color: transparent; color: var(--ink-2); }
+  .btn.danger:hover { color: var(--neg); border-color: var(--neg); }
+  .btn:focus-visible, .seg button:focus-visible, input:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+  .kpi b { display: block; font-size: 30px; line-height: 1.1; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .kpi small { color: var(--mute); font-size: 13px; font-weight: 500; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 980px) { .grid { grid-template-columns: 1.15fr 1fr; } .wide { grid-column: 1 / -1; } }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; min-width: 0; }
+  .empty { color: var(--mute); font-size: 14px; margin: 4px 0; }
+
+  /* jeux : barres horizontales, une seule série */
+  .games { display: grid; gap: 2px; }
+  .game { display: grid; grid-template-columns: minmax(118px, 30%) 1fr 3.2ch; gap: 4px 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+  .game:first-child { border-top: 0; }
+  .game .name { font-weight: 600; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .game .bar { height: 12px; background: var(--track); border-radius: 4px; overflow: hidden; }
+  .game .bar i { display: block; height: 100%; background: var(--acc); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .game .n { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .game .sub { grid-column: 2 / -1; font-size: 12.5px; color: var(--mute); font-variant-numeric: tabular-nums; margin-top: -2px; }
+  .never { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--mute); font-size: 13.5px; }
+  .never b { color: var(--ink-2); font-weight: 600; }
+
+  /* colonnes : activité par jour, heures */
+  .cols { display: flex; align-items: flex-end; gap: 2px; height: 150px; padding-top: 18px; border-bottom: 1px solid var(--line); }
+  .cols div { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; cursor: default; }
+  .cols div i { display: block; width: 100%; background: var(--acc); border-radius: 4px 4px 0 0; min-height: 0; }
+  .cols div:hover i { background: var(--acc-soft); }
+  .cols div.nil i { background: none; }
+  .axis { display: flex; justify-content: space-between; color: var(--mute); font-size: 12px; margin-top: 5px; font-variant-numeric: tabular-nums; }
+  .peak { font-size: 13px; color: var(--ink-2); margin: 8px 0 0; }
+
+  /* joueurs */
+  .rows { display: grid; }
+  .row { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+  .row:first-child { border-top: 0; }
+  .emo { font-size: 20px; text-align: center; line-height: 1; }
+  .row b { font-weight: 600; }
+  .row small { display: block; color: var(--mute); font-size: 12.5px; }
+  .row .n { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  .row .n small { font-weight: 500; }
+
+  /* salons */
+  .salon { border-top: 1px solid var(--line); padding: 12px 0; }
+  .salon:first-of-type { border-top: 0; padding-top: 2px; }
+  .salon-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+  .salon-head .code { font-weight: 700; letter-spacing: .06em; font-size: 16px; }
+  .salon-head .when { color: var(--ink-2); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .salon-head .del { margin-left: auto; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 7px 0 8px; }
+  .chip { background: var(--surface-2); border-radius: 99px; padding: 3px 10px 3px 7px; font-size: 13px; }
+  .parts { display: grid; gap: 4px; }
+  .part { display: grid; grid-template-columns: 9.5ch 1fr auto; gap: 10px; font-size: 14px; align-items: baseline; }
+  .part .t { color: var(--mute); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .part .g b { font-weight: 600; }
+  .part .g small { color: var(--mute); font-size: 12.5px; margin-left: 6px; }
+  .part .r { font-size: 12.5px; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 6px; padding: 1px 6px; }
+  .tag.ok { color: var(--pos); background: color-mix(in oklab, var(--pos) 14%, transparent); }
+  .tag.ko { color: var(--mute); background: var(--surface-2); }
+  .tag.live { color: var(--acc); background: color-mix(in oklab, var(--acc) 16%, transparent); }
+  .more { margin-top: 10px; }
+
+  .note { color: var(--mute); font-size: 13px; line-height: 1.5; margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; }
+
+  #login { max-width: 380px; margin: 12vh auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+  #login p { color: var(--ink-2); margin: 6px 0 16px; }
+  #login input { width: 100%; font: 16px var(--font); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; min-height: 48px; }
+  #login .btn { width: 100%; margin-top: 10px; min-height: 48px; font-size: 15px; }
+  #err { color: var(--neg); font-weight: 600; min-height: 1.3em; margin: 10px 0 0; font-size: 14px; }
+
+  #tip { position: fixed; z-index: 9; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 600; padding: 6px 9px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); }
+  dialog { border: 1px solid var(--line); border-radius: 16px; padding: 20px; max-width: min(420px, calc(100vw - 32px)); background: var(--surface); color: var(--ink); }
+  dialog::backdrop { background: oklch(0.12 0.02 60 / .6); }
+  dialog h3 { margin: 0 0 6px; font-size: 18px; }
+  dialog p { margin: 0 0 16px; color: var(--ink-2); font-size: 14px; }
+  dialog .acts { display: flex; gap: 8px; justify-content: flex-end; }
+  dialog .acts .go { background: var(--neg); border-color: var(--neg); color: oklch(0.99 0.01 80); }
+  @media (max-width: 560px) {
+    .wrap { padding: 16px 16px 48px; }
+    h1 { font-size: 27px; }
+    .part { grid-template-columns: 8.5ch 1fr; } .part .r { grid-column: 2; text-align: left; }
+    .game { grid-template-columns: minmax(96px, 36%) 1fr 3ch; }
+    .game .name { white-space: normal; line-height: 1.2; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <form id="login" hidden>
+    <span class="eyebrow">Boîte à jeux</span>
+    <h1>Statistiques</h1>
+    <p>Qui a joué, dans quels salons, à quels jeux, et combien de temps.</p>
+    <input id="mdp" type="password" placeholder="Mot de passe" autocomplete="current-password" required aria-label="Mot de passe">
+    <button class="btn primary" type="submit">Entrer</button>
+    <p id="err" role="alert"></p>
+  </form>
+
+  <main id="page" hidden>
+    <header>
+      <div><span class="eyebrow">Boîte à jeux</span><h1>Statistiques</h1></div>
+      <div class="tools">
+        <div class="seg" role="group" aria-label="Période" id="periode">
+          <button type="button" data-j="7">7 jours</button><button type="button" data-j="30">30 jours</button><button type="button" data-j="90">90 jours</button><button type="button" data-j="0">Tout</button>
+        </div>
+        <button class="btn" type="button" id="refresh">Actualiser</button>
+        <button class="btn ghost" type="button" id="logout">Se déconnecter</button>
+      </div>
+    </header>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid">
+      <section class="wide"><h2>Les jeux, du plus lancé au moins lancé</h2><div class="games" id="games"></div></section>
+      <section><h2 id="act-title">Parties par jour</h2><div id="activity"></div></section>
+      <section><h2>À quelle heure on lance une partie</h2><div id="hours"></div></section>
+      <section><h2>Joueurs</h2><div class="rows" id="players"></div></section>
+      <section><h2>Salons</h2><div id="salons"></div></section>
+    </div>
+    <div class="note">
+      <span>Une partie compte dès qu’elle est lancée depuis le salon. « Au bout » : au moins une manche terminée avec un podium. Les salons ouverts sur kevindsm.github.io ne sont pas comptés.</span>
+      <button class="btn danger" type="button" id="wipe">Tout effacer</button>
+    </div>
+  </main>
+</div>
+<div id="tip" hidden></div>
+<dialog id="confirm"><h3 id="c-title"></h3><p id="c-text"></p><div class="acts"><button class="btn" type="button" value="non">Annuler</button><button class="btn go" type="button" value="oui">Effacer</button></div></dialog>
+
+<script>
+'use strict';
+const GAMES = [
+  ['timeline', 'Décennies'], ['eclair', 'Éclair'], ['sprint', 'Sprint'], ['chromo', 'Chromo'], ['douze', 'Douze'], ['kems', 'Kems'],
+  ['bataille', 'Bataille'], ['poker', 'Poker'], ['solitaire', 'Solitaire'], ['duel', 'Duel des Cités'], ['teldes', 'Téléphone dessiné'],
+  ['mirage', 'Mirage'], ['memes', 'Mème pas vrai'], ['limite', 'Hors Limite'], ['nomcode', 'Nom de code'], ['sablier', 'Sablier'],
+  ['diapason', 'Diapason'], ['petitbac', 'Petit Brevet'], ['geo', 'Boussole'], ['undercover', 'Undercover'], ['loupgarou', 'Loup-Garou'],
+  ['naufrages', 'Naufragés'],
+];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const TZ = 'Europe/Paris';
+const fmt = (o) => new Intl.DateTimeFormat('fr-FR', { timeZone: TZ, ...o });
+const fDay = fmt({ weekday: 'short', day: 'numeric', month: 'short' }), fDate = fmt({ day: 'numeric', month: 'short' }),
+  fTime = fmt({ hour: '2-digit', minute: '2-digit' }), fMonth = fmt({ month: 'short', year: '2-digit' }), fKey = new Intl.DateTimeFormat('fr-CA', { timeZone: TZ });
+const fHour = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hourCycle: 'h23' }), hourOf = t => (+fHour.format(t)) % 24;
+const dur = ms => { if (!(ms > 0)) return '0 min'; const m = Math.round(ms / 60000); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`; };
+const hours = ms => { const h = ms / 3600000; return h < 10 ? h.toFixed(1).replace('.', ',') + ' h' : Math.round(h) + ' h'; };
+const plural = (n, a, b) => `${n} ${n > 1 ? b : a}`;
+const pct = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–';
+const NB = ' ';
+const dec = x => (Math.round(x * 10) / 10).toString().replace('.', ',');
+
+// thème : celui choisi dans la Boîte à jeux, sinon celui de l'appareil
+(() => {
+  let t = null; try { t = localStorage.getItem('dc-theme'); } catch { }
+  const light = t ? (t === 'light' || t === 'lavande') : matchMedia('(prefers-color-scheme: light)').matches;
+  if (light) { document.documentElement.dataset.theme = 'light'; document.querySelector('meta[name=theme-color]').content = '#f5efe6'; }
+})();
+
+let mdp = '', jours = 30, data = null, showAll = false;
+try { mdp = sessionStorage.getItem('stats-mdp') || ''; } catch { }
+try { jours = +(localStorage.getItem('stats-jours') ?? 30); } catch { }
+
+async function load() {
+  const r = await fetch(`/stats/donnees?jours=${jours}`, { headers: { authorization: `Bearer ${mdp}` }, cache: 'no-store' }).catch(() => null);
+  if (!r) throw new Error('Pas de réseau.');
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(j.erreur || 'Erreur ' + r.status); e.status = r.status; throw e; }
+  return j;
+}
+async function enter() {
+  $('err').textContent = '';
+  try {
+    data = await load();
+    try { sessionStorage.setItem('stats-mdp', mdp); } catch { }
+    $('login').hidden = true; $('page').hidden = false; draw();
+  } catch (e) {
+    $('page').hidden = true; $('login').hidden = false;
+    if (e.status === 401) { try { sessionStorage.removeItem('stats-mdp'); } catch { } }
+    $('err').textContent = e.message;
+  }
+}
+
+// ---------------------------------------------------------------- calculs
+function compute(d) {
+  const salons = new Map(d.salons.map(s => [s.id, { ...s, joueurs: [], parties: [] }]));
+  d.joueurs.forEach(j => salons.get(j.salon)?.joueurs.push(j));
+  const now = d.maintenant;
+  d.parties.forEach(p => {
+    const s = salons.get(p.salon); if (!s) return;
+    p.etat = p.manches > 0 ? 'ok' : p.fin ? 'ko' : (!s.ferme && now - p.debut < 6 * 3600000 ? 'live' : 'ko');
+    p.duree = p.fin ? p.fin - p.debut : p.etat === 'live' ? now - p.debut : 0;
+    s.parties.push(p);
+  });
+  const games = new Map(GAMES.map(([k, n]) => [k, { key: k, name: n, n: 0, ms: 0, joueurs: 0, robots: 0, ok: 0, last: 0 }]));
+  const people = new Map();
+  for (const s of salons.values()) for (const j of s.joueurs) {
+    const p = people.get(j.pid) || { pid: j.pid, nom: j.nom, emoji: j.emoji, salons: 0, parties: 0, ms: 0, last: 0, jeux: new Map() };
+    if (j.arrive >= p.last) { p.nom = j.nom; p.emoji = j.emoji; p.last = Math.max(p.last, j.arrive); }
+    p.salons += 1; people.set(j.pid, p);
+  }
+  let total = 0, ms = 0, ok = 0;
+  for (const p of d.parties) {
+    if (!salons.has(p.salon)) continue;
+    const g = games.get(p.jeu) || games.set(p.jeu, { key: p.jeu, name: p.nom_jeu || p.jeu, n: 0, ms: 0, joueurs: 0, robots: 0, ok: 0, last: 0 }).get(p.jeu);
+    g.n += 1; g.ms += p.duree; g.joueurs += p.joueurs.length; g.robots += p.robots || 0; g.ok += p.etat === 'ok' ? 1 : 0; g.last = Math.max(g.last, p.debut);
+    total += 1; ms += p.duree; ok += p.etat === 'ok' ? 1 : 0;
+    for (const j of p.joueurs) {
+      const q = people.get(j.p); if (!q) continue;
+      q.parties += 1; q.ms += p.duree; q.last = Math.max(q.last, p.debut); q.jeux.set(p.nom_jeu, (q.jeux.get(p.nom_jeu) || 0) + 1);
+    }
+  }
+  return { salons: [...salons.values()], games: [...games.values()].sort((a, b) => b.n - a.n || b.ms - a.ms || a.name.localeCompare(b.name)), people: [...people.values()].sort((a, b) => b.parties - a.parties || b.last - a.last), total, ms, ok, ended: d.parties.filter(p => p.etat !== 'live').length };
+}
+
+// ---------------------------------------------------------------- dessin
+function draw() {
+  const c = compute(data);
+  document.querySelectorAll('#periode button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.j === jours)));
+  const played = c.games.filter(g => g.n).length;
+  $('kpis').innerHTML = [
+    [c.salons.length, c.salons.length > 1 ? 'salons ouverts' : 'salon ouvert'],
+    [c.total, c.total > 1 ? 'parties lancées' : 'partie lancée'],
+    [c.people.length, c.people.length > 1 ? 'joueurs différents' : 'joueur'],
+    [hours(c.ms), 'de jeu au total'],
+    [pct(c.ok, c.ended), 'des parties menées au bout'],
+    [`${played}/${GAMES.length}`, 'jeux essayés'],
+  ].map(([v, l]) => `<div class="kpi"><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join('');
+
+  // les jeux
+  const max = Math.max(1, ...c.games.map(g => g.n));
+  const never = c.games.filter(g => !g.n);
+  $('games').innerHTML = (c.games.filter(g => g.n).map(g => {
+    const avg = g.joueurs / g.n, bots = g.robots / g.n;
+    const sub = [dur(g.ms), `${dec(avg)} joueur${avg >= 2 ? 's' : ''} en moyenne${bots ? `, plus ${dec(bots)} robot${bots >= 2 ? 's' : ''}` : ''}`, `${pct(g.ok, g.n)} au bout`, `dernière le ${fDate.format(g.last)}`].join(' · ');
+    return `<div class="game" data-tip="${esc(`${g.name}${NB}: ${plural(g.n, 'partie', 'parties')}`)}"><span class="name">${esc(g.name)}</span>`
+      + `<span class="bar"><i style="width:${g.n / max * 100}%"></i></span><span class="n">${g.n}</span><span class="sub">${esc(sub)}</span></div>`;
+  }).join('') || '<p class="empty">Aucune partie lancée sur cette période.</p>')
+    + (never.length ? `<p class="never"><b>Jamais lancés sur la période${NB}:</b> ${esc(never.map(g => g.name).join(', '))}.</p>` : '');
+
+  // activité : par jour (ou par mois sur « Tout » quand la période est longue)
+  const parts = data.parties.filter(p => c.salons.some(s => s.id === p.salon));
+  const first = Math.min(data.maintenant, ...c.salons.map(s => s.cree));
+  const spanDays = jours || Math.max(1, Math.ceil((data.maintenant - first) / 86400000) + 1);
+  const byMonth = !jours && spanDays > 92;
+  const buckets = [];
+  if (byMonth) {
+    const d0 = new Date(first); d0.setDate(1);
+    for (let d = new Date(d0); d <= new Date(data.maintenant); d.setMonth(d.getMonth() + 1)) buckets.push({ key: fKey.format(d).slice(0, 7), label: fMonth.format(d), n: 0 });
+    parts.forEach(p => { const b = buckets.find(x => x.key === fKey.format(p.debut).slice(0, 7)); if (b) b.n++; });
+  } else {
+    for (let i = spanDays - 1; i >= 0; i--) { const t = data.maintenant - i * 86400000; buckets.push({ key: fKey.format(t), label: fDay.format(t), n: 0 }); }
+    parts.forEach(p => { const b = buckets.find(x => x.key === fKey.format(p.debut)); if (b) b.n++; });
+  }
+  $('act-title').textContent = byMonth ? 'Parties par mois' : 'Parties par jour';
+  $('activity').innerHTML = columns(buckets.map(b => ({ n: b.n, tip: `${b.label}${NB}: ${plural(b.n, 'partie', 'parties')}` })), buckets[0]?.label || '', buckets[buckets.length - 1]?.label || '');
+
+  // heures de lancement
+  const hrs = Array.from({ length: 24 }, (_, h) => ({ h, n: 0 }));
+  parts.forEach(p => hrs[hourOf(p.debut)].n++);
+  const top = [...hrs].sort((a, b) => b.n - a.n)[0];
+  $('hours').innerHTML = columns(hrs.map(x => ({ n: x.n, tip: `${x.h} h${NB}: ${plural(x.n, 'partie', 'parties')}` })), '0 h', '23 h')
+    + (top?.n ? `<p class="peak">Le créneau le plus joué${NB}: ${top.h} h à ${top.h + 1} h.</p>` : '');
+
+  // joueurs
+  $('players').innerHTML = c.people.length ? c.people.map(p => {
+    const fav = [...p.jeux.entries()].sort((a, b) => b[1] - a[1])[0];
+    return `<div class="row"><span class="emo" aria-hidden="true">${esc(p.emoji || '·')}</span><span><b>${esc(p.nom)}</b><small>${esc([plural(p.salons, 'salon', 'salons'), fav ? `surtout ${fav[0]}` : '', `vu le ${fDate.format(p.last)}`].filter(Boolean).join(' · '))}</small></span>`
+      + `<span class="n">${plural(p.parties, 'partie', 'parties')}<small>${dur(p.ms)}</small></span></div>`;
+  }).join('') : '<p class="empty">Personne n’a encore joué sur cette période.</p>';
+
+  // salons
+  const list = showAll ? c.salons : c.salons.slice(0, 15);
+  $('salons').innerHTML = (list.length ? list.map(s => {
+    const span = s.ferme ? `${fTime.format(s.cree)} à ${fTime.format(s.ferme)}` : data.maintenant - s.cree < 12 * 3600000 ? `ouvert depuis ${fTime.format(s.cree)}` : `${fTime.format(s.cree)}, fin inconnue`;
+    const who = s.joueurs.slice().sort((a, b) => a.arrive - b.arrive).map(j => `<span class="chip">${esc(j.emoji)} ${esc(j.nom)}</span>`).join('');
+    const games = s.parties.map(p => {
+      const res = p.etat === 'ok'
+        ? `<span class="tag ok">au bout${p.manches > 1 ? ` ×${p.manches}` : ''}</span>${p.podium?.[0] ? ` ${esc(p.podium[0].name)}` : ''}`
+        : p.etat === 'live' ? '<span class="tag live">en cours</span>' : '<span class="tag ko">arrêtée</span>';
+      const n = plural(p.joueurs.length, 'joueur', 'joueurs') + (p.robots ? `, plus ${plural(p.robots, 'robot', 'robots')}` : '');
+      return `<div class="part"><span class="t">${fTime.format(p.debut)}${p.fin ? '–' + fTime.format(p.fin) : ''}</span><span class="g"><b>${esc(p.nom_jeu || p.jeu)}</b><small>${esc(dur(p.duree))} · ${esc(n)}</small></span><span class="r">${res}</span></div>`;
+    }).join('') || '<p class="empty">Aucune partie lancée.</p>';
+    return `<div class="salon"><div class="salon-head"><span class="code">${esc(s.code)}</span><span class="when">${esc(fDay.format(s.cree))}, ${esc(span)} · chez ${esc(s.hote_emoji)} ${esc(s.hote)}</span>`
+      + `<button class="btn ghost danger del" type="button" data-del="${esc(s.id)}" data-code="${esc(s.code)}">Effacer</button></div><div class="chips">${who}</div><div class="parts">${games}</div></div>`;
+  }).join('') : '<p class="empty">Aucun salon sur cette période.</p>')
+    + (c.salons.length > 15 ? `<button class="btn more" type="button" id="all">${showAll ? 'Voir moins' : `Voir les ${c.salons.length} salons`}</button>` : '');
+  $('all')?.addEventListener('click', () => { showAll = !showAll; draw(); });
+}
+
+function columns(items, left, right) {
+  const max = Math.max(1, ...items.map(x => x.n));
+  return `<div class="cols">${items.map(x => `<div class="${x.n ? '' : 'nil'}" data-tip="${esc(x.tip)}"><i style="height:${x.n / max * 100}%"></i></div>`).join('')}</div>`
+    + `<div class="axis"><span>${esc(left)}</span><span>${esc(right)}</span></div>`;
+}
+
+// infobulle commune à toutes les barres
+const tip = $('tip');
+document.addEventListener('pointermove', e => {
+  const t = e.target.closest?.('[data-tip]');
+  if (!t) { tip.hidden = true; return; }
+  tip.textContent = t.dataset.tip; tip.hidden = false;
+  tip.style.left = Math.min(innerWidth - 80, Math.max(80, e.clientX)) + 'px'; tip.style.top = e.clientY + 'px';
+});
+document.addEventListener('pointerleave', () => { tip.hidden = true; });
+
+// confirmations
+function ask(title, text) {
+  return new Promise(res => {
+    const d = $('confirm'); $('c-title').textContent = title; $('c-text').textContent = text;
+    d.querySelectorAll('button').forEach(b => b.onclick = () => { d.close(); res(b.value === 'oui'); });
+    d.showModal();
+  });
+}
+async function wipe(q, title, text) {
+  if (!await ask(title, text)) return;
+  const r = await fetch(`/stats/effacer?${q}`, { method: 'POST', headers: { authorization: `Bearer ${mdp}` } }).catch(() => null);
+  if (!r || !r.ok) { alert('Effacement impossible.'); return; }
+  data = await load(); draw();
+}
+$('salons').addEventListener('click', e => {
+  const b = e.target.closest('[data-del]'); if (!b) return;
+  wipe('salon=' + encodeURIComponent(b.dataset.del), `Effacer le salon ${b.dataset.code}`, 'Ses joueurs et ses parties disparaissent des statistiques. Pratique pour retirer une partie de test.');
+});
+$('wipe').onclick = () => wipe('tout=1', 'Tout effacer', 'Toutes les statistiques disparaissent, sur toutes les périodes. Impossible de revenir en arrière.');
+$('periode').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-j]'); if (!b) return;
+  jours = +b.dataset.j; try { localStorage.setItem('stats-jours', String(jours)); } catch { }
+  showAll = false; await enter();
+});
+$('refresh').onclick = () => enter();
+$('logout').onclick = () => { mdp = ''; try { sessionStorage.removeItem('stats-mdp'); } catch { } $('page').hidden = true; $('login').hidden = false; $('mdp').value = ''; $('mdp').focus(); };
+$('login').addEventListener('submit', e => { e.preventDefault(); mdp = $('mdp').value; enter(); });
+if (mdp) enter(); else { $('login').hidden = false; $('mdp').focus(); }
+</script>
+</body>
+</html>

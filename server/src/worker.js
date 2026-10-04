@@ -29,6 +29,7 @@ export class Salon {
     this.ctx = ctx; this.env = env;
     this.rt = null; this.ready = null; this.code = null;
     this.timer = null; this.emptySince = 0; this.lastAct = Date.now();
+    this.salonId = null; this.partie = null; this.nParties = 0; this.bots = 0; this.ticks = 0; this.lastDeep = 0;
   }
 
   async fetch(req) {
@@ -76,6 +77,7 @@ export class Salon {
   tick() {
     const rt = this.rt; if (!rt) return;
     try { if (rt.hostTick()) this.broadcast(); } catch (err) { console.error('tick', err?.stack || err); }
+    this.track(++this.ticks % 10 === 0);
     const now = Date.now();
     if (rt.net.conns.size) this.emptySince = 0; else if (!this.emptySince) this.emptySince = now;
     if (this.emptySince && now - this.emptySince > EMPTY_MS) this.shutdown(null);
@@ -84,7 +86,9 @@ export class Salon {
 
   shutdown(reason) {
     clearInterval(this.timer); this.timer = null;
-    const rt = this.rt; this.rt = null; this.ready = null;
+    const rt = this.rt;
+    if (rt) { this.closeParty(rt.net.game); if (this.salonId) this.stat('UPDATE salons SET ferme = ? WHERE id = ?', Date.now(), this.salonId); }
+    this.rt = null; this.ready = null; this.salonId = null;
     if (!rt) return;
     for (const c of rt.net.conns.values()) { if (reason) c.send({ t: 'closed', msg: reason }); c.close(); }
   }
@@ -105,10 +109,12 @@ export class Salon {
     } else {
       if (!conn.pid || rt.net.conns.get(conn.pid) !== conn) return;
       m.pid = conn.pid;                                 // l'identité vient de la connexion, pas du message
-      if (m.t === 'start') await this.loadFor(m.opts?.mode);
+      if (m.t === 'start') { await this.loadFor(m.opts?.mode); this.bots = m.opts?.rival === 'robot' ? 1 : Math.max(0, Math.min(12, +m.opts?.bots || 0)); }
     }
     this.lastAct = Date.now();
     try { rt.handleClientMessage(conn, m); } catch (err) { console.error('action', m.t, err?.stack || err); conn.send({ t: 'err', msg: 'Le serveur n’a pas compris cette action.' }); }
+    if (m.t === 'hello' || m.t === 'emoji') this.notePlayer(m.pid);
+    this.track(Date.now() - this.lastDeep > 1000);
   }
 
   // données à charger avant certains jeux (le téléphone de l'hôte le faisait avant de lancer)
@@ -117,6 +123,52 @@ export class Salon {
     if (mode === 'memes') await rt.Memes.load(rt.ASSET_V);
     if (mode === 'mirage') await rt.Mirage.load(rt.ASSET_V);
     if (mode === 'geo') await rt.Geo.loadPlaces();
+  }
+
+  // ---------------------------------------------------------------- statistiques (page /stats du site)
+  // Une ligne par salon, par joueur de chaque salon, et par partie lancée depuis le salon : le jeu, le
+  // début, la fin, qui jouait, combien de manches menées au bout et le podium. Rien n'est bloquant :
+  // si la base ne répond pas, la partie continue.
+  stat(sql, ...args) {
+    if (!this.env.DB) return;
+    this.env.DB.prepare(sql).bind(...args).run().catch(err => console.error('stats', err?.message || err));
+  }
+  notePlayer(pid) {
+    const g = this.rt?.net.game, p = g?.player(pid); if (!p || g.banned.has(pid)) return;
+    if (!this.salonId && p.host) {
+      this.salonId = `${this.code}-${Date.now().toString(36)}`;
+      this.stat('INSERT INTO salons (id, code, cree, hote, hote_emoji) VALUES (?, ?, ?, ?, ?)', this.salonId, this.code, Date.now(), p.base, p.emoji || '');
+    }
+    if (this.salonId) this.stat('INSERT INTO joueurs (salon, pid, nom, emoji, arrive) VALUES (?, ?, ?, ?, ?) ON CONFLICT (salon, pid) DO UPDATE SET nom = excluded.nom, emoji = excluded.emoji',
+      this.salonId, pid, p.base, p.emoji || '', Date.now());
+  }
+  // appelé après chaque action et à chaque tick ; « deep » : on regarde aussi si une manche vient de finir
+  track(deep) {
+    const g = this.rt?.net.game; if (!g || !this.salonId) return;
+    const now = Date.now(), p = this.partie;
+    if (g.s.phase === 'lobby') { if (p) this.closeParty(g); return; }
+    if (!p) {
+      const who = g.s.players.filter(q => q.online && !q.kicked).map(q => ({ p: q.id, n: q.base, e: q.emoji || '' }));
+      this.partie = { id: `${this.salonId}-${++this.nParties}`, jeu: g.s.mode, debut: now, fin: 0, manches: 0, podium: null, fini: false };
+      this.stat('INSERT INTO parties (id, salon, jeu, nom_jeu, debut, robots, joueurs) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        this.partie.id, this.salonId, g.s.mode, this.rt.GAMES[g.s.mode]?.name || g.s.mode, now, this.bots, JSON.stringify(who));
+      return;
+    }
+    if (!deep) return;
+    this.lastDeep = now;
+    let sum = null; try { sum = g.summary(); } catch { }
+    if (sum && !p.fini) {
+      p.fini = true; p.manches += 1; p.fin = now; p.podium = sum.podium;
+      this.stat('UPDATE parties SET fin = ?, manches = ?, podium = ? WHERE id = ?', now, p.manches, JSON.stringify(sum.podium), p.id);
+    } else if (!sum && p.fini) p.fini = false;          // « Rejouer » dans le même jeu : une nouvelle manche commence
+  }
+  closeParty(g) {
+    const p = this.partie; if (!p) return;
+    this.partie = null;
+    // une manche finie juste avant le retour au salon : son podium est déjà dans l'historique
+    const h = g?.s.history?.[0];
+    if (!p.manches && h && h.when >= p.debut) { p.manches = 1; p.fin = h.when; p.podium = h.podium; }
+    this.stat('UPDATE parties SET fin = ?, manches = ?, podium = ? WHERE id = ?', p.manches ? p.fin : Date.now(), p.manches, p.podium ? JSON.stringify(p.podium) : null, p.id);
   }
 
   onClose(conn) {

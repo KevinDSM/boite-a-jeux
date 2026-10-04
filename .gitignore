@@ -15,3 +15,4 @@ build-anime.log
 dist/
 .wrangler/
 server/src/runtime.js
+.dev.vars

@@ -4,6 +4,8 @@
   "name": "boite-a-jeux-salons",
   "main": "src/worker.js",
   "compatibility_date": "2026-09-01",
+  // statistiques lues par la page /stats du site (schéma : server/schema.sql)
+  "d1_databases": [{ "binding": "DB", "database_name": "boite-a-jeux-stats", "database_id": "44a91305-99e9-4e9a-b9e1-25be4e41c336" }],
   "durable_objects": { "bindings": [{ "name": "SALONS", "class_name": "Salon" }] },
   // offre gratuite : seules les salles stockées en SQLite sont permises
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Salon"] }],

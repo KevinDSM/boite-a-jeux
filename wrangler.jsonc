@@ -4,5 +4,7 @@
   "pages_build_output_dir": "dist",
   "compatibility_date": "2026-09-01",
   // images d'invitation des salons (« Kevin vous invite à jouer »), gardées deux jours
+  // statistiques écrites par le serveur des salons, lues par /stats (functions/stats/)
+  "d1_databases": [{ "binding": "DB", "database_name": "boite-a-jeux-stats", "database_id": "44a91305-99e9-4e9a-b9e1-25be4e41c336" }],
   "kv_namespaces": [{ "binding": "INVITES", "id": "3dc088bc971f4af79ad22bd48d37bcdc" }]
 }
