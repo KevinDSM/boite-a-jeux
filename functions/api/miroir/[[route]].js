@@ -83,7 +83,9 @@ export async function onRequest({ request, env, params }) {
       }
       if (route === 'hote') {
         const p = await partieByHost(db, q.get('h')); if (!p) return err('Code hôte inconnu.', 404);
-        return json({ ...(await etat(db, p, q.get('tok'))), hote: p.hote, resultat: p.resultat });
+        // l'hôte reçoit aussi la clé de chacun, pour renvoyer son lien à quelqu'un qui a perdu sa place
+        const liens = Object.fromEntries((await db.prepare('SELECT pid, tok FROM miroir_joueurs WHERE partie = ?').bind(p.code).all()).results.map(j => [j.pid, j.tok]));
+        return json({ ...(await etat(db, p, q.get('tok'))), hote: p.hote, resultat: p.resultat, liens });
       }
       if (route === 'resultats') {
         const r = q.get('r');
@@ -128,7 +130,10 @@ export async function onRequest({ request, env, params }) {
       if (route === 'inscrire') {
         const nom = cleanName(b.nom); if (!nom) return err('Il faut un prénom.');
         const twin = list.find(j => j.tok !== b.tok && j.nom.toLowerCase() === nom.toLowerCase());
-        if (twin) return err(`Quelqu’un s’appelle déjà ${twin.nom} dans cette partie. Ajoute une initiale.`);
+        if (twin) {
+          const host = list.find(j => j.pid === p.createur)?.nom || 'l’hôte';
+          return err(`Le prénom ${twin.nom} est déjà pris dans cette partie. Si c’est toi, depuis un autre téléphone ou navigateur, demande ton lien personnel à ${host}. Sinon, ajoute une initiale.`);
+        }
         if (moi) { await db.prepare('UPDATE miroir_joueurs SET nom = ?, emoji = ? WHERE partie = ? AND pid = ?').bind(nom, cleanEmoji(b.emoji), p.code, moi.pid).run(); return json({ pid: moi.pid }); }
         if (list.length >= MAX_JOUEURS) return err(`La partie est complète (${MAX_JOUEURS} joueurs).`, 409);
         const pid = rnd('abcdefghijkmnpqrstuvwxyz23456789', 8);

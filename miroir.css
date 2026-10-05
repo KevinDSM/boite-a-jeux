@@ -202,3 +202,4 @@
   .mr-actions .btn.ghost { padding-left: 10px; padding-right: 10px; }
 }
 @media (min-width: 900px) { .mr-wrap { padding-top: calc(var(--bar-h, 52px) + 24px); } }
+.mr-mylink { background: var(--surface-2); }

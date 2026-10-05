@@ -22,9 +22,13 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch { } },
   json(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
 };
+// Chaque participant est reconnu par une clé gardée dans CE navigateur. Un lien personnel (?c=CODE&k=CLÉ)
+// la transporte ailleurs : autre téléphone, autre navigateur, appli de messagerie. Elle vaut alors pour cette partie.
 const tok = (() => { let t = store.get('mi-tok'); if (!/^[a-z0-9]{20}$/.test(t || '')) { t = [...crypto.getRandomValues(new Uint8Array(20))].map(x => 'abcdefghijklmnopqrstuvwxyz0123456789'[x % 36]).join(''); store.set('mi-tok', t); } return t; })();
 let myEmoji = EMOJIS.includes(store.get('dc-emo')) ? store.get('dc-emo') : EMOJIS[Math.random() * EMOJIS.length | 0];
 const myName = () => store.get('dc-name', '');
+const tokFor = code => store.json('mi-toks', {})[code] || tok;
+function adoptTok(code, k) { const m = store.json('mi-toks', {}); m[code] = k; store.set('mi-toks', JSON.stringify(m)); }
 const TOUCH = !!(window.matchMedia && matchMedia('(hover: none)').matches);
 
 // thème : celui de la Boîte à jeux (clair ou sombre)
@@ -68,6 +72,8 @@ function route() {
   stopPoll(); cur = null; window.scrollTo(0, 0);
   const p = new URLSearchParams(location.search);
   const h = (p.get('h') || '').toUpperCase(), c = (p.get('c') || '').toUpperCase(), r = (p.get('r') || '').toUpperCase();
+  const k = (p.get('k') || '').toLowerCase();
+  if (c && /^[a-z0-9]{12,40}$/.test(k)) { adoptTok(c, k); remember(c); history.replaceState(null, '', `?c=${c}`); toast('Te revoilà dans ta partie.'); }
   if (r) return showResults({ r });
   if (h) return openHost(h);
   if (c) return openGame(c);
@@ -154,7 +160,8 @@ function bindEmoji(root) {
 async function openHost(h) {
   crumb('Miroir');
   try {
-    const s = await api(`hote?h=${h}&tok=${tok}`);
+    const known = mine().find(p => p.hote === h);
+    const s = await api(`hote?h=${h}&tok=${tokFor(known?.code)}`);
     remember(s.code, { hote: h });
     cur = { code: s.code, hote: h, s };
     renderHub(); startPoll();
@@ -165,7 +172,7 @@ async function openGame(code) {
   const h = hostOf(code);
   if (h) return openHost(h);
   try {
-    const s = await api(`etat?c=${code}&tok=${tok}`);
+    const s = await api(`etat?c=${code}&tok=${tokFor(code)}`);
     cur = { code, s };
     if (s.moi) remember(code);
     renderHub(); startPoll();
@@ -174,7 +181,7 @@ async function openGame(code) {
 async function refresh(redraw = true) {
   if (!cur) return;
   try {
-    const s = cur.hote ? await api(`hote?h=${cur.hote}&tok=${tok}`) : await api(`etat?c=${cur.code}&tok=${tok}`);
+    const s = cur.hote ? await api(`hote?h=${cur.hote}&tok=${tokFor(cur.code)}`) : await api(`etat?c=${cur.code}&tok=${tokFor(cur.code)}`);
     const before = JSON.stringify([cur.s.phase, cur.s.participants, cur.s.moi, cur.s.resultat]);
     // les réponses en attente d'envoi restent prioritaires sur celles du serveur
     s.mesReponses = mergeLocal(s.mesReponses || {});
@@ -221,7 +228,7 @@ async function flush() {
     let pend = store.json(pendKey(), []);
     while (pend.length) {
       const x = pend[0];
-      try { await api('repondre', { c: cur.code, tok, ...x }); }
+      try { await api('repondre', { c: cur.code, tok: tokFor(cur.code), ...x }); }
       catch (e) { if (e.status >= 400 && e.status < 500) { if (e.status === 409) toast(e.message, 3600); } else break; }
       pend = store.json(pendKey(), []).filter(y => !(y.cible === x.cible && y.q === x.q && y.val === x.val));
       store.set(pendKey(), JSON.stringify(pend));
@@ -269,6 +276,7 @@ function renderHub() {
   });
   m.appendChild(guess);
 
+  m.appendChild(myLinkBox());
   if (isHost()) m.appendChild(shareBox());
   m.appendChild(progressCard());
   if (isHost()) {
@@ -294,7 +302,7 @@ function signupForm() {
   f.onsubmit = async e => {
     e.preventDefault(); const nom = f.nom.value.trim(); if (!nom) return;
     store.set('dc-name', nom);
-    try { await api('inscrire', { c: s.code, nom, emoji: myEmoji, tok }); remember(s.code); await refresh(false); renderHub(); }
+    try { await api('inscrire', { c: s.code, nom, emoji: myEmoji, tok: tokFor(s.code) }); remember(s.code); await refresh(false); renderHub(); }
     catch (ex) { f.querySelector('.err').textContent = ex.message; }
   };
   return f;
@@ -308,6 +316,8 @@ function progressCard() {
     const sub = `${p.n >= N ? 'miroir fait' : `miroir ${p.n} sur ${N}`} · ${total > 1 ? `a deviné ${guessed} sur ${total - 1}` : 'personne à deviner'}`;
     const row = el('div', 'mr-person mr-progress', `<span class="mr-gwho">${who(p)}${p.pid === s.moi ? ' <i>toi</i>' : ''}${p.pid === s.createurPid ? ' <i>hôte</i>' : ''}<small>${esc(sub)}</small></span>`);
     if (isHost() && p.pid !== s.createurPid) {
+      const lk = cur.s.liens?.[p.pid];
+      if (lk) { const l = el('button', 'btn ghost small', 'Son lien'); l.type = 'button'; l.title = `Le lien qui rend sa place à ${p.nom}`; l.onclick = () => sendLink(p.nom, lk); row.appendChild(l); }
       const x = el('button', 'btn ghost small', 'Retirer'); x.type = 'button';
       x.onclick = async () => { if (await ask(`Retirer ${p.nom}`, `${p.nom} et ses réponses disparaissent de la partie.`, 'Retirer')) { try { await api('hote', { h: cur.hote, action: 'retirer', pid: p.pid }); await refresh(false); renderHub(); } catch (e) { toast(e.message, 3600); } } };
       row.appendChild(x);
@@ -315,6 +325,24 @@ function progressCard() {
     box.querySelector('.mr-people').appendChild(row);
   });
   return box;
+}
+// le lien personnel : il rouvre sa place dans cette partie depuis n'importe quel navigateur
+const personalLink = k => linkFor(`c=${cur.code}&k=${k}`);
+function myLinkBox() {
+  const box = el('section', 'mr-card mr-mylink');
+  box.innerHTML = `<h2>Ton lien personnel</h2><p class="fine">Pour revenir dans ta partie depuis un autre téléphone, un autre navigateur ou l’appli de messagerie. Garde-le pour toi${NB}: il ouvre ta place.</p>
+    <div class="mr-acts"><button class="btn small" type="button" data-a="copy">Copier mon lien</button><button class="btn small" type="button" data-a="share">Me l’envoyer</button></div>`;
+  const url = personalLink(tokFor(cur.code));
+  box.querySelector('[data-a=copy]').onclick = () => navigator.clipboard.writeText(url).then(() => toast('Ton lien est copié'), () => toast('Copie impossible'));
+  const sh = box.querySelector('[data-a=share]'); sh.hidden = !navigator.share;
+  sh.onclick = () => navigator.share({ title: 'Miroir · mon lien', text: `Mon lien Miroir (partie ${cur.code})`, url }).catch(() => { });
+  return box;
+}
+function sendLink(nom, k) {
+  const url = personalLink(k);
+  const text = `${nom}, voici ton lien Miroir${NB}: il te ramène dans ta partie, même depuis un autre téléphone. ${url}`;
+  if (navigator.share) navigator.share({ title: 'Miroir', text, url }).catch(() => { });
+  else navigator.clipboard.writeText(url).then(() => toast(`Lien de ${nom} copié. Envoie-le-lui${NB}: il lui rend sa place.`, 4200), () => toast('Copie impossible'));
 }
 function linkFor(q) { return `${location.origin}${location.pathname}?${q}`; }
 function shareBox() {

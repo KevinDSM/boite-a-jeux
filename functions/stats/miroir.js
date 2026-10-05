@@ -7,7 +7,7 @@ export async function onRequestGet({ request, env }) {
   const parse = s => { try { return JSON.parse(s); } catch { return null; } };
   const [parties, joueurs, reponses] = await env.DB.batch([
     env.DB.prepare('SELECT code, hote, resultat, cree, maj, phase, createur, cats, questions FROM miroir_parties ORDER BY cree DESC LIMIT 60'),
-    env.DB.prepare('SELECT partie, pid, nom, emoji, arrive, fini FROM miroir_joueurs WHERE partie IN (SELECT code FROM miroir_parties ORDER BY cree DESC LIMIT 60) ORDER BY arrive'),
+    env.DB.prepare('SELECT partie, pid, tok, nom, emoji, arrive, fini FROM miroir_joueurs WHERE partie IN (SELECT code FROM miroir_parties ORDER BY cree DESC LIMIT 60) ORDER BY arrive'),
     env.DB.prepare('SELECT partie, pid, q, v, maj FROM miroir_reponses WHERE partie IN (SELECT code FROM miroir_parties ORDER BY cree DESC LIMIT 60)'),
   ]);
   return json({
