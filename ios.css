@@ -1,0 +1,214 @@
+/* ====================================================================================================
+   Boîte à jeux · couche iOS 26 / Liquid Glass (chargée après style.css)
+   D'après le skill apple-design (bowen31337) : jetons, verre en couches (teinte + flou + saturation,
+   reflet sur l'arête haute, liseré fin, ombre douce), ressorts pour tout ce qui se touche (ios.js).
+   Chaque thème a son fond d'écran sous le verre ; chaque jeu garde sa couleur et son dessin.
+   Repli opaque si « réduire la transparence », « contraste élevé » ou pas de backdrop-filter.
+   ==================================================================================================== */
+
+/* ---------------------------------------------------------------- jetons (repris du skill, accordés aux thèmes) */
+:root {
+  --text-large-title: 2.125rem; --text-title-1: 1.75rem; --text-title-2: 1.375rem; --text-title-3: 1.25rem;
+  --text-headline: 1.0625rem; --text-body: 1.0625rem; --text-subhead: .9375rem; --text-footnote: .8125rem; --text-caption-1: .75rem;
+  --tracking-tight: -.022em; --tracking-snug: -.014em; --tracking-wide: .01em;
+  --radius-md: 12px; --radius-lg: 16px; --radius-xl: 22px; --radius-2xl: 28px; --radius-capsule: 999px;
+  --ease-out: cubic-bezier(.23, 1, .32, 1); --ease-ios: cubic-bezier(.32, .72, 0, 1);
+  --duration-instant: 100ms;
+
+  /* Ambre (sombre, par défaut) */
+  --wall-base: oklch(0.17 0.02 50);
+  --wall: radial-gradient(70% 42% at 12% 22%, oklch(0.62 0.17 55 / .85), transparent 70%),
+          radial-gradient(55% 45% at 98% 46%, oklch(0.52 0.17 25 / .75), transparent 70%),
+          radial-gradient(75% 50% at 22% 92%, oklch(0.38 0.12 330 / .9), transparent 72%),
+          linear-gradient(180deg, var(--wall-base) 0, var(--wall-base) 70px, oklch(0.2 0.04 40) 40%, oklch(0.14 0.03 340));
+  --glass-tint: oklch(0.2 0.025 50 / .5);
+  --glass-tint-thick: oklch(0.2 0.025 50 / .72);
+  --glass-hi: rgba(255, 255, 255, .34); --glass-rim: rgba(255, 255, 255, .16); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-shadow: 0 10px 34px rgba(10, 4, 0, .38);
+  --glass-ink: oklch(0.97 0.01 80); --glass-ink-2: oklch(0.88 0.02 70);
+  --glass-field: oklch(0.12 0.02 50 / .45);
+  --icon-label: #fff; --icon-label-shadow: 0 1px 3px rgba(0, 0, 0, .55);
+  --scrim: rgba(10, 6, 2, .42);
+}
+/* Minuit */
+[data-skin="nuit"]:not([data-game]) {
+  --wall-base: oklch(0.16 0.04 260);
+  --wall: radial-gradient(70% 42% at 14% 20%, oklch(0.62 0.12 180 / .7), transparent 70%),
+          radial-gradient(55% 45% at 98% 48%, oklch(0.5 0.16 275 / .75), transparent 70%),
+          radial-gradient(75% 50% at 26% 92%, oklch(0.36 0.11 250 / .9), transparent 72%),
+          linear-gradient(180deg, var(--wall-base) 0, var(--wall-base) 70px, oklch(0.19 0.05 255) 40%, oklch(0.13 0.04 270));
+  --glass-tint: oklch(0.2 0.04 260 / .5); --glass-tint-thick: oklch(0.2 0.04 260 / .74);
+  --glass-shadow: 0 10px 34px rgba(0, 4, 20, .45);
+  --glass-ink: oklch(0.97 0.01 240); --glass-ink-2: oklch(0.87 0.03 240);
+  --glass-field: oklch(0.12 0.04 260 / .5);
+  --scrim: rgba(2, 6, 18, .45);
+}
+/* Crème (clair) */
+[data-theme="light"]:not([data-game]) {
+  --wall-base: oklch(0.96 0.015 78);
+  --wall: radial-gradient(70% 42% at 12% 22%, oklch(0.86 0.1 60 / .9), transparent 70%),
+          radial-gradient(55% 45% at 98% 46%, oklch(0.84 0.09 25 / .8), transparent 70%),
+          radial-gradient(75% 50% at 24% 92%, oklch(0.88 0.09 95 / .9), transparent 72%),
+          linear-gradient(180deg, var(--wall-base) 0, var(--wall-base) 70px, oklch(0.94 0.03 70) 45%, oklch(0.93 0.03 40));
+  --glass-tint: rgba(255, 252, 247, .56); --glass-tint-thick: rgba(255, 252, 247, .78);
+  --glass-hi: rgba(255, 255, 255, .9); --glass-rim: rgba(255, 255, 255, .55); --glass-edge: rgba(70, 45, 20, .1);
+  --glass-shadow: 0 10px 34px rgba(90, 60, 20, .16);
+  --glass-ink: oklch(0.24 0.03 60); --glass-ink-2: oklch(0.4 0.03 60);
+  --glass-field: rgba(255, 255, 255, .6);
+  --icon-label: oklch(0.26 0.03 60); --icon-label-shadow: 0 1px 2px rgba(255, 255, 255, .6);
+  --scrim: rgba(60, 40, 15, .22);
+}
+/* Lavande (clair) */
+[data-theme="light"][data-skin="lavande"]:not([data-game]) {
+  --wall-base: oklch(0.955 0.022 300);
+  --wall: radial-gradient(70% 42% at 12% 22%, oklch(0.84 0.09 300 / .9), transparent 70%),
+          radial-gradient(55% 45% at 98% 46%, oklch(0.84 0.1 350 / .8), transparent 70%),
+          radial-gradient(75% 50% at 24% 92%, oklch(0.85 0.08 260 / .9), transparent 72%),
+          linear-gradient(180deg, var(--wall-base) 0, var(--wall-base) 70px, oklch(0.93 0.03 300) 45%, oklch(0.92 0.035 330));
+  --glass-tint: rgba(253, 250, 255, .56); --glass-tint-thick: rgba(253, 250, 255, .78);
+  --glass-edge: rgba(60, 30, 90, .1); --glass-shadow: 0 10px 34px rgba(70, 40, 110, .16);
+  --glass-ink: oklch(0.25 0.04 300); --glass-ink-2: oklch(0.41 0.04 300);
+  --icon-label: oklch(0.27 0.04 300);
+  --scrim: rgba(50, 25, 80, .22);
+}
+
+/* ---------------------------------------------------------------- le verre (recette complète du skill) */
+.glass {
+  background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
+          backdrop-filter: blur(22px) saturate(185%);
+  box-shadow:
+    inset 0 1.2px 0 var(--glass-hi),          /* la lumière qui accroche l'arête haute */
+    inset 0 -1px 0 rgba(255, 255, 255, .06),  /* un peu de lumière remonte par le bas */
+    inset 0 0 0 .5px var(--glass-rim),         /* liseré intérieur */
+    0 0 0 .5px var(--glass-edge),              /* liseré extérieur : l'arête se lit sur tout fond */
+    var(--glass-shadow);                       /* il flotte au-dessus du fond */
+  color: var(--glass-ink);
+}
+.glass-thick { background: var(--glass-tint-thick); -webkit-backdrop-filter: blur(34px) saturate(180%); backdrop-filter: blur(34px) saturate(180%); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass, .glass-thick { background: var(--surface); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-thick { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--ink); }
+  #s-home .ih-wall { background: var(--bg); }
+}
+@media (prefers-contrast: more) {
+  .glass, .glass-thick { background: var(--surface); box-shadow: 0 0 0 1.5px var(--ink); color: var(--ink); }
+}
+
+/* ---------------------------------------------------------------- l'accueil, façon écran d'iPhone */
+#s-home.ios-home { max-width: 560px; gap: 18px; padding-bottom: calc(118px + env(safe-area-inset-bottom)); animation: none; }
+#s-home .ih-wall { position: fixed; inset: 0; z-index: -1; background: var(--wall); background-color: var(--wall-base); }
+#s-home ~ * {}
+body:has(#s-home:not([hidden])) .grain { display: none; }
+body:has(#s-home:not([hidden])) { background: var(--wall-base); }
+body:has(#s-home:not([hidden])) .topbar { background: transparent; border-bottom-color: transparent; }
+body:has(#s-home:not([hidden])) .topbar .crumb { opacity: 0; }
+body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); color: var(--glass-ink); border-color: transparent;
+  -webkit-backdrop-filter: blur(18px) saturate(185%); backdrop-filter: blur(18px) saturate(185%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); border-radius: 50%; width: 40px; height: 40px; }
+
+.ih-head { display: flex; flex-direction: column; gap: 2px; padding: 0 4px; color: var(--icon-label); text-shadow: var(--icon-label-shadow); }
+.ih-head .ih-date { font-size: var(--text-subhead); font-weight: 600; letter-spacing: 0; opacity: .85; }
+.ih-head h1 { margin: 0; font-size: var(--text-large-title) !important; line-height: 1.05; letter-spacing: var(--tracking-tight) !important; font-weight: 700; }
+
+/* le widget du salon : prénom, créer, rejoindre */
+.ih-widget { border-radius: var(--radius-2xl); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.ih-widget .ih-wtop { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ih-widget .ih-wtop b { font-size: var(--text-headline); font-weight: 650; letter-spacing: -.01em; }
+.ih-widget .ih-wtop span { font-size: var(--text-footnote); color: var(--glass-ink-2); }
+.ih-widget .name-row { display: flex; gap: 8px; }
+.ih-widget input, .ih-widget .emo-btn { background: var(--glass-field); border: 0; color: var(--glass-ink); box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+.ih-widget input { border-radius: 14px; min-height: 48px; }
+.ih-widget input::placeholder { color: var(--glass-ink-2); opacity: .9; }
+.ih-widget input:focus { box-shadow: inset 0 0 0 2px var(--acc); }
+.ih-widget .emo-btn { border-radius: 14px; width: 52px; min-height: 48px; }
+.ih-widget .btn { border-radius: var(--radius-capsule); min-height: 50px; }
+.ih-widget .btn.primary { background: var(--acc); color: var(--on-acc); border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 8px 18px -10px color-mix(in oklab, var(--acc) 80%, black); }
+.ih-widget .join-row .btn:not(.primary) { background: var(--glass-field); color: var(--glass-ink); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+.ih-widget .join-label { display: none; }
+.ih-widget #in-code { font-size: 20px; letter-spacing: .3em; }
+.ih-widget .err { margin: 0; }
+.ih-widget .err:empty { display: none; }
+.ih-resume { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 16px; background: var(--glass-field); box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+.ih-resume span { font-size: var(--text-subhead); }
+.ih-resume b { letter-spacing: .08em; }
+.ih-resume .btn { min-height: 36px; padding: 6px 14px; font-size: 14px; }
+#s-home .invite-banner { background: color-mix(in oklab, var(--acc) 22%, transparent); border-color: color-mix(in oklab, var(--acc) 45%, transparent); color: var(--glass-ink); }
+#s-home .invite-banner span { color: var(--glass-ink-2); }
+
+/* la grille d'icônes */
+.ih-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 0; justify-items: center; padding: 6px 0 4px; }
+.ih-app { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 76px; padding: 0; border: 0; background: none; cursor: pointer;
+  color: var(--icon-label); font: 500 11.5px/1.15 var(--font); text-decoration: none; -webkit-touch-callout: none; user-select: none; }
+.ih-app .ih-l { width: 76px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: var(--icon-label-shadow); letter-spacing: .005em; }
+.ih-app:focus-visible { outline: none; }
+.ih-app:focus-visible .ih-ic { outline: 2px solid var(--icon-label); outline-offset: 3px; }
+.ih-ic { position: relative; width: 62px; height: 62px; border-radius: 14px; display: grid; place-items: center; overflow: hidden; will-change: transform;
+  background: linear-gradient(165deg, color-mix(in oklab, var(--c) 78%, white), var(--c) 52%, color-mix(in oklab, var(--c) 80%, black));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), inset 0 0 0 .5px rgba(255, 255, 255, .14), 0 5px 14px rgba(0, 0, 0, .28); }
+.ih-ic::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), transparent 42%); }
+.ih-ic img { width: 92%; height: 92%; object-fit: contain; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .28)); pointer-events: none; }
+.ih-ic .ih-art { background: none !important; border: 0 !important; box-shadow: none !important; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; }
+.ih-ic .gart { transform: scale(.82); pointer-events: none; }
+.ih-ic .ih-glyph { font-size: 30px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .25)); }
+.ih-ic svg { width: 30px; height: 30px; color: #fff; }
+
+/* le dock des favoris */
+.ih-fade { position: fixed; z-index: 14; left: 0; right: 0; bottom: 0; height: calc(150px + env(safe-area-inset-bottom)); pointer-events: none;
+  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--wall-base) 82%, transparent) 46%, var(--wall-base)); }
+@media (min-width: 1100px) { .ih-fade { display: none; } }
+.ih-dock { position: fixed; z-index: 15; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+  width: min(528px, calc(100% - 20px)); height: 92px; border-radius: 32px; display: flex; justify-content: space-around; align-items: center; padding: 0 6px; }
+.ih-dock .ih-app .ih-l { display: none; }
+.ih-dock-t { display: none; }
+
+.ih-foot { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--icon-label); text-shadow: var(--icon-label-shadow); }
+.ih-foot .btn { color: var(--icon-label); background: none; border: 0; min-height: 44px; }
+.ih-foot .fine { color: inherit; opacity: .8; margin: 0; }
+
+/* ---------------------------------------------------------------- la feuille d'un jeu (ressort, ios.js) */
+.ih-scrim { position: fixed; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; }
+.ih-sheet { position: fixed; z-index: 41; left: 50%; bottom: 0; width: min(560px, 100%); margin-left: max(-280px, -50%);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; padding: 8px 22px max(26px, env(safe-area-inset-bottom));
+  touch-action: none; transform: translateY(110%); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.ih-grab { width: 38px; height: 5px; border-radius: 3px; background: currentColor; opacity: .3; margin: 4px auto 14px; flex: none; }
+.ih-sheet .ih-ic { width: 96px; height: 96px; border-radius: 22px; }
+.ih-sheet .ih-ic img { width: 94%; height: 94%; }
+.ih-sheet .ih-ic .gart { transform: scale(1.2); }
+.ih-sheet h2 { margin: 12px 0 0; font-size: var(--text-title-1); line-height: 1.12; letter-spacing: var(--tracking-snug); font-weight: 700; }
+.ih-sheet p { margin: 4px 0 0; font-size: var(--text-body); color: var(--glass-ink-2); max-width: 36ch; }
+.ih-sheet .ih-meta { font-size: var(--text-footnote); font-weight: 600; color: var(--glass-ink-2); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.ih-sheet .ih-acts { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 18px; }
+.ih-sheet .btn { border-radius: var(--radius-capsule); min-height: 52px; }
+.ih-sheet .btn.primary { background: var(--acc); color: var(--on-acc); border: 0; }
+.ih-sheet .btn:not(.primary) { background: var(--glass-field); color: var(--glass-ink); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+
+/* ---------------------------------------------------------------- PC : deux colonnes, les icônes à gauche, le salon à droite */
+@media (min-width: 1100px) {
+  #s-home.ios-home { max-width: 1120px; display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto 1fr; column-gap: 56px; row-gap: 22px; align-items: start; padding-bottom: 40px; }
+  #s-home .ih-head { grid-column: 1; grid-row: 1; padding-top: 18px; }
+  #s-home .ih-head h1 { font-size: 3rem !important; }
+  #s-home .ih-grid { grid-column: 1; grid-row: 2; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 26px 8px; }
+  #s-home .ih-app { width: 100px; font-size: 13px; }
+  #s-home .ih-app .ih-l { width: 100px; }
+  #s-home .ih-grid .ih-ic { width: 76px; height: 76px; border-radius: 17px; }
+  #s-home .ih-side { grid-column: 2; grid-row: 1 / 3; position: sticky; top: calc(var(--bar-h) + 14px); display: flex; flex-direction: column; gap: 16px; }
+  .ih-dock { position: static; transform: none; width: 100%; height: auto; padding: 14px 10px 12px; border-radius: var(--radius-2xl); flex-wrap: wrap; justify-content: space-around; row-gap: 6px; }
+  .ih-dock-t { display: block; width: 100%; padding: 0 8px 4px; font-size: var(--text-footnote); font-weight: 600; color: var(--glass-ink-2); }
+  .ih-dock .ih-app .ih-l { display: block; color: var(--glass-ink); text-shadow: none; }
+  #s-home .ih-dock .ih-app, #s-home .ih-dock .ih-app .ih-l { width: 82px; }
+  #s-home .ih-dock .ih-ic { width: 62px; height: 62px; }
+}
+@media (max-width: 380px) {
+  .ih-app, .ih-app .ih-l { width: 70px; }
+  .ih-ic { width: 56px; height: 56px; border-radius: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ih-sheet, .ih-scrim { transition: opacity .15s linear !important; }
+}
+
+/* thèmes clairs : l'accent est foncé sous un texte blanc, pour tenir l'AA (4,5:1) */
+[data-theme="light"] .ih-widget .btn.primary, [data-theme="light"] .ih-sheet .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); }

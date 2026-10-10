@@ -5,7 +5,8 @@
 2. Le site (boite-a-jeux.pages.dev) : copie dans dist/ les seuls fichiers servis au navigateur
    (fichiers suivis par git, sans les scripts de construction ni les journaux), puis
    `wrangler pages deploy`. Les fonctions du site sont dans functions/.
-Usage : python deploy.py [--site | --server] [--dry]
+Usage : python deploy.py [--site | --server] [--dry] [--preview NOM]
+  --preview NOM : publie le site sur NOM.boite-a-jeux.pages.dev, sans toucher au site en ligne.
   --site / --server : ne publie que l'un des deux ; --dry : prépare sans publier.
 Attention : publier le serveur redémarre les salons en cours.
 """
@@ -26,10 +27,12 @@ if '--site' not in sys.argv:
 if '--server' in sys.argv: sys.exit(0)
 
 files = subprocess.run(['git', 'ls-files'], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split('\n')
-keep = [f for f in files if f and not f.endswith(SKIP_EXT) and os.path.basename(f) not in SKIP_NAMES and not f.startswith(SKIP_DIRS)]
+keep = [f for f in files if f and not f.endswith(SKIP_EXT) and os.path.basename(f) not in SKIP_NAMES and not f.startswith(SKIP_DIRS)
+        and not (f.startswith('icons/') and f.endswith('.png'))]     # rendus Blender en 512 px : seules les versions web partent
 shutil.rmtree(DIST, ignore_errors=True)
 for f in keep:
     dst = os.path.join(DIST, f); os.makedirs(os.path.dirname(dst), exist_ok=True); shutil.copy2(os.path.join(ROOT, f), dst)
 print(f'{len(keep)} fichiers dans dist/')
 if not dry:
-    sys.exit(subprocess.run([wr, 'pages', 'deploy', 'dist', '--project-name', 'boite-a-jeux', '--branch', 'main', '--commit-dirty=true'], cwd=ROOT).returncode)
+    branch = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else 'main'
+    sys.exit(subprocess.run([wr, 'pages', 'deploy', 'dist', '--project-name', 'boite-a-jeux', '--branch', branch, '--commit-dirty=true'], cwd=ROOT).returncode)

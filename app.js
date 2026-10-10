@@ -1349,6 +1349,9 @@ $('#f-home').addEventListener('submit', async e => {
   try {
     if (mode === 'create') { await (SALON_WS ? serverHost() : hostGame()); keepAwake(); }
     else { if (code.length !== 4) { err.textContent = 'Le code fait 4 lettres.'; return; } await (SALON_WS ? serverJoin(code) : joinGame(code)); keepAwake(); }
+    // lancé depuis l'icône d'un jeu à l'accueil : le salon s'ouvre avec ce jeu déjà choisi
+    if (mode === 'create' && window.pendingPick) { act({ t: 'pick', key: window.pendingPick }); window.pendingPick = null; }
+    try { localStorage.setItem('dc-last', JSON.stringify({ code: net.code, at: Date.now() })); } catch { }
   } catch (ex) {
     err.textContent = ex.message === 'no-room' || ex.type === 'peer-unavailable'
       ? (SALON_WS ? 'Aucune partie avec ce code. Vérifie les 4 lettres.' : 'Aucune partie avec ce code. Vérifie les 4 lettres, et demande à l\'hôte de rouvrir la page du jeu sur son téléphone.')
