@@ -2,7 +2,10 @@
 import sys, os
 from PIL import Image, ImageDraw
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-COL = {'timeline': '#df6438', 'bataille': '#bf3a3a', 'sablier': '#c58d34', 'poker': '#1e6c42'}
+COL = {'timeline': '#df6438', 'eclair': '#e3a619', 'sprint': '#2b9d6a', 'chromo': '#df453b', 'douze': '#1f9187', 'kems': '#7650cf', 'bataille': '#bf3a3a',
+       'poker': '#1e6c42', 'solitaire': '#2e7a4e', 'duel': '#8a683e', 'teldes': '#4a78dd', 'mirage': '#a964d6', 'memes': '#e0a000', 'limite': '#55555f',
+       'nomcode': '#b53327', 'sablier': '#c58d34', 'diapason': '#d4446c', 'petitbac': '#e0852b', 'geo': '#2b8bc5', 'undercover': '#3b4859',
+       'loupgarou': '#2c3166', 'naufrages': '#1592a3', 'miroir': '#6f9bd1', 'regles': '#8a8178', 'solo': '#56657a'}
 keys = sys.argv[1:-1] or list(COL); out = sys.argv[-1]
 T = 180
 def tile(color):
@@ -14,10 +17,11 @@ def tile(color):
         k = y / T; f = 1.18 - 0.36 * k
         d.line([(0, y), (T, y)], fill=tuple(min(255, int(v * f)) for v in c) + (255,))
     t.paste(g, (0, 0), m); return t
-sheet = Image.new('RGBA', (len(keys) * (T + 20) + 20, T + 40), (36, 30, 40, 255))
+COLS = 7; rows = (len(keys) + COLS - 1) // COLS
+sheet = Image.new('RGBA', (min(len(keys), COLS) * (T + 20) + 20, rows * (T + 20) + 20), (36, 30, 40, 255))
 for i, k in enumerate(keys):
     t = tile(COL.get(k, '#777777'))
     ic = Image.open(os.path.join(ROOT, 'icons', k + '.png')).convert('RGBA').resize((int(T * 0.86),) * 2, Image.LANCZOS)
     t.alpha_composite(ic, ((T - ic.width) // 2, (T - ic.height) // 2))
-    sheet.alpha_composite(t, (20 + i * (T + 20), 20))
+    sheet.alpha_composite(t, (20 + (i % COLS) * (T + 20), 20 + (i // COLS) * (T + 20)))
 sheet.save(out)

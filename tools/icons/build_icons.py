@@ -114,16 +114,36 @@ def text(name, body, font, size, m, loc, rot=(0, 0, 0), depth=0.012, align='CENT
     except Exception: pass
     return obj_from(name, c, m, loc, rot)
 
-def frame(objs, margin=1.04):
-    """Recadre la caméra pour que l'objet remplisse l'icône."""
-    sc = bpy.context.scene; cam = sc.camera
+def frame(objs, fill=0.86):
+    """Recadre la caméra sur ce qu'elle voit vraiment : les sommets réels (modificateurs compris), projetés
+    à l'écran, pour que l'objet remplisse l'icône quelle que soit sa forme. Deux passes : viser, puis régler la distance."""
+    from bpy_extras.object_utils import world_to_camera_view
+    sc = bpy.context.scene; cam = sc.camera; dg = bpy.context.evaluated_depsgraph_get()
     bpy.context.view_layer.update()
-    pts = [o.matrix_world @ Vector(c) for o in objs for c in o.bound_box]
+    pts = []
+    for o in objs:
+        ev = o.evaluated_get(dg)
+        try:
+            me = ev.to_mesh(); pts += [ev.matrix_world @ v.co for v in me.vertices]; ev.to_mesh_clear()
+        except Exception:
+            pts += [o.matrix_world @ Vector(c) for c in o.bound_box]
+    if not pts: return
     center = sum(pts, Vector()) / len(pts)
-    radius = max((p - center).length for p in pts)
-    fov = 2 * math.atan(cam.data.sensor_width / (2 * cam.data.lens))
-    dist = radius * margin / math.sin(fov / 2)
-    d = (cam.location - Vector((0, 0, 0))).normalized()
+    d = (cam.location - center).normalized()
+    dist = (cam.location - center).length
+    for _ in range(3):
+        cam.location = center + d * dist
+        cam.rotation_euler = (center - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        bpy.context.view_layer.update()
+        pr = [world_to_camera_view(sc, cam, p) for p in pts]
+        xs, ys = [p.x for p in pr], [p.y for p in pr]
+        # recentre la visée sur le milieu de l'objet tel qu'il apparaît
+        mx, my = (min(xs) + max(xs)) / 2 - 0.5, (min(ys) + max(ys)) / 2 - 0.5
+        right = cam.matrix_world.to_3x3() @ Vector((1, 0, 0)); up = cam.matrix_world.to_3x3() @ Vector((0, 1, 0))
+        half = dist * math.tan(2 * math.atan(cam.data.sensor_width / (2 * cam.data.lens)) / 2)
+        center = center + right * (mx * 2 * half) + up * (my * 2 * half)
+        extent = max(max(xs) - min(xs), max(ys) - min(ys))
+        dist *= extent / fill
     cam.location = center + d * dist
     cam.rotation_euler = (center - cam.location).to_track_quat('-Z', 'Y').to_euler()
 
@@ -238,11 +258,14 @@ def icon_poker():                          # Poker : une pile de jetons et un je
     return objs
 
 ICONS = {'timeline': icon_timeline, 'bataille': icon_bataille, 'sablier': icon_sablier, 'poker': icon_poker}
+# les autres jeux, Miroir, les règles et le mode solo : dans more_icons.py, exécuté ici (mêmes outils)
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'more_icons.py'), encoding='utf-8').read())
+ICONS.update(MORE)
 
 if __name__ == '__main__':
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     for key in (argv or list(ICONS)):
         reset()
         objs = ICONS[key]()
-        frame([o for o in bpy.context.scene.objects if o.type in ('MESH', 'FONT')])
+        frame([o for o in bpy.context.scene.objects if o.type in ('MESH', 'FONT', 'CURVE') and not o.hide_render])
         render(key)

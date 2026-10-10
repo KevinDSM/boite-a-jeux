@@ -6,7 +6,7 @@
 
 'use strict';
 
-const ASSET_V = '66';
+const ASSET_V = '67';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;

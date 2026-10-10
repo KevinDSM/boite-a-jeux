@@ -212,3 +212,156 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
 
 /* thèmes clairs : l'accent est foncé sous un texte blanc, pour tenir l'AA (4,5:1) */
 [data-theme="light"] .ih-widget .btn.primary, [data-theme="light"] .ih-sheet .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); }
+
+/* ====================================================================================================
+   Le fond d'écran commun (accueil, salon) : un seul élément posé par ios.js
+   ==================================================================================================== */
+.ios-wall { position: fixed; inset: 0; z-index: -1; background: var(--wall); background-color: var(--wall-base); display: none; pointer-events: none; }
+#s-home .ih-wall { display: none; }
+body:has(#s-home:not([hidden])) .ios-wall, body:has(#s-lobby:not([hidden])) .ios-wall { display: block; }
+@media (prefers-reduced-transparency: reduce) { .ios-wall { background: var(--bg); } }
+
+/* ====================================================================================================
+   Le salon : la liste des jeux en verre, le code en widget, les réglages dans une carte épaisse
+   ==================================================================================================== */
+/* le fond d'écran est sous le corps de page : le corps devient transparent, la page prend la teinte du haut */
+html:has(body :is(#s-home, #s-lobby):not([hidden])) { background: var(--wall-base); }
+body:has(:is(#s-home, #s-lobby):not([hidden])) { background: transparent; }
+body:has(:is(#s-home, #s-lobby):not([hidden]))::before { display: none; }
+body:has(#s-lobby:not([hidden])) .grain { display: none; }
+/* la barre du haut reste UNIE (iOS 26 prélève sa couleur pour la barre d'état) : la teinte du haut du fond d'écran */
+body:has(#s-lobby:not([hidden])) .topbar { background: var(--wall-base); border-bottom-color: transparent; }
+body:has(:is(#s-lobby, #s-home):not([hidden])) .topbar .ic { background: var(--glass-tint); color: var(--glass-ink); border-color: transparent;
+  -webkit-backdrop-filter: blur(18px) saturate(185%); backdrop-filter: blur(18px) saturate(185%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); border-radius: 50%; width: 44px; height: 44px; }
+body:has(#s-lobby:not([hidden])) .topbar .crumb { color: var(--icon-label); font-weight: 650; }
+
+#s-lobby {
+  --ink: var(--glass-ink); --ink-2: var(--glass-ink-2); --mute: var(--glass-ink-2);
+  --line: color-mix(in oklab, var(--glass-ink) 13%, transparent);
+  --surface: var(--glass-field); --surface-2: var(--glass-field);
+  animation: none;
+}
+/* ce qui est posé directement sur le fond d'écran se lit comme les étiquettes de l'accueil */
+#s-lobby .picker .section-title, #s-lobby .gfam, #s-lobby .gsoon, #s-lobby .players-title, #s-lobby #lobby-wait, #s-lobby .opts .fine, #s-lobby .chips legend {
+  color: var(--icon-label); text-shadow: var(--icon-label-shadow); }
+#s-lobby .picker .section-title { font-size: var(--text-large-title); letter-spacing: var(--tracking-tight); font-weight: 700; }
+#s-lobby .gfam { font-size: var(--text-footnote); font-weight: 650; padding: 20px 6px 8px; }
+
+/* le code du salon : un widget en verre */
+#s-lobby .code-strip { border-radius: var(--radius-2xl); padding: 16px 18px; gap: 6px; }
+#s-lobby .code-strip .eyebrow { color: var(--glass-ink-2); }
+#s-lobby .code-strip .code { font-variant-numeric: tabular-nums; }
+#s-lobby .code-strip .btn { margin-top: 6px; }
+#s-lobby .btn { border-radius: var(--radius-capsule); min-height: 44px; }
+#s-lobby .btn:not(.primary) { background: var(--glass-field); color: var(--glass-ink); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+#s-lobby .btn.primary { border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 10px 22px -12px color-mix(in oklab, var(--acc) 80%, black); }
+[data-theme="light"] #s-lobby .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); color: #fff; }
+
+/* les joueurs : des pastilles de verre */
+#s-lobby .chip { background: var(--glass-tint); border: 0; min-height: 44px; padding: 6px 14px 6px 10px; color: var(--glass-ink);
+  -webkit-backdrop-filter: blur(18px) saturate(185%); backdrop-filter: blur(18px) saturate(185%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); }
+#s-lobby .chip i { color: var(--glass-ink-2); }
+
+/* les familles : un contrôle segmenté, la pastille glisse sur ressort (ios.js) */
+#s-lobby .gfilters { position: relative; border-radius: var(--radius-capsule); padding: 4px; gap: 0; background: var(--glass-tint); margin: 0 0 4px;
+  -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge), var(--glass-shadow); }
+#s-lobby .gfilter { position: relative; z-index: 1; min-height: 44px; padding: 8px 15px; border-radius: var(--radius-capsule); color: var(--glass-ink); font-weight: 500;
+  background: transparent !important; box-shadow: none !important; transition: color .2s var(--ease-out); }
+#s-lobby .gfilter[aria-pressed="true"] { font-weight: 650; }
+#s-lobby .gfilter:active { transform: none; }
+.gf-pill { position: absolute; z-index: 0; top: 4px; left: 0; height: calc(100% - 8px); width: 60px; border-radius: var(--radius-capsule); pointer-events: none;
+  background: color-mix(in oklab, var(--glass-ink) 16%, transparent); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 2px 8px rgba(0, 0, 0, .18); will-change: transform; }
+[data-theme="light"] .gf-pill { background: rgba(255, 255, 255, .92); box-shadow: inset 0 1px 0 #fff, 0 2px 8px rgba(60, 40, 15, .14), 0 0 0 .5px rgba(60, 40, 15, .08); }
+
+/* la liste des jeux : une liste groupée en verre, avec les icônes 3D */
+#s-lobby .glist { border: 0; border-radius: var(--radius-xl); }
+#games .gcard { min-height: 76px; }
+#games .gcard .gart { display: none; }
+#games .gcard .ih-ic { grid-row: 1 / 3; grid-column: 1; width: 52px; height: 52px; border-radius: 12px; }
+#games .gcard .ih-ic img { width: 94%; height: 94%; }
+#games .gcard:active { background: color-mix(in oklab, var(--glass-ink) 8%, transparent); }
+#games .gcard[aria-pressed="true"] { background: color-mix(in oklab, var(--acc) 16%, transparent); box-shadow: inset 0 0 0 2px var(--acc); }
+#games .gcard .gmeta { font-variant-numeric: tabular-nums; }
+
+/* les réglages */
+#s-lobby .field.row { background: var(--glass-tint); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge);
+  -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%); }
+#s-lobby .chips label { background: var(--glass-tint); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); min-height: 40px; }
+@media (min-width: 1100px) {
+  #s-lobby .lobby-side { background: var(--glass-tint-thick); border-radius: var(--radius-2xl); padding: 22px 22px 18px; color: var(--glass-ink);
+    -webkit-backdrop-filter: blur(34px) saturate(180%); backdrop-filter: blur(34px) saturate(180%);
+    box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge), var(--glass-shadow); }
+  /* dans la carte, plus besoin d'ombre portée sur le texte */
+  #s-lobby .lobby-side :is(.players-title, .opts .fine, #lobby-wait, .chips legend) { color: var(--glass-ink-2); text-shadow: none; }
+  #s-lobby .lobby-side .code-strip { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; padding: 0; }
+  #s-lobby .lobby-side .chip { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-top: .5px solid var(--line); border-radius: 0; }
+  #s-lobby .lobby-side .players-title + .chip { border-top: 0; }
+  #s-lobby .lobby-side .field.row, #s-lobby .lobby-side .chips label { background: var(--glass-field); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  #s-lobby .lobby-side #btn-start { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 10px 22px -12px color-mix(in oklab, var(--acc) 80%, black); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #s-lobby .chip, #s-lobby .gfilters, #s-lobby .field.row, #s-lobby .lobby-side, .modal .sheet { background: var(--bg) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}
+
+/* ====================================================================================================
+   Les feuilles (règles, inviter, joueurs, emoji, confirmer) : verre épais, poignée, ressort (ios.js)
+   ==================================================================================================== */
+.modal { background: var(--scrim); animation: none; }
+/* plus dense que le verre des cartes : du texte long se lit dessus, rien ne doit transparaître */
+.modal .sheet { background: linear-gradient(var(--glass-tint-thick), var(--glass-tint-thick)), color-mix(in oklab, var(--wall-base) 62%, transparent); color: var(--glass-ink); border: 0; border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; animation: none; padding-top: 8px;
+  --ink: var(--glass-ink); --ink-2: var(--glass-ink-2); --mute: var(--glass-ink-2); --line: color-mix(in oklab, var(--glass-ink) 13%, transparent); --surface: var(--glass-field); --surface-2: var(--glass-field);
+  -webkit-backdrop-filter: blur(44px) saturate(180%); backdrop-filter: blur(44px) saturate(180%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge), 0 -12px 40px rgba(0, 0, 0, .3); }
+/* en jeu, la feuille prend la palette du jeu (les jetons de verre ne sont définis que hors jeu) */
+[data-game] .modal .sheet { background: color-mix(in oklab, var(--surface) 86%, transparent); color: var(--ink);
+  --ink: inherit; --ink-2: inherit; --mute: inherit; --line: inherit; --surface: inherit; --surface-2: inherit; }
+.modal .sheet .ih-grab { margin: 2px auto 6px; }
+.modal .sheet-top { min-height: 44px; }
+.modal .sheet-top .btn { min-height: 44px; border-radius: var(--radius-capsule); }
+.modal .sheet .btn:not(.primary):not(.ghost) { background: var(--glass-field); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+[data-theme="light"]:not([data-game]) .modal .sheet .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); color: #fff; border: 0; }
+.modal.ios-closing[hidden] { display: flex !important; pointer-events: none; }
+@media (min-width: 760px) { .modal { align-items: center; } .modal .sheet { border-radius: var(--radius-2xl); max-height: 80dvh; } .modal .sheet .ih-grab { display: none; } }
+@media (prefers-contrast: more) { .modal .sheet { background: var(--bg); box-shadow: 0 0 0 1.5px var(--ink); } }
+
+/* le verre posé directement sur le fond (téléphone) : le widget du code et les listes de jeux */
+#s-lobby .code-strip, #s-lobby .glist { background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge), var(--glass-shadow); }
+.modal { background: color-mix(in srgb, var(--scrim) calc(var(--so, 1) * 100%), transparent); }
+.modal .sheet-top, .modal .ih-grab { touch-action: none; -webkit-user-select: none; user-select: none; }
+@media (prefers-reduced-transparency: reduce) { #s-lobby .code-strip, #s-lobby .glist { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* ====================================================================================================
+   Les écrans de jeu : chaque jeu garde sa palette et ses dessins ; seul le cadre commun passe au verre.
+   Les jetons de verre sont recalculés depuis la palette du jeu (fond, surface, encre).
+   ==================================================================================================== */
+[data-game] {
+  --glass-tint: color-mix(in oklab, var(--surface) 72%, transparent);
+  --glass-tint-thick: color-mix(in oklab, var(--surface) 88%, transparent);
+  --glass-hi: color-mix(in oklab, white 30%, transparent); --glass-rim: color-mix(in oklab, var(--ink) 12%, transparent);
+  --glass-edge: color-mix(in oklab, black 22%, transparent);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: color-mix(in oklab, var(--surface-2) 80%, transparent);
+  --scrim: color-mix(in oklab, black 42%, transparent);
+}
+/* la barre du haut reste unie (couleur du jeu), ses boutons deviennent des pastilles de verre rondes */
+[data-game] .topbar { border-bottom-color: transparent; }
+[data-game] .topbar .ic { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--glass-tint);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge), 0 4px 12px -6px rgba(0, 0, 0, .35); }
+/* les boutons des jeux : des capsules, enfoncées dès que le doigt se pose (ressort, ios.js) */
+.screen.play .btn, #s-end .btn { border-radius: var(--radius-capsule); min-height: 44px; }
+.screen.play .btn.primary, #s-end .btn.primary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .26), 0 10px 22px -14px color-mix(in oklab, var(--acc) 80%, black); }
+/* le message éphémère : une capsule de verre sombre */
+.toast { background: color-mix(in oklab, var(--ink) 84%, transparent); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 22%, transparent), 0 10px 30px -10px rgba(0, 0, 0, .45); }
+/* le choix de couleur de Chromo : une feuille de verre */
+.ch-picker { background: var(--glass-tint-thick); border-top: 0; border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  -webkit-backdrop-filter: blur(34px) saturate(180%); backdrop-filter: blur(34px) saturate(180%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 -14px 34px rgba(0, 0, 0, .35); }
+@media (prefers-reduced-transparency: reduce) {
+  .toast { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ch-picker, [data-game] .topbar .ic { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
