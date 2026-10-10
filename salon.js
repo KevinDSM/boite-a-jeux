@@ -239,15 +239,15 @@ $('#invite').onclick = e => { if (e.target.id === 'invite') $('#invite').hidden 
   const code = (q.get('c') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
   if (code.length !== 4) return;
   const from = (q.get('de') || '').trim().slice(0, 14);
-  const form = $('#f-home'), join = form.querySelector('button[data-act=join]'), banner = $('#invite-banner'), own = $('#btn-own');
-  form.classList.add('invited');
+  // un lien d'invitation mène droit à « rejoindre », le code déjà rempli
+  const form = $('#f-home'), banner = $('#invite-banner'), own = $('#btn-own');
+  form.classList.add('invited'); form.dataset.step = 'join';
   banner.innerHTML = `${from ? `<b>${esc(from)}</b> t’invite à jouer.` : 'Une partie t’attend.'}<span>Salon ${code}. Choisis ton prénom et ton emoji, puis rejoins la table.</span>`;
   banner.hidden = false;
-  join.classList.add('primary', 'lg'); join.textContent = 'Rejoindre la partie';
   own.hidden = false;
   own.onclick = () => {
     form.classList.remove('invited'); banner.hidden = true; own.hidden = true;
-    join.classList.remove('primary', 'lg'); join.textContent = 'Rejoindre';
     $('#in-code').value = ''; history.replaceState(null, '', location.pathname);
+    form.dataset.step = 'create'; $('#in-name').focus();
   };
 })();

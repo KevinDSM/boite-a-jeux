@@ -58,23 +58,11 @@ const IH_COLORS = {
   nomcode: '#b53327', sablier: '#c58d34', diapason: '#d4446c', petitbac: '#e0852b', geo: '#2b8bc5', undercover: '#3b4859',
   loupgarou: '#2c3166', naufrages: '#1592a3', camembert: '#d9a21b',
 };
-const IH_SHORT = { teldes: 'Téléphone', duel: 'Duel des Cités', memes: 'Mème pas vrai' };
-// Chaque jeu a son icône modélisée dans Blender (tools/icons → icons/web/<jeu>.webp) ; le dessin plat ne sert plus que de secours.
-const IH_DOCK_DEFAULT = ['timeline', 'undercover', 'loupgarou', 'sablier'];
 const ihStore = {
   json(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } },
 };
 
-function ihGames() {
-  return [...document.querySelectorAll('#s-lobby .gcard[data-game]')].map(c => ({
-    key: c.dataset.game, cls: [...c.classList].find(x => x.startsWith('g-')) || '',
-    name: c.querySelector('.gname')?.textContent.trim() || c.dataset.game,
-    desc: c.querySelector('.gdesc')?.textContent.trim() || '',
-    meta: [...c.querySelectorAll('.gmeta b, .gmeta i')].map(x => x.textContent.trim()).filter(Boolean).join(' · '),
-    art: c.querySelector('.gart'),
-  }));
-}
 function ihIcon(g, big) {
   const ic = el('span', 'ih-ic'); ic.style.setProperty('--c', IH_COLORS[g.key] || '#777');
   const flat = () => { if (!g.art) return; const w = el('span', `ih-art ${g.cls}`); w.appendChild(g.art.cloneNode(true)); ic.appendChild(w); };   // la classe du jeu garde le dessin intact ; son fond est neutralisé
@@ -83,31 +71,24 @@ function ihIcon(g, big) {
   im.src = `icons/web/${g.key}.webp?v=${ASSET_V}`; ic.appendChild(im);
   return ic;
 }
-function ihApp(g, inDock) {
-  const b = el('button', 'ih-app'); b.type = 'button'; b.dataset.game = g.key;
-  b.setAttribute('aria-label', g.name);
-  if (!inDock) b.setAttribute('role', 'listitem');
-  b.appendChild(ihIcon(g));
-  b.appendChild(el('span', 'ih-l', esc(IH_SHORT[g.key] || g.name)));
-  b.onclick = () => ihOpenSheet(g);
-  return b;
-}
 function ihBuild() {
-  const games = ihGames(); if (!games.length) return;
-  const grid = $('#ih-grid'), first = $('#btn-miroir');
-  grid.querySelectorAll('.ih-app[data-game]').forEach(x => x.remove());
-  games.forEach(g => grid.insertBefore(ihApp(g), first));
-  // le dock : les jeux les plus lancés depuis ce téléphone, sinon quatre classiques
-  const favs = ihStore.json('dc-favs', {});
-  const order = Object.keys(favs).filter(k => games.some(g => g.key === k)).sort((a, b) => favs[b] - favs[a]);
-  const pick = [...new Set([...order, ...IH_DOCK_DEFAULT])].slice(0, 4);
-  const dock = $('#ih-dock'); dock.querySelectorAll('.ih-app').forEach(x => x.remove());
-  pick.forEach(k => { const g = games.find(x => x.key === k); if (g) dock.appendChild(ihApp(g, true)); });
   // la date, comme en haut d'un écran d'accueil
   try { $('#ih-date').textContent = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date()); } catch { }
   ihResume();
 }
-function ihFav(key) { const f = ihStore.json('dc-favs', {}); f[key] = (f[key] || 0) + 1; ihStore.set('dc-favs', f); }
+
+// l'entrée en deux temps : choisir « rejoindre » ou « créer », puis seulement les champs de ce choix
+function ihStep(step) {
+  const f = $('#f-home'); f.dataset.step = step; $('#home-err').textContent = '';
+  if (step === 'join') ($('#in-code').value.length === 4 ? $('#in-name') : $('#in-code')).focus({ preventScroll: true });
+  if (step === 'create') ($('#in-name').value.trim() ? f.querySelector('button[data-act=create]') : $('#in-name')).focus({ preventScroll: true });
+  if (step === 'choice') f.querySelector('.ih-pick')?.focus({ preventScroll: true });
+}
+document.querySelectorAll('#f-home .ih-pick').forEach(b => b.onclick = () => ihStep(b.dataset.go));
+$('#ih-back').onclick = () => { if ($('#f-home').classList.contains('invited')) $('#btn-own').click(); ihStep('choice'); };
+// une erreur (prénom manquant, code faux) doit rester visible : on montre l'étape « rejoindre » si on était au choix
+new MutationObserver(() => { const f = $('#f-home'); if ($('#home-err').textContent && f.dataset.step === 'choice') f.dataset.step = 'join'; })
+  .observe($('#home-err'), { childList: true, characterData: true, subtree: true });
 
 // reprendre le dernier salon (moins de six heures)
 function ihResume() {
@@ -117,81 +98,15 @@ function ihResume() {
   const min = Math.round((Date.now() - last.at) / 60000);
   box.innerHTML = `<span>Salon <b>${esc(last.code)}</b>, ${min < 1 ? 'à l’instant' : min < 60 ? `il y a ${min} min` : `il y a ${Math.floor(min / 60)} h`}</span>`;
   const b = el('button', 'btn small', 'Reprendre'); b.type = 'button';
-  b.onclick = () => { $('#in-code').value = last.code; $('#f-home').requestSubmit($('#f-home button[data-act=join]')); };
+  b.onclick = () => { $('#in-code').value = last.code; $('#f-home').dataset.step = 'join'; $('#f-home').requestSubmit($('#f-home button[data-act=join]')); };
   box.appendChild(b);
-}
-
-// ---------------------------------------------------------------- la feuille d'un jeu
-let ihSheet = null, ihScrim = null, ihCur = null;
-function ihMakeSheet() {
-  ihScrim = el('div', 'ih-scrim'); ihScrim.hidden = true;
-  ihSheet = el('div', 'ih-sheet glass glass-thick'); ihSheet.hidden = true;
-  ihSheet.setAttribute('role', 'dialog'); ihSheet.setAttribute('aria-modal', 'true');
-  document.body.append(ihScrim, ihSheet);
-  ihScrim.onclick = () => ihCloseSheet();
-  addEventListener('keydown', e => { if (e.key === 'Escape' && ihCur) ihCloseSheet(); });
-  // le glisser : suit le doigt 1:1, résiste vers le haut, et décide à la lâche selon l'élan
-  let start = 0, cur = 0, samples = [], dragging = false;
-  const h = () => ihSheet.offsetHeight;
-  const setY = y => { ihSheet.style.transform = `translateY(${y}px)`; ihScrim.style.opacity = String(Math.max(0, 1 - y / h())); };
-  const rubber = (o, dim, c = 0.55) => (o * dim * c) / (dim + c * Math.abs(o));
-  const project = (v, d = 0.998) => (v / 1000) * d / (1 - d);
-  ihSheet.addEventListener('pointerdown', e => {
-    if (e.target.closest('button, a, input')) return;
-    e.preventDefault(); dragging = true; ihSheet.setPointerCapture(e.pointerId);
-    start = e.clientY - (springValue(ihSheet, 'y') || 0); samples = [{ y: 0, t: e.timeStamp }];
-    cancelAnimationFrame(springState.get(ihSheet)?.y?.raf);
-  });
-  ihSheet.addEventListener('pointermove', e => {
-    if (!dragging) return;
-    let dy = e.clientY - start; if (dy < 0) dy = -rubber(-dy, h());
-    cur = dy; setY(dy); const st = springState.get(ihSheet)?.y; if (st) st.x = dy;
-    samples.push({ y: dy, t: e.timeStamp }); if (samples.length > 5) samples.shift();
-  });
-  const end = e => {
-    if (!dragging) return; dragging = false;
-    const v = releaseVelocity(samples, e.timeStamp);
-    if (cur + project(v) > h() * 0.5 || v > 900) ihCloseSheet(v);
-    else springTo(ihSheet, 'y', 0, { from: cur, velocity: v, response: 0.3, damping: 0.8, apply: setY });
-  };
-  ihSheet.addEventListener('pointerup', end); ihSheet.addEventListener('pointercancel', end);
-  ihSheet._setY = setY;
-}
-function ihOpenSheet(g) {
-  if (!ihSheet) ihMakeSheet();
-  ihCur = g; ihSheet.innerHTML = '';
-  ihSheet.setAttribute('aria-label', g.name);
-  ihSheet.append(el('div', 'ih-grab'), ihIcon(g, true), el('h2', '', esc(g.name)), el('p', '', esc(g.desc)), el('div', 'ih-meta', esc(g.meta)));
-  const acts = el('div', 'ih-acts');
-  const go = el('button', 'btn primary lg', `Créer une partie de ${esc(g.name)}`); go.type = 'button';
-  go.onclick = () => {
-    const name = $('#in-name').value.trim();
-    ihCloseSheet();
-    if (!name) { $('#in-name').focus(); toast('Ton prénom d’abord, puis on lance la partie.'); return; }
-    window.pendingPick = g.key; ihFav(g.key);
-    $('#f-home').requestSubmit($('#f-home button[data-act=create]'));
-  };
-  const rules = el('button', 'btn lg', 'Les règles'); rules.type = 'button';
-  rules.onclick = () => { ihCloseSheet(); openRules(); setTimeout(() => document.getElementById(`r-${g.key}`)?.scrollIntoView({ block: 'start' }), 60); };
-  acts.append(go, rules); ihSheet.appendChild(acts);
-  ihScrim.hidden = false; ihSheet.hidden = false;
-  const H = ihSheet.offsetHeight;
-  springTo(ihSheet, 'y', 0, { from: H, response: 0.34, damping: 0.86, apply: ihSheet._setY });
-  go.focus({ preventScroll: true });
-}
-function ihCloseSheet(velocity = 0) {
-  if (!ihSheet || ihSheet.hidden) return;
-  const H = ihSheet.offsetHeight; ihCur = null;
-  springTo(ihSheet, 'y', H + 20, { velocity, response: 0.3, damping: 1, apply: ihSheet._setY })
-    .then(() => { if (!ihCur) { ihSheet.hidden = true; ihScrim.hidden = true; } });
 }
 
 // ---------------------------------------------------------------- branchements
 pressable(document, '.ih-app');
 ihBuild();
-// le salon retient son code pour « Reprendre » à l'accueil, et chaque jeu lancé compte dans les favoris
+// le salon retient son code pour « Reprendre » à l'accueil
 setInterval(() => { if (net.code && view && !net.kicked) ihStore.set('dc-last', { code: net.code, at: Date.now() }); }, 20000);
-document.addEventListener('click', e => { const c = e.target.closest('#s-lobby .gcard[data-game]'); if (c && isHostPlayer()) ihFav(c.dataset.game); });
 
 // ---------------------------------------------------------------- le salon
 // un seul fond d'écran pour l'accueil et le salon
@@ -203,7 +118,7 @@ document.querySelectorAll('#games .gcard[data-game]').forEach(c => {
 });
 pressable(document, '#games .gcard');
 // les boutons de l'appli s'enfoncent à peine (4 %), comme les boutons d'iOS
-pressable(document, '#s-lobby .btn, .screen.play .btn, #s-end .btn, .modal .btn, .ih-widget .btn, .ih-sheet .btn', null, 0.96);
+pressable(document, '#s-lobby .btn, .screen.play .btn, #s-end .btn, .modal .btn, .ih-widget .btn, .ih-pick', null, 0.97);
 
 // le contrôle segmenté des familles : la pastille glisse d'une famille à l'autre sur un ressort
 (function segmented() {
@@ -278,7 +193,8 @@ function sheetSetup(m) {
 document.querySelectorAll('.modal').forEach(sheetSetup);
 // Échap ferme la feuille du dessus, comme son bouton
 addEventListener('keydown', e => {
-  if (e.key !== 'Escape' || ihCur) return;
+  if (e.key !== 'Escape') return;
   const open = [...document.querySelectorAll('.modal:not([hidden])')].pop();
-  if (open) { e.preventDefault(); closeBtnOf(open)?.click(); }
+  if (open) { e.preventDefault(); closeBtnOf(open)?.click(); return; }
+  if (!$('#s-home').hidden && $('#f-home').dataset.step !== 'choice' && !$('#f-home').classList.contains('invited')) ihStep('choice');
 });

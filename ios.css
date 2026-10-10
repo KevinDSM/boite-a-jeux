@@ -98,7 +98,7 @@
 }
 
 /* ---------------------------------------------------------------- l'accueil, façon écran d'iPhone */
-#s-home.ios-home { max-width: 560px; gap: 18px; padding-bottom: calc(118px + env(safe-area-inset-bottom)); animation: none; }
+#s-home.ios-home { max-width: 520px; gap: 18px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); animation: none; }
 #s-home .ih-wall { position: fixed; inset: 0; z-index: -1; background: var(--wall); background-color: var(--wall-base); }
 #s-home ~ * {}
 body:has(#s-home:not([hidden])) .grain { display: none; }
@@ -138,6 +138,52 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
 #s-home .invite-banner { background: color-mix(in oklab, var(--acc) 22%, transparent); border-color: color-mix(in oklab, var(--acc) 45%, transparent); color: var(--glass-ink); }
 #s-home .invite-banner span { color: var(--glass-ink-2); }
 
+/* l'entrée en deux temps : on ne montre que ce qui sert à l'étape en cours */
+#f-home[data-step="choice"] [data-show]:not([data-show~="choice"]),
+#f-home[data-step="join"] [data-show]:not([data-show~="join"]),
+#f-home[data-step="create"] [data-show]:not([data-show~="create"]) { display: none !important; }
+.ih-head .ih-sub { margin: 4px 0 0; font-size: var(--text-subhead); font-weight: 500; opacity: .9; }
+.ih-choice { display: flex; flex-direction: column; gap: 10px; }
+.ih-pick { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 14px; width: 100%; min-height: 84px; padding: 14px 14px 14px 14px;
+  border: 0; border-radius: 20px; background: var(--glass-field); color: var(--glass-ink); text-align: left; font: inherit; cursor: pointer;
+  box-shadow: inset 0 0 0 .5px var(--glass-rim); transition: background .15s var(--ease-out); -webkit-tap-highlight-color: transparent; }
+.ih-pick:hover { background: color-mix(in oklab, var(--glass-field), var(--glass-ink) 6%); }
+.ih-pick:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.ih-pick-ic { width: 48px; height: 48px; border-radius: 13px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(165deg, color-mix(in oklab, var(--c) 78%, white), var(--c) 55%, color-mix(in oklab, var(--c) 80%, black));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), 0 4px 10px rgba(0, 0, 0, .22); }
+.ih-pick-ic svg { width: 26px; height: 26px; }
+.ih-pick-t { display: flex; flex-direction: column; gap: 3px; }
+.ih-pick-t b { font-size: var(--text-headline); font-weight: 650; letter-spacing: -.01em; }
+.ih-pick-t span { font-size: var(--text-subhead); line-height: 1.35; color: var(--glass-ink-2); }
+.ih-pick-go { font-size: 26px; line-height: 1; color: var(--glass-ink-2); padding-right: 2px; }
+.ih-step { display: flex; flex-direction: column; gap: 10px; }
+.ih-steptop { display: flex; align-items: center; gap: 6px; margin: -4px 0 2px -6px; }
+.ih-back { width: 44px; height: 44px; flex: none; border: 0; border-radius: 50%; background: transparent; color: var(--glass-ink); font: 600 26px/1 var(--font); cursor: pointer; }
+.ih-back:hover { background: var(--glass-field); }
+.ih-steptitle { font-size: var(--text-title-3); font-weight: 700; letter-spacing: var(--tracking-snug); }
+.ih-codebox { display: flex; flex-direction: column; gap: 6px; }
+.ih-codebox > span, .ih-namel { font-size: var(--text-footnote); font-weight: 600; color: var(--glass-ink-2); padding-left: 4px; }
+.ih-namel { margin-top: 4px; }
+.ih-widget .ih-codebox #in-code { min-height: 64px; font-size: 30px; font-weight: 700; letter-spacing: .42em; text-align: center; padding-left: .42em; text-transform: uppercase; }
+.ih-widget .ih-codebox #in-code::placeholder { letter-spacing: .42em; opacity: .4; }
+.ih-hint { margin: 0; text-align: center; color: var(--glass-ink-2); font-size: var(--text-footnote); }
+#f-home.invited .ih-steptop { display: none; }
+#s-home #btn-own { min-height: 44px; color: var(--glass-ink-2); background: none; box-shadow: none; }
+/* les trois entrées sans salon : Miroir, les règles, le mode solo */
+.ih-grid.ih-more { display: flex; justify-content: center; gap: 22px; margin: 4px 0 0; }
+/* PC : le titre et les trois entrées à gauche, l'entrée dans un salon à droite */
+@media (min-width: 1100px) {
+  #s-home.ios-home { max-width: 1000px; display: grid; grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: auto auto auto; column-gap: 72px; row-gap: 26px;
+    align-content: center; min-height: calc(100dvh - var(--bar-h) - 20px); padding: 24px 40px 40px; }
+  #s-home .ih-head { grid-column: 1; grid-row: 1; align-self: end; }
+  #s-home .ih-head h1 { font-size: 3.5rem !important; }
+  #s-home .ih-head .ih-sub { font-size: var(--text-title-3); }
+  #s-home .ih-more { grid-column: 1; grid-row: 2; justify-content: flex-start; align-self: start; margin: 0 0 0 -12px; }
+  #s-home #f-home { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+  #s-home .ih-foot { grid-column: 2; grid-row: 3; align-self: start; }
+}
+
 /* la grille d'icônes */
 .ih-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 0; justify-items: center; padding: 6px 0 4px; }
 .ih-app { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 76px; padding: 0; border: 0; background: none; cursor: pointer;
@@ -156,62 +202,13 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
 .ih-ic .ih-glyph { font-size: 30px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .25)); }
 .ih-ic svg { width: 30px; height: 30px; color: #fff; }
 
-/* le dock des favoris */
-.ih-fade { position: fixed; z-index: 14; left: 0; right: 0; bottom: 0; height: calc(150px + env(safe-area-inset-bottom)); pointer-events: none;
-  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--wall-base) 82%, transparent) 46%, var(--wall-base)); }
-@media (min-width: 1100px) { .ih-fade { display: none; } }
-.ih-dock { position: fixed; z-index: 15; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%);
-  width: min(528px, calc(100% - 20px)); height: 92px; border-radius: 32px; display: flex; justify-content: space-around; align-items: center; padding: 0 6px; }
-.ih-dock .ih-app .ih-l { display: none; }
-.ih-dock-t { display: none; }
-
-.ih-foot { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--icon-label); text-shadow: var(--icon-label-shadow); }
-.ih-foot .btn { color: var(--icon-label); background: none; border: 0; min-height: 44px; }
-.ih-foot .fine { color: inherit; opacity: .8; margin: 0; }
-
-/* ---------------------------------------------------------------- la feuille d'un jeu (ressort, ios.js) */
-.ih-scrim { position: fixed; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; }
-.ih-sheet { position: fixed; z-index: 41; left: 50%; bottom: 0; width: min(560px, 100%); margin-left: max(-280px, -50%);
-  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; padding: 8px 22px max(26px, env(safe-area-inset-bottom));
-  touch-action: none; transform: translateY(110%); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
-.ih-grab { width: 38px; height: 5px; border-radius: 3px; background: currentColor; opacity: .3; margin: 4px auto 14px; flex: none; }
-.ih-sheet .ih-ic { width: 96px; height: 96px; border-radius: 22px; }
-.ih-sheet .ih-ic img { width: 94%; height: 94%; }
-.ih-sheet .ih-ic .gart { transform: scale(1.2); }
-.ih-sheet h2 { margin: 12px 0 0; font-size: var(--text-title-1); line-height: 1.12; letter-spacing: var(--tracking-snug); font-weight: 700; }
-.ih-sheet p { margin: 4px 0 0; font-size: var(--text-body); color: var(--glass-ink-2); max-width: 36ch; }
-.ih-sheet .ih-meta { font-size: var(--text-footnote); font-weight: 600; color: var(--glass-ink-2); margin-top: 6px; font-variant-numeric: tabular-nums; }
-.ih-sheet .ih-acts { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 18px; }
-.ih-sheet .btn { border-radius: var(--radius-capsule); min-height: 52px; }
-.ih-sheet .btn.primary { background: var(--acc); color: var(--on-acc); border: 0; }
-.ih-sheet .btn:not(.primary) { background: var(--glass-field); color: var(--glass-ink); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); }
-
-/* ---------------------------------------------------------------- PC : deux colonnes, les icônes à gauche, le salon à droite */
-@media (min-width: 1100px) {
-  #s-home.ios-home { max-width: 1120px; display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto 1fr; column-gap: 56px; row-gap: 22px; align-items: start; padding-bottom: 40px; }
-  #s-home .ih-head { grid-column: 1; grid-row: 1; padding-top: 18px; }
-  #s-home .ih-head h1 { font-size: 3rem !important; }
-  #s-home .ih-grid { grid-column: 1; grid-row: 2; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 26px 8px; }
-  #s-home .ih-app { width: 100px; font-size: 13px; }
-  #s-home .ih-app .ih-l { width: 100px; }
-  #s-home .ih-grid .ih-ic { width: 76px; height: 76px; border-radius: 17px; }
-  #s-home .ih-side { grid-column: 2; grid-row: 1 / 3; position: sticky; top: calc(var(--bar-h) + 14px); display: flex; flex-direction: column; gap: 16px; }
-  .ih-dock { position: static; transform: none; width: 100%; height: auto; padding: 14px 10px 12px; border-radius: var(--radius-2xl); flex-wrap: wrap; justify-content: space-around; row-gap: 6px; }
-  .ih-dock-t { display: block; width: 100%; padding: 0 8px 4px; font-size: var(--text-footnote); font-weight: 600; color: var(--glass-ink-2); }
-  .ih-dock .ih-app .ih-l { display: block; color: var(--glass-ink); text-shadow: none; }
-  #s-home .ih-dock .ih-app, #s-home .ih-dock .ih-app .ih-l { width: 82px; }
-  #s-home .ih-dock .ih-ic { width: 62px; height: 62px; }
-}
 @media (max-width: 380px) {
   .ih-app, .ih-app .ih-l { width: 70px; }
   .ih-ic { width: 56px; height: 56px; border-radius: 13px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .ih-sheet, .ih-scrim { transition: opacity .15s linear !important; }
-}
 
 /* thèmes clairs : l'accent est foncé sous un texte blanc, pour tenir l'AA (4,5:1) */
-[data-theme="light"] .ih-widget .btn.primary, [data-theme="light"] .ih-sheet .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); }
+[data-theme="light"] .ih-widget .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); }
 
 /* ====================================================================================================
    Le fond d'écran commun (accueil, salon) : un seul élément posé par ios.js
@@ -318,6 +315,7 @@ body:has(#s-lobby:not([hidden])) .topbar .crumb { color: var(--icon-label); font
 /* en jeu, la feuille prend la palette du jeu (les jetons de verre ne sont définis que hors jeu) */
 [data-game] .modal .sheet { background: color-mix(in oklab, var(--surface) 86%, transparent); color: var(--ink);
   --ink: inherit; --ink-2: inherit; --mute: inherit; --line: inherit; --surface: inherit; --surface-2: inherit; }
+.ih-grab { width: 38px; height: 5px; border-radius: 3px; background: currentColor; opacity: .3; margin: 4px auto 14px; flex: none; }
 .modal .sheet .ih-grab { margin: 2px auto 6px; }
 .modal .sheet-top { min-height: 44px; }
 .modal .sheet-top .btn { min-height: 44px; border-radius: var(--radius-capsule); }
@@ -365,3 +363,4 @@ body:has(#s-lobby:not([hidden])) .topbar .crumb { color: var(--icon-label); font
   .toast { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .ch-picker, [data-game] .topbar .ic { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+#f-home.invited .ih-codebox { display: none; }

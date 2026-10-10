@@ -8,8 +8,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=67">
-<link rel="apple-touch-icon" href="icon-180.png?v=67">
+<link rel="manifest" href="manifest.json?v=68">
+<link rel="apple-touch-icon" href="icon-180.png?v=68">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
 <meta name="description" content="22 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:type" content="website">
@@ -26,8 +26,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Special+Elite&family=Lilita+One&family=Alfa+Slab+One&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=67">
-<link rel="stylesheet" href="ios.css?v=67">
+<link rel="stylesheet" href="style.css?v=68">
+<link rel="stylesheet" href="ios.css?v=68">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -53,42 +53,59 @@
   <header class="ih-head">
     <span class="ih-date" id="ih-date"></span>
     <h1>Boîte à jeux</h1>
+    <p class="ih-sub">22 jeux, un téléphone chacun.</p>
   </header>
 
-  <div class="ih-side">
-    <!-- le widget du salon : on entre son prénom, puis on crée ou on rejoint -->
-    <form class="ih-widget glass" id="f-home">
-      <p class="invite-banner" id="invite-banner" hidden></p>
-      <div class="ih-wtop"><b>Ce soir</b><span>Vingt-deux jeux, un téléphone chacun</span></div>
-      <div class="ih-resume" id="ih-resume" hidden></div>
+  <!-- l'entrée en deux temps : d'abord « rejoindre » ou « créer », puis seulement les champs utiles -->
+  <form class="ih-widget glass" id="f-home" data-step="choice">
+    <p class="invite-banner" id="invite-banner" hidden></p>
+    <div class="ih-resume" id="ih-resume" hidden></div>
+
+    <div class="ih-choice" data-show="choice">
+      <button class="ih-pick" type="button" data-go="join">
+        <span class="ih-pick-ic" style="--c:#2f7fd8" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9.5 16.5 14 12l-4.5-4.5"/><path d="M14 12H3.5"/></svg></span>
+        <span class="ih-pick-t"><b>Rejoindre une partie</b><span>Un ami l’a déjà lancée. Il te donne son code de 4 lettres.</span></span>
+        <span class="ih-pick-go" aria-hidden="true">›</span>
+      </button>
+      <button class="ih-pick" type="button" data-go="create">
+        <span class="ih-pick-ic" style="--c:#e0852b" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        <span class="ih-pick-t"><b>Créer une partie</b><span>C’est toi qui lances. Les autres te rejoignent avec ton code.</span></span>
+        <span class="ih-pick-go" aria-hidden="true">›</span>
+      </button>
+    </div>
+
+    <div class="ih-step" data-show="join create">
+      <div class="ih-steptop">
+        <button class="ih-back" id="ih-back" type="button" aria-label="Revenir au choix">‹</button>
+        <b class="ih-steptitle" data-show="join">Rejoindre une partie</b>
+        <b class="ih-steptitle" data-show="create">Créer une partie</b>
+      </div>
+      <label class="ih-codebox" data-show="join">
+        <span>Le code que ton ami t’a donné</span>
+        <input id="in-code" maxlength="4" placeholder="····" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie">
+      </label>
+      <label class="ih-namel" for="in-name">Ton prénom</label>
       <div class="name-row">
         <button class="emo-btn" id="btn-emo" type="button" aria-label="Choisir ton emoji" title="Choisir ton emoji"></button>
-        <input id="in-name" maxlength="14" autocomplete="off" placeholder="Ton prénom" required aria-label="Ton prénom">
+        <input id="in-name" maxlength="14" autocomplete="off" placeholder="Ton prénom" required>
       </div>
-      <button class="btn primary lg" type="submit" data-act="create">Créer une partie</button>
-      <p class="join-label">Tu as un code ?</p>
-      <div class="join-row">
-        <input id="in-code" maxlength="4" placeholder="Code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de la partie">
-        <button class="btn" type="submit" data-act="join">Rejoindre</button>
-      </div>
-      <button class="btn ghost" id="btn-own" type="button" hidden>Créer ma propre partie</button>
-      <p class="err" id="home-err" role="alert"></p>
-    </form>
-    <!-- le dock : les jeux favoris de ce téléphone -->
-    <div class="ih-fade" aria-hidden="true"></div>
-    <nav class="ih-dock glass" id="ih-dock" aria-label="Tes jeux favoris"><span class="ih-dock-t">Tes favoris</span></nav>
-  </div>
+      <button class="btn primary lg" type="submit" data-act="join" data-show="join">Rejoindre la partie</button>
+      <button class="btn primary lg" type="submit" data-act="create" data-show="create">Créer le salon</button>
+      <p class="fine ih-hint" data-show="create">Tu choisiras le jeu juste après, une fois tout le monde à table.</p>
+      <button class="btn ghost" id="btn-own" type="button" hidden>Non, je crée ma propre partie</button>
+    </div>
+    <p class="err" id="home-err" role="alert"></p>
+  </form>
 
-  <!-- la grille : un jeu par icône (remplie par ios.js à partir des cartes du salon), puis Miroir, les règles, le mode solo -->
-  <div class="ih-grid" id="ih-grid" role="list" aria-label="Les jeux">
-    <a class="ih-app" id="btn-miroir" href="miroir" role="listitem"><span class="ih-ic" style="--c:#6f9bd1"><img src="icons/web/miroir.webp?v=67" alt="" decoding="async"></span><span class="ih-l">Miroir</span></a>
-    <button class="ih-app" id="btn-rules" type="button" role="listitem"><span class="ih-ic" style="--c:#8a8178"><img src="icons/web/regles.webp?v=67" alt="" decoding="async"></span><span class="ih-l">Les règles</span></button>
-    <button class="ih-app" id="btn-solo" type="button" role="listitem"><span class="ih-ic" style="--c:#56657a"><img src="icons/web/solo.webp?v=67" alt="" decoding="async"></span><span class="ih-l">Jouer seul</span></button>
+  <!-- le reste de la boîte, sans salon -->
+  <div class="ih-grid ih-more" id="ih-grid" role="list" aria-label="Aussi dans la boîte">
+    <a class="ih-app" id="btn-miroir" href="miroir" role="listitem"><span class="ih-ic" style="--c:#6f9bd1"><img src="icons/web/miroir.webp?v=68" alt="" decoding="async"></span><span class="ih-l">Miroir</span></a>
+    <button class="ih-app" id="btn-rules" type="button" role="listitem"><span class="ih-ic" style="--c:#8a8178"><img src="icons/web/regles.webp?v=68" alt="" decoding="async"></span><span class="ih-l">Les règles</span></button>
+    <button class="ih-app" id="btn-solo" type="button" role="listitem"><span class="ih-ic" style="--c:#56657a"><img src="icons/web/solo.webp?v=68" alt="" decoding="async"></span><span class="ih-l">Jouer seul</span></button>
   </div>
 
   <div class="ih-foot">
-    <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne se connecte pas ? Diagnostic</button>
-    <p class="fine">22 jeux, et d’autres en route.</p>
+    <button class="btn ghost small" id="btn-diag-home" type="button">Ça ne se connecte pas ? Diagnostic</button>
   </div>
 </section>
 
@@ -688,55 +705,55 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="core.js?v=67"></script>
-<script src="engines/sablier.js?v=67"></script>
-<script src="app.js?v=67"></script>
-<script src="toile.js?v=67"></script>
-<script src="sablier-ui.js?v=67"></script>
-<script src="engines/undercover.js?v=67"></script>
-<script src="undercover.js?v=67"></script>
-<script src="geo-config.js?v=67"></script>
-<script src="engines/geo.js?v=67"></script>
-<script src="geo.js?v=67"></script>
-<script src="engines/chromo.js?v=67"></script>
-<script src="chromo.js?v=67"></script>
-<script src="engines/kems.js?v=67"></script>
-<script src="kems.js?v=67"></script>
-<script src="engines/mirage.js?v=67"></script>
-<script src="mirage.js?v=67"></script>
-<script src="engines/douze.js?v=67"></script>
-<script src="douze.js?v=67"></script>
-<script src="engines/petitbac.js?v=67"></script>
-<script src="petitbac.js?v=67"></script>
-<script src="engines/loupgarou.js?v=67"></script>
-<script src="loupgarou.js?v=67"></script>
-<script src="engines/naufrages.js?v=67"></script>
-<script src="naufrages.js?v=67"></script>
-<script src="engines/memes.js?v=67"></script>
-<script src="memes.js?v=67"></script>
-<script src="limite-cartes.js?v=67"></script>
-<script src="engines/limite.js?v=67"></script>
-<script src="limite.js?v=67"></script>
-<script src="engines/solitaire.js?v=67"></script>
-<script src="solitaire.js?v=67"></script>
-<script src="engines/poker.js?v=67"></script>
-<script src="poker.js?v=67"></script>
-<script src="engines/bataille.js?v=67"></script>
-<script src="bataille.js?v=67"></script>
-<script src="diapason-cartes.js?v=67"></script>
-<script src="engines/diapason.js?v=67"></script>
-<script src="diapason.js?v=67"></script>
-<script src="duel-cartes.js?v=67"></script>
-<script src="engines/duel.js?v=67"></script>
-<script src="duel.js?v=67"></script>
-<script src="engines/teldes.js?v=67"></script>
-<script src="teldes.js?v=67"></script>
-<script src="nomcode-mots.js?v=67"></script>
-<script src="engines/nomcode.js?v=67"></script>
-<script src="nomcode.js?v=67"></script>
-<script src="desk.js?v=67"></script>
-<script src="regles.js?v=67"></script>
-<script src="salon.js?v=67"></script>
-<script src="ios.js?v=67"></script>
+<script src="core.js?v=68"></script>
+<script src="engines/sablier.js?v=68"></script>
+<script src="app.js?v=68"></script>
+<script src="toile.js?v=68"></script>
+<script src="sablier-ui.js?v=68"></script>
+<script src="engines/undercover.js?v=68"></script>
+<script src="undercover.js?v=68"></script>
+<script src="geo-config.js?v=68"></script>
+<script src="engines/geo.js?v=68"></script>
+<script src="geo.js?v=68"></script>
+<script src="engines/chromo.js?v=68"></script>
+<script src="chromo.js?v=68"></script>
+<script src="engines/kems.js?v=68"></script>
+<script src="kems.js?v=68"></script>
+<script src="engines/mirage.js?v=68"></script>
+<script src="mirage.js?v=68"></script>
+<script src="engines/douze.js?v=68"></script>
+<script src="douze.js?v=68"></script>
+<script src="engines/petitbac.js?v=68"></script>
+<script src="petitbac.js?v=68"></script>
+<script src="engines/loupgarou.js?v=68"></script>
+<script src="loupgarou.js?v=68"></script>
+<script src="engines/naufrages.js?v=68"></script>
+<script src="naufrages.js?v=68"></script>
+<script src="engines/memes.js?v=68"></script>
+<script src="memes.js?v=68"></script>
+<script src="limite-cartes.js?v=68"></script>
+<script src="engines/limite.js?v=68"></script>
+<script src="limite.js?v=68"></script>
+<script src="engines/solitaire.js?v=68"></script>
+<script src="solitaire.js?v=68"></script>
+<script src="engines/poker.js?v=68"></script>
+<script src="poker.js?v=68"></script>
+<script src="engines/bataille.js?v=68"></script>
+<script src="bataille.js?v=68"></script>
+<script src="diapason-cartes.js?v=68"></script>
+<script src="engines/diapason.js?v=68"></script>
+<script src="diapason.js?v=68"></script>
+<script src="duel-cartes.js?v=68"></script>
+<script src="engines/duel.js?v=68"></script>
+<script src="duel.js?v=68"></script>
+<script src="engines/teldes.js?v=68"></script>
+<script src="teldes.js?v=68"></script>
+<script src="nomcode-mots.js?v=68"></script>
+<script src="engines/nomcode.js?v=68"></script>
+<script src="nomcode.js?v=68"></script>
+<script src="desk.js?v=68"></script>
+<script src="regles.js?v=68"></script>
+<script src="salon.js?v=68"></script>
+<script src="ios.js?v=68"></script>
 </body>
 </html>

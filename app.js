@@ -1329,12 +1329,13 @@ let savedTheme = null; try { savedTheme = localStorage.getItem('dc-theme'); } ca
 applyTheme(savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 
 // ============================================================ écrans d'entrée
-// Entrée : avec un code tapé, on rejoint la partie de l'ami ; sans code, on en crée une
+// Entrée : fait ce que l'étape affichée propose (rejoindre ou créer), jamais l'autre
 ['#in-name', '#in-code'].forEach(sel => $(sel).addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   e.preventDefault();
-  const code = $('#in-code').value.trim();
-  $(code ? 'button[data-act=join]' : 'button[data-act=create]').click();
+  const step = $('#f-home').dataset.step;
+  if (step === 'join' && sel === '#in-code' && !$('#in-name').value.trim()) { $('#in-name').focus(); return; }
+  $(step === 'create' ? 'button[data-act=create]' : 'button[data-act=join]').click();
 }));
 $('#f-home').addEventListener('submit', async e => {
   e.preventDefault();

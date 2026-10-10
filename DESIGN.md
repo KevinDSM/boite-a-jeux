@@ -26,7 +26,7 @@ Scène : des amis dans un salon le soir, lumière tamisée, téléphone en main.
 
 ## Icônes
 
-- Chaque jeu a une icône modélisée dans Blender (`tools/icons/build_icons.py` + `more_icons.py`, Cycles, vue Standard), exportée en WebP 192 px (`tools/icons/export_web.py` → `icons/web/<jeu>.webp`). Miroir, Les règles et Jouer seul ont aussi la leur.
+- Chaque jeu a une icône modélisée dans Blender (visible dans le salon) (`tools/icons/build_icons.py` + `more_icons.py`, Cycles, vue Standard), exportée en WebP 192 px (`tools/icons/export_web.py` → `icons/web/<jeu>.webp`). Miroir, Les règles et Jouer seul ont aussi la leur.
 - L'objet est posé sur une tuile arrondie dégradée de la couleur du jeu (`.ih-ic`, rayon 14 px à 62 px, reflet en haut). Le dessin plat du jeu ne sert plus que de secours si l'image ne charge pas.
 - Nouvelle icône : une fonction `icon_<jeu>()` qui construit l'objet face à -Y, `frame()` cadre tout seul ; aperçu rapide avec `ICON_PREVIEW=1`, planche avec `tools/icons/preview.py`.
 
@@ -41,9 +41,9 @@ Scène : des amis dans un salon le soir, lumière tamisée, téléphone en main.
 ## Mise en page
 
 - Téléphone : une colonne, gouttière de 20 px.
-- Accueil : grille d'icônes de 4 colonnes, widget « Ce soir » (prénom, emoji, créer, rejoindre, reprise du dernier salon), dock des favoris en bas (les jeux les plus lancés, `dc-favs`). Toucher une icône ouvre la feuille du jeu (« Créer une partie de X », « Les règles »).
+- Accueil (révisé le 10/10/2026, les amis confondaient créer et rejoindre) : AUCUN jeu à l'accueil, ils n'apparaissent qu'une fois dans le salon. L'entrée se fait en deux temps : d'abord deux grandes rangées « Rejoindre une partie » (un ami l'a lancée, il te donne son code) et « Créer une partie » (c'est toi qui lances), puis une étape qui ne montre que ses champs (rejoindre : le code en grand, puis le prénom ; créer : le prénom seul). Entrée fait l'action de l'étape affichée, jamais l'autre. Un lien d'invitation ouvre directement l'étape « rejoindre », code rempli. Sous l'entrée : Miroir, Les règles, Jouer seul. La reprise du dernier salon reste en tête.
 - Salon : widget du code en verre, joueurs en pastilles, contrôle segmenté des familles, listes groupées en verre avec les icônes 3D, réglages en formulaire groupé.
-- PC (≥ 1100 px) : deux colonnes. À gauche le contenu (icônes, jeux, partie), à droite un panneau en verre épais de 340 à 400 px avec code, joueurs, réglages, scores et fil de la partie ; le bouton principal reste collé en bas du panneau. À l'accueil, le dock devient la carte « Tes favoris » du panneau.
+- PC (≥ 1100 px) : deux colonnes. À gauche le contenu (icônes, jeux, partie), à droite un panneau en verre épais de 340 à 400 px avec code, joueurs, réglages, scores et fil de la partie ; le bouton principal reste collé en bas du panneau. À l'accueil, le titre et les trois entrées sans salon à gauche, l'entrée dans un salon à droite.
 
 ## Mouvement
 
