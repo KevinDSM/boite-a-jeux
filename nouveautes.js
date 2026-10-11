@@ -1,9 +1,13 @@
-/* Boîte à jeux · les nouveautés : une ligne par ajout, la plus récente en haut. Court : on ne saoule personne.
+/* Boîte à jeux · les nouveautés et les suggestions de l'accueil.
+   Les nouveautés : une ligne par ajout, la plus récente en haut. Court : on ne saoule personne.
    Ajouter une ligne ici à chaque mise en ligne qui change quelque chose pour les joueurs (pas les corrections invisibles).
    Une pastille rouge s'allume sur l'icône de l'accueil tant que la ligne du haut n'a pas été vue (localStorage dc-news). */
 'use strict';
 
 const NEWS = [
+  ['2026-10-11', 'Plus de chansons, plus de mots à l’Undercover, et presque plus de répétitions.'],
+  ['2026-10-11', 'Les Naufragés passent en 3D : une vraie île, la météo, le radeau, et vous autour du feu.'],
+  ['2026-10-11', 'Une idée, un bug ? Le bouton « Vos suggestions », juste là sur l’accueil.'],
   ['2026-10-11', 'Quatre nouveaux jeux : Un seul indice, Menteur, Bataille navale et Coinche.'],
   ['2026-10-11', 'Chromo, Kems, Poker, Bataille, Douze et Solitaire changent de table. Plus beaux, plus lisibles.'],
   ['2026-10-11', 'Le Mot du jour : un mot par jour, façon Motus, le même pour tout le monde.'],
@@ -31,4 +35,37 @@ const NEWS = [
   };
   $('#news-close').onclick = () => { sheet.hidden = true; };
   sheet.onclick = e => { if (e.target === sheet) sheet.hidden = true; };
+})();
+
+// les suggestions : un prénom, un texte, envoyés à /api/suggestion ; Kevin les lit (et les efface) dans /stats
+(function suggestions() {
+  const sheet = $('#sugg'); if (!sheet) return;
+  const form = $('#f-sugg'), err = $('#sugg-err'), send = $('#sugg-send');
+  const tok = () => { let t = ''; try { t = localStorage.getItem('mi-tok') || ''; } catch { }
+    if (!/^[a-z0-9]{20}$/.test(t)) { t = [...crypto.getRandomValues(new Uint8Array(20))].map(x => 'abcdefghijklmnopqrstuvwxyz0123456789'[x % 36]).join(''); try { localStorage.setItem('mi-tok', t); } catch { } }
+    return t; };
+  const reset = () => { form.hidden = false; $('#sugg-done').hidden = true; err.textContent = ''; $('#sugg-texte').value = ''; };
+  $('#btn-sugg').onclick = () => {
+    reset(); sheet.hidden = false;
+    const nom = $('#sugg-nom'); if (!nom.value) nom.value = $('#in-name').value.trim() || (() => { try { return localStorage.getItem('dc-name') || ''; } catch { return ''; } })();
+    setTimeout(() => (nom.value ? $('#sugg-texte') : nom).focus({ preventScroll: true }), 250);
+  };
+  $('#sugg-close').onclick = () => { sheet.hidden = true; };
+  sheet.onclick = e => { if (e.target === sheet) sheet.hidden = true; };
+  $('#sugg-again').onclick = () => { reset(); $('#sugg-texte').focus(); };
+  form.addEventListener('input', () => { err.textContent = ''; });      // le message d'erreur s'efface dès qu'on corrige
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); err.textContent = '';
+    const nom = $('#sugg-nom').value.trim(), texte = $('#sugg-texte').value.trim();
+    if (!nom) { err.textContent = 'Mets ton prénom.'; $('#sugg-nom').focus(); return; }
+    if (texte.length < 3) { err.textContent = 'Écris ta suggestion.'; $('#sugg-texte').focus(); return; }
+    send.disabled = true; send.textContent = 'Envoi';
+    try {
+      const r = await fetch('/api/suggestion', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ nom, texte, tok: tok(), site: $('#sugg-site').value }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { err.textContent = j.erreur || 'Envoi impossible. Réessaie dans un moment.'; return; }
+      form.hidden = true; $('#sugg-done').hidden = false;
+    } catch { err.textContent = 'Pas de réseau. Réessaie dans un moment.'; }
+    finally { send.disabled = false; send.textContent = 'Envoyer'; }
+  });
 })();

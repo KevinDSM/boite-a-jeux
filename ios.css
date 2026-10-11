@@ -195,7 +195,7 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
   background: oklch(0.44 0.16 263); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18); }
 .ih-mdj-tiles i.on { background: oklch(0.56 0.205 27); }
 .ih-mdj-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.ih-mdj-list li { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 30px; font-size: var(--text-subhead); }
+.ih-mdj-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 30px; font-size: var(--text-subhead); }
 .ih-mdj-list li > span:first-child { font-weight: 700; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; text-align: center; }
 .ih-mdj-list li b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ih-mdj-list li > span:last-child { color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
@@ -620,3 +620,27 @@ button.chx-chip { cursor: pointer; min-height: 40px; }
 .ih-mdj-ic { width: 34px; height: 34px; border-radius: 9px; flex: none; margin-right: 8px; }
 .ih-mdj-top:has(.ih-mdj-ic) { justify-content: flex-start; }
 .ih-mdj-top:has(.ih-mdj-ic) #ih-mdj-meta { margin-left: auto; }
+
+/* ---------------------------------------------------------------- bientôt, et les suggestions (nouveautes.js) */
+.ih-soon { border-radius: var(--radius-2xl); padding: 14px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ih-soon-t { flex: 1 1 180px; display: flex; flex-direction: column; gap: 2px; }
+.ih-soon-t b { font-size: var(--text-headline); font-weight: 650; letter-spacing: -.01em; }
+.ih-soon-t span { font-size: var(--text-subhead); color: var(--glass-ink-2); }
+.ih-soon .btn { min-height: 44px; border-radius: var(--radius-capsule); background: var(--glass-field); color: var(--glass-ink); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+@media (min-width: 1100px) { #s-home .ih-soon { grid-column: 1; grid-row: 4; align-self: start; max-width: 420px; } }
+#sugg .sheet { max-width: 520px; }
+.sugg-form { display: flex; flex-direction: column; gap: 6px; }
+.sugg-say { margin: 2px 0 8px; color: var(--glass-ink-2); font-size: var(--text-subhead); }
+.sugg-l { font-size: var(--text-footnote); font-weight: 600; color: var(--glass-ink-2); padding-left: 4px; margin-top: 4px; }
+.sugg-form input, .sugg-form textarea { background: var(--glass-field); border: 0; color: var(--glass-ink); border-radius: 14px; box-shadow: inset 0 0 0 .5px var(--glass-rim); font: 16px/1.4 var(--font); padding: 12px 14px; }
+.sugg-form input { min-height: 48px; }
+.sugg-form textarea { resize: vertical; min-height: 110px; }
+.sugg-form input:focus, .sugg-form textarea:focus { outline: none; box-shadow: inset 0 0 0 2px var(--acc); }
+.sugg-form .btn.primary { margin-top: 8px; border-radius: var(--radius-capsule); }
+[data-theme="light"] .sugg-form .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); color: #fff; }
+.sugg-form .err:empty { display: none; }
+.sugg-site { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.sugg-done { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 0 8px; text-align: center; }
+.sugg-done b { font-size: var(--text-title-2); }
+.sugg-done span { color: var(--glass-ink-2); }
+.sugg-done .btn { margin-top: 10px; min-height: 44px; border-radius: var(--radius-capsule); background: var(--glass-field); color: var(--glass-ink); border: 0; }

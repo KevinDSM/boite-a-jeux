@@ -70,3 +70,13 @@ CREATE TABLE IF NOT EXISTS motdujour_joueurs (
   trouve INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (jour, tok)
 );
+
+-- Les suggestions des joueurs (bouton « Vos suggestions » de l'accueil) : lues et effacées depuis /stats.
+CREATE TABLE IF NOT EXISTS suggestions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cree INTEGER NOT NULL,            -- ms depuis 1970
+  nom TEXT NOT NULL,                -- le prénom donné (pas de compte)
+  texte TEXT NOT NULL,
+  tok TEXT                          -- le téléphone (mi-tok), seulement pour freiner les envois à la chaîne
+);
+CREATE INDEX IF NOT EXISTS suggestions_cree ON suggestions (cree);

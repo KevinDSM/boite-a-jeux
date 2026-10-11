@@ -78,14 +78,14 @@ function ihBuild() {
   ihMotDuJour();
 }
 
-// le Mot du jour : la longueur, la première lettre, les premiers du classement (le jeu vit sur motdujour.html)
+// le Mot du jour : la longueur, la première lettre, le top 10 du classement (le jeu vit sur motdujour.html)
 async function ihMotDuJour() {
   const box = $('#ih-mdj'); if (!box) return;
   let tok = null; try { tok = localStorage.getItem('mi-tok'); } catch { }
   let s = null;
   try { const r = await fetch('/api/motdujour/jour' + (tok ? '?tok=' + tok : ''), { cache: 'no-store' }); if (r.ok) s = await r.json(); } catch { }
   if (!s || !s.n) { box.hidden = true; return; }      // pas de fonctions (serveur de test) : pas de widget
-  const nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 3);
+  const nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 10);
   $('#ih-mdj-meta').textContent = moi?.trouve ? `Trouvé en ${moi.lignes}` : moi?.fini ? 'Raté aujourd’hui' : `${s.n} lettres`;
   $('#ih-mdj-tiles').innerHTML = Array.from({ length: s.n }, (_, i) => `<i${i ? '' : ' class="on"'}>${i ? '' : esc(s.premiere)}</i>`).join('');
   $('#ih-mdj-list').innerHTML = top.length

@@ -1,0 +1,94 @@
+/* Naufragés : l'île en 3D derrière l'interface en verre (naufrages3d.js), sur la table commune (table.css).
+   L'île reste un lagon sombre en thème clair, comme les autres tables : c'est le décor du jeu. */
+[data-game="naufrages"], [data-theme="light"][data-game="naufrages"] {
+  --bg: oklch(0.24 0.05 215); --surface: oklch(0.29 0.055 212); --surface-2: oklch(0.33 0.055 210); --line: oklch(0.45 0.05 205 / .6);
+  --ink: oklch(0.97 0.015 95); --ink-2: oklch(0.86 0.03 150); --mute: oklch(0.78 0.035 180);
+  --acc: oklch(0.85 0.15 80); --acc-soft: oklch(0.9 0.09 80); --on-acc: oklch(0.25 0.06 60); --neg: oklch(0.68 0.19 30); --pos: oklch(0.82 0.14 150);
+  --felt-hi: oklch(0.62 0.11 205); --felt-mid: oklch(0.42 0.09 210); --felt-lo: oklch(0.2 0.05 220);
+  --glass-tint: oklch(0.24 0.05 215 / .5); --glass-tint-thick: oklch(0.2 0.05 218 / .78); --glass-ink: var(--ink); --glass-ink-2: var(--ink-2);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .3); --glass-field: rgba(255, 255, 255, .1);
+}
+#s-naufrages .tb-say, #s-naufrages .tb-chip, #s-naufrages .tb-tray { --tb-glass: oklch(0.22 0.05 215 / .5); --tb-glass-thick: oklch(0.19 0.05 218 / .8); }
+
+/* le canevas 3D couvre tout l'écran, derrière ; les étiquettes (emoji + prénom) flottent au-dessus des têtes */
+.nf3d-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+#s-naufrages > .stack { position: relative; z-index: 1; }
+.nf3d-labels { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.nf3d-label { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 1px; will-change: transform; }
+.nf3d-label .e { font-size: 17px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .4)); }
+.nf3d-label .n { font: 650 11px/1.3 var(--font); padding: 1px 7px; border-radius: 999px; color: #fff; background: rgba(0, 0, 0, .4); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); white-space: nowrap; }
+.nf3d-label.me .n { background: color-mix(in oklab, var(--acc) 85%, black); color: var(--on-acc); }
+.nf3d-label.sick .n { background: rgba(190, 60, 60, .75); }
+
+/* l'emplacement de l'île : vide, transparent ; la météo et le calendrier posés en bas */
+.nf-stage { position: relative; height: clamp(190px, 27vh, 300px); display: flex; align-items: flex-end; pointer-events: none; }
+.nfx-sky { display: flex; gap: 6px; align-items: center; pointer-events: auto; width: 100%; min-width: 0; }
+.nfx-sky .nf-cal { flex: 1; min-width: 0; justify-content: flex-end; }
+.nfx-sky .nf-cal-day { min-width: 30px; padding: 3px 2px; font-size: 14px; }
+.nfx-sky .tb-chip { height: 32px; font-size: 12.5px; }
+.nfx-sky .nf-cal-day { background: var(--tb-glass, rgba(0, 0, 0, .3)); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), inset 0 0 0 .5px rgba(255, 255, 255, .14); color: var(--ink); }
+.nfx-sky .nf-cal-day small { color: var(--ink-2); }
+/* sans 3D : la carte de l'île d'avant, posée sur le tapis */
+#s-naufrages .nf-island { border-radius: 22px; overflow: hidden; }
+
+/* le meneur et les annonces */
+#s-naufrages .nf-flash.tb-say { animation: pop .35s var(--ease); }
+#s-naufrages .nf-flash p { margin: 0; font: 600 16px/1.35 var(--font); color: var(--ink); }
+#s-naufrages .nf-flash small { color: var(--ink-2); }
+#s-naufrages .tb-say .mj-prog { margin-top: 6px; }
+
+/* le plateau : les quatre choix du jour, le risque pour le bois, les votes */
+.nfx-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+.nfx-act { display: flex; gap: 8px; align-items: center; min-height: 58px; padding: 10px 12px; border: 0; border-radius: 20px; text-align: left; color: var(--ink); font: inherit; cursor: pointer;
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), inset 0 0 0 .5px rgba(255, 255, 255, .14); transition: background .15s; }
+.nfx-act i { font-style: normal; font-size: 24px; width: 32px; text-align: center; flex: none; }
+.nfx-act b { display: block; font-size: 15.5px; font-weight: 650; }
+.nfx-act small { display: block; color: var(--ink-2); font-size: 12.5px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nfx-act > span { min-width: 0; }
+.nfx-act.on { background: color-mix(in oklab, var(--acc) 18%, transparent); box-shadow: inset 0 0 0 2px var(--acc), 0 0 22px -8px var(--acc); }
+.nfx-risk-t { margin: 10px 4px 4px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.nfx-risk { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, .07); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .12); }
+.nfx-risk-opt { flex: 1; min-height: 40px; border: 0; border-radius: 999px; background: none; color: var(--ink-2); font: 600 14px var(--font); cursor: pointer; white-space: nowrap; padding: 0 6px; }
+.nfx-risk-opt:first-child { flex: 1.8; }
+.nfx-risk-opt[aria-pressed="true"] { background: rgba(255, 255, 255, .16); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); }
+.nfx-note { margin: 8px 4px 0; font-size: 13px; color: var(--ink-2); }
+.nfx-bad { color: var(--neg); }
+.nfx-votes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.nfx-vote { display: flex; gap: 10px; align-items: center; min-height: 56px; padding: 8px 12px; border: 0; border-radius: 18px; text-align: left; color: var(--ink); font: inherit; cursor: pointer;
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .14); }
+.nfx-vote b { display: block; font-size: 15px; } .nfx-vote b small { font-weight: 500; color: var(--ink-2); }
+.nfx-vote > span:last-child > small { display: block; font-size: 12px; color: var(--ink-2); }
+.nfx-vote-e { font-size: 22px; width: 30px; text-align: center; }
+.nfx-vote.on { background: color-mix(in oklab, var(--neg) 22%, transparent); box-shadow: inset 0 0 0 2px var(--neg); }
+.nfx-vote:disabled { opacity: .5; cursor: default; }
+#s-naufrages .nf-timer { margin-top: 10px; background: rgba(255, 255, 255, .12); }
+
+/* les blocs hors plateau (compte rendu du soir, objets) en verre */
+#s-naufrages .rl-block .mj-side-title { color: var(--ink); text-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
+#s-naufrages .nf-peek { color: var(--ink); text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+
+/* téléphone : les réserves sont dans le plateau, les naufragés et le fil dans la feuille */
+@media (max-width: 1099px) { #nf-main > :is(.nf-camp, .nf-people, .nf-log) { display: none; } }
+@media (min-width: 1100px) {
+  .nf-stage { height: min(52vh, 460px); }
+  #s-naufrages .tb-tray { position: static; border-radius: 28px; }
+  #s-naufrages .desk-side .nf-cards { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-transparency: reduce) { .nfx-sky .nf-cal-day { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* les cartes des naufragés (colonne de droite sur PC) : en verre, à la couleur de chacun */
+#s-naufrages .nf-card { background: rgba(255, 255, 255, .08); border: 0; color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 0 0 .5px rgba(255, 255, 255, .14); }
+#s-naufrages .nf-card.me { box-shadow: inset 0 0 0 2px var(--acc), 0 0 18px -6px var(--acc); }
+#s-naufrages .nf-card.sick { background: rgba(200, 80, 70, .18); }
+#s-naufrages .nf-card.win { background: color-mix(in oklab, var(--pos) 20%, transparent); }
+#s-naufrages .nf-card-state, #s-naufrages .nf-card-items small { color: var(--ink-2); opacity: 1; }
+@media (min-width: 1100px) {
+  .nf-stage { height: min(34vh, 320px); }
+  #s-naufrages .desk-side > .rl-block, #s-naufrages .desk-side > .nf-log { padding: 16px 18px; border-radius: 26px; background: var(--tb-glass-thick, rgba(8, 30, 40, .78));
+    -webkit-backdrop-filter: blur(30px) saturate(170%); backdrop-filter: blur(30px) saturate(170%); box-shadow: inset 0 1.2px 0 rgba(255, 255, 255, .3), inset 0 0 0 .5px rgba(255, 255, 255, .14), 0 10px 30px rgba(0, 0, 0, .3); }
+  #s-naufrages .desk-side .mj-list { background: none; box-shadow: none; border: 0; }
+  #s-naufrages .desk-side .mj-side-title { text-shadow: none; color: var(--ink-2); }
+  .nfx-acts { grid-template-columns: repeat(4, 1fr); }
+  .nfx-act { flex-direction: column; text-align: center; gap: 4px; min-height: 92px; }
+  .nfx-act i { width: auto; }
+}
