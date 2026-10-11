@@ -1,0 +1,130 @@
+/* kems : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Un feutre bordeaux profond, des cartes ivoire, de l'or pour ce qui se joue. Ton partenaire assis en face,
+   les adversaires à gauche et à droite, les quatre cartes du milieu sur le tapis, ta main dans le plateau de verre.
+   Comme Chromo, la table reste sombre même en thème clair : c'est l'objet du jeu. */
+[data-game="kems"], [data-theme="light"][data-game="kems"] {
+  --bg: oklch(0.2 0.06 18); --surface: oklch(0.26 0.065 18); --surface-2: oklch(0.31 0.068 18); --line: oklch(0.43 0.07 20 / .6);
+  --ink: oklch(0.97 0.012 80); --ink-2: oklch(0.87 0.03 60); --mute: oklch(0.78 0.04 45);
+  --acc: oklch(0.86 0.15 85); --acc-soft: oklch(0.91 0.1 88); --on-acc: oklch(0.25 0.06 60);
+  --neg: oklch(0.56 0.21 27); --pos: oklch(0.83 0.14 150); --gold: oklch(0.86 0.15 85); --glow: .14;
+  --t0: oklch(0.78 0.15 18); --t1: oklch(0.84 0.075 240);                         /* Cœurs, Piques */
+  --glass-tint: oklch(0.24 0.06 18 / .5); --glass-tint-thick: oklch(0.2 0.06 18 / .78);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.47 0.15 20); --felt-mid: oklch(0.33 0.11 19); --felt-lo: oklch(0.15 0.045 18);
+  --tb-back: oklch(0.42 0.14 20);
+}
+#s-kems { padding-bottom: 0; }
+#s-kems button.tb-chip { min-height: 44px; }
+.kmx-sym { font-style: normal; line-height: 1; }
+.kmx-sym.t0 { color: var(--t0); } .kmx-sym.t1 { color: var(--t1); }
+.tb-chip .kmx-sym { font-size: 15px; margin-left: 2px; }
+.tb-chip .kmx-sym + b { margin-left: -2px; }
+
+/* la table : sur téléphone, elle prend la place libre et le milieu reste au centre */
+.kmx-table { position: relative; display: flex; flex-direction: column; }
+@media (max-width: 1099px) { #km-main > .kmx-table { flex: 1; } #km-main > .kmx-table > .kmx-mid { flex: 1; } }
+.kmx-table .tb-opps { height: 112px; }
+/* en croix : le partenaire en face, les adversaires de chaque côté */
+.kmx-table .tb-opp.kmx-top { left: 50% !important; top: 0 !important; }
+.kmx-table .tb-opp.kmx-l { left: 14% !important; top: 30px !important; }
+.kmx-table .tb-opp.kmx-r { left: 86% !important; top: 30px !important; }
+/* les couleurs d'équipe : l'anneau de l'avatar et le badge */
+.kmx-table .tb-opp { width: 116px; }
+.kmx-table .tb-nm { max-width: 116px; }
+.tb-opp.kmx-t0 { --tc: var(--t0); } .tb-opp.kmx-t1 { --tc: var(--t1); }
+.tb-opp:is(.kmx-t0, .kmx-t1) .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 3px var(--tc), 0 0 18px -2px color-mix(in oklab, var(--tc) 55%, transparent), 0 8px 18px rgba(0, 0, 0, .4); }
+.tb-opp:is(.kmx-t0, .kmx-t1) .tb-badge { background: var(--tc); color: oklch(0.2 0.05 20); font-size: 14px; line-height: 22px; padding: 0; min-width: 22px; }
+.tb-opp.kmx-pass .tb-av { filter: saturate(.6) brightness(.85); }
+.tb-tag.kmx-tag-mate { background: color-mix(in oklab, var(--acc) 20%, transparent); color: var(--acc); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--acc) 45%, transparent); }
+/* « passe » : une pastille posée sur le bas de l'avatar, pour ne pas allonger la place */
+.tb-opp .kmx-ptag { position: absolute; top: 38px; left: 50%; transform: translateX(-50%); z-index: 1; padding: 1px 8px; font-size: 11.5px; color: var(--ink);
+  background: oklch(0.2 0.05 18 / .92); box-shadow: 0 0 0 1px rgba(255, 255, 255, .22), 0 2px 6px rgba(0, 0, 0, .4); }
+/* le partenaire qui fait un signe : son anneau s'allume en or */
+.tb-opp.kmx-sig .tb-av { animation: kmx-sig 1.1s ease-in-out infinite; }
+@keyframes kmx-sig { 50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 4px var(--acc), 0 0 30px 6px color-mix(in oklab, var(--acc) 60%, transparent), 0 8px 18px rgba(0, 0, 0, .4); } }
+
+/* le milieu : une zone imprimée sur le feutre, double filet doré, quatre cartes posées un peu de travers */
+.kmx-mid { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; margin: 4px 6px 0; padding: 14px 12px 18px; border-radius: 26px;
+  border: 1px solid color-mix(in oklab, var(--acc) 42%, transparent); outline: 1px solid color-mix(in oklab, var(--acc) 18%, transparent); outline-offset: 5px;
+  background: radial-gradient(80% 70% at 50% 45%, rgba(0, 0, 0, .05), rgba(0, 0, 0, .16)); }
+.kmx-mid-title { margin: 0; font: 400 15px/1 "Alfa Slab One", var(--font); color: color-mix(in oklab, var(--acc) 85%, white); letter-spacing: .02em; text-shadow: 0 1px 0 rgba(0, 0, 0, .4); }
+.kmx-mid-row { display: flex; gap: 8px; justify-content: center; padding-top: 10px; }
+.kmx-mid-row .tb-slot.kmx-spot { position: relative; top: auto; width: 72px; transform: rotate(var(--tilt, 0deg)); }
+.kmx-mid-row .tb-slot.kmx-spot.ok { transform: translateY(-6px) rotate(var(--tilt, 0deg)); }
+.kmx-mid-row .tb-slot.kmx-spot.sel { transform: translateY(-9px) rotate(0deg); }
+.kmx-mid-row .km-card { cursor: pointer; }
+.kmx-mid.can .kmx-mid-title { color: var(--acc); }
+.screen.tb .kmx-refresh { min-height: 44px; padding: 8px 16px; border: 0; border-radius: 999px; font: 600 14px/1.25 var(--font); color: var(--ink);
+  background: var(--tb-glass); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 1px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 0 0 .5px var(--tb-edge); }
+
+/* le meneur */
+#km-main .tb-say { flex: none; }
+
+/* ta main, et les deux cris */
+.kmx-tray .tb-slot.kmx-carre > * { box-shadow: 0 0 0 2.5px var(--acc), 0 0 22px 3px color-mix(in oklab, var(--acc) 50%, transparent), 0 12px 24px -6px rgba(0, 0, 0, .6) !important; }
+.kmx-tray .tb-fan-hand .km-card { cursor: pointer; }
+.kmx-tray .tb-acts { margin-top: 2px; }
+.kmx-tray .tb-acts + .tb-acts { margin-top: 8px; }
+.screen.tb .tb-btn.kmx-call { min-height: 56px; padding: 6px 10px; font: 400 19px/1.1 "Alfa Slab One", var(--font); letter-spacing: .01em; white-space: normal; }
+.screen.tb .tb-btn.kmx-call.armed { font: 700 14.5px/1.2 var(--font); letter-spacing: 0; animation: kmx-arm .5s cubic-bezier(.3, 1.4, .5, 1); }
+.screen.tb .tb-btn.hero.kmx-call.armed { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 0 0 3px #fff, 0 0 0 6px oklch(0.86 0.17 92 / .55), 0 10px 26px -8px oklch(0.7 0.17 75); }
+.screen.tb .tb-btn.danger.kmx-call.armed { box-shadow: 0 0 0 3px #fff, 0 0 0 6px color-mix(in oklab, var(--neg) 55%, transparent), 0 10px 22px -8px var(--neg); }
+@keyframes kmx-arm { from { transform: scale(.94); } }
+.kmx-acts2 .btn { min-height: 46px; }
+.screen.tb .tb-btn.glass.kmx-passbtn.on { color: var(--acc); background: color-mix(in oklab, var(--acc) 18%, transparent); box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--acc) 70%, transparent); }
+.kmx-passes { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.kmx-passes i { width: 12px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .2); }
+.kmx-passes i.f { background: var(--acc); }
+.kmx-passes em { font-style: normal; margin-left: 4px; }
+
+/* scores, table et fil : dans la feuille sur téléphone, dans la colonne de droite sur PC */
+#km-main > :is(.km-seats, .km-log) { display: none; }
+.kmx-sheet-title { margin: 16px 0 2px; }
+/* .sheet ul (style.css) décale les listes de la feuille : on les remet au bord */
+[data-game="kems"] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }
+#tb-sheet .tb-e .kmx-sym, .km-score .tb-e .kmx-sym { font-size: 20px; }
+.tb-rows .tb-s .kmx-sym { font-size: 20px; }
+.kmx-gain { font-style: normal; font-size: 14px; font-weight: 650; color: var(--pos); }
+.km-score .mj-side-title, .km-seats .mj-side-title, .km-log .mj-side-title { margin: 0 0 4px; }
+/* hors donne, sur téléphone : le score dans une carte de verre */
+#km-main > .km-score { padding: 12px 16px 6px; border-radius: 22px;
+  background: var(--tb-glass); -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%); box-shadow: inset 0 1px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 10px 30px rgba(0, 0, 0, .25); }
+
+/* fin de donne : les quatre mains retournées, une rangée par équipe */
+#km-main .kmx-reveal { display: flex; flex-direction: column; gap: 6px; }
+#km-main .kmx-reveal > .mj-side-title { margin: 4px 4px 0; }
+#km-main .kmx-reveal-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; padding: 4px; overflow: hidden; }
+#km-main .kmx-reveal .km-reveal-row { display: flex; flex-direction: column; align-items: stretch; background: none; border: 0; border-radius: 16px; padding: 10px 10px 12px; gap: 8px; min-width: 0; box-shadow: none; }
+#km-main .kmx-reveal .km-reveal-row.carre { background: color-mix(in oklab, var(--acc) 12%, transparent); box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--acc) 60%, transparent); }
+#km-main .kmx-reveal .km-reveal-head { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; align-items: center; align-content: center; flex: 1; }
+#km-main .kmx-reveal .kmx-rv-e { grid-row: span 2; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; background: rgba(255, 255, 255, .08); box-shadow: 0 0 0 2px var(--tc, transparent); }
+#km-main .kmx-reveal .kmx-t0 { --tc: var(--t0); } #km-main .kmx-reveal .kmx-t1 { --tc: var(--t1); }
+#km-main .kmx-reveal .km-reveal-head b { font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#km-main .kmx-reveal .km-reveal-head span:last-child { font-size: 12.5px; color: var(--ink-2); }
+#km-main .kmx-reveal .km-reveal-row.carre .km-reveal-head span:last-child { color: var(--acc); }
+#km-main .kmx-reveal .km-hand.mini { gap: 4px; }
+#km-main .kmx-reveal .km-hand.mini .km-card { width: 34px; border-radius: 5px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1), 0 4px 8px -2px rgba(0, 0, 0, .45); }
+#km-main .kmx-reveal .km-hand.mini .km-card::after { display: none; }
+
+/* PC : une vraie table ovale au rebord de bois, le partenaire en haut, les adversaires sur les côtés */
+@media (min-width: 1100px) {
+  #s-kems .kmx-table { width: 100%; max-width: 700px; aspect-ratio: 2.8 / 1; margin: 44px auto 0; flex: none; border-radius: 50%;
+    background: radial-gradient(60% 55% at 50% 45%, var(--felt-hi), var(--felt-mid) 70%, color-mix(in oklab, var(--felt-mid), var(--felt-lo) 40%));
+    box-shadow: inset 0 0 0 14px oklch(0.4 0.07 50), inset 0 0 0 16px oklch(0.26 0.05 45), inset 0 0 0 18px rgba(255, 255, 255, .08), inset 0 30px 60px rgba(0, 0, 0, .35), 0 30px 60px -20px rgba(0, 0, 0, .6); }
+  #s-kems .kmx-table::before { content: ""; position: absolute; inset: 14px; border-radius: 50%; background: linear-gradient(180deg, rgba(255, 255, 255, .14), transparent 22%); pointer-events: none; }
+  #s-kems .kmx-table .tb-opps { position: absolute; inset: 0; height: auto; z-index: 2; pointer-events: none; }
+  #s-kems .kmx-table .tb-opp { pointer-events: auto; }
+  #s-kems .kmx-table .tb-opp.kmx-top { top: -44px !important; }
+  #s-kems .kmx-table .tb-opp.kmx-l { left: 5% !important; top: calc(50% - 46px) !important; }
+  #s-kems .kmx-table .tb-opp.kmx-r { left: 95% !important; top: calc(50% - 46px) !important; }
+  #s-kems .kmx-table.kmx-watch .tb-opps { top: -46px; bottom: auto; height: 0; }
+  #s-kems .kmx-mid { position: absolute; left: 50%; top: 57%; transform: translate(-50%, -50%); margin: 0; padding: 10px 30px 16px; gap: 6px; border-radius: 70px; }
+  #s-kems .kmx-mid-row { gap: 12px; }
+  #s-kems .kmx-mid-row .tb-slot.kmx-spot { width: 74px; }
+  #s-kems .tb-tray .tb-acts { max-width: 600px; }
+  #s-kems .tb-tray .tb-acts .kmx-passbtn { flex: .8 1 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tb-opp.kmx-sig .tb-av, .screen.tb .tb-btn.kmx-call.armed { animation: none; }
+}

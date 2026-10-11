@@ -1,0 +1,231 @@
+/* ====================================================================================================
+   Douze : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Tapis ardoise bleu nuit, les autres en arc avec leur petite grille, la pioche, la carte en main et la
+   défausse au centre, ta grille 3 × 4 en grand dans le plateau de verre. Les cartes sont vernies :
+   dégradé de leur couleur, bord blanc, reflet, ombre, chiffres en Rubik ; le dos porte un motif.
+   Douze reste une table sombre même en thème clair : c'est l'objet du jeu, comme une vraie table.
+   ==================================================================================================== */
+[data-game="douze"], [data-theme="light"][data-game="douze"] {
+  --bg: oklch(0.2 0.035 256); --surface: oklch(0.26 0.04 256); --surface-2: oklch(0.31 0.045 256); --line: oklch(0.44 0.04 256 / .6);
+  --ink: oklch(0.97 0.01 250); --ink-2: oklch(0.87 0.025 250); --mute: oklch(0.78 0.03 250);
+  --acc: oklch(0.86 0.17 92); --acc-soft: oklch(0.92 0.1 95); --on-acc: oklch(0.25 0.06 75); --neg: oklch(0.68 0.19 27); --pos: oklch(0.83 0.14 150);
+  --gold: oklch(0.86 0.17 92);
+  --glass-tint: oklch(0.24 0.04 256 / .5); --glass-tint-thick: oklch(0.2 0.035 256 / .78);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.46 0.085 238); --felt-mid: oklch(0.3 0.06 250); --felt-lo: oklch(0.15 0.03 260);
+  /* les couleurs des cartes, par valeur */
+  --dzx-n: oklch(0.43 0.17 268); --dzx-z: oklch(0.77 0.11 222); --dzx-g: oklch(0.66 0.17 150); --dzx-y: oklch(0.86 0.16 90); --dzx-r: oklch(0.6 0.21 27);
+  --dzx-back: oklch(0.34 0.1 258); --dzx-cyan: oklch(0.86 0.12 210); --dzx-dark: oklch(0.25 0.06 258);
+}
+#s-douze { padding-bottom: 0; }
+#s-douze > .stack { gap: 8px; }
+#dz-main button.tb-chip { min-height: 44px; }
+#dz-main .tb-say { padding: 10px 14px; }
+#dz-main .tb-say .tb-pip { width: 34px; height: 34px; font-size: 17px; }
+#dz-main .tb-say .mj-prog { margin-top: 6px; }
+/* sur téléphone, le centre prend la place libre ; scores et fil passent dans la feuille */
+#dz-main > .dz-players, #dz-main > .dz-log { display: none; }
+@media (max-width: 1099px) { #dz-main > .dzx-center { flex: 1; } }
+@media (max-width: 759px) { .dzx-wide { display: none; } }
+
+/* ------------------------------------------------------------ les cartes */
+.dzx-card { --cc: var(--dzx-back); position: relative; isolation: isolate; container-type: inline-size; display: grid; place-items: center; width: 100%; aspect-ratio: 5 / 7; border-radius: 10px;
+  font-family: "Rubik", var(--font); color: #fff; overflow: hidden;
+  background: linear-gradient(158deg, color-mix(in oklab, var(--cc) 66%, white), var(--cc) 42%, color-mix(in oklab, var(--cc) 74%, black));
+  box-shadow: inset 0 0 0 2.5px #fff, inset 0 0 0 3.5px rgba(0, 0, 0, .1), 0 8px 18px -6px rgba(0, 0, 0, .6), 0 2px 4px rgba(0, 0, 0, .25); }
+/* la pastille ovale au centre, comme sur les vraies cartes, et le reflet du vernis */
+.dzx-card::before { content: ""; position: absolute; inset: 17% 15%; z-index: -1; border-radius: 50% / 40%;
+  background: radial-gradient(circle at 42% 30%, rgba(255, 255, 255, .34), rgba(255, 255, 255, .1) 72%); box-shadow: inset 0 -2px 5px rgba(0, 0, 0, .14), 0 1px 0 rgba(255, 255, 255, .25); }
+.dzx-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(116deg, rgba(255, 255, 255, .38) 0 17%, transparent 33%); }
+.dzx-card b { font-size: 46cqw; font-weight: 800; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 0 color-mix(in oklab, var(--cc) 52%, black), 0 3px 8px rgba(0, 0, 0, .2); }
+.dzx-card.two b { font-size: 37cqw; letter-spacing: -.06em; }
+.dzx-c { position: absolute; top: 7%; left: 10%; font-size: 17cqw; font-weight: 700; font-style: normal; line-height: 1; letter-spacing: -.04em; }
+.dzx-c.end { top: auto; left: auto; bottom: 7%; right: 10%; transform: rotate(180deg); }
+.dzx-card.t-n { --cc: var(--dzx-n); } .dzx-card.t-z { --cc: var(--dzx-z); } .dzx-card.t-g { --cc: var(--dzx-g); } .dzx-card.t-y { --cc: var(--dzx-y); } .dzx-card.t-r { --cc: var(--dzx-r); }
+/* chiffres sombres sur les couleurs claires */
+.dzx-card.t-z, .dzx-card.t-y { color: var(--dzx-dark); }
+.dzx-card.t-z b, .dzx-card.t-y b { text-shadow: 0 1.5px 0 rgba(255, 255, 255, .5); }
+/* le dos : rayures bleu nuit, un médaillon « 12 » */
+.dzx-card.back { background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .14), transparent 62%),
+    repeating-linear-gradient(45deg, color-mix(in oklab, var(--cc), white 10%) 0 3px, var(--cc) 3px 7px), var(--cc); }
+.dzx-card.back::before { display: none; }
+.dzx-card.back b { width: 52%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; text-shadow: none;
+  background: radial-gradient(circle at 40% 30%, color-mix(in oklab, var(--cc), white 8%), color-mix(in oklab, var(--cc), black 32%)); box-shadow: inset 0 0 0 2px var(--dzx-cyan), 0 2px 5px rgba(0, 0, 0, .35); }
+.dzx-card.back b::before { content: ""; width: 38%; aspect-ratio: 1; rotate: 45deg; border-radius: 3px; background: linear-gradient(135deg, var(--dzx-cyan), color-mix(in oklab, var(--dzx-cyan), var(--cc) 45%)); box-shadow: 0 0 10px color-mix(in oklab, var(--dzx-cyan) 50%, transparent); }
+/* case vide : une colonne retirée, ou rien en main */
+.dzx-card.gone, .dzx-card.slot { background: rgba(0, 0, 0, .14); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .2); }
+.dzx-card.gone::before, .dzx-card.gone::after, .dzx-card.slot::before, .dzx-card.slot::after { display: none; }
+/* en petit (les grilles des autres) */
+.dzx-card.mini { border-radius: 3.5px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .9), 0 1px 2px rgba(0, 0, 0, .4); }
+.dzx-card.mini::before { inset: 14% 12%; }
+.dzx-card.mini b { font-size: 9.5px; font-weight: 800; letter-spacing: -.05em; text-shadow: 0 1px 0 color-mix(in oklab, var(--cc) 50%, black); }
+.dzx-card.mini.two b { font-size: 8.5px; letter-spacing: -.08em; }
+.dzx-card.mini.t-z b, .dzx-card.mini.t-y b { text-shadow: none; }
+.dzx-card.mini.back { background: repeating-linear-gradient(45deg, color-mix(in oklab, var(--cc), white 12%) 0 1.5px, var(--cc) 1.5px 3.5px), var(--cc); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .55), 0 1px 2px rgba(0, 0, 0, .4); }
+.dzx-card.mini.back b { display: none; }
+.dzx-card.mini.back b::before { display: none; }
+.dzx-card.mini.gone { background: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); }
+/* arrivées : la carte prise saute dans la main, la carte retournée pivote */
+.dzx-card.pop { animation: dzx-land .42s cubic-bezier(.2, .9, .3, 1.25); }
+@keyframes dzx-land { from { translate: 0 -34px; scale: 1.16; opacity: .4; } }
+.dzx-card.flip { animation: dzx-flip .42s cubic-bezier(.2, .8, .3, 1.15); }
+@keyframes dzx-flip { from { transform: perspective(400px) rotateY(90deg); filter: brightness(.7); } }
+
+/* ------------------------------------------------------------ les autres, en arc, avec leur petite grille */
+.dzx-opps { height: 124px; }
+.dzx-opps .tb-opp { gap: 2px; }
+.dzx-opps .tb-av { width: 38px; height: 38px; font-size: 21px; }
+.dzx-opps .tb-badge { top: -5px; left: calc(50% + 9px); }
+.dzx-opps .tb-timer { inset: -6px; animation-duration: 30s; }
+.dzx-opps .tb-nm { font-size: 12.5px; line-height: 15px; }
+.dzx-mini { display: grid; grid-template-columns: repeat(4, 13.5px); gap: 2px; padding: 3px; border-radius: 7px; background: rgba(0, 0, 0, .2); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .1); }
+.dzx-mini .dzx-card { aspect-ratio: 14 / 18; }
+.tb-opp.now .dzx-mini { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--acc) 70%, transparent), 0 0 14px -2px color-mix(in oklab, var(--acc) 50%, transparent); }
+.dzx-flag { position: absolute; top: 23px; left: 50%; transform: translateX(-50%); z-index: 1; font-size: 10.5px; padding: 1px 7px; line-height: 14px; }
+.tb-opp.dzx-wait .tb-av { opacity: .78; }
+/* quatre adversaires : on serre un peu */
+.dzx-n4 .tb-nm { max-width: 76px; }
+.dzx-n4 .dzx-mini { grid-template-columns: repeat(4, 12.5px); }
+/* cinq et plus sur téléphone : l'arc ne laisse plus de place aux grilles, on les range dans une rangée qui défile
+   (left/top sont posés en ligne par tbSeats pour l'arc : il faut !important pour les annuler) */
+@media (max-width: 1099px) {
+  .dzx-opps.dzx-strip { display: flex; gap: 4px; height: auto; margin: 0 -20px; padding: 2px 20px 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; scroll-snap-type: x proximity;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent); mask: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent); }
+  .dzx-strip::-webkit-scrollbar { display: none; }
+  .dzx-strip .tb-opp { position: relative; left: auto !important; top: auto !important; transform: none; flex: none; width: 74px; padding-top: 6px; scroll-snap-align: center; }
+  .dzx-strip.many .tb-av { width: 38px; height: 38px; font-size: 21px; }
+  .dzx-strip .tb-nm, .dzx-strip.many .tb-nm { font-size: 12px; max-width: 72px; }
+  .dzx-strip .tb-badge { top: 1px; }
+  .dzx-strip .dzx-flag { top: 29px; }
+  .dzx-strip .dzx-mini { grid-template-columns: repeat(4, 12.5px); }
+  .dzx-strip.dzx-n5 .tb-opp { width: 68px; }
+  .dzx-strip.dzx-n5 .tb-nm { max-width: 66px; }
+}
+
+/* ------------------------------------------------------------ le centre du tapis */
+.dzx-center { position: relative; display: flex; justify-content: center; align-items: center; gap: 24px; min-height: 112px; }
+.dzx-halo { position: absolute; left: 50%; top: 50%; width: 300px; height: 170px; transform: translate(-50%, -54%); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--dzx-cyan) 16%, transparent), transparent); }
+.dzx-pile, .dzx-hand { position: relative; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 0; border: 0; background: none; color: inherit; font: inherit; }
+.dzx-pile { cursor: default; }
+.dzx-pile.can { cursor: pointer; }
+.dzx-pile:disabled { opacity: 1; }
+.dzx-stack { position: relative; display: block; width: 56px; aspect-ratio: 5 / 7; }
+.dzx-stack .dzx-card { position: absolute; inset: 0; }
+.dzx-count { position: absolute; z-index: 2; top: -8px; right: -10px; min-width: 26px; height: 22px; padding: 0 6px; border-radius: 11px; background: #fff; color: #111; font: 700 12px/22px var(--font); text-align: center; font-variant-numeric: tabular-nums; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); }
+.dzx-stack .dzx-card:nth-child(1) { transform: translate(-4px, 4px); } .dzx-stack .dzx-card:nth-child(2) { transform: translate(-2px, 2px); }
+.dzx-discard > .dzx-card { width: 56px; }
+.dzx-hand > .dzx-card { width: 56px; }
+.dzx-hand.has > .dzx-card { width: 62px; box-shadow: inset 0 0 0 2.5px #fff, 0 0 0 2.5px #fff, 0 0 0 5px color-mix(in oklab, var(--dzx-cyan) 70%, transparent), 0 14px 26px -6px rgba(0, 0, 0, .65); }
+.dzx-hand.mine > .dzx-card { box-shadow: inset 0 0 0 2.5px #fff, 0 0 0 2.5px #fff, 0 0 0 5.5px var(--acc), 0 0 28px 4px color-mix(in oklab, var(--acc) 45%, transparent), 0 14px 26px -6px rgba(0, 0, 0, .65); }
+.dzx-pile.can .dzx-stack .dzx-card:nth-child(3), .dzx-discard.can > .dzx-card { box-shadow: inset 0 0 0 2.5px #fff, 0 0 0 3px var(--acc), 0 0 20px color-mix(in oklab, var(--acc) 48%, transparent), 0 10px 22px -6px rgba(0, 0, 0, .55); }
+.dzx-pile.can .dzx-stack .dzx-card:nth-child(3) { animation: dzx-breathe 1.8s ease-in-out infinite; }
+@keyframes dzx-breathe { 50% { translate: 0 -4px; } }
+.dzx-lbl { font-size: 12.5px; font-weight: 600; color: var(--ink-2); white-space: nowrap; line-height: 16px; text-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
+.dzx-lbl b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.dzx-pile.can .dzx-lbl, .dzx-hand.mine .dzx-lbl { color: var(--acc); }
+
+/* ------------------------------------------------------------ ta grille, dans le plateau */
+.dzx-grid { --dzx-w: 57px; display: grid; grid-template-columns: repeat(4, var(--dzx-w)); gap: 7px 10px; justify-content: center; padding: 8px 0 4px; }
+.dzx-cell { position: relative; padding: 0; border: 0; background: none; border-radius: 10px; cursor: pointer; transition: translate .25s cubic-bezier(.3, 1.3, .5, 1); }
+.dzx-cell:disabled { cursor: default; opacity: 1; }
+.dzx-cell.ok { translate: 0 -2px; }
+.dzx-cell.ok .dzx-card { box-shadow: inset 0 0 0 2.5px #fff, 0 0 0 2.5px var(--acc), 0 0 18px 1px color-mix(in oklab, var(--acc) 45%, transparent), 0 10px 20px -6px rgba(0, 0, 0, .6); }
+.dzx-cell.no .dzx-card { filter: saturate(.6) brightness(.66); }
+#dz-main .tb-tray-top { gap: 8px; }
+#dz-main .tb-tray-top > span:last-child { text-align: right; }
+#dz-main .tb-tray-top > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#dz-main .tb-acts .btn { min-width: 0; }
+
+/* ------------------------------------------------------------ fin de manche et de partie, en verre */
+#dz-main .dzx-row { gap: 12px; padding: 10px 14px; background: none; border: 0; border-top: .5px solid rgba(255, 255, 255, .12); border-radius: 0; }
+#dz-main .dzx-row:first-child { border-top: 0; }
+.dzx-row-head { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 15px; }
+.dzx-row-head b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dzx-row-head b i { font-style: normal; font-size: 11.5px; font-weight: 700; margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: rgba(255, 255, 255, .14); vertical-align: 1px; }
+.dzx-row-head .neg { color: var(--neg); font-size: 13px; font-variant-numeric: tabular-nums; }
+.dzx-row.me .dzx-row-head b { color: var(--acc); }
+.dzx-row-pts { font: 700 20px var(--font); font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+.dzx-row.doubled .dzx-row-pts { color: var(--neg); }
+.dzx-row .dzx-mini { grid-template-columns: repeat(4, 18px); flex: none; }
+.dzx-row .dzx-card.mini b { font-size: 11px; }
+.dzx-row .dzx-card.mini.two b { font-size: 10px; }
+#dz-main .dzx-score-row { gap: 10px; min-height: 48px; padding: 8px 14px; border-top: .5px solid rgba(255, 255, 255, .12); }
+#dz-main .dzx-score-row:first-child { border-top: 0; }
+.dzx-score-name { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dzx-score-name small { color: var(--ink-2); font-weight: 500; }
+.dzx-score-last { color: var(--ink-2); font-size: 14px; font-variant-numeric: tabular-nums; }
+.dzx-score-total { font: 700 19px var(--font); font-variant-numeric: tabular-nums; min-width: 2.2ch; text-align: right; }
+.dzx-score-row.lead :is(.dzx-score-name, .dzx-score-total) { color: var(--acc); }
+.dzx-score-row.me .dzx-score-name { color: var(--acc); }
+#dz-main .dz-verdict, #dz-main .dz-scores { display: block; }
+#dz-main .dz-verdict .mj-side-title, #dz-main .dz-scores .mj-side-title { padding: 0 4px; color: var(--ink-2); text-shadow: 0 1px 3px rgba(0, 0, 0, .4); }
+#dz-main > .note { text-align: center; color: var(--ink-2); }
+
+/* ------------------------------------------------------------ PC : la table au centre, scores et fil à droite */
+@media (min-width: 1100px) {
+  .dzx-opps .tb-av { width: 46px; height: 46px; font-size: 25px; }
+  .dzx-opps .tb-nm { font-size: 13px; }
+  .dzx-opps .dzx-mini { grid-template-columns: repeat(4, 17px); gap: 2.5px; padding: 4px; }
+  .dzx-opps .dzx-card.mini b { font-size: 11.5px; }
+  .dzx-opps .dzx-card.mini.two b { font-size: 10.5px; }
+  /* peu d'adversaires : la petite grille à droite de l'avatar, la table gagne en hauteur */
+  /* chacun sur une petite plaque de verre : son avatar, son prénom (sur deux lignes au besoin) et sa grille */
+  .dzx-opps.dzx-few { height: 116px; }
+  .dzx-few .tb-opp { width: auto; display: grid; grid-template-columns: 76px auto; grid-template-rows: auto auto; column-gap: 8px; row-gap: 4px; align-items: center; justify-items: center;
+    padding: 8px 10px 8px 6px; border-radius: 20px; background: color-mix(in oklab, var(--bg) 45%, transparent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), inset 0 0 0 .5px var(--tb-rim); }
+  .dzx-few .tb-opp.now { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), inset 0 0 0 1px color-mix(in oklab, var(--acc) 55%, transparent), 0 0 26px -8px color-mix(in oklab, var(--acc) 60%, transparent); }
+  .dzx-few .tb-av { grid-column: 1; grid-row: 1; align-self: end; }
+  .dzx-few .tb-nm { grid-column: 1; grid-row: 2; max-width: 76px; align-self: start; white-space: normal; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+  .dzx-few .dzx-mini { grid-column: 2; grid-row: 1 / 3; }
+  .dzx-few .tb-badge { left: 58px; top: 2px; }
+  .dzx-few .dzx-flag { top: 44px; left: 44px; }
+  /* quatre adversaires et plus : chacun en colonne (avatar, prénom, grille), la grille rétrécit avec le nombre */
+  .dzx-opps:is(.dzx-mid, .dzx-lots) { height: 136px; }
+  .dzx-opps.dzx-lots.many { height: 132px; }
+  :is(.dzx-mid, .dzx-lots) .tb-opp { width: 104px; }
+  :is(.dzx-mid, .dzx-lots) .tb-nm { max-width: 104px; }
+  .dzx-opps:is(.dzx-mid, .dzx-lots) .tb-badge { left: calc(50% + 12px); }
+  :is(.dzx-mid, .dzx-lots) .dzx-flag { top: 30px; }
+  .dzx-mid .dzx-mini { grid-template-columns: repeat(4, 16px); }
+  .dzx-lots.many .tb-opp { width: 84px; }
+  .dzx-lots.many .tb-av { width: 40px; height: 40px; font-size: 22px; }
+  .dzx-lots.many .tb-nm { font-size: 12px; max-width: 84px; }
+  .dzx-lots.many .dzx-flag { top: 25px; font-size: 10px; }
+  .dzx-lots .dzx-mini { grid-template-columns: repeat(4, 14px); gap: 2px; padding: 3px; }
+  .dzx-lots .dzx-card.mini b { font-size: 9.5px; }
+  .dzx-lots .dzx-card.mini.two b { font-size: 8.5px; }
+  .dzx-center { gap: 34px; min-height: 114px; }
+  .dzx-stack, .dzx-discard > .dzx-card, .dzx-hand > .dzx-card { width: 60px; }
+  .dzx-hand.has > .dzx-card { width: 70px; }
+  .dzx-grid { --dzx-w: 62px; gap: 8px 14px; padding-top: 6px; }
+  #s-douze .desk-side .dz-log { text-align: left; }
+  /* la hauteur est comptée (zoom des écrans de jeu) : la ligne de partie passe en tête des scores, à droite */
+  #s-douze > .stack { gap: 12px; }
+  /* le plateau descend jusqu'en bas de l'écran ; la colonne de droite garde sa hauteur */
+  #dz-main.desk-split { align-items: stretch; }
+  #dz-main.desk-split > .desk-side { align-self: start; }
+  #dz-main .desk-main > .tb-bar:has(+ .dzx-opps) { display: none; }
+  /* le plateau : ta grille au milieu, les gestes à sa droite */
+  #dz-main .tb-tray { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr); column-gap: 22px; align-items: center; }
+  #dz-main .tb-tray > .tb-tray-top { grid-column: 1 / -1; }
+  #dz-main .tb-tray > .dzx-grid { grid-column: 2; grid-row: 2; }
+  #dz-main .tb-tray > .tb-acts { grid-column: 3; grid-row: 2; flex-direction: column; flex-wrap: nowrap; width: 100%; max-width: 230px; margin: 0; justify-self: start; }
+  #dz-main .tb-tray:not(:has(.dzx-grid)) > .tb-acts { grid-column: 1 / -1; grid-row: auto; flex-direction: row; justify-self: center; }
+  #dz-main .tb-tray .tb-acts .btn { flex: none; width: 100%; min-height: 52px; line-height: 1.15; }
+  #dz-main .dzx-sub { display: block; font-size: 13px; font-weight: 500; opacity: .8; }
+  #s-douze .desk-side .mj-side-title { margin-bottom: 6px; }
+}
+/* téléphone court : on resserre la grille pour que tout tienne sans défiler */
+@media (max-width: 1099px) and (max-height: 760px) {
+  .dzx-grid { --dzx-w: 54px; gap: 6px 9px; padding-top: 6px; }
+  .dzx-center { min-height: 112px; }
+  .dzx-stack, .dzx-discard > .dzx-card, .dzx-hand > .dzx-card { width: 54px; }
+  .dzx-hand.has > .dzx-card { width: 62px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dzx-card.pop, .dzx-card.flip, .dzx-pile.can .dzx-stack .dzx-card:nth-child(3) { animation: none; }
+  .dzx-cell { transition: none; }
+}

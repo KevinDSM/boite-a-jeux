@@ -1,0 +1,183 @@
+/* solitaire : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Un tapis bleu canard plein écran, les emplacements dessinés finement sur le feutre (liseré clair, symbole en
+   filigrane), des cartes vernies qui se chevauchent nettement : le rang et la couleur restent lisibles dans la
+   partie découverte. La table reste sombre même en thème clair, comme une vraie table. */
+
+[data-game="solitaire"], [data-theme="light"][data-game="solitaire"] {
+  --bg: oklch(0.215 0.042 212); --surface: oklch(0.27 0.048 210); --surface-2: oklch(0.31 0.052 210); --line: oklch(0.44 0.05 208 / .6);
+  --ink: oklch(0.975 0.01 200); --ink-2: oklch(0.87 0.028 205); --mute: oklch(0.79 0.035 205);
+  --acc: oklch(0.87 0.13 86); --acc-soft: oklch(0.93 0.08 90); --on-acc: oklch(0.26 0.05 70); --neg: oklch(0.66 0.2 27); --pos: oklch(0.84 0.13 160);
+  --glass-tint: oklch(0.24 0.042 212 / .5); --glass-tint-thick: oklch(0.2 0.042 214 / .78);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.53 0.085 198); --felt-mid: oklch(0.375 0.072 204); --felt-lo: oklch(0.175 0.04 214);
+  --tb-back: oklch(0.43 0.15 22);
+  --font-d: var(--font);
+}
+
+/* sur téléphone, un peu plus de place en largeur pour les 7 colonnes */
+#s-solitaire { padding-left: 12px; padding-right: 12px; }
+#s-solitaire .tb-tray { margin-left: -12px; margin-right: -12px; }
+@media (min-width: 700px) { #s-solitaire { padding-left: 20px; padding-right: 20px; } #s-solitaire .tb-tray { margin-left: -20px; margin-right: -20px; } }
+
+/* la ligne du haut : le chrono tourne en chiffres tabulaires */
+.sox-clock { display: inline-flex; align-items: center; gap: 4px; vertical-align: top; }
+.sox-clock svg { width: 14px; height: 14px; opacity: .8; }
+.sox-clock b { font-variant-numeric: tabular-nums; }
+.tb-chip.sox-hurry .sox-clock { color: oklch(0.8 0.14 30); }
+.tb-chip.sox-hurry .sox-clock b { color: oklch(0.86 0.13 35); }
+
+/* la puce de la course : une cible de 44 px ; le bouton doré garde son libellé centré (la classe .hero est aussi celle du titre d'accueil) */
+#so-main button.tb-chip { min-height: 44px; }
+#so-main .tb-btn.hero { padding: 0 18px; }
+
+/* le meneur, un peu plus compact : la table a besoin de hauteur */
+#so-main .tb-say { padding: 10px 14px; gap: 11px; }
+#so-main .tb-say .tb-pip { width: 34px; height: 34px; font-size: 17px; }
+#so-main .tb-say .mj-title { font-size: 18px; }
+#so-main .tb-say .mj-say { font-size: 14px; }
+#so-main .tb-say .mj-prog { margin-top: 8px; color: var(--ink-2); }
+#so-main .tb-say .mj-prog i { background: rgba(255, 255, 255, .16); }
+#so-main .tb-say .mj-prog i.f { background: var(--acc); }
+
+/* ------------------------------------------------------------------ la table */
+#s-solitaire .so-board { --gap: 5px; --sox-r: 6px; max-width: 640px; margin: 4px auto 0; }
+#s-solitaire .so-top, #s-solitaire .so-tab { gap: var(--gap); }
+#s-solitaire .so-tab { margin-top: 16px; align-items: stretch; }
+#s-solitaire .so-board.frozen { opacity: .55; pointer-events: none; }
+#s-solitaire .so-board.won { pointer-events: none; }
+#s-solitaire .so-board.won .so-tab { display: none; }
+#s-solitaire .so-board.won :is(.so-stock, .so-waste) { visibility: hidden; }
+
+/* les emplacements, dessinés sur le feutre : un liseré clair et un creux léger */
+#s-solitaire .so-slot, #s-solitaire .so-empty { aspect-ratio: 5 / 7; border: 0; border-radius: var(--sox-r); background: rgba(0, 0, 0, .13);
+  box-shadow: inset 0 0 0 1.25px rgba(255, 255, 255, .24), inset 0 2px 7px rgba(0, 0, 0, .28), 0 1px 0 rgba(255, 255, 255, .05); transition: box-shadow .2s, background .2s; }
+#s-solitaire .so-suit, #s-solitaire .so-empty, #s-solitaire .so-recycle { position: absolute; inset: 0; container-type: inline-size; display: grid; place-items: center; pointer-events: none; }
+#s-solitaire .so-empty { position: relative; font-family: var(--font); }
+#s-solitaire .so-suit i, #s-solitaire .so-empty i { font-style: normal; line-height: 1; color: rgba(255, 255, 255, .2); text-shadow: 0 1px 0 rgba(0, 0, 0, .18); }
+#s-solitaire .so-suit i { font-size: 54cqw; }
+#s-solitaire .so-found.red .so-suit i { color: oklch(0.78 0.09 25 / .3); }
+#s-solitaire .so-empty i { font: 700 38cqw/1 var(--font); letter-spacing: -.03em; }
+#s-solitaire .so-recycle { color: rgba(255, 255, 255, .42); }
+#s-solitaire .so-recycle svg { width: 46cqw; height: 46cqw; }
+#s-solitaire .so-stock.spent .so-recycle { color: rgba(255, 255, 255, .16); }
+#s-solitaire .so-stock { cursor: pointer; }
+#s-solitaire .so-stock .so-card { position: absolute; inset: 0; z-index: 2; }
+/* l'épaisseur de la pioche : une ou deux tranches de cartes derrière */
+#s-solitaire .so-stock.deep::before, #s-solitaire .so-stock.deeper::after { content: ""; position: absolute; inset: 0; border-radius: var(--sox-r);
+  background: var(--tb-back); box-shadow: inset 0 0 0 1.5px #f4efe4, 0 2px 4px rgba(0, 0, 0, .3); z-index: 1; translate: 2px 2px; }
+#s-solitaire .so-stock.deeper::after { z-index: 0; translate: 4px 4px; }
+#s-solitaire .so-left { right: auto; left: 50%; bottom: -9px; translate: -50% 0; z-index: 3; min-width: 26px; padding: 2px 7px; border-radius: 999px; text-align: center;
+  background: oklch(0.2 0.04 212 / .82); color: var(--ink); font: 700 11px/1.25 var(--font); font-variant-numeric: tabular-nums;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .22), 0 2px 6px rgba(0, 0, 0, .35); }
+/* la défausse : à plat sur le tapis, en éventail en pioche de trois */
+#s-solitaire .so-waste { grid-column: span 2; aspect-ratio: auto; background: none; box-shadow: none; }
+#s-solitaire .so-waste .so-card, #s-solitaire .so-waste .so-card.km-card { position: absolute; top: 0; width: calc((100% - var(--gap)) / 2); }
+#s-solitaire .so-waste .fan1 { left: 25%; } #s-solitaire .so-waste .fan2 { left: 50%; }
+#s-solitaire .so-found .so-card { position: absolute; inset: 0; }
+#s-solitaire .so-found.full { box-shadow: inset 0 0 0 1.25px rgba(255, 255, 255, .24), 0 0 0 2px color-mix(in oklab, var(--acc) 70%, transparent), 0 0 22px color-mix(in oklab, var(--acc) 45%, transparent); }
+
+/* les colonnes : les cartes cachées se serrent, les découvertes laissent voir leur rang et leur couleur */
+#s-solitaire .so-col { --sox-up: min(50%, 34px); --sox-dn: 20%; min-height: 0; padding-bottom: 6px; border-radius: var(--sox-r); }
+#s-solitaire .so-col > .so-card + .so-card { margin-top: calc(var(--sox-up) - 140%); }
+#s-solitaire .so-col > .so-card.down + .so-card { margin-top: calc(var(--sox-dn) - 140%); }
+
+/* ------------------------------------------------------------------ les cartes */
+#s-solitaire .so-card { width: 100%; aspect-ratio: 5 / 7; border-radius: var(--sox-r); }
+#s-solitaire .so-card.km-card { font-family: var(--font); container-type: inline-size; cursor: grab; touch-action: none; overflow: hidden;
+  box-shadow: inset 0 0 0 .75px rgba(0, 0, 0, .14), inset 0 1px 0 #fff, 0 -1px 2px rgba(0, 0, 0, .12), 0 2px 3px rgba(0, 0, 0, .28);
+  transition: translate .18s cubic-bezier(.3, 1.3, .5, 1), box-shadow .18s; }
+/* la dernière carte d'une colonne (et celles posées seules) porte une vraie ombre sur le tapis */
+#s-solitaire .so-col > .so-card:last-child, #s-solitaire .so-found .so-card, #s-solitaire .so-waste .so-card:last-child, #s-solitaire .so-stock .so-card {
+  box-shadow: inset 0 0 0 .75px rgba(0, 0, 0, .14), inset 0 1px 0 #fff, 0 -1px 2px rgba(0, 0, 0, .12), 0 9px 16px -7px rgba(0, 0, 0, .6), 0 2px 4px rgba(0, 0, 0, .25); }
+/* un vernis discret : un reflet sur l'arête haute, qui ne mange pas le rang */
+#s-solitaire .so-card.km-card::after { background: linear-gradient(172deg, rgba(255, 255, 255, .5), transparent 9%), linear-gradient(118deg, transparent 55%, rgba(255, 255, 255, .22) 70%, transparent 86%); }
+#s-solitaire .so-card .km-corner { top: 6cqw; left: 8cqw; right: 7cqw; flex-direction: row; justify-content: space-between; align-items: center; gap: 2px; }
+#s-solitaire .so-card .km-corner b { font-size: clamp(13px, 31cqw, 22px); font-weight: 760; letter-spacing: -.06em; line-height: 1; }
+#s-solitaire .so-card .km-corner i { font-size: clamp(11px, 25cqw, 18px); margin: 0; line-height: 1; }
+#s-solitaire .so-card .km-corner.bottom { display: none; }
+#s-solitaire .so-card .km-pip { inset: auto 0 7cqw; padding: 0; display: block; text-align: center; font-size: 58cqw; line-height: 1; }
+/* les figures : un cadre fin autour du symbole, comme sur un jeu de cartes */
+#s-solitaire .so-card.fig::before { content: ""; position: absolute; inset: 54cqw 11cqw 9cqw; border-radius: 4cqw; pointer-events: none;
+  border: max(1px, 1.6cqw) solid currentColor; opacity: .2; }
+#s-solitaire .so-card.fig .km-pip { bottom: 14cqw; font-size: 40cqw; }
+#s-solitaire .so-card.red.fig::before { color: oklch(0.55 0.21 25); }
+/* le dos : le motif de la table, avec un cadre blanc plus fin à cette taille */
+#s-solitaire .so-card.back { background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .16), transparent 62%),
+    repeating-linear-gradient(45deg, color-mix(in oklab, var(--tb-back), white 11%) 0 3px, var(--tb-back) 3px 6px);
+  box-shadow: inset 0 0 0 2px #f4efe4, inset 0 0 0 3px rgba(0, 0, 0, .14), 0 -1px 2px rgba(0, 0, 0, .14), 0 2px 3px rgba(0, 0, 0, .3); }
+
+/* la carte prise, les places possibles, le survol */
+#s-solitaire .so-card.sel { translate: 0 -3px; z-index: 2;
+  box-shadow: 0 0 0 2px var(--acc), 0 0 16px 1px color-mix(in oklab, var(--acc) 50%, transparent), 0 10px 18px -6px rgba(0, 0, 0, .6); }
+#s-solitaire .so-col.hot { box-shadow: none; }
+#s-solitaire .so-col.hot > :last-child, #s-solitaire .so-found.hot {
+  box-shadow: 0 0 0 2.5px var(--acc), 0 0 20px 2px color-mix(in oklab, var(--acc) 50%, transparent), 0 9px 16px -7px rgba(0, 0, 0, .6); }
+#s-solitaire .so-found.hot .so-card { box-shadow: none; }
+@media (hover: hover) {
+  #s-solitaire .so-board:not(.frozen) .so-card[data-src]:hover:not(.sel):not(.dragging) { box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--acc) 75%, transparent), 0 9px 16px -7px rgba(0, 0, 0, .6); }
+  #s-solitaire .so-stock:hover .so-card { box-shadow: inset 0 0 0 2px #f4efe4, 0 0 0 1.5px color-mix(in oklab, var(--acc) 75%, transparent), 0 9px 16px -7px rgba(0, 0, 0, .6); }
+}
+#s-solitaire .so-stock:focus-visible, #s-solitaire .so-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+/* tenue au doigt : elle passe au-dessus de tout, avec une ombre portée plus haute */
+#s-solitaire .so-card.dragging { z-index: 50; cursor: grabbing; transition: none;
+  box-shadow: 0 0 0 2px var(--acc), 0 24px 34px -12px rgba(0, 0, 0, .7), 0 6px 12px rgba(0, 0, 0, .3) !important; }
+
+/* ------------------------------------------------------------------ le plateau de verre */
+#so-main .sox-tray { padding-top: 8px; }
+#so-main .sox-tray .tb-tray-top { font-variant-numeric: tabular-nums; }
+#so-main .sox-tray .tb-acts { margin-top: 8px; gap: 8px; }
+#so-main .sox-tray .tb-acts .btn { min-width: 0; min-height: 46px; padding: 0 12px; font-size: 15.5px; gap: 7px; white-space: nowrap; }
+/* « Finir la patience » prend toute la ligne au-dessus des deux autres */
+#so-main .sox-tray .tb-acts .btn.hero { order: -1; flex: 1 1 100%; }
+#so-main .sox-tray .btn svg { width: 18px; height: 18px; flex: none; }
+#so-main .sox-tray .btn:disabled { opacity: .4; }
+
+/* ------------------------------------------------------------------ la course */
+.sox-race { list-style: none; margin: 0; padding: 0; }
+.sox-race li { display: grid; grid-template-columns: 16px 36px minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 10px; row-gap: 6px; align-items: center;
+  padding: 9px 2px; border-top: .5px solid rgba(255, 255, 255, .12); }
+.sox-race li:first-child { border-top: 0; }
+.sox-race .sox-rk { grid-row: 1 / 3; font: 600 13.5px var(--font); font-variant-numeric: tabular-nums; color: var(--ink-2); text-align: center; }
+.sox-race .tb-e { grid-row: 1 / 3; }
+.sox-race .sox-nm { min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+.sox-race .sox-nm small { font-weight: 500; font-size: 12.5px; color: var(--ink-2); margin-left: 2px; }
+.sox-race .sox-ct { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
+.sox-race .sox-bar { grid-column: 3 / 5; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .13); overflow: hidden; }
+.sox-race .sox-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--acc-soft), var(--acc)); transition: width .45s cubic-bezier(.2, .8, .2, 1); }
+.sox-race li.me .sox-nm { color: var(--acc); }
+.sox-race li.done .sox-ct { color: var(--pos); font-weight: 650; }
+.sox-race li.done .sox-bar i { background: var(--pos); }
+.sox-race li.quit .sox-bar i { background: rgba(255, 255, 255, .35); }
+.sox-race li.off { opacity: .5; }
+#tb-sheet .sox-stop { width: 100%; min-height: 48px; margin-top: 12px; }
+/* sur téléphone la course vit dans la feuille ; elle n'apparaît dans la page que sur PC (colonne de droite) */
+@media (max-width: 1099px) { #so-main > .so-race, #so-main > .so-end { display: none; } }
+#so-main .so-race .mj-side-title { display: block; margin: 0 0 4px; }
+
+/* ------------------------------------------------------------------ la fin : le classement sur une plaque de verre */
+.sox-over { padding: 14px 16px 16px; border-radius: 26px; background: var(--tb-glass-thick);
+  -webkit-backdrop-filter: blur(30px) saturate(170%); backdrop-filter: blur(30px) saturate(170%);
+  box-shadow: inset 0 1.2px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 0 0 .5px var(--tb-edge), 0 14px 34px rgba(0, 0, 0, .35); }
+.sox-over-title { margin: 0 0 4px; font: 600 13px var(--font); color: var(--ink-2); }
+.sox-over .tb-acts { margin-top: 14px; }
+.sox-over .tb-acts .btn { min-height: 50px; }
+.sox-note { margin: 12px 0 0; text-align: center; font-size: 14.5px; color: var(--ink-2); }
+.sox-over .sox-race li.me { margin: 0 -10px; padding: 9px 12px; border-radius: 14px; background: color-mix(in oklab, var(--acc) 12%, transparent); border-top-color: transparent; }
+.sox-over .sox-race li.me + li { border-top-color: transparent; }
+
+/* ------------------------------------------------------------------ tablette et PC : des cartes plus grandes */
+@media (min-width: 700px) {
+  #s-solitaire .so-board { --gap: 9px; --sox-r: 9px; }
+  #s-solitaire .so-tab { margin-top: 22px; }
+  #s-solitaire .so-left { font-size: 12.5px; padding: 3px 9px; bottom: -11px; }
+}
+@media (min-width: 1100px) {
+  #s-solitaire .so-board { max-width: 660px; --gap: 11px; --sox-r: 10px; }
+  #so-main .tb-say, #so-main .tb-bar { max-width: 660px; width: 100%; margin: 0 auto; }
+  #so-main .sox-tray { max-width: 660px; width: 100%; margin: auto auto 0; border-radius: 28px 28px 0 0; padding: 8px 16px 14px; }
+  #so-main .sox-tray .tb-acts { max-width: none; }
+  #so-main .desk-side > .so-end { padding: 0 18px; min-height: 48px; border-radius: 999px; color: var(--ink); font: 650 15px var(--font); }
+  #so-main:not(.desk-split) .sox-over { width: 100%; max-width: 660px; margin: 0 auto; }
+}
+@media (prefers-reduced-motion: reduce) { #s-solitaire .so-card.km-card { transition: none; } .sox-race .sox-bar i { transition: none; } }

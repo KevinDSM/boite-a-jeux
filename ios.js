@@ -136,6 +136,8 @@ document.querySelectorAll('#games .gcard[data-game]').forEach(c => {
   c.prepend(ihIcon(g));
 });
 pressable(document, '#games .gcard');
+// les cartes des mains en éventail (table.js) s'enfoncent un peu sous le doigt
+pressable(document, '.tb-slot > *', null, 0.94);
 // les boutons de l'appli s'enfoncent à peine (4 %), comme les boutons d'iOS
 pressable(document, '#s-lobby .btn, .screen.play .btn, #s-end .btn, .modal .btn, .ih-widget .btn, .ih-pick', null, 0.97);
 

@@ -1,0 +1,162 @@
+/* bataille : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Un tapis rouge brique plein écran, les adversaires en arc avec leur tas, les cartes du pli posées
+   devant chacun au centre, ton tas et le bouton « Retourner » dans le plateau de verre.
+   Comme Chromo, la table reste sombre même en thème clair : c'est l'objet du jeu. */
+[data-game="bataille"], [data-theme="light"][data-game="bataille"] {
+  --bg: oklch(0.2 0.045 22); --surface: oklch(0.27 0.05 22); --surface-2: oklch(0.31 0.055 22); --line: oklch(0.45 0.05 22 / .6);
+  --ink: oklch(0.97 0.012 70); --ink-2: oklch(0.87 0.03 50); --mute: oklch(0.79 0.035 40);
+  --acc: oklch(0.86 0.15 88); --acc-soft: oklch(0.92 0.09 92); --on-acc: oklch(0.25 0.06 75); --neg: oklch(0.7 0.19 38); --pos: oklch(0.83 0.14 150);
+  --gold: oklch(0.86 0.15 88); --glow: 0.1;
+  --glass-tint: oklch(0.24 0.045 22 / .5); --glass-tint-thick: oklch(0.2 0.045 22 / .76);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.46 0.13 26); --felt-mid: oklch(0.33 0.1 24); --felt-lo: oklch(0.16 0.045 22);
+  --tb-back: oklch(0.42 0.12 258);   /* dos bleu nuit : il se détache du tapis rouge */
+}
+
+/* sur téléphone, la table prend la place libre : le pli reste au milieu, le plateau en bas */
+@media (max-width: 1099px) {
+  #bt-main > .btx-table { flex: 1; display: flex; flex-direction: column; }
+  #bt-main > .btx-table.over { flex: none; }
+  #bt-main > .in-play { display: none; }
+  /* cinq adversaires sur un téléphone : on se serre (table.js ne le fait qu'à partir de six) */
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) { height: 112px; }
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) .tb-opp { width: 64px; }
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) .tb-av { width: 42px; height: 42px; font-size: 22px; }
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) .tb-nm { font-size: 11.5px; max-width: 64px; }
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) .tb-tag { font-size: 11px; padding: 2px 6px; }
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) .btx-opile { display: none; }
+  #s-bataille .tb-opps:has(> .tb-opp:nth-child(5)) .tb-opp:has(.btx-opile) .tb-badge { top: -4px; left: calc(50% + 9px); }
+}
+
+/* les adversaires : un petit tas à côté de l'avatar, son épaisseur suit le nombre de cartes */
+.btx-opile { position: absolute; top: 26px; left: calc(50% + 13px); width: 26px; height: 32px; pointer-events: none; }
+.btx-opile i { position: absolute; left: 0; bottom: 0; width: 19px; height: 27px; border-radius: 4px;
+  background: repeating-linear-gradient(45deg, color-mix(in oklab, var(--tb-back), white 12%) 0 2px, var(--tb-back) 2px 4px);
+  box-shadow: inset 0 0 0 1.5px #fff, 0 2px 4px rgba(0, 0, 0, .45); }
+.btx-opile i:nth-child(2) { translate: 1.5px -2px; } .btx-opile i:nth-child(3) { translate: 3px -4px; }
+.btx-opile i:nth-child(4) { translate: 4.5px -6px; } .btx-opile i:nth-child(5) { translate: 6px -8px; }
+.btx-opile.empty::before { content: ""; position: absolute; left: 0; bottom: 0; width: 19px; height: 27px; border-radius: 4px; border: 1.5px dashed rgba(255, 255, 255, .35); box-sizing: border-box; }
+.tb-opp:has(.btx-opile) .tb-badge { top: 18px; left: calc(50% + 32px); }
+.tb-opps.many .btx-opile { display: none; }
+.tb-opps.many .tb-opp:has(.btx-opile) .tb-badge { top: -4px; left: calc(50% + 9px); }
+.tb-opp.btx-need .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 2px color-mix(in oklab, var(--acc) 60%, transparent), 0 8px 18px rgba(0, 0, 0, .4); }
+.tb-opp.btx-fight .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 3px var(--neg), 0 0 22px 2px color-mix(in oklab, var(--neg) 60%, transparent), 0 8px 18px rgba(0, 0, 0, .4); }
+.tb-opp.btx-win .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 3px var(--acc), 0 0 24px 3px color-mix(in oklab, var(--acc) 60%, transparent), 0 8px 18px rgba(0, 0, 0, .4); }
+.tb-opp .tb-tag { margin-top: 1px; }
+
+/* le pli : les cartes retournées posées devant chacun ; les tiennes en bas, au plus près de toi */
+.btx-pli { position: relative; flex: 1; min-height: 250px; --cw: 60px; --mw: 80px; --off: 20px; }
+.btx-pli.four { --cw: 52px; }
+.btx-pli.many { --cw: 44px; --off: 18px; }
+.btx-spot { position: absolute; top: calc(6px + var(--arc, 0) * 20px); transform: translateX(-50%); width: var(--cw); height: calc(var(--cw) * 1.44 + (var(--k) - 1) * var(--off)); transition: scale .3s cubic-bezier(.3, 1.3, .5, 1); }
+.btx-spot.mine { left: 50%; top: auto; bottom: 10px; width: var(--mw); height: calc(var(--mw) * 1.44 + (var(--k) - 1) * var(--off)); }
+.btx-spot.tap { cursor: pointer; }
+.btx-spot > .bt-card.bt-card { position: absolute; left: 0; top: calc(var(--i) * var(--off)); width: 100%; margin: 0; cursor: inherit; }
+.btx-spot .bt-card .km-corner { top: 4px; left: 5px; }
+.btx-spot .bt-card .km-corner b { font-size: 16px; }
+.btx-spot .bt-card .km-corner i { font-size: 12px; }
+.btx-spot .bt-card .km-pip { font-size: 30px; padding-top: 12px; }
+.btx-pli.four .btx-spot:not(.mine) .bt-card .km-corner b { font-size: 15px; }
+.btx-pli.four .btx-spot:not(.mine) .bt-card .km-pip { font-size: 26px; }
+.btx-pli.many .btx-spot:not(.mine) .bt-card .km-corner { top: 3px; left: 4px; }
+.btx-pli.many .btx-spot:not(.mine) .bt-card .km-corner b { font-size: 13px; }
+.btx-pli.many .btx-spot:not(.mine) .bt-card .km-pip { font-size: 22px; }
+.btx-spot.mine .bt-card .km-corner { top: 5px; left: 7px; }
+.btx-spot.mine .bt-card .km-corner b { font-size: 19px; }
+.btx-spot.mine .bt-card .km-corner i { font-size: 14px; }
+.btx-spot.mine .bt-card .km-pip { font-size: 42px; padding-top: 14px; }
+.btx-ghost { width: 100%; aspect-ratio: 5 / 7.2; border-radius: 9px; border: 1.5px dashed rgba(255, 255, 255, .26); box-sizing: border-box; }
+.btx-ghost.need { border-color: color-mix(in oklab, var(--acc) 60%, transparent); background: color-mix(in oklab, var(--acc) 8%, transparent); animation: btx-wait 1.6s ease-in-out infinite; }
+@keyframes btx-wait { 50% { opacity: .45; } }
+/* la gagnante en lumière, les autres s'éteignent ; pendant une bataille, les cartes en cause s'embrasent */
+.btx-spot.win { scale: 1.08; z-index: 3; }
+.btx-spot.win > .bt-card.top { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1), 0 0 0 3px var(--acc), 0 0 28px 4px color-mix(in oklab, var(--acc) 55%, transparent), 0 12px 24px -6px rgba(0, 0, 0, .6); }
+.btx-spot.lose > .bt-card { filter: saturate(.6) brightness(.7); }
+.btx-spot.fight > .bt-card.top.up { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1), 0 0 0 2.5px var(--neg), 0 0 22px 2px color-mix(in oklab, var(--neg) 60%, transparent), 0 12px 24px -6px rgba(0, 0, 0, .6); }
+.btx-pli.war .btx-spot:not(.fight) > .bt-card { filter: saturate(.55) brightness(.6); }
+/* une carte qui arrive : elle se retourne en tombant sur le tapis (seulement les nouvelles) */
+.btx-spot > .bt-card.new.up { animation: btx-flip .46s cubic-bezier(.2, .9, .3, 1.15) both; }
+.btx-spot.mine > .bt-card.new.up { animation-name: btx-flip-up; }
+.btx-spot > .bt-card.new:not(.up) { animation: btx-slide .34s cubic-bezier(.2, .9, .3, 1.1) both; }
+@keyframes btx-flip { from { transform: perspective(500px) translateY(-26px) rotateY(110deg) scale(1.12); opacity: .2; } }
+@keyframes btx-flip-up { from { transform: perspective(500px) translateY(60px) rotateY(110deg) scale(1.12); opacity: .2; } }
+@keyframes btx-slide { from { transform: translateY(-18px); opacity: 0; } }
+
+/* au milieu du tapis : ce qui est en jeu */
+.btx-pot { position: absolute; left: 50%; bottom: calc(24px + var(--mw) * 1.44 + (var(--mk, 1) - 1) * var(--off)); transform: translateX(-50%); z-index: 4; display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 13px; border-radius: 999px; white-space: nowrap;
+  font: 600 13px var(--font); color: var(--ink-2); background: var(--tb-glass); -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 6px 16px rgba(0, 0, 0, .3); }
+.btx-pot b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.btx-pot.war { color: #fff; background: color-mix(in oklab, var(--neg) 55%, transparent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 1px color-mix(in oklab, var(--neg) 70%, transparent), 0 0 24px color-mix(in oklab, var(--neg) 55%, transparent); }
+.btx-pot.war b { color: #fff; }
+.btx-pot.win { color: var(--on-acc); background: linear-gradient(180deg, oklch(0.88 0.16 90), oklch(0.78 0.17 75)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 0 22px color-mix(in oklab, var(--acc) 55%, transparent); }
+.btx-pot.win b { color: var(--on-acc); }
+
+/* le plateau : ton tas en grand, les puces, l'interrupteur */
+.btx-mine { display: flex; align-items: center; gap: 16px; padding: 8px 4px 6px; }
+.btx-pile { position: relative; flex: none; width: 76px; height: 120px; padding: 0; border: 0; background: none; color: inherit; cursor: default; -webkit-tap-highlight-color: transparent; }
+.btx-pile.can { cursor: pointer; }
+.btx-pile .bt-card.back { position: absolute; left: 0; bottom: 0; width: 70px; translate: calc(var(--l) * 1.6px) calc(var(--l) * -2.4px); }
+.btx-pile.can > .bt-card:last-of-type { box-shadow: inset 0 0 0 3px #fff, 0 0 0 3px var(--acc), 0 0 24px color-mix(in oklab, var(--acc) 55%, transparent), 0 10px 22px -6px rgba(0, 0, 0, .55); animation: btx-breathe 1.8s ease-in-out infinite; }
+@keyframes btx-breathe { 50% { transform: translateY(-4px); } }
+.btx-pile .btx-ghost { position: absolute; left: 0; bottom: 0; width: 70px; }
+.btx-n { position: absolute; left: 35px; bottom: -8px; transform: translateX(-50%); z-index: 6; min-width: 28px; height: 24px; padding: 0 8px; border-radius: 12px; background: #fff; color: #111; font: 700 13px/24px var(--font); text-align: center; font-variant-numeric: tabular-nums; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); }
+.btx-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.btx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.btx-chips .tb-chip { min-height: 32px; padding: 0 11px; }
+.btx-meter { display: block; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .12); overflow: hidden; margin: 0 2px; }
+.btx-meter i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, oklch(0.78 0.17 75), oklch(0.88 0.16 90)); transition: width .4s ease; }
+/* l'interrupteur « Retourner tout seul » */
+.btx-auto { position: relative; display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; font-weight: 600; color: var(--ink); cursor: pointer; -webkit-user-select: none; user-select: none; }
+.btx-auto input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.btx-sw { position: relative; flex: none; width: 48px; height: 29px; border-radius: 999px; background: rgba(255, 255, 255, .16); box-shadow: inset 0 0 0 .5px var(--tb-rim), inset 0 1px 2px rgba(0, 0, 0, .25); transition: background .25s; }
+.btx-sw::after { content: ""; position: absolute; top: 2.5px; left: 2.5px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, .35); transition: translate .32s cubic-bezier(.3, 1.3, .5, 1); }
+.btx-auto input:checked + .btx-sw { background: oklch(0.78 0.16 80); }
+.btx-auto input:checked + .btx-sw::after { translate: 19px 0; }
+.btx-auto input:focus-visible + .btx-sw { outline: 2px solid var(--acc); outline-offset: 2px; }
+.screen.tb .tb-btn.bt-flip:disabled { opacity: .5; }
+#s-bataille button.tb-chip { min-height: 44px; }
+
+/* fin de partie : le classement et le fil en verre, la durée et « Rejouer » dans le plateau */
+#bt-main > .bt-side, #bt-main > .bt-log { padding: 12px 16px; border-radius: 22px; background: var(--tb-glass); -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: inset 0 1.2px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 0 0 .5px var(--tb-edge), 0 10px 30px rgba(0, 0, 0, .3); }
+.bt-side .mj-side-title, .bt-log .mj-side-title { margin: 0 0 4px; }
+.bt-side .tb-s small { font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.btx-len { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 4px 6px 6px; font-size: 15px; font-weight: 600; color: var(--ink); }
+.btx-len select { min-height: 44px; max-width: 55%; border-radius: 12px; border: 0; padding: 0 12px; font: 600 15px var(--font); color: var(--ink); background: var(--tb-field); box-shadow: inset 0 0 0 .5px var(--tb-rim); }
+.btx-len select option { color: #111; }
+.btx-note { text-align: center; color: var(--ink-2); }
+
+/* PC : une vraie table ovale au rebord de bois, les joueurs assis sur le bord */
+@media (min-width: 1100px) {
+  .btx-table:not(.over) { position: relative; width: 100%; max-width: 740px; aspect-ratio: 2.15 / 1; margin: 48px auto 0; border-radius: 50%;
+    background: radial-gradient(60% 55% at 50% 45%, var(--felt-hi), var(--felt-mid) 70%, color-mix(in oklab, var(--felt-mid), var(--felt-lo) 40%));
+    box-shadow: inset 0 0 0 14px oklch(0.4 0.07 50), inset 0 0 0 16px oklch(0.25 0.05 45), inset 0 0 0 18px rgba(255, 255, 255, .08), inset 0 30px 60px rgba(0, 0, 0, .35), 0 30px 60px -20px rgba(0, 0, 0, .6); }
+  .btx-table:not(.over)::before { content: ""; position: absolute; inset: 14px; border-radius: 50%; background: linear-gradient(180deg, rgba(255, 255, 255, .14), transparent 22%); pointer-events: none; }
+  .btx-table:not(.over) .tb-opps { position: absolute; left: 0; right: 0; top: -46px; height: 0; z-index: 2; }
+  .btx-table .btx-pli, .btx-table .btx-pli.four, .btx-table .btx-pli.many { position: absolute; inset: 0; min-height: 0; --cw: 54px; --mw: 70px; --off: 22px; }
+  /* sur la grande table, les cartes de bataille s'étalent vers la droite : on lit le coin de chacune */
+  .btx-spot { top: calc(68px + var(--arc, 0) * 34px); height: calc(var(--cw) * 1.44); width: calc(var(--cw) + (var(--k) - 1) * var(--off)); }
+  .btx-spot.mine { bottom: 30px; height: calc(var(--mw) * 1.44); width: calc(var(--mw) + (var(--k) - 1) * var(--off)); }
+  .btx-spot > .bt-card.bt-card { top: 0; left: calc(var(--i) * var(--off)); width: var(--cw); }
+  .btx-spot.mine > .bt-card.bt-card { width: var(--mw); }
+  .btx-pot { bottom: calc(42px + var(--mw) * 1.44); }
+  /* la colonne de gauche descend jusqu'en bas de l'écran : le plateau reste collé au bord */
+  #bt-main.desk-split > .desk-main { min-height: calc(100dvh / var(--z, 1) - var(--bar-h) - env(safe-area-inset-top) - 10px); }
+  /* en fin de partie, pas de table au centre : le plateau « Rejouer » suit le meneur, en carte de verre */
+  #bt-main.desk-split:has(.btx-table.over) > .desk-main { min-height: 0; }
+  #bt-main .tb-tray:has(> .btx-len) { position: static; margin: 0; border-radius: 26px; padding: 12px 18px 16px; }
+  /* le plateau sur une ligne : ton tas, les puces et l'interrupteur, puis le bouton */
+  #s-bataille .tb-tray:has(> .btx-mine) { display: flex; align-items: center; justify-content: center; gap: 22px; padding: 12px 24px 14px; }
+  #s-bataille .tb-tray:has(> .btx-mine) .tb-acts { flex: 0 1 300px; margin: 0; }
+  #s-bataille .tb-tray:has(> .btx-mine) .tb-acts .btn { min-height: 54px; }
+  .btx-spot .bt-card .km-corner b { font-size: 16px; } .btx-spot .bt-card .km-pip { font-size: 30px; }
+  .btx-spot.mine .bt-card .km-corner b { font-size: 19px; } .btx-spot.mine .bt-card .km-pip { font-size: 40px; }
+  .btx-mine { flex: 0 1 420px; min-width: 0; padding: 4px 0; }
+  #s-bataille .desk-side .tb-rows li { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btx-spot > .bt-card.new, .btx-pile.can > .bt-card:last-of-type, .btx-ghost.need { animation: none !important; }
+  .btx-sw::after, .btx-spot { transition: none; }
+}
