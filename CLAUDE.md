@@ -10,6 +10,31 @@ Hub de 22 jeux de soirée (+ Miroir et Le Mot du jour, à part) joués sur les t
 - `PRODUCT.md` (le pourquoi) et `DESIGN.md` (la charte) font foi pour toute modification visible. Kevin valide sur une préversion avant toute mise en production.
 - Pour un portage ou une refonte, garder la mise en page que les amis connaissent et ne changer que la peau, sauf demande contraire.
 
+## À faire à la passation : Menteur, Bataille navale, Coinche (laissé par la session cloud du 11/10/2026)
+
+Trois jeux de salon sur la table commune, une branche par jeu, chacune partie de `jeux-table` : `menteur`, `bataille-navale` (clé `navale`), `coinche`. Cette section est la même sur les trois branches. Demander à Kevin ce qui est déjà fait, cocher ici au fur et à mesure, puis supprimer cette section quand tout est fait.
+
+- [ ] **Fusionner les trois branches** (après `jeux-table`). Chacune est en v72 (`ASSET_V` de core.js + tous les `?v=` de index.html, miroir.html, motdujour.html) : conflit attendu sur ce numéro à chaque fusion, comme `un-seul-indice` (v71) face à `jeux-table` (v71). Garder les trois jeux partout (core.js, app.js, index.html, regles.js, ios.js, desk.js, server/build.py, tools/tests/all_games.py, CLAUDE.md « Déjà faits ») et mettre UN numéro de version plus haut que tout ce qui existe, partout. `tools/tests/salon_helpers.py` est identique sur les trois branches.
+- [ ] **Vérifier après fusion**, serveur local lancé (`npx wrangler dev -c server/wrangler.jsonc --port 8787` + `python -m http.server 8767 --bind 127.0.0.1`) : `SRV=ws://127.0.0.1:8787 python tools/tests/menteur_play.py`, puis `navale_play.py`, puis `coinche_play.py` (chacun doit finir par OK ; la Coinche joue une partie entière, environ 10 minutes), puis `SRV=ws://127.0.0.1:8787 python tools/tests/all_games.py`.
+- [ ] **Publier.** D'abord `python deploy.py --server` (OBLIGATOIRE, trois nouveaux moteurs ; redémarre les salons en cours, le faire quand personne ne joue), puis `python deploy.py --site --preview tables`, validation par Kevin sur téléphone et PC, puis `python deploy.py --site`.
+- [ ] **Icônes 3D du salon** dans Blender : `icons/web/menteur.webp`, `icons/web/navale.webp`, `icons/web/coinche.webp`. En attendant, la carte du salon affiche un dessin plat (`.mtx-art`, `.nvx-art`, `.cox-art`).
+- [ ] **Objets 3D des jeux** dans Blender (dessinés en CSS en attendant). Chaque jeu charge `img/<jeu>/<objet>.webp?v=ASSET_V` s'il existe et remplace le dessin CSS (`mtImg()` dans menteur.js, `nvImg()` dans navale.js) :
+  - `img/menteur/de-1.webp` à `de-6.webp` (un dé par face) : 42 px dans le plateau sur téléphone, 48 px sur PC, 58 px sur la plaque centrale, 28 px dans le choix de la valeur, 15 px sous les avatars.
+  - `img/menteur/gobelet.webp` : environ 50 à 54 px dans le plateau, 20 px sous les avatars.
+  - `img/navale/pa.webp` (porte-avions, 5 cases), `cr.webp` (croiseur, 4), `ct.webp` (contre-torpilleur, 3), `sm.webp` (sous-marin, 3), `tp.webp` (torpilleur, 2) : vue de dessus, proue à droite (tournés en CSS quand le bateau est vertical). Case d'environ 35 px sur la grande grille du téléphone, 40 à 44 px sur PC, 15 à 20 px sur la petite grille de la flotte.
+  - La Coinche n'a pas d'objet 3D (cartes communes `.km-card`).
+- [ ] **Briques communes manquantes** (on n'a pas touché `table.js` / `table.css` ; chaque jeu a sa rustine, à remonter dans la table commune si Kevin est d'accord, puis retirer les rustines) :
+  - style.css fait « respirer » tout `.btn.danger` (ancien Chromo) : un `tbBtn('danger')` bouge sous le doigt (Playwright : « element is not stable »). Rustine : `#s-<jeu> .tb-btn.danger { animation: none; }`.
+  - Les listes dans la feuille `#tb-sheet` sont décalées : `[data-game=<jeu>] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }`.
+  - Le chargeur d'image 3D facultative (précharger `img/<jeu>/<objet>.webp`, relancer le rendu s'il arrive, dessin CSS en secours) est refait dans chaque jeu : en faire un `tbImg()` commun.
+  - Ne pas reconstruire l'affichage pendant que le doigt est posé (placement des bateaux : `nvDown` / `nvPending` dans navale.js) : utile à d'autres jeux.
+  - Une puce `tb-chip` impose `color: var(--ink)` à ses `<b>` : un symbole de couleur en `<b>` dans une puce devient blanc sur blanc (corrigé dans coinche.css par `.tb-chip b.cox-suit`).
+- [ ] **Limites connues, à faire valider par Kevin** :
+  - Bataille navale : cases de 34 px sur téléphone (sous les 44 px conseillés) ; c'est le maximum pour 10 cases dans 390 px.
+  - Coinche : une variante de décompte a été choisie (réussi = contrat atteint ET plus que la défense ; réussi : contrat + points faits, la défense garde les siens ; chuté : 160 + contrat pour la défense ; coinché ×2, surcoinché ×4 ; capot 250). Elle est expliquée dans les règles du jeu ; demander si les amis comptent autrement.
+  - Le mode PeerJS (hors pages.dev, l'hôte fait tourner la partie) n'a pas été testé pour ces trois jeux : tout a été testé en mode serveur.
+  - Le titre de CLAUDE.md dit encore « 22 jeux » : à mettre à jour après fusion.
+
 ## Publier
 
 - `python deploy.py --site` publie le site ; `python deploy.py --site --preview NOM` publie une préversion sur `https://NOM.boite-a-jeux.pages.dev` (à faire valider par Kevin) ; `python deploy.py --server` publie le Worker des salons ; sans option : serveur puis site. `--dry` prépare `dist/` sans publier.
