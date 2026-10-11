@@ -525,5 +525,70 @@ def icon_nouveautes():                     # Les nouveautés : un cadeau, ruban 
     pivot_all(x=-14, z=-24)
     return [b]
 
+def lathe(name, prof, m, steps=96):
+    """Une pièce tournée (pièce d'échecs) : un profil (rayon, hauteur) de bas en haut, tourné autour de Z."""
+    me = bpy.data.meshes.new(name); bm = bmesh.new()
+    vs = [bm.verts.new((r, 0, z)) for r, z in prof]
+    for a, b in zip(vs, vs[1:]): bm.edges.new((a, b))
+    bmesh.ops.spin(bm, geom=bm.verts[:] + bm.edges[:], cent=(0, 0, 0), axis=(0, 0, 1), angle=math.tau, steps=steps, use_duplicate=False)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me); bm.free()
+    o = obj_from(name, me, m)
+    for p in o.data.polygons: p.use_smooth = True
+    return o
+
+def board(n, sq, light, dark, top=0.0):
+    """Un bout de damier n × n, cases de côté sq, posé à plat (dessus à la hauteur top)."""
+    off = (n - 1) * sq / 2
+    for i in range(n):
+        for j in range(n):
+            rounded_box(f'case{i}{j}', sq, sq, 0.16, 0.012, light if (i + j) % 2 == 0 else dark, loc=(i * sq - off, j * sq - off, top - 0.08))
+    rounded_box('cadre', n * sq + 0.2, n * sq + 0.2, 0.2, 0.05, dark, loc=(0, 0, top - 0.2))
+
+def icon_echecs():                         # Échecs : le roi blanc et un pion noir sur un coin de l'échiquier
+    ivory = mat('ivoire', hexc('#f2ead8'), rough=0.24, coat=0.7); ebony = mat('ebene', hexc('#2a2422'), rough=0.22, coat=0.8)
+    board(3, 0.95, mat('clair', hexc('#ecd9b0'), rough=0.38, coat=0.4), mat('fonce', hexc('#7a4f2e'), rough=0.4, coat=0.4))
+    king = lathe('roi', [(0, 0), (0.6, 0), (0.6, 0.11), (0.5, 0.2), (0.48, 0.27), (0.36, 0.35), (0.3, 0.5), (0.25, 1.05), (0.22, 1.38),
+                         (0.36, 1.45), (0.38, 1.53), (0.24, 1.6), (0.3, 1.82), (0.35, 1.98), (0.22, 2.06), (0, 2.06)], ivory)
+    rounded_box('croixV', 0.14, 0.14, 0.5, 0.04, ivory, loc=(0, 0, 2.28)); rounded_box('croixH', 0.38, 0.14, 0.14, 0.04, ivory, loc=(0, 0, 2.33))
+    for o in (king, bpy.data.objects['croixV'], bpy.data.objects['croixH']): o.location.x -= 0.42; o.location.y += 0.3
+    pawn = lathe('pion', [(0, 0), (0.46, 0), (0.46, 0.1), (0.38, 0.17), (0.28, 0.25), (0.19, 0.68), (0.31, 0.75), (0.31, 0.81), (0.17, 0.87), (0, 0.87)], ebony)
+    head = sphere('tete', 0.27, ebony, loc=(0, 0, 1.08))
+    for o in (pawn, head): o.location.x += 0.55; o.location.y -= 0.45
+    pivot_all(z=-18)
+    return []
+
+def checker(name, m, ring, loc, h=0.2, r=0.52):
+    """Un pion de dames : un palet arrondi, deux sillons sur le dessus."""
+    p = cylinder(name, r, h, m, loc=loc, verts=96); bevel(p, 0.05, 4)
+    for rr in (r * 0.72, r * 0.42):
+        bpy.ops.mesh.primitive_torus_add(major_radius=rr, minor_radius=0.022, major_segments=96, minor_segments=10, location=(loc[0], loc[1], loc[2] + h / 2))
+        t = bpy.context.active_object; t.data.materials.append(ring)
+    return p
+
+def icon_dames():                          # Dames : une dame blanche couronnée (deux pions) et un pion noir sur le damier
+    white = mat('blanc', hexc('#f3ece0'), rough=0.26, coat=0.7); black = mat('noir', hexc('#2b2523'), rough=0.24, coat=0.8)
+    lw = mat('sillonB', hexc('#d8cdb9'), rough=0.35); lb = mat('sillonN', hexc('#47403c'), rough=0.3)
+    goldm = mat('or', hexc('#e8ae3c'), rough=0.24, metal=1.0); ruby = mat('rubis', hexc('#d8283b'), rough=0.2, coat=0.8)
+    board(2, 1.5, mat('clair', hexc('#ecd9b0'), rough=0.38, coat=0.4), mat('fonce', hexc('#7a4f2e'), rough=0.4, coat=0.4))
+    x, y, r, h = -0.62, 0.62, 0.64, 0.26
+    checker('dame1', white, lw, (x, y, h / 2), h, r); checker('dame2', white, lw, (x, y, h * 1.5 + 0.01), h, r)
+    # la couronne dorée posée sur la dame : un anneau à cinq pointes perlées
+    z0 = h * 2 + 0.01
+    lathe('couronne', [(0.0, z0), (0.44, z0), (0.46, z0 + 0.04), (0.46, z0 + 0.2), (0.4, z0 + 0.22), (0.4, z0 + 0.06), (0.0, z0 + 0.06)], goldm).location = (x, y, 0)
+    for i in range(5):
+        a = i * math.tau / 5 + 0.3
+        bpy.ops.mesh.primitive_cone_add(vertices=24, radius1=0.15, radius2=0.0, depth=0.3, location=(x + 0.43 * math.cos(a), y + 0.43 * math.sin(a), z0 + 0.35))
+        bpy.context.active_object.data.materials.append(goldm)
+        sphere(f'perle{i}', 0.06, goldm, loc=(x + 0.43 * math.cos(a), y + 0.43 * math.sin(a), z0 + 0.52), seg=16)
+    for i in range(5):
+        a = i * math.tau / 5 + 0.3 + math.pi / 5
+        sphere(f'rubis{i}', 0.065, ruby, loc=(x + 0.465 * math.cos(a), y + 0.465 * math.sin(a), z0 + 0.12), seg=24)
+    checker('pion', black, lb, (0.75, -0.75, h / 2), h, r)
+    pivot_all(x=24, z=-14)
+    return []
+
 MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
-             'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes})
+             'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes,
+             'echecs': icon_echecs, 'dames': icon_dames})

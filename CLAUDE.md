@@ -10,13 +10,10 @@ Hub de 28 jeux de soirée (+ Miroir et Le Mot du jour, à part) joués sur les t
 - `PRODUCT.md` (le pourquoi) et `DESIGN.md` (la charte) font foi pour toute modification visible. Kevin valide sur une préversion avant toute mise en production.
 - Pour un portage ou une refonte, garder la mise en page que les amis connaissent et ne changer que la peau, sauf demande contraire.
 
-## À faire à la passation : Échecs, Dames, réglages sous la carte (laissé par la session cloud du 11/10/2026)
+## À faire : Échecs et Dames (en production depuis la v78, le 11/10/2026)
 
-Branche `echecs-dames` (v78, partie de `main` en v77). Demander à Kevin ce qui est déjà fait, cocher ici au fur et à mesure, puis supprimer cette section quand tout est fait.
+Vérifiés en local, icônes 3D faites (`icon_echecs` / `icon_dames` dans `tools/icons/more_icons.py`), serveur et site publiés. Reste :
 
-- [ ] **Vérifier en local** (serveur lancé : `npx wrangler dev -c server/wrangler.jsonc --port 8787` + `python -m http.server 8767 --bind 127.0.0.1`) : `SRV=ws://127.0.0.1:8787 python tools/tests/echecs_play.py`, `SRV=ws://127.0.0.1:8787 python tools/tests/dames_play.py` (chacun finit par OK), puis `SRV=ws://127.0.0.1:8787 python tools/tests/all_games.py`. Règles vérifiées hors navigateur par les comptages de référence (perft) : échecs 5 positions, dames 10 × 10 jusqu'à 6 coups.
-- [ ] **Publier** : `python deploy.py --server` (OBLIGATOIRE : deux nouveaux moteurs, core.js change ; redémarre les salons en cours, le faire quand personne ne joue), puis `python deploy.py --site --preview echecs`, validation par Kevin sur téléphone et PC (salon : réglages sous la carte ; une partie de chaque jeu contre le robot), puis `python deploy.py --site`. Si une autre branche est publiée entre-temps, monter la version au-dessus de la sienne.
-- [ ] **Icônes 3D du salon** dans Blender : `icons/web/echecs.webp` et `icons/web/dames.webp` (en attendant, la carte affiche le dessin plat `.ecx-art` / `.dmx-art`).
 - [ ] **Objets 3D facultatifs** (dessin vectoriel ou CSS en secours, rien ne casse sans eux) : pièces d'échecs `img/echecs/<w|b><k|q|r|b|n|p>.webp` (12 images, vue de trois quarts, fond transparent, pied en bas ; affichées à 40-46 px sur téléphone, 50-70 px sur PC, 15 px dans les prises) ; dames `img/dames/pion-blanc.webp`, `pion-noir.webp`, `dame-blanche.webp`, `dame-noire.webp` (vue de dessus légèrement inclinée, fond transparent ; 29 px en 10 × 10 sur téléphone, 36 px en 8 × 8, 30-50 px sur PC).
 - [ ] **À faire valider par Kevin** : la famille « Jeux de plateau » (Échecs, Dames, Bataille navale, qui quitte « Devinettes ») ; l'encart de l'accueil « Bientôt dans la boîte » devient « Une idée de jeu ? » (même bouton « Vos suggestions ») ; dames internationales (10 × 10, règles françaises) par défaut, 8 × 8 en option (mêmes règles : dames brésiliennes) ; un joueur absent une minute à son tour est remplacé par le robot pour ce coup (comme aux autres jeux).
 
