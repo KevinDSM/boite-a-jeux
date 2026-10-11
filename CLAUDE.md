@@ -14,7 +14,7 @@ Hub de 22 jeux de soirée (+ Miroir et Le Mot du jour, à part) joués sur les t
 
 - `python deploy.py --site` publie le site ; `python deploy.py --site --preview NOM` publie une préversion sur `https://NOM.boite-a-jeux.pages.dev` (à faire valider par Kevin) ; `python deploy.py --server` publie le Worker des salons ; sans option : serveur puis site. `--dry` prépare `dist/` sans publier.
 - **Publier le serveur REDÉMARRE les salons en cours** : ne le faire que si `core.js`, `engines/` ou les données des jeux ont changé, et le dire à Kevin.
-- **À chaque mise en ligne, monter la version** : `ASSET_V` dans `core.js` ET tous les `?v=` de `index.html` ET de `miroir.html` (même numéro), sinon les téléphones gardent l'ancienne version.
+- **À chaque mise en ligne, monter la version** : `ASSET_V` dans `core.js` ET tous les `?v=` de `index.html`, `miroir.html` ET `motdujour.html` (même numéro), sinon les téléphones gardent l'ancienne version.
 - `deploy.py` utilise la connexion Wrangler du PC de Kevin. **Depuis une session cloud, il n'y a pas d'accès Cloudflare** : pousser une branche, et Kevin publie depuis son PC (`git pull` puis `python deploy.py …`). Ne jamais demander de jeton dans le chat.
 - `dist/` = fichiers suivis par git, sans `.py .txt .log .md .jsonc`, sans `functions/ server/ dist/` (les fonctions partent à part).
 
