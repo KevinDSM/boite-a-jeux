@@ -14,7 +14,8 @@ import os, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ROOT, 'dist')
 SKIP_EXT = ('.py', '.txt', '.log', '.md', '.jsonc')
-SKIP_NAMES = {'.gitignore', 'mirage-rejected.json'}
+# unseulindice.json : les mots d'Un seul indice ne vivent que sur le serveur des salons (server/build.py les emballe)
+SKIP_NAMES = {'.gitignore', 'mirage-rejected.json', 'unseulindice.json'}
 SKIP_DIRS = ('functions/', 'dist/', 'server/')
 
 wr = shutil.which('wrangler') or 'wrangler'

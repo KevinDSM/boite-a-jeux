@@ -101,6 +101,10 @@ function tbFan(items, opts = {}) {
     if (card && it.label) card.setAttribute('aria-label', it.label);
     inner.appendChild(slot);
   });
+  // la hauteur suit la carte la plus basse de l'éventail (les bords descendent et tournent) : rien ne dépasse du plateau
+  const edge = (k - 1) / 2, rot = flat ? 0 : edge * (desk ? 3.4 : 4.6) * Math.PI / 180;
+  const low = 18 + (flat ? 0 : edge * edge * 2.2) + H * Math.cos(rot) + w * Math.abs(Math.sin(rot)) / 2;
+  inner.style.height = Math.ceil(Math.max(H + 34, low + 6)) + 'px';
   fan.appendChild(inner);
   return fan;
 }
