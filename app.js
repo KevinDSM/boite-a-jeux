@@ -26,12 +26,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-coinche';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-coinche') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-coinche' ? 'coinche' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -316,6 +316,7 @@ function render() {
   else if (s.phase === 'td') { show('s-teldes'); renderTelDes(s.td); }
   else if (s.phase === 'nc') { show('s-nomcode'); renderNomCode(s.nc); }
   else if (s.phase === 'bt') { show('s-bataille'); renderBataille(s.bt); }
+  else if (s.phase === 'co') { show('s-coinche'); renderCoinche(s.co); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -438,6 +439,7 @@ function renderLobby(s) {
   $('#opts-teldes').hidden = s.pick !== 'teldes';
   $('#opts-nomcode').hidden = s.pick !== 'nomcode';
   $('#opts-bataille').hidden = s.pick !== 'bataille';
+  $('#opts-coinche').hidden = s.pick !== 'coinche';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
   if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''}, robots compris. Il en faut au moins 5.` : `${n} joueurs, dont ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
@@ -1118,6 +1120,14 @@ const HELP = {
       <li>Un passant ou un mot adverse arrête le tour. L’assassin fait perdre la partie.</li>
       <li>La première équipe qui retrouve tous ses agents gagne.</li>
     </ul>`,
+  coinche: `<h3>Coinche</h3>
+    <p>La belote coinchée, à quatre, deux équipes. Partenaires en face.</p>
+    <ul>
+      <li><b>Enchères :</b> annonce un contrat de 80 à 160, ou capot, et ta couleur d’atout. Toujours plus haut. Un adversaire peut coincher (×2), les preneurs surcoincher (×4).</li>
+      <li><b>Au jeu :</b> fournis à la couleur demandée. Sinon coupe, sauf si ton partenaire est maître. À l’atout, monte si tu peux.</li>
+      <li>Atout : valet 20, neuf 14, as 11, dix 10. Ailleurs : as 11, dix 10, roi 4, dame 3, valet 2. Dix de der, belote-rebelote 20.</li>
+      <li>Les preneurs doivent atteindre leur contrat et faire plus que la défense. Sinon, chute : 160 plus le contrat pour la défense.</li>
+    </ul>`,
   duel: `<h3>Duel des Cités</h3>
     <p>À deux, bâtis la plus grande cité de l’Antiquité en trois âges. Les cartes forment une pyramide, et seules celles que rien ne recouvre se prennent.</p>
     <ul>
@@ -1369,7 +1379,7 @@ document.querySelectorAll('.gcard').forEach(b => b.onclick = () => act({ t: 'pic
 // Les jeux sont rangés par famille, avec un intitulé, et des pastilles pour n'afficher qu'une famille.
 const FAMILIES = [
   { id: 'musique', icon: '🎵', name: 'Musique', short: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
-  { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'bataille', 'poker', 'solitaire', 'duel'] },
+  { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'coinche', 'bataille', 'poker', 'solitaire', 'duel'] },
   { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['teldes', 'mirage', 'memes', 'limite'] },
   { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['nomcode', 'sablier', 'diapason', 'petitbac', 'geo'] },
   { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', short: 'Rôles cachés', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages'] },
@@ -1487,6 +1497,12 @@ $('#btn-start').onclick = () => {
     const n = (view?.players || []).filter(p => p.online).length + botsOpt('nc');
     if (n < 4) { toast('Nom de code se joue à quatre minimum, deux par équipe : ajoute des robots'); return; }
     act({ t: 'start', opts: { mode: 'nomcode', bots: botsOpt('nc') } });
+  }
+  if (pick === 'coinche') {
+    const humans = (view?.players || []).filter(p => p.online).length, fill = $('#opt-co-bots').checked;
+    if (humans < 4 && !fill) { toast('La coinche se joue à quatre. Invite des amis ou complète avec des robots.'); return; }
+    if (humans > 4) toast('Quatre à table : les autres regardent cette partie.');
+    act({ t: 'start', opts: { mode: 'coinche', target: +$('#opt-co-target').value, annonces: $('#opt-co-annonces').checked, random: $('#opt-co-teams').value === 'hasard', bots: fill ? Math.max(0, 4 - humans) : 0 } });
   }
   if (pick === 'duel') {
     const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-du-rival').value;

@@ -343,6 +343,29 @@ const RULES = [
     ['La lecture', `<p>L’hôte déroule les carnets page par page, sur tous les écrans à la fois. Lis à voix haute ! Pendant la lecture, touche le cœur des meilleurs moments (jamais les tiens). À la fin, on voit qui a récolté le plus de cœurs.</p>`],
     ['Réglages dans le salon', `<p>Robots (ils écrivent et devinent au hasard, et gribouillent), rythme des étapes, longueur des carnets. De 3 à 12 joueurs.</p>`],
   ] },
+  { key: 'coinche', parts: [
+    ['Le principe', `<p>La belote coinchée, à quatre joueurs en deux équipes, partenaires assis en face. Chaque donne, une équipe s’engage sur un nombre de points à faire avec l’atout de son choix. La première équipe à 1 000 (ou 2 000) points gagne. Tu ne vois que ta main ; celles des autres n’arrivent jamais sur ton téléphone.</p>`],
+    ['Les cartes', `<p>32 cartes, 8 chacun. À l’atout, de la plus forte à la plus faible : valet (20 points), neuf (14), as (11), dix (10), roi (4), dame (3), huit et sept (0). Dans les autres couleurs : as (11), dix (10), roi (4), dame (3), valet (2), neuf, huit et sept (0). Le dernier pli rapporte 10 de plus (dix de der). Au total, 162 points par donne.</p>`],
+    ['Les enchères', `<ul>
+      <li>À tour de rôle, en commençant à gauche du donneur, chacun annonce un contrat de 80 à 160 (de dix en dix) dans une couleur d’atout, ou capot (faire tous les plis, 250), ou passe. Chaque annonce doit être plus haute que la précédente.</li>
+      <li>Un adversaire de l’équipe qui a la meilleure annonce peut <b>coincher</b> à son tour : il parie qu’elle chutera, et la donne vaut double. Les preneurs peuvent alors <b>surcoincher</b> : quatre fois.</li>
+      <li>Trois passes après une annonce ferment les enchères. Si les quatre passent sans annonce, on redonne.</li></ul>`],
+    ['Le jeu de la carte', `<ul>
+      <li>Le joueur à gauche du donneur entame. Le gagnant d’un pli entame le suivant.</li>
+      <li>Il faut <b>fournir</b> à la couleur demandée.</li>
+      <li>Si tu n’en as pas, tu dois <b>couper</b> avec un atout, sauf si ton partenaire est maître du pli : là, tu joues ce que tu veux.</li>
+      <li>Si un adversaire a déjà coupé, tu dois <b>surcouper</b> si tu peux ; sinon, tu coupes quand même plus bas.</li>
+      <li>À l’atout, il faut <b>monter</b> (jouer plus fort que l’atout déjà posé) si tu peux.</li>
+      <li><b>Belote-rebelote</b> : le roi et la dame d’atout dans la même main rapportent 20 points à leur équipe, annoncés quand on les pose.</li></ul>`],
+    ['Les annonces (option)', `<p>Une suite de trois cartes de la même couleur (tierce) vaut 20, de quatre (cinquante) 50, de cinq ou plus (cent) 100. Un carré de valets vaut 200, de neuf 150, d’as, de dix, de rois ou de dames 100. Les annonces sont faites toutes seules au début du jeu. Seule l’équipe qui a la plus forte marque les siennes, et elles comptent pour le contrat.</p>`],
+    ['Le décompte', `<ul>
+      <li>Les preneurs réussissent s’ils atteignent leur contrat (cartes, belote et annonces comprises) et font plus que la défense. Au capot, il faut les huit plis.</li>
+      <li><b>Réussi</b> : les preneurs marquent le contrat plus leurs points, la défense marque ses points.</li>
+      <li><b>Chuté</b> : la défense marque 160 plus le contrat. Les preneurs ne gardent que leur belote.</li>
+      <li><b>Coinché ou surcoinché</b> : l’équipe qui gagne le pari marque 160 plus le contrat × 2 (ou × 4). La belote reste toujours à son équipe.</li>
+      <li>Une équipe qui fait tous les plis compte 250 points de cartes.</li></ul>`],
+    ['Robots', `<p>Les robots complètent la table : ils enchérissent selon leurs atouts et leurs as, soutiennent leur partenaire, coinchent parfois, et respectent toujours les règles du pli. Un joueur absent depuis 20 secondes à son tour est remplacé par un robot pour ce coup.</p>`],
+  ] },
   { key: 'nomcode', parts: [
     ['Le principe', `<p>L’équivalent maison de Codenames. Deux équipes, la Rouge et la Bleue, s’affrontent sur une grille de 25 mots. Chaque équipe a un espion : lui seul sait quels mots cachent ses agents.</p>`],
     ['La grille', `<ul>
