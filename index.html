@@ -37,6 +37,7 @@
 <link rel="stylesheet" href="unseulindice.css?v=VVV">
 <link rel="stylesheet" href="jeux/menteur.css?v=VVV">
 <link rel="stylesheet" href="jeux/navale.css?v=VVV">
+<link rel="stylesheet" href="jeux/coinche.css?v=VVV">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -284,6 +285,12 @@
         <span class="gdesc">Cache ta flotte. Trouve la sienne. Coule tout.</span>
         <span class="gmeta"><b>2 joueurs</b><i>15 min</i></span>
       </button>
+      <button class="gcard g-coinche" type="button" data-game="coinche">
+        <span class="gart" aria-hidden="true"><span class="cox-art"><i>V♣</i><i>9♥</i></span></span>
+        <span class="gname">Coinche</span>
+        <span class="gdesc">Annonce, coinche, et fais tes plis avec ton partenaire.</span>
+        <span class="gmeta"><b>4 joueurs</b><i>40 min</i></span>
+      </button>
       <button class="gcard g-nomcode" type="button" data-game="nomcode">
         <span class="gart" aria-hidden="true"><span class="ncart"><i class="c0"></i><i class="c2"></i><i class="c1"></i><i class="c1"></i><i class="c0"></i><i class="c2"></i><i class="c3"></i><i class="c1"></i><i class="c0"></i></span></span>
         <span class="gname">Nom de code</span>
@@ -461,6 +468,13 @@
       <label class="field row"><span>On rejoue quand on touche</span><input id="opt-nv-replay" type="checkbox" class="tick" checked></label>
       <p class="fine">Un duel à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
     </div>
+    <div class="opts" id="opts-coinche" hidden>
+      <label class="field row"><span>Partie en</span><select id="opt-co-target"><option value="1000" selected>1 000 points</option><option value="2000">2 000 points</option></select></label>
+      <label class="field row"><span>Équipes</span><select id="opt-co-teams"><option value="ordre" selected>Dans l’ordre d’arrivée</option><option value="hasard">Tirées au sort</option></select></label>
+      <label class="field row"><span>Annonces (tierce, cinquante, cent, carrés)</span><input id="opt-co-annonces" type="checkbox" class="tick"></label>
+      <label class="field row"><span>Compléter la table avec des robots</span><input id="opt-co-bots" type="checkbox" class="tick" checked></label>
+      <p class="fine">Quatre joueurs, partenaires en face. Dans l’ordre d’arrivée, le premier et le troisième font équipe contre le deuxième et le quatrième.</p>
+    </div>
     <div class="opts" id="opts-duel" hidden>
       <label class="field row"><span>Adversaire</span><select id="opt-du-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
       <p class="fine">Un duel se joue à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
@@ -610,6 +624,11 @@
 <!-- ====================== BATAILLE NAVALE ====================== -->
 <section class="screen play navale tb" id="s-navale" hidden>
   <div class="stack" id="nv-main"></div>
+</section>
+
+<!-- ====================== COINCHE ====================== -->
+<section class="screen play coinche tb" id="s-coinche" hidden>
+  <div class="stack" id="co-main"></div>
 </section>
 
 <!-- ====================== KEMS ====================== -->
@@ -839,6 +858,8 @@
 <script src="menteur.js?v=VVV"></script>
 <script src="engines/navale.js?v=VVV"></script>
 <script src="navale.js?v=VVV"></script>
+<script src="engines/coinche.js?v=VVV"></script>
+<script src="coinche.js?v=VVV"></script>
 <script src="desk.js?v=VVV"></script>
 <script src="regles.js?v=VVV"></script>
 <script src="salon.js?v=VVV"></script>

@@ -1,0 +1,147 @@
+/* coinche : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Un tapis bleu canard de café, des cartes ivoire, de l'or pour le contrat. Ton partenaire assis en face, les
+   adversaires à gauche et à droite, le pli posé en croix au milieu, ta main et les enchères dans le plateau de verre.
+   La table reste sombre même en thème clair. Les sélecteurs passent par html[data-game] : la tuile du salon n'est pas touchée. */
+html[data-game="coinche"], html[data-theme="light"][data-game="coinche"] {
+  --bg: oklch(0.19 0.04 212); --surface: oklch(0.25 0.045 212); --surface-2: oklch(0.3 0.05 212); --line: oklch(0.42 0.05 210 / .6);
+  --ink: oklch(0.97 0.012 95); --ink-2: oklch(0.87 0.025 190); --mute: oklch(0.79 0.03 200);
+  --acc: oklch(0.86 0.14 84); --acc-soft: oklch(0.91 0.1 86); --on-acc: oklch(0.25 0.06 60); --neg: oklch(0.62 0.21 27); --pos: oklch(0.84 0.14 155); --gold: var(--acc);
+  --glass-tint: oklch(0.22 0.04 212 / .5); --glass-tint-thick: oklch(0.19 0.04 212 / .8);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.47 0.085 200); --felt-mid: oklch(0.32 0.07 205); --felt-lo: oklch(0.13 0.035 215);
+  --tb-back: oklch(0.42 0.13 255);
+  --t0: oklch(0.8 0.1 235); --t1: oklch(0.82 0.13 65);
+}
+#s-coinche { padding-bottom: 0; }
+#s-coinche button.tb-chip { min-height: 44px; }
+.cox-suit { font-weight: 700; color: oklch(0.22 0.02 260); background: oklch(0.97 0.01 90); border-radius: 6px; padding: 0 4px; margin-left: 4px; font-size: .95em; }
+.cox-suit.red { color: oklch(0.55 0.21 25); }
+.tb-chip b.cox-suit { color: oklch(0.22 0.02 260); }
+.tb-chip b.cox-suit.red { color: oklch(0.55 0.21 25); }
+
+/* la table : en croix, le partenaire en haut, les adversaires sur les côtés */
+.cox-table { position: relative; display: flex; flex-direction: column; }
+@media (max-width: 1099px) { #co-main > .cox-table { flex: 1; } #co-main > .cox-table > .cox-mid { flex: 1; } }
+.cox-table .tb-opps { height: 112px; }
+.cox-table .tb-opp.cox-r2 { left: 50% !important; top: 0 !important; }
+.cox-table .tb-opp.cox-r1 { left: 13% !important; top: 34px !important; }
+.cox-table .tb-opp.cox-r3 { left: 87% !important; top: 34px !important; }
+.cox-table.watch .tb-opps { height: 150px; }
+.cox-table.watch .tb-opp.cox-r0 { left: 50% !important; top: 70px !important; }
+.cox-table.watch .tb-opp.cox-r2 { top: -4px !important; }
+.cox-table .tb-opp { width: 108px; }
+.tb-opp.cox-t0 { --tc: var(--t0); } .tb-opp.cox-t1 { --tc: var(--t1); }
+.tb-opp:is(.cox-t0, .cox-t1) .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 3px var(--tc), 0 8px 18px rgba(0, 0, 0, .4); }
+.tb-opp:is(.cox-t0, .cox-t1).now .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 3px var(--acc), 0 0 22px 2px color-mix(in oklab, var(--acc) 55%, transparent), 0 8px 18px rgba(0, 0, 0, .4); }
+.tb-opp .tb-tag .cox-suit { padding: 0 3px; margin-left: 2px; }
+
+/* le milieu : le contrat pendant les enchères, puis le pli en croix */
+.cox-mid { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+.cox-plate { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 210px; padding: 14px 22px 16px; border-radius: 26px; text-align: center;
+  border: 1px solid color-mix(in oklab, var(--acc) 45%, transparent); outline: 1px solid color-mix(in oklab, var(--acc) 18%, transparent); outline-offset: 5px;
+  background: radial-gradient(80% 70% at 50% 40%, rgba(0, 0, 0, .06), rgba(0, 0, 0, .22)); }
+.cox-plate small { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.cox-big { font: 400 46px/1.05 "Alfa Slab One", var(--font); color: var(--acc); text-shadow: 0 2px 0 rgba(0, 0, 0, .45); display: inline-flex; align-items: center; }
+.cox-big .cox-suit { font: 700 34px/1.2 var(--font); margin-left: 10px; padding: 0 8px; border-radius: 10px; text-shadow: none; }
+.cox-coinche { padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--neg); color: #fff; }
+.cox-suits { display: flex; gap: 8px; font-size: 22px; padding-top: 4px; }
+.cox-trump { padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 650; color: var(--ink-2); background: rgba(0, 0, 0, .25); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .14); }
+.cox-trick { position: relative; width: 200px; height: 196px; }
+.cox-trick .km-card { position: absolute; width: 60px; cursor: default; }
+.cox-trick .p0 { left: 70px; bottom: 0; transform: rotate(-3deg); }
+.cox-trick .p1 { left: 0; top: 52px; transform: rotate(-12deg); }
+.cox-trick .p2 { left: 70px; top: 0; transform: rotate(4deg); }
+.cox-trick .p3 { right: 0; top: 52px; transform: rotate(11deg); }
+.cox-trick .pop { animation: cox-land .38s cubic-bezier(.2, .9, .3, 1.25); }
+@keyframes cox-land { from { translate: 0 30px; scale: 1.15; opacity: .3; } }
+.cox-trick.done .km-card { opacity: .55; }
+.cox-trick.done .km-card.win { opacity: 1; box-shadow: 0 0 0 2.5px var(--acc), 0 10px 20px -6px rgba(0, 0, 0, .55); }
+.cox-trick-cap, .cox-tricks { margin: 0; font-size: 13px; color: var(--ink-2); text-align: center; }
+.cox-tricks b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* le plateau : la main, et les enchères */
+.cox-tray .tb-fan-hand .km-card { cursor: pointer; }
+.cox-tray .km-card.trump { box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--acc) 70%, transparent), 0 8px 18px -6px rgba(0, 0, 0, .5); }
+.cox-bidwrap { display: flex; flex-direction: column; gap: 4px; }
+.cox-bidbox { display: flex; flex-direction: column; gap: 8px; }
+.cox-suitpick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.cox-sbtn { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 54px; border: 0; border-radius: 14px; cursor: pointer;
+  font: 700 24px/1 var(--font); color: oklch(0.22 0.02 260); background: oklch(0.95 0.012 90); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12); }
+.cox-sbtn.red { color: oklch(0.55 0.21 25); }
+.cox-sbtn small { font-size: 11.5px; font-weight: 600; color: oklch(0.4 0.02 260); margin-top: 2px; }
+.cox-sbtn.on { box-shadow: 0 0 0 3px var(--acc), 0 0 16px color-mix(in oklab, var(--acc) 55%, transparent); }
+.cox-step { display: flex; align-items: center; gap: 10px; }
+.cox-stepbtn, .cox-capot { min-height: 46px; border: 0; border-radius: 999px; cursor: pointer; color: var(--ink); background: rgba(255, 255, 255, .1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 .5px var(--tb-rim); }
+.cox-stepbtn { width: 46px; font: 600 24px/1 var(--font); }
+.cox-stepbtn:disabled { opacity: .3; cursor: default; }
+.cox-val { flex: 1; text-align: center; }
+.cox-val b { font: 400 30px/1 "Alfa Slab One", var(--font); }
+.cox-capot { padding: 0 16px; font: 650 15px var(--font); }
+.cox-capot.on { background: color-mix(in oklab, var(--acc) 22%, transparent); box-shadow: inset 0 0 0 2px var(--acc); color: var(--acc); }
+.screen.tb .tb-btn.cox-cry { font: 400 18px/1.1 "Alfa Slab One", var(--font); }
+/* style.css fait « respirer » tout .btn.danger (ancien Chromo) : le bouton bougerait sous le doigt */
+#s-coinche .tb-btn.danger { animation: none; }
+.cox-tray.ph-bid .tb-fan-hand { margin-bottom: -8px; }
+
+/* fin de donne : le décompte */
+.cox-result { padding: 12px 14px 8px; border-radius: 22px; background: var(--tb-glass); -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 10px 30px rgba(0, 0, 0, .25); }
+.cox-result .mj-side-title { margin: 0 0 6px; }
+.cox-result .ok, .cox-hist .ok { color: var(--pos); } .cox-result .ko, .cox-hist .ko { color: oklch(0.78 0.14 30); }
+.cox-tab { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.cox-tab th, .cox-tab td { padding: 7px 4px; text-align: right; border-top: .5px solid rgba(255, 255, 255, .1); font-size: 14.5px; }
+.cox-tab th:first-child { text-align: left; font-weight: 500; color: var(--ink-2); }
+.cox-tab thead th { border-top: 0; font-size: 13px; font-weight: 650; color: var(--ink); vertical-align: bottom; }
+.cox-tab thead small { display: block; font-weight: 500; color: var(--ink-2); font-size: 12px; }
+.cox-tab tr.add td { color: var(--acc); font-weight: 700; }
+.cox-tab tr.tot td { font-weight: 750; font-size: 16px; }
+
+/* scores, dernier pli et fil : feuille sur téléphone, colonne de droite sur PC */
+#co-main > :is(.co-side, .co-log) { display: none; }
+[data-game="coinche"] #tb-sheet :is(.tb-rows, .tb-log, .cox-hist) { padding-left: 0; margin: 0; }
+.cox-sheet-title { margin: 14px 0 4px; }
+.cox-hist { list-style: none; padding: 0; margin: 0; }
+.cox-hist li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: center; min-height: 40px; border-top: .5px solid rgba(255, 255, 255, .1); font-size: 14px; }
+.cox-hist li:first-child { border-top: 0; }
+.cox-hist em { font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.cox-last { display: flex; gap: 6px; }
+.cox-last .km-card { width: 46px; cursor: default; }
+.cox-ann { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-2); }
+
+/* PC : une table ronde au rebord de bois, le partenaire en haut, les adversaires sur les côtés */
+@media (min-width: 1100px) {
+  #co-main.desk-split > .desk-side > :is(.co-side, .co-log) { display: block; }
+  #s-coinche .cox-table { width: 100%; max-width: 660px; aspect-ratio: 2.2 / 1; margin: 46px auto 0; flex: none; border-radius: 50%;
+    background: radial-gradient(60% 55% at 50% 45%, var(--felt-hi), var(--felt-mid) 70%, color-mix(in oklab, var(--felt-mid), var(--felt-lo) 40%));
+    box-shadow: inset 0 0 0 14px oklch(0.36 0.06 45), inset 0 0 0 16px oklch(0.24 0.045 40), inset 0 0 0 18px rgba(255, 255, 255, .08), inset 0 30px 60px rgba(0, 0, 0, .35), 0 30px 60px -20px rgba(0, 0, 0, .6); }
+  #s-coinche .cox-table .tb-opps { position: absolute; inset: 0; height: auto; z-index: 2; pointer-events: none; }
+  #s-coinche .cox-table .tb-opp { pointer-events: auto; }
+  #s-coinche .cox-table .tb-opp.cox-r2 { top: -46px !important; }
+  #s-coinche .cox-table .tb-opp.cox-r1 { left: 3% !important; top: calc(50% - 48px) !important; }
+  #s-coinche .cox-table .tb-opp.cox-r3 { left: 97% !important; top: calc(50% - 48px) !important; }
+  #s-coinche .cox-table.watch .tb-opp.cox-r0 { top: auto !important; bottom: -40px; }
+  #s-coinche .cox-table.watch { margin-bottom: 48px; }
+  #s-coinche .cox-mid { position: absolute; inset: 0; margin: 0; }
+  #s-coinche .cox-trick { transform: scale(.84); }
+  /* l'atout à gauche du pli, le compte des plis à droite : le haut reste au partenaire */
+  #s-coinche .cox-table.ph-play .cox-trump { position: absolute; left: 25%; top: 50%; translate: -50% -50%; }
+  #s-coinche .cox-table.ph-play .cox-tricks { position: absolute; left: 75%; top: 50%; translate: -50% -50%; max-width: 150px; }
+  #s-coinche .tb-tray { max-width: 720px; width: 100%; margin: auto auto 0; }
+  #s-coinche .cox-tray .tb-fan-hand { padding-bottom: 10px; }
+  #s-coinche .cox-bidbox { max-width: 640px; width: 100%; margin: 0 auto; flex-direction: row; align-items: center; gap: 12px; }
+  /* pendant les enchères, la table ne porte que le contrat : plus basse, pour que le meneur reste visible au-dessus du plateau */
+  #s-coinche .cox-table.ph-bid { aspect-ratio: 3 / 1; }
+  #s-coinche .cox-table.ph-bid .cox-plate { transform: scale(.88); }
+  #s-coinche .cox-bidbox .cox-suitpick { flex: 1.2 1 0; }
+  #s-coinche .cox-bidbox .cox-step { flex: 1 1 0; gap: 8px; }
+  #s-coinche .cox-sbtn { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .cox-trick .pop { animation: none; } }
+
+/* le dessin de la carte du salon (si l'icône 3D manque) : deux cartes et un valet d'atout */
+.cox-art { position: relative; display: block; width: 54px; height: 54px; }
+.cox-art i { position: absolute; top: 6px; width: 28px; height: 40px; border-radius: 4px; background: oklch(0.975 0.012 90); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12), 0 3px 6px rgba(0, 0, 0, .3);
+  font: 700 13px/1 var(--font); font-style: normal; color: oklch(0.55 0.21 25); padding: 4px; box-sizing: border-box; }
+.cox-art i:nth-child(1) { left: 6px; transform: rotate(-10deg); color: oklch(0.22 0.02 260); }
+.cox-art i:nth-child(2) { left: 20px; transform: rotate(8deg); }
