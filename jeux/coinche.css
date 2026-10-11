@@ -121,6 +121,7 @@ html[data-game="coinche"], html[data-theme="light"][data-game="coinche"] {
   #s-coinche .cox-table .tb-opp.cox-r1 { left: 3% !important; top: calc(50% - 48px) !important; }
   #s-coinche .cox-table .tb-opp.cox-r3 { left: 97% !important; top: calc(50% - 48px) !important; }
   #s-coinche .cox-table.watch .tb-opp.cox-r0 { top: auto !important; bottom: -40px; }
+  #s-coinche .cox-table.watch { margin-bottom: 48px; }
   #s-coinche .cox-mid { position: absolute; inset: 0; margin: 0; }
   #s-coinche .cox-trick { transform: scale(.84); }
   /* l'atout à gauche du pli, le compte des plis à droite : le haut reste au partenaire */

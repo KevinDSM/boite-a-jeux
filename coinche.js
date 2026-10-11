@@ -205,7 +205,7 @@ function renderCoinche(v) {
       + row('Total', coNum(r.scores[0]), coNum(r.scores[1]), 'tot') + '</tbody></table>';
     root.appendChild(box);
     if (host) root.appendChild(tbTray({ acts: [v.phase === 'over' ? tbBtn('hero', 'Retour au salon', () => act({ t: 'restart' })) : tbBtn('hero', 'Donne suivante', () => act({ t: 'co:next' }))] }));
-    else root.appendChild(el('p', 'note', 'L’hôte lance la suite.'));
+    else root.appendChild(el('p', 'note', v.phase === 'over' ? 'L’hôte vous ramène au salon.' : 'L’hôte lance la suite.'));
   }
 
   // ---------------------------------------------------------------- colonne de droite (PC) : scores, dernier pli, fil
