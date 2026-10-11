@@ -7,8 +7,8 @@ THEME = sys.argv[3] if len(sys.argv) > 3 else "dark"
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out", f"all-{W}-{THEME}"); os.makedirs(OUT, exist_ok=True)
 GAMES = [('timeline', None), ('eclair', None), ('sprint', None), ('sablier', 'sab'), ('undercover', 'uc'), ('geo', None), ('chromo', 'ch'), ('kems', 'km'),
          ('mirage', 'mi'), ('douze', 'dz'), ('petitbac', None), ('loupgarou', 'lw'), ('naufrages', 'nf'), ('memes', 'mm'), ('limite', 'hl'),
-         ('solitaire', None), ('poker', 'pk'), ('diapason', 'dp'), ('duel', None), ('teldes', 'td'), ('nomcode', 'nc'), ('bataille', 'bt')]
-BOTS = {'sab': 3, 'uc': 4, 'ch': 2, 'km': 3, 'mi': 3, 'dz': 2, 'lw': 5, 'nf': 3, 'mm': 3, 'hl': 3, 'pk': 2, 'dp': 3, 'td': 3, 'nc': 3, 'bt': 2}
+         ('solitaire', None), ('poker', 'pk'), ('diapason', 'dp'), ('duel', None), ('teldes', 'td'), ('nomcode', 'nc'), ('bataille', 'bt'), ('menteur', 'mt')]
+BOTS = {'sab': 3, 'uc': 4, 'ch': 2, 'km': 3, 'mi': 3, 'dz': 2, 'lw': 5, 'nf': 3, 'mm': 3, 'hl': 3, 'pk': 2, 'dp': 3, 'td': 3, 'nc': 3, 'bt': 2, 'mt': 3}
 ONLY = sys.argv[4].split(',') if len(sys.argv) > 4 else None
 res = {}; fonts = set()
 with sync_playwright() as pw:

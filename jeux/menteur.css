@@ -1,0 +1,137 @@
+/* menteur : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Une table de taverne : un cuir tabac sous une lampe, des gobelets de cuir cousu, des dés ivoire, les Paco en or.
+   Les autres assis en arc derrière leur gobelet, l'annonce en cours gravée au milieu, tes dés sous ton gobelet
+   soulevé dans le plateau de verre. La table reste sombre même en thème clair : c'est l'objet du jeu.
+   Les sélecteurs passent par html[data-game] : la tuile .gcard[data-game="menteur"] du salon n'est pas touchée.
+   Images 3D facultatives (img/menteur/de-1 à de-6.webp, gobelet.webp) : elles recouvrent le dessin CSS. */
+html[data-game="menteur"], html[data-theme="light"][data-game="menteur"] {
+  --bg: oklch(0.19 0.035 52); --surface: oklch(0.25 0.04 52); --surface-2: oklch(0.3 0.045 52); --line: oklch(0.42 0.05 55 / .6);
+  --ink: oklch(0.97 0.012 85); --ink-2: oklch(0.87 0.03 75); --mute: oklch(0.79 0.035 70);
+  --acc: oklch(0.86 0.14 84); --acc-soft: oklch(0.91 0.1 86); --on-acc: oklch(0.25 0.06 60); --neg: oklch(0.6 0.2 28); --pos: oklch(0.84 0.14 152); --gold: var(--acc);
+  --glass-tint: oklch(0.22 0.035 52 / .5); --glass-tint-thick: oklch(0.19 0.035 52 / .8);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.48 0.09 58); --felt-mid: oklch(0.33 0.07 52); --felt-lo: oklch(0.14 0.03 45);
+}
+/* les couleurs des objets (dés, gobelets) valent partout : la carte du salon et les règles les dessinent aussi */
+:root {
+  --mtx-ivory: oklch(0.97 0.015 85); --mtx-ivory-2: oklch(0.88 0.03 80); --mtx-pip: oklch(0.22 0.02 40);
+  --mtx-gold: oklch(0.84 0.14 84); --mtx-gold-2: oklch(0.68 0.13 70); --mtx-paco: oklch(0.42 0.16 28);
+  --mtx-cup: oklch(0.42 0.09 45); --mtx-cup-2: oklch(0.27 0.06 40); --mtx-stitch: oklch(0.8 0.07 75 / .75);
+}
+#s-menteur { padding-bottom: 0; }
+#s-menteur button.tb-chip { min-height: 44px; }
+
+/* la table : sur téléphone elle prend la place libre, l'annonce reste au milieu */
+.mtx-table { position: relative; display: flex; flex-direction: column; }
+@media (max-width: 1099px) { #mt-main > .mtx-table { flex: 1; } #mt-main > .mtx-table > .mtx-center { flex: 1; } }
+.mtx-table .tb-opps { height: 128px; }
+.mtx-table .tb-opp { gap: 4px; }
+.tb-opp.mtx-last .tb-av { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 2.5px var(--mtx-gold), 0 8px 18px rgba(0, 0, 0, .4); }
+.mtx-table .tb-badge::before { content: "🎲"; font-size: 10px; margin-right: 2px; }
+
+/* les dés : ivoire, coins ronds, points gravés ; le Paco (le 1) en or, avec un gros point rouge */
+.mtx-die { --d: 30px; position: relative; width: var(--d); height: var(--d); flex: none; display: inline-grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: calc(var(--d) * .13); border-radius: 22%;
+  background: linear-gradient(150deg, #fff, var(--mtx-ivory) 45%, var(--mtx-ivory-2));
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, .14), inset 0 1px 0 #fff, 0 3px 7px rgba(0, 0, 0, .4); vertical-align: middle; }
+.mtx-die i { width: 78%; aspect-ratio: 1; border-radius: 50%; place-self: center; background: radial-gradient(circle at 40% 35%, color-mix(in oklab, var(--mtx-pip), white 25%), var(--mtx-pip)); box-shadow: inset 0 1px 1px rgba(0, 0, 0, .5); }
+.mtx-die .p1 { grid-area: 1 / 1; } .mtx-die .p3 { grid-area: 1 / 3; } .mtx-die .p4 { grid-area: 2 / 1; } .mtx-die .p5 { grid-area: 2 / 2; }
+.mtx-die .p6 { grid-area: 2 / 3; } .mtx-die .p7 { grid-area: 3 / 1; } .mtx-die .p9 { grid-area: 3 / 3; }
+.mtx-die.f1 { background: linear-gradient(150deg, oklch(0.93 0.1 90), var(--mtx-gold) 45%, var(--mtx-gold-2)); }
+.mtx-die.f1 .p5 { width: 112%; background: radial-gradient(circle at 40% 35%, oklch(0.6 0.19 28), var(--mtx-paco)); }
+.mtx-die .mtx-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.mtx-die:has(.mtx-img) { background: none; box-shadow: none; }
+.mtx-die:has(.mtx-img) i { display: none; }
+.mtx-die.big { --d: 58px; }
+.mtx-die.hit { box-shadow: inset 0 -2px 3px rgba(0, 0, 0, .14), 0 0 0 2.5px var(--acc), 0 0 14px 1px color-mix(in oklab, var(--acc) 60%, transparent); }
+.mtx-die.dim { opacity: .4; filter: saturate(.6); }
+
+/* les gobelets : cuir cousu, plus larges en bas, posés à l'envers sur la table */
+.mtx-cup { --c: 54px; position: relative; display: inline-block; width: var(--c); height: calc(var(--c) * 1.05); flex: none; }
+.mtx-cup > i { position: absolute; inset: 0; clip-path: polygon(16% 0, 84% 0, 100% 100%, 0 100%); border-radius: 6px;
+  background: repeating-linear-gradient(90deg, transparent 0 7px, rgba(0, 0, 0, .08) 7px 8px),
+    linear-gradient(180deg, transparent 0 16%, var(--mtx-stitch) 16% 18%, transparent 18% 80%, var(--mtx-stitch) 80% 82%, transparent 82%),
+    linear-gradient(90deg, var(--mtx-cup-2), var(--mtx-cup) 35%, color-mix(in oklab, var(--mtx-cup), white 18%) 50%, var(--mtx-cup) 65%, var(--mtx-cup-2)); }
+.mtx-cup::after { content: ""; position: absolute; left: 4%; right: 4%; bottom: -3px; height: 6px; border-radius: 50%; background: rgba(0, 0, 0, .35); filter: blur(2px); z-index: -1; }
+.mtx-cup .mtx-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1; }
+.mtx-cup:has(.mtx-img) > i, .mtx-cup:has(.mtx-img)::after { display: none; }
+.mtx-cup.mini { --c: 20px; margin-top: 2px; }
+.mtx-cups { display: flex; gap: 14px; justify-content: center; padding: 6px 0 2px; }
+.mtx-cups .mtx-cup:nth-child(2) { transform: translateY(-6px); }
+.mtx-mini { display: inline-flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 96px; }
+.mtx-mini .mtx-die { --d: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); }
+.mtx-mini .mtx-die.hit { box-shadow: 0 0 0 1.5px var(--acc), 0 0 8px var(--acc); }
+/* sur téléphone, cinq dés ne tiennent pas sous un avatar : trois puis deux */
+@media (max-width: 1099px) { .mtx-mini { max-width: 52px; } .mtx-table .tb-opps:has(.mtx-mini) { height: 150px; } }
+
+/* l'annonce au milieu : une plaque gravée sur le cuir */
+.mtx-center { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 6px 0 4px; }
+.mtx-plate { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 230px; padding: 14px 22px 16px; border-radius: 26px; text-align: center;
+  border: 1px solid color-mix(in oklab, var(--acc) 45%, transparent); outline: 1px solid color-mix(in oklab, var(--acc) 18%, transparent); outline-offset: 5px;
+  background: radial-gradient(80% 70% at 50% 40%, rgba(0, 0, 0, .06), rgba(0, 0, 0, .22)); }
+.mtx-plate small { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.mtx-bid { display: flex; align-items: center; gap: 10px; }
+.mtx-bid > b { font: 400 54px/1 "Alfa Slab One", var(--font); color: var(--acc); text-shadow: 0 2px 0 rgba(0, 0, 0, .45); font-variant-numeric: tabular-nums; }
+.mtx-x { font-size: 26px; font-weight: 700; color: var(--ink-2); }
+.mtx-of { font-size: 13px; color: var(--ink-2); }
+.mtx-verdict { font-size: 15px; font-weight: 600; }
+.mtx-verdict b { font-size: 19px; color: var(--acc); }
+.mtx-plate.reveal.false { border-color: color-mix(in oklab, var(--neg) 65%, transparent); }
+.mtx-plate.reveal.false .mtx-verdict { color: oklch(0.82 0.12 30); }
+.mtx-plate.empty small { font-size: 14px; }
+.mtx-trail { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 0; }
+.mtx-trail span { padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); background: rgba(0, 0, 0, .22); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .14); }
+
+/* le plateau : tes dés sous ton gobelet soulevé, le choix de l'annonce */
+.mtx-tray .tb-tray-top span:last-child { text-align: right; }
+.mtx-mine { display: flex; align-items: flex-end; gap: 14px; padding: 8px 4px 2px; min-height: 64px; }
+.mtx-mine .mtx-cup.lifted { --c: 50px; transform: rotate(-16deg) translateY(-8px); filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .35)); }
+.mtx-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.mtx-mine .mtx-row .mtx-die { --d: 42px; }
+.mtx-pick { display: flex; flex-direction: column; gap: 10px; }
+.mtx-faces { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.mtx-face { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: 6px 2px; border: 0; border-radius: 14px; cursor: pointer; color: var(--ink);
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 .5px var(--tb-rim); font: 600 11.5px var(--font); }
+.mtx-face .mtx-die { --d: 28px; }
+.mtx-face small { font-size: 11.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mtx-face.on { background: color-mix(in oklab, var(--acc) 20%, transparent); box-shadow: inset 0 0 0 2px var(--acc); }
+.mtx-face.on small { color: var(--acc); }
+.mtx-face:disabled { opacity: .3; cursor: default; }
+.mtx-step { display: flex; align-items: center; gap: 10px; }
+.mtx-stepbtn { width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; font: 600 26px/1 var(--font); color: var(--ink); cursor: pointer;
+  background: rgba(255, 255, 255, .1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 .5px var(--tb-rim); }
+.mtx-stepbtn:disabled { opacity: .3; cursor: default; }
+.mtx-q { flex: 1; text-align: center; font-size: 17px; color: var(--ink-2); }
+.mtx-q b { font: 400 30px/1 "Alfa Slab One", var(--font); color: var(--ink); vertical-align: -3px; margin: 0 4px; }
+.screen.tb .tb-btn.mtx-liar { font: 400 19px/1.1 "Alfa Slab One", var(--font); letter-spacing: .01em; }
+/* style.css fait « respirer » tout .btn.danger (ancien Chromo) : le bouton bougerait sous le doigt */
+#s-menteur .tb-btn.danger { animation: none; }
+
+/* fin de partie, colonne de droite et fil */
+#mt-main > :is(.mt-side, .mt-log) { display: none; }
+.mtx-rank { padding: 12px 16px 6px; border-radius: 22px; background: var(--tb-glass); -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--tb-hi), inset 0 0 0 .5px var(--tb-rim), 0 10px 30px rgba(0, 0, 0, .25); }
+.mtx-rank .mj-side-title { margin: 0 0 2px; }
+[data-game="menteur"] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }
+
+/* PC : une table ronde au rebord de bois, les joueurs assis autour, les gobelets et le fil à droite */
+@media (min-width: 1100px) {
+  #mt-main.desk-split > .desk-side > :is(.mt-side, .mt-log) { display: block; }
+  #s-menteur .mtx-table { width: 100%; max-width: 680px; aspect-ratio: 2.4 / 1; margin: 46px auto 0; flex: none; border-radius: 50%;
+    background: radial-gradient(60% 55% at 50% 45%, var(--felt-hi), var(--felt-mid) 70%, color-mix(in oklab, var(--felt-mid), var(--felt-lo) 40%));
+    box-shadow: inset 0 0 0 14px oklch(0.36 0.06 45), inset 0 0 0 16px oklch(0.24 0.045 40), inset 0 0 0 18px rgba(255, 255, 255, .08), inset 0 30px 60px rgba(0, 0, 0, .35), 0 30px 60px -20px rgba(0, 0, 0, .6); }
+  #s-menteur .mtx-table .tb-opps { position: absolute; left: 0; right: 0; top: -46px; height: 0; z-index: 2; }
+  #s-menteur .mtx-center { position: absolute; inset: 0; padding-top: 70px; }
+  #s-menteur .mtx-plate { padding: 10px 26px 12px; background: radial-gradient(80% 70% at 50% 40%, rgba(0, 0, 0, .1), rgba(0, 0, 0, .28)); }
+  #s-menteur .mtx-mine .mtx-row .mtx-die { --d: 48px; }
+  #s-menteur .tb-tray { max-width: 720px; width: 100%; margin: auto auto 0; border-radius: 30px 30px 0 0; }
+  #s-menteur .tb-tray .tb-acts { max-width: 520px; }
+}
+@media (prefers-reduced-motion: reduce) { .mtx-mine .mtx-cup.lifted { transform: none; } }
+
+/* le dessin de la carte du salon (si l'icône 3D manque) : un gobelet et deux dés */
+.mtx-art { position: relative; display: block; width: 54px; height: 54px; }
+.mtx-art .mtx-cup { --c: 30px; position: absolute; left: 4px; top: 6px; }
+.mtx-art .mtx-die { --d: 18px; position: absolute; }
+.mtx-art .mtx-die:nth-of-type(1) { right: 6px; top: 12px; transform: rotate(12deg); }
+.mtx-art .mtx-die:nth-of-type(2) { right: 2px; bottom: 6px; transform: rotate(-8deg); }
