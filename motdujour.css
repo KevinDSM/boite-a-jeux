@@ -1,0 +1,158 @@
+/* Le Mot du jour : palette propre au jeu (le bleu de Motus, ses carrés rouges et ses ronds jaunes),
+   posée sur les jetons de style.css et le verre de ios.css. Préfixe md-.
+   La grille est un objet de jeu : elle reste bleu nuit dans les deux thèmes. Le cadre (cartes, clavier,
+   boutons) passe au verre, teinté depuis la palette du jeu. */
+[data-game="motdujour"] {
+  --bg: oklch(0.21 0.07 265); --surface: oklch(0.26 0.075 265); --surface-2: oklch(0.31 0.08 265);
+  --line: oklch(0.38 0.07 265); --ink: oklch(0.97 0.01 250); --ink-2: oklch(0.87 0.03 250); --mute: oklch(0.78 0.04 255);
+  --acc: oklch(0.86 0.16 90); --acc-soft: oklch(0.90 0.12 92); --on-acc: oklch(0.22 0.06 262);
+  --pos: oklch(0.82 0.13 165); --neg: oklch(0.74 0.17 22);
+  --md-wall: radial-gradient(70% 45% at 12% 16%, oklch(0.46 0.17 266 / .85), transparent 70%),
+             radial-gradient(60% 45% at 98% 52%, oklch(0.42 0.15 300 / .6), transparent 70%),
+             radial-gradient(75% 50% at 22% 94%, oklch(0.40 0.12 232 / .85), transparent 72%),
+             linear-gradient(180deg, var(--bg) 0, var(--bg) 70px, oklch(0.2 0.07 262) 40%, oklch(0.15 0.05 272));
+  --md-panel: oklch(0.29 0.12 264); --md-tile: oklch(0.44 0.16 263); --md-tile-hi: oklch(0.56 0.15 262);
+  --md-good: oklch(0.56 0.205 27); --md-near: oklch(0.86 0.17 92); --md-near-ink: oklch(0.22 0.06 262); --md-letter: #fff;
+  --glass-tint: oklch(0.24 0.08 264 / .52); --glass-tint-thick: oklch(0.24 0.08 264 / .76);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .16); --glass-edge: rgba(0, 0, 20, .4);
+  --glass-shadow: 0 10px 34px rgba(0, 4, 30, .42);
+  --glass-ink: oklch(0.97 0.01 250); --glass-ink-2: oklch(0.87 0.03 250);
+  --glass-field: oklch(0.13 0.05 264 / .5);
+}
+[data-game="motdujour"][data-theme="light"] {
+  --bg: oklch(0.95 0.025 258); --surface: oklch(0.99 0.008 258); --surface-2: oklch(0.93 0.03 258);
+  --line: oklch(0.86 0.03 258); --ink: oklch(0.24 0.06 262); --ink-2: oklch(0.38 0.06 262); --mute: oklch(0.45 0.05 262);
+  --acc: oklch(0.45 0.17 263); --acc-soft: oklch(0.40 0.16 263); --on-acc: oklch(0.99 0.005 258);
+  --pos: oklch(0.50 0.12 165); --neg: oklch(0.52 0.18 25);
+  --md-wall: radial-gradient(70% 45% at 12% 16%, oklch(0.84 0.09 262 / .9), transparent 70%),
+             radial-gradient(60% 45% at 98% 52%, oklch(0.86 0.08 305 / .75), transparent 70%),
+             radial-gradient(75% 50% at 22% 94%, oklch(0.88 0.08 225 / .9), transparent 72%),
+             linear-gradient(180deg, var(--bg) 0, var(--bg) 70px, oklch(0.93 0.03 258) 45%, oklch(0.92 0.035 280));
+  --glass-tint: rgba(250, 252, 255, .58); --glass-tint-thick: rgba(250, 252, 255, .8);
+  --glass-hi: rgba(255, 255, 255, .9); --glass-rim: rgba(255, 255, 255, .55); --glass-edge: rgba(20, 30, 90, .12);
+  --glass-shadow: 0 10px 34px rgba(30, 40, 110, .16);
+  --glass-ink: oklch(0.24 0.06 262); --glass-ink-2: oklch(0.38 0.06 262);
+  --glass-field: rgba(255, 255, 255, .62);
+}
+
+/* le fond d'écran sous le verre ; la barre du haut reste unie */
+html[data-game="motdujour"] { background: var(--bg); }
+[data-game="motdujour"] body { background: transparent; }
+[data-game="motdujour"] body::before { display: none; }
+.md-wall { position: fixed; inset: 0; z-index: -1; background: var(--md-wall); background-color: var(--bg); pointer-events: none; }
+@media (prefers-reduced-transparency: reduce) { .md-wall { background: var(--bg); } }
+.md-top { background: var(--bg); border-bottom-color: transparent; }
+.md-top .crumb { font-family: var(--font); font-weight: 650; }
+.md-top a.ic { text-decoration: none; font-size: 26px; padding-bottom: 4px; width: 44px; height: 44px; border-radius: 50%; border: 0; color: var(--glass-ink);
+  background: var(--glass-tint); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); }
+
+.md-wrap { max-width: 560px; margin: 0 auto; padding: calc(var(--bar-h) + env(safe-area-inset-top) + 10px) 16px max(28px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 2; }
+.md-play, .md-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.md-status { padding: 0 4px; }
+.md-status .mj-title { font-size: 26px; }
+
+/* les cartes en verre */
+.md-card { border-radius: var(--radius-xl); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.md-card h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--glass-ink-2); }
+.md-card p { margin: 0; color: var(--glass-ink-2); }
+.md-card input, .md-card .emo-btn { background: var(--glass-field); border: 0; color: var(--glass-ink); box-shadow: inset 0 0 0 .5px var(--glass-rim); border-radius: 14px; min-height: 48px; }
+.md-card input::placeholder { color: var(--glass-ink-2); }
+.md-card input:focus { box-shadow: inset 0 0 0 2px var(--acc); outline: 0; }
+.md-card .field > span { color: var(--glass-ink-2); }
+.md-card .name-row { display: flex; gap: 8px; }
+.md-card .name-row input { flex: 1; min-width: 0; padding: 0 14px; font-size: 17px; }
+.md-card .emo-btn { width: 52px; font-size: 24px; }
+.md-card .btn, .md-end .btn { border-radius: var(--radius-capsule); min-height: 50px; }
+.md-card .btn:not(.primary) { background: var(--glass-field); color: var(--glass-ink); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.md-emo-pop { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; padding: 8px; background: var(--glass-field); border-radius: 14px; }
+.md-emo-pop .emo { min-height: 46px; font-size: 24px; background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
+.md-emo-pop .emo.on { background: color-mix(in oklab, var(--acc) 30%, transparent); }
+
+/* ---------------------------------------------------------------- la grille (objet de jeu) */
+.md-boardbox { align-self: center; width: min(100%, calc(var(--md-n, 7) * 60px + 20px)); padding: 10px; border-radius: 20px; background: var(--md-panel);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), inset 0 0 0 1px rgba(255, 255, 255, .06), 0 14px 34px rgba(0, 4, 40, .35); }
+.md-board { container-type: inline-size; display: flex; flex-direction: column; gap: 5px; }
+.md-row { --tile: calc((100cqw - (var(--md-n, 7) - 1) * 5px) / var(--md-n, 7)); display: grid; grid-template-columns: repeat(var(--md-n, 7), 1fr); gap: 5px; }
+.md-t { position: relative; aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; background: var(--md-tile); color: var(--md-letter);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 -2px 0 rgba(0, 0, 30, .18); }
+.md-t i { position: relative; z-index: 1; font: 700 calc(var(--tile) * .56)/1 var(--font); font-style: normal; letter-spacing: 0; }
+.md-t.md-b { background: var(--md-good); }
+.md-t.md-m::before { content: ""; position: absolute; inset: 7%; border-radius: 50%; background: var(--md-near); box-shadow: inset 0 -2px 0 rgba(120, 80, 0, .25); }
+.md-t.md-m { color: var(--md-near-ink); }
+.md-empty .md-t { background: color-mix(in oklab, var(--md-tile) 55%, var(--md-panel)); box-shadow: none; }
+.md-input .md-t { background: color-mix(in oklab, var(--md-tile) 80%, var(--md-panel)); }
+.md-input .md-ghost i { opacity: .45; }
+.md-input .md-typed { background: var(--md-tile-hi); }
+.md-input .md-cursor { box-shadow: inset 0 -3px 0 var(--md-near); }
+.md-hintrow { display: flex; align-items: center; gap: 10px; min-height: var(--tile); padding: 6px 12px; border-radius: 6px; background: color-mix(in oklab, var(--md-near) 16%, var(--md-tile)); color: #fff; }
+.md-hint-ic { font-size: 22px; line-height: 1; flex: none; }
+.md-hint-tx { font-size: 15px; line-height: 1.25; font-weight: 600; }
+.md-hint-tx small { display: block; font-size: 12px; font-weight: 600; opacity: .85; }
+
+/* une ligne qui vient d'être jouée se retourne, case après case ; une proposition refusée tremble */
+.md-flip { animation: md-flip .5s var(--ease-out) backwards; }
+@keyframes md-flip { from { transform: perspective(300px) rotateX(-90deg); opacity: .2; } }
+.md-pop { animation: md-pop .42s var(--ease-out) backwards; }
+@keyframes md-pop { from { transform: scale(.92); opacity: 0; } }
+.md-shake { animation: md-shake .36s ease-in-out; }
+@keyframes md-shake { 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+
+/* ---------------------------------------------------------------- l'indice */
+.md-hintbar { display: flex; justify-content: center; }
+.md-hintbtn { border-radius: var(--radius-capsule); min-height: 48px; padding: 6px 20px; border: 0; background: var(--glass-tint); color: var(--glass-ink);
+  -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; }
+.md-hintbtn small { font-size: 13px; font-weight: 500; color: var(--glass-ink-2); }
+.md-hintbtn.armed { background: var(--acc); color: var(--on-acc); }
+
+/* ---------------------------------------------------------------- le clavier */
+.md-kb { display: flex; flex-direction: column; gap: 7px; margin: 0 -10px; }
+.md-kbrow { display: flex; gap: 5px; justify-content: center; }
+.md-key { flex: 1 1 0; min-width: 0; max-width: 52px; min-height: 54px; border: 0; border-radius: 9px; padding: 0; cursor: pointer; touch-action: manipulation;
+  background: var(--glass-tint); color: var(--glass-ink); font: 600 19px/1 var(--font);
+  -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 1px 0 var(--glass-edge);
+  display: grid; place-items: center; user-select: none; -webkit-user-select: none; transition: transform .08s var(--ease-out); }
+.md-key:active { transform: scale(.94); }
+.md-key:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.md-key.md-wide { flex-grow: 1.6; max-width: 84px; font-size: 14px; }
+.md-key.md-enter { background: var(--acc); color: var(--on-acc); }
+.md-key.md-kb-b { background: var(--md-good); color: #fff; }
+.md-key.md-kb-m { background: var(--md-near); color: var(--md-near-ink); }
+.md-key.md-kb-a { opacity: .38; }
+
+/* ---------------------------------------------------------------- la fin */
+.md-sol { display: flex; flex-direction: column; gap: 2px; }
+.md-sol small { font-size: 13px; font-weight: 600; color: var(--glass-ink-2); }
+.md-sol b { font-size: 30px; line-height: 1.1; letter-spacing: .06em; font-weight: 750; color: var(--glass-ink); }
+.md-sol span { color: var(--glass-ink-2); font-size: 15px; }
+.md-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.md-acts .btn { flex: 1 1 160px; }
+.md-next { font-size: 15px; text-align: center; }
+.md-next b { font-variant-numeric: tabular-nums; color: var(--glass-ink); }
+
+/* ---------------------------------------------------------------- le classement du jour */
+.md-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.md-r { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 48px; padding: 4px 0; border-top: .5px solid color-mix(in oklab, var(--glass-ink) 14%, transparent); }
+.md-r:first-child { border-top: 0; }
+.md-r.moi .md-who b { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--acc); }
+.md-pos { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--glass-ink-2); text-align: center; }
+.md-who { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.md-who b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-emo { font-size: 20px; }
+.md-bulb { font-size: 15px; }
+.md-sc { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 15px; }
+.md-sc small { display: block; font-weight: 500; font-size: 12.5px; color: var(--glass-ink-2); }
+.md-r.rate .md-sc { color: var(--glass-ink-2); font-weight: 500; }
+.md-wait, .md-none { font-size: 15px; }
+.md-none:empty { display: none; }
+
+/* PC : la grille et le clavier à gauche, le classement dans un panneau en verre épais à droite */
+@media (min-width: 1100px) {
+  .md-wrap { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; column-gap: 48px; align-items: start; padding-top: calc(var(--bar-h) + 28px); }
+  .md-side { position: sticky; top: calc(var(--bar-h) + 20px); }
+  .md-side .md-rank { background: var(--glass-tint-thick); -webkit-backdrop-filter: blur(34px) saturate(180%); backdrop-filter: blur(34px) saturate(180%); }
+  .md-kb { margin: 0; }
+}
+@media (max-width: 360px) { .md-key { min-height: 50px; font-size: 17px; } .md-kbrow { gap: 4px; } }
+@media (prefers-reduced-motion: reduce) { .md-flip, .md-pop, .md-shake { animation: none; } }

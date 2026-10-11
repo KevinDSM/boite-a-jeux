@@ -180,9 +180,29 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
   #s-home .ih-head h1 { font-size: 3.5rem !important; }
   #s-home .ih-head .ih-sub { font-size: var(--text-title-3); }
   #s-home .ih-more { grid-column: 1; grid-row: 2; justify-content: flex-start; align-self: start; margin: 0 0 0 -12px; }
-  #s-home #f-home { grid-column: 2; grid-row: 1 / 3; align-self: center; }
-  #s-home .ih-foot { grid-column: 2; grid-row: 3; align-self: start; }
+  #s-home #f-home { grid-column: 2; grid-row: 1 / 4; align-self: center; }
+  #s-home .ih-mdj { grid-column: 1; grid-row: 3; align-self: start; max-width: 420px; }
+  #s-home .ih-foot { grid-column: 2; grid-row: 4; align-self: start; }
 }
+
+/* le Mot du jour : un petit widget, ses cases reprennent le bleu et le rouge du jeu */
+.ih-mdj { border-radius: var(--radius-2xl); padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ih-mdj-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ih-mdj-top b { font-size: var(--text-headline); font-weight: 650; letter-spacing: -.01em; }
+.ih-mdj-top span { font-size: var(--text-footnote); color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
+.ih-mdj-tiles { display: flex; gap: 4px; }
+.ih-mdj-tiles i { width: 26px; height: 26px; border-radius: 5px; display: grid; place-items: center; font: 700 15px/1 var(--font); font-style: normal; color: #fff;
+  background: oklch(0.44 0.16 263); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18); }
+.ih-mdj-tiles i.on { background: oklch(0.56 0.205 27); }
+.ih-mdj-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ih-mdj-list li { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; min-height: 30px; font-size: var(--text-subhead); }
+.ih-mdj-list li > span:first-child { font-weight: 700; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; text-align: center; }
+.ih-mdj-list li b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ih-mdj-list li > span:last-child { color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
+.ih-mdj-none { margin: 0; font-size: var(--text-subhead); color: var(--glass-ink-2); }
+.ih-mdj .btn { border-radius: var(--radius-capsule); min-height: 48px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.ih-mdj .btn.primary { background: var(--acc); color: var(--on-acc); border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 8px 18px -10px color-mix(in oklab, var(--acc) 80%, black); }
+[data-theme="light"] .ih-mdj .btn.primary { background: color-mix(in oklab, var(--acc) 66%, black); }
 
 /* la grille d'icônes */
 .ih-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 0; justify-items: center; padding: 6px 0 4px; }

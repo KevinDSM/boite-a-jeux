@@ -1,6 +1,6 @@
 # Boîte à jeux — consignes pour Claude
 
-Hub de 22 jeux de soirée (+ Miroir, à part) joués sur les téléphones des amis de Kevin. Site vivant : **https://boite-a-jeux.pages.dev** (Cloudflare Pages). `kevindsm.github.io/boite-a-jeux` n'est qu'une page de redirection (branche orpheline `gh-pages`, ne pas la toucher).
+Hub de 22 jeux de soirée (+ Miroir et Le Mot du jour, à part) joués sur les téléphones des amis de Kevin. Site vivant : **https://boite-a-jeux.pages.dev** (Cloudflare Pages). `kevindsm.github.io/boite-a-jeux` n'est qu'une page de redirection (branche orpheline `gh-pages`, ne pas la toucher).
 
 ## Règles de travail
 
@@ -26,6 +26,7 @@ Hub de 22 jeux de soirée (+ Miroir, à part) joués sur les téléphones des am
 - **Deux modes réseau** : sur pages.dev, le salon tourne côté serveur (Worker `boite-a-jeux-salons`, Durable Object `Salon`, dossier `server/` ; `server/build.py` emballe core.js + engines + données dans `server/src/runtime.js`, généré) ; ailleurs, l'hôte est le téléphone qui crée la partie (PeerJS). Côté client : `SALON_WS`, `isHostPlayer()` = premier joueur en mode serveur (**ne jamais tester `net.isHost` dans l'affichage**). `localStorage['dc-server']` = URL ws ou `off` pour forcer un mode en test.
 - `functions/` (Pages Functions) : aperçu des liens d'invitation (KV `INVITES`), `/stats` (D1 `boite-a-jeux-stats`, schéma `server/schema.sql`), API de Miroir (`functions/api/miroir/`, questions cachées dans `_banque.js`).
 - **Miroir** : page à part `/miroir` (`miroir.html/.js/.css`), asynchrone, préfixe CSS `mr-` (**`mi-` est pris par Mirage**).
+- **Le Mot du jour** : page à part `/motdujour` (`motdujour.html/.js/.css`, préfixe CSS `md-`), façon Motus, un mot par jour (heure de Paris) pour tout le monde, + widget `#ih-mdj` sur l'accueil (ios.js). API `functions/api/motdujour/` (tables D1 `motdujour_*`) : **le mot ne part jamais vers le navigateur avant la fin de la partie du joueur**, le serveur vérifie chaque proposition et renvoie les couleurs. Mots + indices : `_mots.js` (365) ; dictionnaire `_dico.js` GÉNÉRÉ par `tools/motdujour/build_dico.mjs` (à relancer si on ajoute des mots). Ordre des jours tiré avec le secret Pages `MOT_SEL` (posé par Kevin, jamais dans le dépôt), puis le mot du jour est figé en base à la première visite. Joueur = `mi-tok` (même secret que Miroir) + `dc-name`/`dc-emo`.
 
 ### Ajouter un jeu (liste à cocher)
 
@@ -46,7 +47,7 @@ Entrée dans `GAMES` (core.js) ; moteur `engines/<jeu>.js` + affichage `<jeu>.js
 
 - Serveur local : `python -m http.server 8767 --bind 127.0.0.1` à la racine, puis les scripts Playwright de `tools/tests/` (captures dans `tools/tests/out/`, ignoré par git). Sans serveur de salons, le mode local passe par PeerJS (il faut Internet).
 - Mode serveur en local : `npx wrangler dev -c server/wrangler.jsonc --port 8787`, puis par exemple `SRV=ws://127.0.0.1:8787 python tools/tests/all_games.py`. Site + fonctions : `npx wrangler pages dev --port 8788 --ip 127.0.0.1 --live-reload=false` (ne pas partager `--persist-to` avec le Worker : verrou SQLite).
-- Scripts : `all_games.py [url] [largeur] [thème] [jeux]` (lance les 22 jeux), `ios_accueil.py` (accueil en deux temps), `ios_salon.py`, `ios_motion.py` (ressorts, glisser), `ios_contrast.py [url] [salon|etapes]` (contraste réel), `salon_play.py` (emojis, invitation, retrait), `server_play.py`, `sab_server.py`, `new2_play.py`, `accueil_reel.py URL` (créer + rejoindre par code + par lien), `miroir_play2.py BASE MDP`, `stats_shot.py BASE MDP`.
+- Scripts : `all_games.py [url] [largeur] [thème] [jeux]` (lance les 22 jeux), `ios_accueil.py` (accueil en deux temps), `ios_salon.py`, `ios_motion.py` (ressorts, glisser), `ios_contrast.py [url] [salon|etapes]` (contraste réel), `salon_play.py` (emojis, invitation, retrait), `server_play.py`, `sab_server.py`, `new2_play.py`, `accueil_reel.py URL` (créer + rejoindre par code + par lien), `miroir_play2.py BASE MDP`, `stats_shot.py BASE MDP`, `motdujour_play.py [BASE]` (trois joueurs, vérifie que le mot reste caché ; base locale vide pour ces prénoms ce jour-là), `ios_contrast.py URL motdujour` (widget + page du jeu).
 - Les scripts remplissent l'accueil en posant d'abord l'étape : `page.evaluate("s => document.getElementById('f-home').dataset.step = s", 'create')`.
 - Deux joueurs sur la même machine : l'identifiant est en localStorage, donc un contexte de navigateur par joueur (ou `127.0.0.1` pour l'un et `localhost` pour l'autre).
 - **Les tests sur la vraie adresse (ou une préversion) écrivent dans la vraie base /stats** : éviter, ou effacer ensuite.

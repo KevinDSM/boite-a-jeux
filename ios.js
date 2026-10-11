@@ -75,7 +75,26 @@ function ihBuild() {
   // la date, comme en haut d'un écran d'accueil
   try { $('#ih-date').textContent = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date()); } catch { }
   ihResume();
+  ihMotDuJour();
 }
+
+// le Mot du jour : la longueur, la première lettre, les premiers du classement (le jeu vit sur motdujour.html)
+async function ihMotDuJour() {
+  const box = $('#ih-mdj'); if (!box) return;
+  let tok = null; try { tok = localStorage.getItem('mi-tok'); } catch { }
+  let s = null;
+  try { const r = await fetch('/api/motdujour/jour' + (tok ? '?tok=' + tok : ''), { cache: 'no-store' }); if (r.ok) s = await r.json(); } catch { }
+  if (!s || !s.n) { box.hidden = true; return; }      // pas de fonctions (serveur de test) : pas de widget
+  const nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 3);
+  $('#ih-mdj-meta').textContent = moi?.trouve ? `Trouvé en ${moi.lignes}` : moi?.fini ? 'Raté aujourd’hui' : `${s.n} lettres`;
+  $('#ih-mdj-tiles').innerHTML = Array.from({ length: s.n }, (_, i) => `<i${i ? '' : ' class="on"'}>${i ? '' : esc(s.premiere)}</i>`).join('');
+  $('#ih-mdj-list').innerHTML = top.length
+    ? `<ol class="ih-mdj-list">${top.map((x, i) => `<li><span>${i + 1}</span><span><b>${esc(x.emoji || '')} ${esc(x.nom)}</b>${x.indice ? ' 💡' : ''}</span><span>${x.lignes} essai${x.lignes > 1 ? 's' : ''}</span></li>`).join('')}</ol>`
+    : `<p class="ih-mdj-none">${s.classement?.length ? 'Personne ne l’a encore trouvé.' : `Personne n’a encore joué. À toi${nb}?`}</p>`;
+  $('#ih-mdj-go').textContent = moi?.fini ? 'Voir le classement' : moi?.essais?.length ? 'Reprendre' : 'Jouer';
+  box.hidden = false;
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !$('#s-home').hidden) ihMotDuJour(); });
 
 // l'entrée en deux temps : choisir « rejoindre » ou « créer », puis seulement les champs de ce choix
 function ihStep(step) {
