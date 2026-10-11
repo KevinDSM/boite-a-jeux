@@ -16,3 +16,6 @@ dist/
 .wrangler/
 server/src/runtime.js
 .dev.vars
+
+# captures des tests Playwright
+tools/tests/out/

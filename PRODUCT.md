@@ -24,7 +24,7 @@ Ossature discrète, voix de meneur de jeu.
 
 - Les interfaces « générées par une IA » : petites étiquettes en capitales espacées au-dessus de chaque bloc, cartes arrondies dans des cartes, grilles de tuiles identiques, emojis posés en décoration, polices à la mode (Bricolage Grotesque, Instrument Sans, Fraunces, Syne, Space Grotesk, Cormorant).
 - Les textes au même moule : « deux notions, deux-points, une phrase, une chute », les slogans de pub, les consignes qui décrivent l'évidence (« touche une carte libre, non recouverte… »), les points de suspension d'attente partout.
-- Le look SaaS ou tableau de bord : dégradés, verre flouté, chiffres héros.
+- Le look SaaS ou tableau de bord : dégradés, chiffres héros.
 
 ## Design Principles
 
