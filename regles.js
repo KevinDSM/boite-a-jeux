@@ -343,6 +343,21 @@ const RULES = [
     ['La lecture', `<p>L’hôte déroule les carnets page par page, sur tous les écrans à la fois. Lis à voix haute ! Pendant la lecture, touche le cœur des meilleurs moments (jamais les tiens). À la fin, on voit qui a récolté le plus de cœurs.</p>`],
     ['Réglages dans le salon', `<p>Robots (ils écrivent et devinent au hasard, et gribouillent), rythme des étapes, longueur des carnets. De 3 à 12 joueurs.</p>`],
   ] },
+  { key: 'unseulindice', parts: [
+    ['Le principe', `<p>L’équivalent maison de Just One, un jeu coopératif. Toute la table joue ensemble pour faire deviner 13 mots mystères, un par carte. À chaque carte, un joueur devine et les autres l’aident, chacun avec un seul mot.</p>`],
+    ['Une carte', `<ul>
+      <li>Le devineur change à chaque carte. Son téléphone ne montre pas le mot ; celui des autres, si.</li>
+      <li>Chacun des autres écrit en secret un indice d’un seul mot, sans espace. On peut le reprendre tant que tout le monde n’a pas écrit.</li>
+      <li>Avant de les montrer, le jeu annule les indices identiques ou trop proches entre eux : même mot au pluriel ou sans accent, même famille (chanteur et chanter, pomme et pommier). Tous les indices d’un même groupe tombent. Un indice trop proche du mot mystère, ou qui le contient, tombe aussi.</li>
+      <li>Les autres voient alors tous les indices et peuvent en rayer un à la main si la machine en a laissé passer un (une traduction, un mot qui se prononce pareil). Puis on montre au devineur ceux qui restent.</li></ul>`],
+    ['Deviner', `<ul>
+      <li>Le devineur n’a qu’une seule proposition. Le pluriel et les accents ne comptent pas.</li>
+      <li><b>Juste</b>, la carte est gagnée.</li>
+      <li><b>Fausse</b>, la carte est perdue, et la carte suivante de la pioche aussi. Si c’était la dernière, on rend une carte gagnée.</li>
+      <li><b>Passer</b> perd seulement la carte en cours.</li></ul>`],
+    ['Fin de partie', `<p>Quand les 13 cartes sont passées, on compte celles trouvées. 13, parfait. 12, incroyable. 11, génial. 9 ou 10, super. 7 ou 8, pas mal. En dessous, la revanche s’impose.</p>`],
+    ['Réglages et robots', `<p>De 3 à 8 joueurs, robots compris. Les robots écrivent des indices tirés d’une liste d’idées associées à chaque mot, et quand c’est leur tour de deviner, ils cherchent le mot qui va le mieux avec les indices. Deux robots peuvent avoir la même idée, et s’annuler. Si un devineur quitte la partie, l’hôte peut passer sa carte.</p>`],
+  ] },
   { key: 'nomcode', parts: [
     ['Le principe', `<p>L’équivalent maison de Codenames. Deux équipes, la Rouge et la Bleue, s’affrontent sur une grille de 25 mots. Chaque équipe a un espion : lui seul sait quels mots cachent ses agents.</p>`],
     ['La grille', `<ul>
