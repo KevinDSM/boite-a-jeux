@@ -4,15 +4,18 @@
 
 
 // ============================================================ écran
-// Voix du meneur (voir DESIGN.md). L'île, le calendrier et les cartes des naufragés gardent le dessin du jeu ;
-// l'interface autour (état, choix d'action, votes, réserves, journal) suit l'ossature commune.
+// Voix du meneur (voir DESIGN.md). L'île est en 3D (naufrages3d.js : Three.js + modèles Blender) ; sans WebGL,
+// on garde le dessin d'avant (nfScene). L'interface suit la table commune (table.js) : le meneur en bulle de verre,
+// les choix dans un plateau de verre collé en bas, les naufragés et le fil dans une feuille sur téléphone.
 let nfRisk = 0, nfUsing = null, nfTimer = null;
 const NF_ACTIONS = [
-  { key: 'fish', name: 'Pêcher', text: 'De 1 à 4 poissons.', doing: 'Tu vas pêcher.' },
-  { key: 'water', name: 'Chercher de l’eau', text: 'Selon la météo du jour.', doing: 'Tu cherches de l’eau.' },
-  { key: 'wood', name: 'Couper du bois', text: '1 morceau, plus si tu tentes ta chance.', doing: 'Tu coupes du bois.' },
-  { key: 'wreck', name: 'Fouiller l’épave', text: 'Un objet caché, gardé pour toi.', doing: 'Tu fouilles l’épave.' },
+  { key: 'fish', icon: '🎣', short: 'Pêcher', tip: '1 à 4 poissons', name: 'Pêcher', text: 'De 1 à 4 poissons.', doing: 'Tu vas pêcher.' },
+  { key: 'water', icon: '💧', short: 'De l’eau', tip: 'selon la météo', name: 'Chercher de l’eau', text: 'Selon la météo du jour.', doing: 'Tu cherches de l’eau.' },
+  { key: 'wood', icon: '🪓', short: 'Du bois', tip: '1 morceau, ou plus', name: 'Couper du bois', text: '1 morceau, plus si tu tentes ta chance.', doing: 'Tu coupes du bois.' },
+  { key: 'wreck', icon: '📦', short: 'L’épave', tip: 'un objet caché', name: 'Fouiller l’épave', text: 'Un objet caché, gardé pour toi.', doing: 'Tu fouilles l’épave.' },
 ];
+// la météo en court, pour la puce posée sur l'île
+const NF_SKY = w => w === 'ouragan' ? '🌀 Ouragan ce soir' : ['☀️ Grand soleil · 1 ration', '⛅ Nuageux · 2 rations', '🌦️ Averses · 3 rations', '🌧️ Pluie battante · 4 rations'][w] || '';
 const NF_WEATHER = w => w === 'ouragan' ? { icon: '🌀', text: 'Ouragan ce soir, 3 rations d’eau par récolte' } : [{ icon: '☀️', text: 'Grand soleil, 1 ration d’eau par récolte' }, { icon: '⛅', text: 'Nuageux, 2 rations d’eau par récolte' }, { icon: '🌦️', text: 'Averses, 3 rations d’eau par récolte' }, { icon: '🌧️', text: 'Pluie battante, 4 rations d’eau par récolte' }][w] || { icon: '', text: '' };
 const nfNames = list => list.length <= 1 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' et ' + list[list.length - 1];
 const nfProg = (done, total) => total > 0 ? el('div', 'mj-prog', `${Array.from({ length: total }, (_, i) => `<i${i < done ? ' class="f"' : ''}></i>`).join('')}<span>${done} sur ${total}</span>`) : null;
@@ -91,39 +94,50 @@ function renderNaufrages(v) {
   const say = list => list[Math.max(0, v.day - 1) % list.length];              // une réplique stable pendant toute la journée
   const names = list => esc(nfNames(list));
   const cap = s => s ? s[0].toUpperCase() + s.slice(1) : '';
-
-  // la ligne d'info discrète, puis l'île (la scène, la météo, le calendrier)
-  root.appendChild(el('p', 'mj-meta', `Jour ${v.day} · ${nfPlural(n, 'survivant', 'survivants')}`));
   const w = NF_WEATHER(v.weather);
-  root.appendChild(el('div', 'nf-island', `${nfScene(v)}<p class="nf-weather">${w.icon ? `<span aria-hidden="true">${w.icon}</span> ` : ''}${w.text}</p>${nfCalendar(v)}`));
+  const three = typeof NF3D !== 'undefined' && !NF3D.off();
+
+  // la ligne de partie ; sur téléphone, les puces ouvrent les naufragés et le fil dans la feuille commune
+  const chips = [tbChip(`${TB_ICON.people}<b>${n}</b>`, () => tbSheet.open('nf-people', 'Les naufragés', () => nfSheet('people')), 'Les naufragés')];
+  if (v.log.length) chips.unshift(tbChip(`${TB_ICON.log}Fil`, () => tbSheet.open('nf-log', 'Ce qui s’est passé', () => nfSheet('log'))));
+  root.appendChild(tbBar(`Jour <b>${v.day}</b> · ${nfPlural(n, 'survivant', 'survivants')}`, chips));
+
+  // l'île : en 3D (naufrages3d.js) dans l'emplacement réservé, sinon le dessin d'avant
+  if (three && NF3D.ready()) {
+    root.appendChild(el('div', 'nf-stage', `<div class="nfx-sky"><span class="tb-chip" title="${esc(w.text)}">${NF_SKY(v.weather)}</span>${nfCalendar(v)}</div>`));
+  } else {
+    root.appendChild(el('div', 'nf-island', `${nfScene(v)}<p class="nf-weather">${w.icon ? `<span aria-hidden="true">${w.icon}</span> ` : ''}${w.text}</p>${nfCalendar(v)}`));
+  }
+  if (three) NF3D.update(v, $('#s-naufrages'));
 
   // ce qui se passe, dit par le meneur
-  if (v.flash && (v.phase === 'vote' || v.phase === 'day')) root.appendChild(el('div', 'nf-flash', `<p>${esc(v.flash.text)}</p>${v.flash.votes?.length ? `<small>${v.flash.votes.map(esc).join(' · ')}</small>` : ''}`));
-  let title = '', line = '', prog = null;
+  if (v.flash && (v.phase === 'vote' || v.phase === 'day')) root.appendChild(el('div', 'nf-flash tb-say', `<span class="tb-pip" aria-hidden="true">📣</span><div><p>${esc(v.flash.text)}</p>${v.flash.votes?.length ? `<small>${v.flash.votes.map(esc).join(' · ')}</small>` : ''}</div>`));
+  let title = '', line = '', prog = null, pip = '🏝️', hot = false;
   const lacks = [v.food < n ? 'du poisson' : '', v.water < n ? 'de l’eau' : ''].filter(Boolean);
   if (v.phase === 'day') {
     const actors = v.players.filter(p => p.alive && p.canAct && p.online);
     const waiting = actors.filter(p => !p.done && !p.me).map(p => p.name);
     prog = [actors.filter(p => p.done).length, actors.length];
-    if (!me) { title = 'Le camp s’organise.'; line = 'Tu regardes, tu joueras à la prochaine partie.'; }
-    else if (!me.alive) { title = 'Tu es hors jeu.'; line = `${esc(cap(me.fate || ''))}. Regarde la suite en silence.`; }
-    else if (me.sick) { title = 'Tu te reposes.'; line = `Morsure de serpent. Encore ${nfPlural(me.sick, 'jour', 'jours')} au lit.`; }
+    if (!me) { title = 'Le camp s’organise.'; line = 'Tu regardes, tu joueras à la prochaine partie.'; pip = '👀'; }
+    else if (!me.alive) { title = 'Tu es hors jeu.'; line = `${esc(cap(me.fate || ''))}. Regarde la suite en silence.`; pip = '🪦'; }
+    else if (me.sick) { title = 'Tu te reposes.'; line = `Morsure de serpent. Encore ${nfPlural(me.sick, 'jour', 'jours')} au lit.`; pip = '🤒'; }
     else if (me.choice) {
       const c = NF_ACTIONS.find(x => x.key === me.choice.action);
       title = me.choice.action === 'wood' && me.choice.risk ? `Tu coupes du bois, et tu tentes ${me.choice.risk} de plus.` : c.doing;
       line = waiting.length ? `Plus que ${names(waiting)}. Tu peux encore changer d’avis.` : 'Tout le monde a choisi.';
+      pip = c.icon;
     } else {
-      title = 'Que fais-tu aujourd’hui ?';
+      title = 'Que fais-tu aujourd’hui ?'; hot = true; pip = '✋';
       line = lacks.length ? `Il manque ${lacks.join(' et ')} pour ce soir. Personne ne verra ton choix avant le soir.`
         : v.seats < n ? say(['Les vivres tiennent. Le radeau, lui, attend son bois.', 'De quoi manger ce soir. Reste à construire ce radeau.', 'Ton choix reste secret jusqu’au soir. Le radeau, lui, n’attend pas.'])
-          : say(['Une place pour chacun. Encore un effort pour les réserves ?', 'Le radeau est là. Il ne manque plus que de quoi tenir la traversée.']);
+          : say(['Une place pour chacun. Encore un effort pour les réserves ?', 'Le radeau est là. Il ne manque plus que de quoi tenir la traversée.']);
     }
   } else if (v.phase === 'dusk') {
-    title = 'Le soir tombe.';
+    title = 'Le soir tombe.'; pip = '🔥';
     line = say(['Voilà ce que la journée a rapporté.', 'On fait les comptes autour du feu.', 'Chacun vide ses poches. Enfin, presque.']);
   } else if (v.phase === 'vote' && v.vote) {
     const vt = v.vote, c = vt.count;
-    prog = [vt.done, n];
+    prog = [vt.done, n]; pip = '🗳️'; hot = !!me?.alive && !vt.mine;
     title = vt.reason === 'food' ? 'Pas assez pour tout le monde.' : v.seats < n ? 'Le radeau est trop petit.' : 'Pas assez de vivres pour la traversée.';
     line = vt.reason === 'food' ? `Il faut désigner ${c > 1 ? `${c} personnes` : 'quelqu’un'}.` : `${c > 1 ? `${c} personnes restent` : 'Une personne reste'} sur l’île.`;
     const waiting = v.players.filter(p => p.alive && p.online && !p.done && !p.me).map(p => p.name);
@@ -131,85 +145,23 @@ function renderNaufrages(v) {
     else if (vt.mine) line += ` Tu désignes ${esc(v.players.find(p => p.id === vt.mine)?.name || '')}.${waiting.length ? ` Plus que ${names(waiting)}.` : ''}`;
     else line += ' Discutez vite, puis votez.';
   } else if (v.phase === 'ready') {
-    title = 'Le radeau est prêt.';
-    line = 'Assez de places et de vivres pour tout le monde. On part, ou on reste faire des réserves ?';
+    title = 'Le radeau est prêt.'; pip = '⛵'; hot = true;
+    line = 'Assez de places et de vivres pour tout le monde. On part, ou on reste faire des réserves ?';
   } else if (v.phase === 'over') {
-    title = me?.won ? 'Tu t’en sors.' : me ? 'Tu restes sur l’île.' : 'Fin de la partie.';
+    title = me?.won ? 'Tu t’en sors.' : me ? 'Tu restes sur l’île.' : 'Fin de la partie.'; pip = me?.won ? '⛵' : '🏝️'; hot = !!me?.won;
     line = esc(v.outcome || '');
   }
-  const status = el('div', 'mj-status', `<h3 class="mj-title">${title}</h3>${line ? `<p class="mj-say">${line}</p>` : ''}`);
-  const bar = prog && nfProg(prog[0], prog[1]); if (bar) status.appendChild(bar);
+  const status = tbSay({ title, line, pip, hot });
+  const bar = prog && nfProg(prog[0], prog[1]); if (bar) status.querySelector('div').appendChild(bar);
   root.appendChild(status);
-
-  // le jour : une action chacun, en secret
-  if (v.phase === 'day' && me?.canAct) {
-    const list = el('div', 'mj-list rl-choices nf-todo');
-    NF_ACTIONS.forEach(a => {
-      const on = me.choice?.action === a.key;
-      const extra = a.key === 'fish' && me.boost.canne ? ' Canne prête : +2.' : a.key === 'wood' && me.boost.hache ? ' Hache prête : +3.' : '';
-      const b = el('button', 'mj-row rl-opt nf-do' + (on ? ' on' : ''), `<span class="rl-main"><b>${a.name}</b><small>${a.text}${extra}</small></span><span class="rl-tag">${on ? 'ton choix' : ''}</span>`);
-      b.type = 'button';
-      b.onclick = () => act({ t: 'nf:choose', action: a.key, risk: a.key === 'wood' ? nfRisk : 0 });
-      list.appendChild(b);
-    });
-    root.appendChild(list);
-    const gamble = el('div', 'nf-gamble', '<span class="nf-gamble-label">Tenter plus de bois</span>');
-    const seg = el('div', 'nf-seg');
-    [0, 1, 2, 3, 4, 5].forEach(r => {
-      const b = el('button', 'nf-seg-opt', r ? `+${r}` : 'Non'); b.type = 'button';
-      b.setAttribute('aria-pressed', nfRisk === r ? 'true' : 'false');
-      b.onclick = () => { nfRisk = r; if (me.choice?.action === 'wood') act({ t: 'nf:choose', action: 'wood', risk: r }); else renderNaufrages(view.nf); };
-      seg.appendChild(b);
-    });
-    gamble.appendChild(seg);
-    gamble.appendChild(el('p', 'nf-gamble-note', nfRisk ? `Environ ${Math.round((1 - Math.pow(5 / 6, nfRisk)) * 100)} % de risque de morsure. Mordu, tu es malade deux jours et tu ne rapportes rien.` : 'Sans risque, 1 morceau.'));
-    root.appendChild(gamble);
-  }
 
   // le soir : le compte rendu de la journée
   if (v.phase === 'dusk') {
     const box = el('div', 'nf-report rl-block', '<span class="mj-side-title">La journée</span>');
     const list = el('div', 'mj-list');
-    v.report.forEach(l => list.appendChild(el('div', 'mj-row', `<span class="rl-name"><b>${esc(l.name)}</b> ${esc(l.text)}</span>${l.item ? `<span class="rl-tag nf-secret">${l.item === 'rien' ? 'rien trouvé' : `trouvé : ${esc(l.item)}`}</span>` : ''}`)));
+    v.report.forEach(l => list.appendChild(el('div', 'mj-row', `<span class="rl-name"><b>${esc(l.name)}</b> ${esc(l.text)}</span>${l.item ? `<span class="rl-tag nf-secret">${l.item === 'rien' ? 'rien trouvé' : `trouvé : ${esc(l.item)}`}</span>` : ''}`)));
     box.appendChild(list); root.appendChild(box);
-    if (v.isHost) root.appendChild(btn('primary lg', 'Passer au repas du soir', () => act({ t: 'nf:next' })));
-    else root.appendChild(el('p', 'note', 'L’hôte lance le repas du soir.'));
   }
-
-  // le vote : une ligne par survivant
-  if (v.phase === 'vote' && v.vote) {
-    if (me?.alive) {
-      const list = el('div', 'mj-list rl-choices cols nf-choices');
-      v.players.filter(p => p.alive).forEach(p => {
-        const safe = v.vote.protected.includes(p.id), on = v.vote.mine === p.id;
-        const b = el('button', 'mj-row rl-opt nf-vote-opt' + (on ? ' on' : ''), `<span class="rl-name">${esc(p.name)}${p.me ? ' <small>(toi)</small>' : ''}</span><span class="rl-tag">${safe ? 'talisman' : on ? 'ton vote' : p.done ? 'a voté' : ''}</span>`);
-        b.type = 'button'; b.disabled = safe; b.onclick = () => act({ t: 'nf:vote', target: p.id });
-        list.appendChild(b);
-      });
-      root.appendChild(list);
-    }
-    const bar = el('div', 'nf-timer'), i = el('i'); bar.appendChild(i); root.appendChild(bar);
-    const t0 = Date.now(), left0 = v.vote.left; const paint = () => { i.style.width = Math.max(0, 100 * (left0 - (Date.now() - t0)) / 45000) + '%'; }; paint(); nfTimer = setInterval(paint, 250);
-    root.appendChild(el('p', 'note', 'Le plus désigné part. À égalité, le hasard tranche.'));
-    if (v.isHost) root.appendChild(btn('ghost small', 'Clore le vote maintenant', () => act({ t: 'nf:skip' })));
-  }
-
-  if (v.phase === 'ready') {
-    if (v.isHost) { const r = el('div', 'nf-row'); r.append(btn('primary lg', 'Prendre la mer', () => act({ t: 'nf:leave' })), btn('ghost', 'Rester un jour de plus', () => act({ t: 'nf:stay' }))); root.appendChild(r); }
-    else root.appendChild(el('p', 'note', 'L’hôte décide. Donne-lui ton avis, et fort.'));
-  }
-
-  if (v.phase === 'over' && v.isHost) root.appendChild(btn('primary lg', 'Retour au salon', () => act({ t: 'restart' })));
-
-  // les réserves du camp (colonne de droite sur PC)
-  const stock = el('div', 'nf-camp rl-block', '<span class="mj-side-title">Les réserves</span>');
-  const sl = el('div', 'mj-list');
-  const res = (name, value, tag, bad) => sl.appendChild(el('div', 'mj-row', `<span class="rl-name">${name}</span>${v.phase === 'over' ? '' : `<span class="rl-tag${bad ? ' bad' : ''}">${tag}</span>`}<b class="rl-score">${value}</b>`));
-  res('Poissons', v.food, `il en faut ${n} ce soir`, v.food < n);
-  res('Eau', v.water, `il en faut ${n} ce soir`, v.water < n);
-  res('Bois', v.wood, `encore ${v.woodToNext} pour une place`, false);
-  res('Radeau', `${v.seats}/${n}`, v.seats >= n ? 'une place pour chacun' : `il manque ${nfPlural(n - v.seats, 'place', 'places')}`, v.seats < n);
-  stock.appendChild(sl); root.appendChild(stock);
 
   // mes objets, secrets
   if (me?.alive && me.items.length && v.phase !== 'over') {
@@ -229,9 +181,69 @@ function renderNaufrages(v) {
     });
     box.appendChild(list); root.appendChild(box);
   }
-  if (me?.peek?.length) root.appendChild(el('p', 'nf-peek', `Longue-vue : ${me.peek.map(x => NF_WEATHER(x).icon).join(' ')} ${me.peek.length > 1 ? `les ${me.peek.length} prochains jours` : 'demain'}.`));
+  if (me?.peek?.length) root.appendChild(el('p', 'nf-peek', `Longue-vue : ${me.peek.map(x => NF_WEATHER(x).icon).join(' ')} ${me.peek.length > 1 ? `les ${me.peek.length} prochains jours` : 'demain'}.`));
 
-  // les naufragés
+  // le plateau de verre, collé en bas : les réserves en tête, puis ce que l'on peut faire maintenant
+  const stockLine = `🐟 <b>${v.food}</b> · 💧 <b>${v.water}</b> · 🪵 <b>${v.wood}</b> · radeau <b>${v.seats}/${n}</b>`;
+  const body = el('div', 'nfx-body'), acts = [];
+  let right = v.food < n || v.water < n ? '<span class="nfx-bad">il manque des vivres</span>' : v.seats < n ? `encore ${v.woodToNext} bois pour une place` : 'une place pour chacun';
+  if (v.phase === 'day' && me?.canAct) {
+    const grid = el('div', 'nfx-acts');
+    NF_ACTIONS.forEach(a => {
+      const on = me.choice?.action === a.key;
+      const extra = a.key === 'fish' && me.boost.canne ? ' Canne prête : +2.' : a.key === 'wood' && me.boost.hache ? ' Hache prête : +3.' : '';
+      const b = el('button', 'nfx-act' + (on ? ' on' : ''), `<i aria-hidden="true">${a.icon}</i><span><b>${a.short}</b><small>${a.tip}${extra ? ',' + extra.replace(' prête :', '') : ''}</small></span>`);
+      b.type = 'button'; b.setAttribute('aria-pressed', String(on));
+      b.onclick = () => act({ t: 'nf:choose', action: a.key, risk: a.key === 'wood' ? nfRisk : 0 });
+      grid.appendChild(b);
+    });
+    body.appendChild(grid);
+    const seg = el('div', 'nfx-risk'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Tenter plus de bois');
+    [0, 1, 2, 3, 4, 5].forEach(r => {
+      const b = el('button', 'nfx-risk-opt', r ? `+${r}` : 'Sans risque'); b.type = 'button';
+      b.setAttribute('aria-pressed', nfRisk === r ? 'true' : 'false');
+      b.onclick = () => { nfRisk = r; if (me.choice?.action === 'wood') act({ t: 'nf:choose', action: 'wood', risk: r }); else renderNaufrages(view.nf); };
+      seg.appendChild(b);
+    });
+    body.appendChild(el('p', 'nfx-risk-t', 'Pour le bois, tenter plus'));
+    body.appendChild(seg);
+    body.appendChild(el('p', 'nfx-note', nfRisk ? `${Math.round((1 - Math.pow(5 / 6, nfRisk)) * 100)} % de risque de morsure : deux jours malade, et rien rapporté.` : 'Sans risque : 1 morceau de bois.'));
+    right = me.choice ? 'ton choix est fait' : 'touche ton choix';
+  }
+  if (v.phase === 'vote' && v.vote) {
+    if (me?.alive) {
+      const list = el('div', 'nfx-votes');
+      v.players.filter(p => p.alive).forEach(p => {
+        const safe = v.vote.protected.includes(p.id), on = v.vote.mine === p.id, [e, nm] = tbSplit(p);
+        const b = el('button', 'nfx-vote' + (on ? ' on' : ''), `<span class="nfx-vote-e">${esc(e)}</span><span><b>${esc(nm)}${p.me ? ' <small>toi</small>' : ''}</b><small>${safe ? 'talisman' : on ? 'ton vote' : p.done ? 'a voté' : ''}</small></span>`);
+        b.type = 'button'; b.disabled = safe; b.onclick = () => act({ t: 'nf:vote', target: p.id });
+        list.appendChild(b);
+      });
+      body.appendChild(list);
+    }
+    const tb = el('div', 'nf-timer'), i = el('i'); tb.appendChild(i); body.appendChild(tb);
+    const t0 = Date.now(), left0 = v.vote.left; const paintT = () => { i.style.width = Math.max(0, 100 * (left0 - (Date.now() - t0)) / 45000) + '%'; }; paintT(); nfTimer = setInterval(paintT, 250);
+    body.appendChild(el('p', 'nfx-note', 'Le plus désigné part. À égalité, le hasard tranche.'));
+    if (v.isHost) acts.push(tbBtn('glass', 'Clore le vote maintenant', () => act({ t: 'nf:skip' })));
+    right = `${v.vote.done} sur ${n} ont voté`;
+  }
+  if (v.phase === 'dusk') { if (v.isHost) acts.push(tbBtn('hero', 'Passer au repas du soir', () => act({ t: 'nf:next' }))); else body.appendChild(el('p', 'nfx-note', 'L’hôte lance le repas du soir.')); }
+  if (v.phase === 'ready') {
+    if (v.isHost) acts.push(tbBtn('hero', 'Prendre la mer', () => act({ t: 'nf:leave' })), tbBtn('glass', 'Rester un jour de plus', () => act({ t: 'nf:stay' })));
+    else body.appendChild(el('p', 'nfx-note', 'L’hôte décide. Donne-lui ton avis, et fort.'));
+  }
+  if (v.phase === 'over' && v.isHost) acts.push(tbBtn('hero', 'Retour au salon', () => act({ t: 'restart' })));
+  root.appendChild(tbTray({ left: v.phase === 'over' ? 'Fin de la partie' : stockLine, right, body: body.children.length ? body : null, acts }));
+
+  // les réserves du camp, les naufragés et le fil : colonne de droite sur PC (desk.js), feuille sur téléphone
+  const stock = el('div', 'nf-camp rl-block', '<span class="mj-side-title">Les réserves</span>');
+  const sl = el('div', 'mj-list');
+  const res = (name, value, tag, bad) => sl.appendChild(el('div', 'mj-row', `<span class="rl-name">${name}</span>${v.phase === 'over' ? '' : `<span class="rl-tag${bad ? ' bad' : ''}">${tag}</span>`}<b class="rl-score">${value}</b>`));
+  res('Poissons', v.food, `il en faut ${n} ce soir`, v.food < n);
+  res('Eau', v.water, `il en faut ${n} ce soir`, v.water < n);
+  res('Bois', v.wood, `encore ${v.woodToNext} pour une place`, false);
+  res('Radeau', `${v.seats}/${n}`, v.seats >= n ? 'une place pour chacun' : `il manque ${nfPlural(n - v.seats, 'place', 'places')}`, v.seats < n);
+  stock.appendChild(sl); root.appendChild(stock);
   const people = el('div', 'nf-people rl-block', '<span class="mj-side-title">Les naufragés</span>');
   const cards = el('div', 'nf-cards'); v.players.forEach(p => cards.insertAdjacentHTML('beforeend', nfPersonCard(p, v)));
   people.appendChild(cards); root.appendChild(people);
@@ -240,4 +252,18 @@ function renderNaufrages(v) {
     const ul = el('ul'); v.log.slice().reverse().forEach(t => ul.appendChild(el('li', '', esc(t)))); lg.appendChild(ul);
     root.appendChild(lg);
   }
+  nfLast = v;
+  tbSheet.refresh(String(tbSheet.kind || '').startsWith('nf-'));
+}
+
+// la feuille du téléphone : les naufragés (état, objets) ou le fil de la partie
+let nfLast = null;
+function nfSheet(kind) {
+  const v = nfLast; if (!v) return '';
+  if (kind === 'log') return tbLog(v.log.slice().reverse());
+  return tbRows(v.players.map(p => {
+    const [e, nm] = tbSplit(p);
+    const st = p.winner ? 'sur le radeau' : !p.alive ? (p.fate || 'hors jeu') : p.sick ? `malade, ${p.sick} j` : v.phase === 'day' ? (p.done ? 'a choisi' : 'hésite') : v.phase === 'vote' ? (p.done ? 'a voté' : 'hésite') : 'en forme';
+    return { e, name: nm, sub: [p.me ? 'toi' : '', st, p.items ? `${p.items} objet${p.items > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · '), me: p.me };
+  }));
 }

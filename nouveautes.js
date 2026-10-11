@@ -5,6 +5,7 @@
 'use strict';
 
 const NEWS = [
+  ['2026-10-11', 'Les Naufragés passent en 3D : une vraie île, la météo, le radeau, et vous autour du feu.'],
   ['2026-10-11', 'Une idée, un bug ? Le bouton « Vos suggestions », juste là sur l’accueil.'],
   ['2026-10-11', 'Quatre nouveaux jeux : Un seul indice, Menteur, Bataille navale et Coinche.'],
   ['2026-10-11', 'Chromo, Kems, Poker, Bataille, Douze et Solitaire changent de table. Plus beaux, plus lisibles.'],
