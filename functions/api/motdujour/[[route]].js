@@ -78,13 +78,16 @@ const lignes = r => (parse(r.essais) || []).length + (r.indice == null ? 0 : 1);
 const fini = r => !!r.trouve || lignes(r) >= LIGNES;
 
 // le classement du jour : ceux qui ont trouvé (moins de lignes, puis le plus tôt), puis ceux qui ont séché,
-// puis ceux qui cherchent encore. Un même prénom ne compte qu'une fois : sa première partie du jour.
+// puis ceux qui cherchent encore. Un même prénom ne compte qu'une fois, et pareil pour tout le monde : sa première
+// partie TERMINÉE du jour (on ne rejoue pas pour améliorer son score) ; à défaut, sa première partie en cours.
 async function classement(db, jour, tok) {
   const rows = (await db.prepare('SELECT tok, nom, emoji, essais, indice, debut, fin, trouve FROM motdujour_joueurs WHERE jour = ? ORDER BY debut').bind(jour).all()).results;
-  const vus = new Set(), out = [];
-  for (const r of rows) {
-    const k = r.nom.toLowerCase(); if (vus.has(k) && r.tok !== tok) continue; vus.add(k);
-    out.push({ nom: r.nom, emoji: r.emoji, lignes: lignes(r), indice: r.indice != null, trouve: !!r.trouve, fini: fini(r), fin: r.fin, moi: r.tok === tok });
+  const groupes = new Map();
+  for (const r of rows) { const k = r.nom.toLowerCase(); if (!groupes.has(k)) groupes.set(k, []); groupes.get(k).push(r); }
+  const out = [];
+  for (const g of groupes.values()) {
+    const r = g.find(fini) || g[0];
+    out.push({ nom: r.nom, emoji: r.emoji, lignes: lignes(r), indice: r.indice != null, trouve: !!r.trouve, fini: fini(r), fin: r.fin, moi: g.some(x => x.tok === tok) });
   }
   const rang = x => x.trouve ? 0 : x.fini ? 1 : 2;
   out.sort((a, b) => rang(a) - rang(b) || (rang(a) === 0 ? a.lignes - b.lignes : 0) || (a.fin || 9e15) - (b.fin || 9e15));
