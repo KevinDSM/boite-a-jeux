@@ -1,5 +1,6 @@
 # Construit songs.json depuis l'API iTunes Search (gratuite, sans cle).
 # Usage : python build_songs.py   -> lit playlists.txt, ecrit songs.json
+# Ligne : « Artiste | Titre » ou « Artiste | Titre | 1984 » (annee de sortie imposee, plus sure que celle d'iTunes)
 import json, urllib.request, urllib.parse, re, time, sys
 SRC=sys.argv[1] if len(sys.argv)>1 else "playlists.txt"; DST=sys.argv[2] if len(sys.argv)>2 else "songs.json"
 sys.stdout.reconfigure(encoding="utf-8")
@@ -7,13 +8,14 @@ BAD = re.compile(r"remix|mix|live|remaster|karaoke|version|edit|acoustic|instrum
 def base(t):
     b=re.sub(r"\s*[\(\[].*", "", t).strip()
     return b or re.sub(r"\s*[\(\[][^\)\]]*[\)\]]\s*", " ", t).strip()
+UA={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"}   # iTunes refuse (403) le client Python par defaut
 def norm(t): return re.sub(r"[^a-z0-9]+"," ",t.lower().translate(str.maketrans("éèêàâçùûôîïëœ","eeeaacuuoiieo"))).strip()
 def lookup(q):
-    artist,title=[x.strip() for x in q.split("|")]
+    artist,title=[x.strip() for x in q.split("|")][:2]
     u="https://itunes.apple.com/search?"+urllib.parse.urlencode({"term":artist+" "+title,"entity":"song","limit":50,"country":"FR"})
     res=[]
     for i in range(3):
-        try: res=json.load(urllib.request.urlopen(u,timeout=20))["results"]; break
+        try: res=json.load(urllib.request.urlopen(urllib.request.Request(u,headers=UA),timeout=20))["results"]; break
         except Exception as e: print("   (retry", i+1, type(e).__name__, getattr(e,"code",""), ")"); time.sleep(45 if getattr(e,"code",0)==403 else 5)
     res=[r for r in res if r.get("previewUrl")]
     if not res: return None
@@ -48,7 +50,9 @@ for line in open(SRC,encoding="utf-8"):
         cache[line]=dict(s,_q=line); json.dump(list(cache.values()),open(DST+".cache.json","w",encoding="utf-8"),ensure_ascii=False)
     if not s: print("  KO  ",line); continue
     s["_q"]=line
-    if line in FIXES: s["year"]=FIXES[line]
+    forced=[x.strip() for x in line.split("|")][2:]
+    if forced and forced[0].isdigit(): s["year"]=int(forced[0])
+    elif line in FIXES: s["year"]=FIXES[line]
     elif cat and cat.isdigit(): s["year"]=int(cat)   # Eclair : la rubrique est l'annee du tube
     key=(s["artist"].lower(),s["title"].lower())
     if key in seen: continue

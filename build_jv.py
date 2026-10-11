@@ -3,6 +3,8 @@
 
 Format d'une ligne :  Nom du jeu | termes de recherche iTunes
 Les rubriques « # ... » deviennent les familles proposées dans le salon.
+Un même jeu peut revenir sur plusieurs lignes (autre morceau) : écrire exactement le même nom de jeu.
+Éviter deux noms dont l'un contient l'autre (« Halo » et « Halo 3 ») : « halo » serait compté pour le mauvais jeu.
 
 La bonne réponse du jeu est le NOM DU JEU, pas le titre du morceau : beaucoup de
 musiques Nintendo ou Sega n'existent sur iTunes que via des reprises orchestrales,
@@ -27,12 +29,14 @@ def words(t):
     stop = {"the", "of", "a", "de", "la", "le", "les", "and", "to", "ii", "iii", "vii", "x", "2", "3"}
     return [w for w in norm(t).split() if w not in stop and len(w) > 2]
 
+UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"}   # iTunes refuse (403) le client Python par défaut
+
 def fetch(term, limit=12):
     u = "https://itunes.apple.com/search?" + urllib.parse.urlencode(
         {"term": term, "entity": "song", "limit": limit, "country": "FR"})
     for i in range(3):
         try:
-            return [r for r in json.load(urllib.request.urlopen(u, timeout=20))["results"] if r.get("previewUrl")]
+            return [r for r in json.load(urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=20))["results"] if r.get("previewUrl")]
         except Exception as e:
             print("   (retry", i + 1, type(e).__name__, getattr(e, "code", ""), ")")
             time.sleep(45 if getattr(e, "code", 0) == 403 else 6)
@@ -83,11 +87,12 @@ for line in open(SRC, encoding="utf-8"):
         time.sleep(3)
         cache[line] = s
         json.dump(list(cache.values()), open(DST + ".cache.json", "w", encoding="utf-8"), ensure_ascii=False)
-    if norm(s["game"]) in seen: continue
-    seen.add(norm(s["game"]))
+    key = (norm(s["game"]), norm(s["title"]))   # un même jeu peut avoir plusieurs morceaux : la réponse reste le nom du jeu
+    if key in seen: continue
+    seen.add(key)
     s["cat"] = cat
     out.append(s)
     print(f'{cat[:14]:16} {s["game"][:30]:32} {s["artist"][:24]:26} {s["title"][:30]}')
 
 json.dump(out, open(DST, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
-print(len(out), "jeux")
+print(len(out), "morceaux,", len({x["game"] for x in out}), "jeux")

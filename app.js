@@ -286,8 +286,45 @@ const isHostPlayer = () => net.server ? view?.players?.[0]?.id === net.me : net.
 
 
 // ============================================================ rendu
+// Morceaux déjà entendus sur ce téléphone (voir songKey dans core.js) : relevés quand le titre est dévoilé,
+// envoyés au lancement d'un jeu musical pour que le salon serve d'abord ce qu'on n'a pas encore entendu.
+const HEARD_LS = 'dc-entendus';
+let heardMine = null;
+function heardRead() { try { const v = JSON.parse(localStorage.getItem(HEARD_LS) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } }
+function heardNote(s) {
+  const songs = [s.current, ...(s.players || []).flatMap(p => p.timeline || [])].filter(x => x && x.title);
+  if (!songs.length) return;
+  if (!heardMine) heardMine = heardRead();
+  const add = songs.map(songKey).filter(k => !heardMine.includes(k));
+  if (!add.length) return;
+  heardMine = heardMine.concat(add).slice(-HEARD_MAX);
+  try { localStorage.setItem(HEARD_LS, JSON.stringify(heardMine)); } catch { }
+}
+
+// Undercover : paires déjà jouées sur ce téléphone, relevées à la fin de chaque manche, envoyées au lancement.
+const UC_SEEN_LS = 'dc-uc-vues';
+function ucSeenRead() {
+  let v = [];
+  try { v = JSON.parse(localStorage.getItem(UC_SEEN_LS) || '[]'); if (!Array.isArray(v)) v = []; } catch { }
+  try {                                    // ancienne mémoire (numéros de paires, avant le mode serveur)
+    const old = JSON.parse(localStorage.getItem('uc-vues') || 'null');
+    if (Array.isArray(old)) {
+      v = old.map(i => Undercover.PAIRS[i]).filter(Boolean).map(Undercover.pairKey).filter(k => !v.includes(k)).concat(v);
+      localStorage.setItem(UC_SEEN_LS, JSON.stringify(v)); localStorage.removeItem('uc-vues');
+    }
+  } catch { }
+  return v;
+}
+function ucSeenNote(s) {
+  const p = s.uc?.pair; if (!p) return;
+  const k = Undercover.pairKey([p.civil, p.undercover]), v = ucSeenRead();
+  if (v[v.length - 1] === k) return;
+  try { localStorage.setItem(UC_SEEN_LS, JSON.stringify(v.filter(x => x !== k).concat(k).slice(-2000))); } catch { }
+}
+
 function render() {
   if (!view) return;
+  try { heardNote(view); ucSeenNote(view); } catch { }
   // préserve la saisie en cours : un état reçu du réseau ne doit pas effacer ce qu'on tape
   const ae = document.activeElement;
   const keep = ae && ae.tagName === 'INPUT' && ae.id ? { id: ae.id, v: ae.value, a: ae.selectionStart, b: ae.selectionEnd } : null;
@@ -1446,17 +1483,17 @@ $('#btn-start').onclick = () => {
     const cats = [...$('#opt-cats').querySelectorAll('input:checked')].map(i => i.value);
     if (!cats.length) { toast('Choisis au moins une playlist'); return; }
     const snd = $('#opt-sound').value;
-    act({ t: 'start', opts: { mode: 'timeline', cats, target: +$('#opt-target').value, speakerId: snd === 'host' ? net.me : null, soundAll: snd === 'all' } });
+    act({ t: 'start', opts: { mode: 'timeline', cats, target: +$('#opt-target').value, speakerId: snd === 'host' ? net.me : null, soundAll: snd === 'all', heard: heardRead() } });
   } else if (pick === 'eclair') {
     const checked = [...$('#opt-decades').querySelectorAll('input:checked')].map(i => i.value);
     const decades = checked.filter(v => v !== 'jv').map(Number), jv = checked.includes('jv');
     if (!decades.length && !jv) { toast('Choisis au moins une période ou les jeux vidéo'); return; }
-    act({ t: 'start', opts: { mode: 'eclair', decades, jv, rounds: +$('#opt-rounds').value } });
+    act({ t: 'start', opts: { mode: 'eclair', decades, jv, rounds: +$('#opt-rounds').value, heard: heardRead() } });
   } else if (pick === 'sprint') {
     const checked = [...$('#opt-decades-s').querySelectorAll('input:checked')].map(i => i.value);
     const decades = checked.filter(v => v !== 'jv' && v !== 'anime').map(Number), jv = checked.includes('jv'), anime = checked.includes('anime');
     if (!decades.length && !jv && !anime) { toast('Choisis au moins une période, les jeux vidéo ou les animés'); return; }
-    act({ t: 'start', opts: { mode: 'sprint', decades, jv, anime, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null } });
+    act({ t: 'start', opts: { mode: 'sprint', decades, jv, anime, rounds: +$('#opt-rounds-s').value, speakerId: $('#opt-sound-s').value === 'host' ? net.me : null, heard: heardRead() } });
   }
   if (pick === 'sablier') {
     if ((view?.players || []).filter(p => p.online).length + botsOpt('sab') < 2) { toast('Sablier se joue à deux minimum, par équipes. Ajoute des robots.'); return; }
@@ -1469,7 +1506,7 @@ $('#btn-start').onclick = () => {
   }
   if (pick === 'undercover') {
     if ((view?.players || []).filter(p => p.online).length + botsOpt('uc') < 3) { toast('Undercover se joue à trois minimum. Ajoute des robots.'); return; }
-    act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked, bots: botsOpt('uc') } });
+    act({ t: 'start', opts: { mode: 'undercover', rounds: +$('#opt-uc-rounds').value, undercovers: $('#opt-uc-count').value, white: $('#opt-uc-white').checked, bots: botsOpt('uc'), seen: ucSeenRead() } });
   }
   if (pick === 'chromo') {
     const humans = (view?.players || []).filter(p => p.online).length, bots = +$('#opt-ch-bots').value;

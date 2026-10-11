@@ -6,7 +6,7 @@
 
 'use strict';
 
-const ASSET_V = '74';
+const ASSET_V = '75';
 
 const BET_SECONDS = 12;
 const TOKEN_START = 2, TOKEN_MAX = 3;
@@ -61,11 +61,22 @@ const ROBOT_NAMES = ['Robot Pixel', 'Robot Zinc', 'Robot Mira', 'Robot Quartz', 
 const robots = n => Array.from({ length: Math.max(0, Math.min(ROBOT_NAMES.length, +n || 0)) }, (_, i) => ({ id: 'bot' + i, name: ROBOT_NAMES[i], online: true, bot: true }));
 const withRobots = (s, n) => s.players.map(p => ({ id: p.id, name: p.name, online: p.online })).concat(robots(n));
 
+// Morceaux déjà entendus : le salon s'en souvient d'une partie à l'autre, et chaque téléphone d'une soirée à
+// l'autre (localStorage 'dc-entendus', envoyé par l'hôte au lancement). La pioche sert d'abord ce qui n'a pas
+// été entendu, puis ce qui l'a été il y a le plus longtemps. Clé courte : on n'envoie pas les titres.
+const HEARD_MAX = 3000;
+function songKey(x) {
+  const t = `${x?.artist || ''}|${x?.title || ''}`.toLowerCase();
+  let h = 2166136261; for (let i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 16777619);
+  return (h >>> 0).toString(36);
+}
+
 // ============================================================ moteur (hôte)
 class Game {
   constructor(code, songs, songsE, songsJV, songsAnime) {
     this.songs = songs; this.songsE = songsE; this.songsJV = songsJV || []; this.songsAnime = songsAnime || []; this.seq = 0;
     this.banned = new Set();          // joueurs retirés par l'hôte : ils ne peuvent plus revenir dans ce salon
+    this.heard = new Map(); this.heardN = 0;   // morceaux déjà entendus (clé → ordre d'écoute)
     this.state = {
       code, phase: 'lobby', pick: null, mode: 'timeline', players: [],
       // Décennies
@@ -141,7 +152,25 @@ class Game {
     const p = base.concat(jv, anime);
     return p.length ? p : this.songsE;
   }
-  draw() { if (!this.s.deck.length) this.s.deck = shuffle(this.s.mode === 'eclair' ? [...this.poolE()] : [...this.pool()]); return this.s.deck.pop(); }
+  draw() { if (!this.s.deck.length) this.s.deck = this.freshDeck(this.s.mode === 'eclair' ? this.poolE() : this.pool()); return this.hear(this.s.deck.pop()); }
+  // ce que le téléphone de l'hôte a déjà entendu les soirs précédents (du plus ancien au plus récent)
+  noteHeard(keys) {
+    if (!Array.isArray(keys)) return;
+    keys.slice(-HEARD_MAX).forEach(k => { if (typeof k === 'string' && k.length <= 8 && !this.heard.has(k)) this.heard.set(k, this.heardN++); });
+  }
+  hear(x) {
+    if (!x) return x;
+    const k = songKey(x); this.heard.delete(k); this.heard.set(k, this.heardN++);
+    if (this.heard.size > HEARD_MAX) this.heard.delete(this.heard.keys().next().value);
+    return x;
+  }
+  // pioche : d'abord les morceaux jamais entendus (au hasard), puis les plus anciennement entendus
+  freshDeck(pool) {
+    const fresh = [], old = [];
+    pool.forEach(x => (this.heard.has(songKey(x)) ? old : fresh).push(x));
+    old.sort((a, b) => this.heard.get(songKey(b)) - this.heard.get(songKey(a)));   // le plus ancien en dernier : pioché en premier
+    return old.concat(shuffle(fresh));
+  }
   card() { return { ...this.draw(), at: ++this.seq }; }
 
   setPick(pid, key) { if (pid !== this.s.players[0]?.id) return null; if (GAMES[key] && this.s.pick !== key) { this.s.pick = key; this.s.pickOpts = null; } return null; }
@@ -183,7 +212,8 @@ class Game {
     if (s.mode === 'coinche') return this.startCoinche(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
-    s.deck = shuffle([...this.pool()]); s.turn = 0;
+    this.noteHeard(o.heard);
+    s.deck = this.freshDeck(this.pool()); s.turn = 0;
     s.players.forEach(p => { p.tokens = TOKEN_START; p.score = 0; p.timeline = [this.card()]; });
     this.nextSong(); s.phase = 'listen';
   }
@@ -285,14 +315,15 @@ class Game {
   startEclair(o) {
     const s = this.s;
     s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null; s.jv = !!o.jv; s.anime = false;
-    s.deck = shuffle([...this.poolE()]);
+    this.noteHeard(o.heard);
+    s.deck = this.freshDeck(this.poolE());
     s.players.forEach(p => { p.score = 0; });
     this.nextRound();
   }
   nextRound() {
     const s = this.s; s.round++;
-    if (!s.deck.length) s.deck = shuffle([...this.poolE()]);
-    s.current = s.deck.pop(); s.eclair = {}; s.result = null;
+    if (!s.deck.length) s.deck = this.freshDeck(this.poolE());
+    s.current = this.hear(s.deck.pop()); s.eclair = {}; s.result = null;
     s.players.forEach(p => { s.eclair[p.id] = { level: 0, done: false, points: 0, tries: [] }; });
     s.phase = 'e-play';
   }
@@ -326,14 +357,15 @@ class Game {
     const s = this.s;
     s.rounds = o.rounds || 10; s.round = 0; s.decades = Array.isArray(o.decades) ? o.decades : null;
     s.speakerId = o.speakerId || null; s.soundAll = !o.speakerId; s.jv = !!o.jv; s.anime = !!o.anime;
-    s.deck = shuffle([...this.poolE()]);
+    this.noteHeard(o.heard);
+    s.deck = this.freshDeck(this.poolE());
     s.players.forEach(p => { p.score = 0; });
     this.nextSprintRound();
   }
   nextSprintRound() {
     const s = this.s; s.round++;
-    if (!s.deck.length) s.deck = shuffle([...this.poolE()]);
-    s.current = s.deck.pop(); s.order = []; s.result = null;
+    if (!s.deck.length) s.deck = this.freshDeck(this.poolE());
+    s.current = this.hear(s.deck.pop()); s.order = []; s.result = null;
     s.sprint = {}; s.players.forEach(p => { s.sprint[p.id] = { tries: 0, done: false, points: 0, rank: 0 }; });
     s.roundEnds = Date.now() + SP_ROUND_MS; s.phase = 's-play';
   }
@@ -404,7 +436,10 @@ class Game {
   startUndercover(o) {
     const s = this.s;
     s.players.forEach(p => { p.score = 0; });
-    this.uc = Undercover.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), rounds: o.rounds, undercovers: o.undercovers, white: o.white });
+    // paires déjà jouées : celles du téléphone de l'hôte (les plus anciennes), puis celles de ce salon
+    const mine = this.ucSeen || [], from = Array.isArray(o.seen) ? o.seen.filter(k => typeof k === 'string' && k.length <= 8 && !mine.includes(k)).slice(-2000) : [];
+    this.ucSeen = from.concat(mine);
+    this.uc = Undercover.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), rounds: o.rounds, undercovers: o.undercovers, white: o.white, seen: this.ucSeen });
     s.phase = 'uc';
   }
   // ================= Boussole : la salle vit dans this.geo, les coordonnées ne sortent qu'à la révélation =================

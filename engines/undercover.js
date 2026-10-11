@@ -47,15 +47,150 @@ const Undercover = (() => {
     ['Karaoké', 'Boîte de nuit'], ['Concert', 'Festival'], ['Pique-nique', 'Barbecue'], ['Zoo', 'Aquarium'], ['Parc d\'attractions', 'Fête foraine'],
     ['Yoga', 'Pilates'], ['Natation', 'Plongée'], ['Boxe', 'Judo'], ['Course à pied', 'Marche'], ['Escalade', 'Randonnée'],
     ['Miel', 'Confiture'], ['Sel', 'Poivre'], ['Ketchup', 'Moutarde'], ['Popcorn', 'Barbe à papa'], ['Bonbon', 'Chewing-gum'],
+    // octobre 2026 : 583 paires de plus. Toujours ajouter à la fin : l'ancienne mémoire des téléphones (numéros de paires) est convertie au premier lancement.
+    ['Raclette', 'Fondue'], ['Tartiflette', 'Gratin dauphinois'], ['Couscous', 'Paella'], ['Lasagnes', 'Cannellonis'], ['Ravioli', 'Gnocchi'],
+    ['Spaghetti', 'Tagliatelles'], ['Hot-dog', 'Sandwich'], ['Tacos', 'Burrito'], ['Nems', 'Rouleaux de printemps'], ['Soupe', 'Velouté'],
+    ['Omelette', 'Œuf au plat'], ['Steak', 'Côtelette'], ['Saucisson', 'Jambon'], ['Poulet rôti', 'Dinde'], ['Saumon', 'Thon'],
+    ['Moules', 'Huîtres'], ['Crevette', 'Homard'], ['Camembert', 'Brie'], ['Comté', 'Emmental'], ['Baguette', 'Pain de mie'],
+    ['Brioche', 'Pain au lait'], ['Éclair', 'Religieuse'], ['Macaron', 'Meringue'], ['Tarte aux pommes', 'Clafoutis'], ['Mousse au chocolat', 'Crème brûlée'],
+    ['Tiramisu', 'Panna cotta'], ['Cookie', 'Brownie'], ['Muffin', 'Cupcake'], ['Donut', 'Beignet'], ['Chantilly', 'Crème fraîche'],
+    ['Nutella', 'Spéculoos'], ['Céréales', 'Muesli'], ['Biscotte', 'Pain grillé'], ['Mayonnaise', 'Aïoli'], ['Vinaigrette', 'Sauce soja'],
+    ['Cornichon', 'Oignon grelot'], ['Olive', 'Câpre'], ['Avocat', 'Concombre'], ['Courgette', 'Aubergine'], ['Brocoli', 'Chou-fleur'],
+    ['Petits pois', 'Haricots verts'], ['Champignon', 'Truffe'], ['Ail', 'Oignon'], ['Persil', 'Basilic'], ['Cannelle', 'Vanille'],
+    ['Sucre', 'Édulcorant'], ['Farine', 'Levure'], ['Pastèque', 'Melon'], ['Ananas', 'Noix de coco'], ['Kiwi', 'Citron vert'],
+    ['Cerise', 'Prune'], ['Abricot', 'Pêche'], ['Raisin', 'Myrtille'], ['Noisette', 'Amande'], ['Cacahuète', 'Pistache'],
+    ['Châtaigne', 'Marron'], ['Café crème', 'Cappuccino'], ['Expresso', 'Café allongé'], ['Chocolat chaud', 'Lait fraise'], ['Smoothie', 'Milkshake'],
+    ['Coca', 'Orangina'], ['Eau gazeuse', 'Eau plate'], ['Mojito', 'Piña colada'], ['Sangria', 'Punch'], ['Rosé', 'Vin blanc'],
+    ['Whisky', 'Rhum'], ['Apéro', 'Goûter'], ['Petit-déjeuner', 'Brunch'], ['Dîner', 'Déjeuner'], ['Buffet', 'Self-service'],
+    ['Food truck', 'Friterie'], ['Boulangerie', 'Épicerie'], ['Pizzeria', 'Crêperie'], ['Salon', 'Salle à manger'], ['Chambre', 'Bureau'],
+    ['Cave', 'Grenier'], ['Garage', 'Abri de jardin'], ['Balcon', 'Terrasse'], ['Jardin', 'Potager'], ['Couloir', 'Escalier'],
+    ['Ascenseur', 'Escalator'], ['Porte', 'Portail'], ['Volet', 'Rideau'], ['Tapis', 'Moquette'], ['Coussin', 'Oreiller'],
+    ['Couette', 'Plaid'], ['Armoire', 'Commode'], ['Étagère', 'Placard'], ['Lavabo', 'Évier'], ['Robinet', 'Pommeau de douche'],
+    ['Lave-linge', 'Sèche-linge'], ['Lave-vaisselle', 'Égouttoir'], ['Aspirateur', 'Balai'], ['Serpillière', 'Éponge'], ['Poubelle', 'Composteur'],
+    ['Fer à repasser', 'Défroisseur'], ['Grille-pain', 'Gaufrier'], ['Bouilloire', 'Cafetière'], ['Mixeur', 'Robot pâtissier'], ['Cocotte-minute', 'Faitout'],
+    ['Saladier', 'Plat à gratin'], ['Louche', 'Spatule'], ['Passoire', 'Tamis'], ['Ouvre-boîte', 'Tire-bouchon'], ['Radiateur', 'Cheminée'],
+    ['Ventilateur', 'Climatisation'], ['Ampoule', 'Lampe de poche'], ['Interrupteur', 'Prise électrique'], ['Sonnette', 'Interphone'], ['Clé', 'Badge'],
+    ['Boîte aux lettres', 'Colis'], ['Paillasson', 'Tapis de bain'], ['Cintre', 'Porte-manteau'], ['Alarme', 'Détecteur de fumée'], ['Hamac', 'Transat'],
+    ['Piscine gonflable', 'Pataugeoire'], ['Tondeuse', 'Débroussailleuse'], ['Arrosoir', 'Tuyau d\'arrosage'], ['Brouette', 'Chariot'], ['Robe', 'Jupe'],
+    ['Chemise', 'Polo'], ['T-shirt', 'Débardeur'], ['Manteau', 'Doudoune'], ['Veste', 'Blazer'], ['Pyjama', 'Peignoir'],
+    ['Maillot de bain', 'Bikini'], ['Bottes', 'Bottines'], ['Talons', 'Ballerines'], ['Tongs', 'Claquettes'], ['Pantoufles', 'Chaussons'],
+    ['Gants', 'Moufles'], ['Bonnet', 'Béret'], ['Ceinture', 'Bretelles'], ['Nœud papillon', 'Cravate'], ['Sac à dos', 'Valise'],
+    ['Sac à main', 'Pochette'], ['Portefeuille', 'Porte-monnaie'], ['Bague', 'Bracelet'], ['Collier', 'Pendentif'], ['Boucles d\'oreilles', 'Piercing'],
+    ['Montre connectée', 'Bracelet de sport'], ['Parfum', 'Déodorant'], ['Rouge à lèvres', 'Mascara'], ['Vernis à ongles', 'Faux ongles'], ['Crème solaire', 'Après-soleil'],
+    ['Rasoir', 'Tondeuse à barbe'], ['Sèche-cheveux', 'Lisseur'], ['Dentifrice', 'Bain de bouche'], ['Mouchoir', 'Serviette'], ['Écouteurs', 'Casque audio'],
+    ['Enceinte', 'Radio-réveil'], ['Chargeur', 'Batterie externe'], ['Clé USB', 'Disque dur'], ['Appareil photo', 'Caméra'], ['Selfie', 'Photo de groupe'],
+    ['Console', 'Arcade'], ['Manette', 'Joystick'], ['Télécommande', 'Clavier sans fil'], ['Agenda', 'Calendrier'], ['Post-it', 'Bloc-notes'],
+    ['Trombone', 'Agrafe'], ['Colle', 'Scotch'], ['Gomme', 'Correcteur'], ['Règle', 'Équerre'], ['Compas', 'Rapporteur'],
+    ['Cartable', 'Trousse'], ['Tableau noir', 'Tableau blanc'], ['Feutre', 'Surligneur'], ['Pinceau', 'Rouleau de peinture'], ['Marteau', 'Tournevis'],
+    ['Perceuse', 'Visseuse'], ['Clou', 'Vis'], ['Scie', 'Hache'], ['Échelle', 'Escabeau'], ['Corde', 'Ficelle'],
+    ['Cadenas', 'Antivol'], ['Boussole', 'GPS'], ['Jumelles', 'Longue-vue'], ['Loupe', 'Microscope'], ['Thermomètre', 'Baromètre'],
+    ['Plage de sable', 'Plage de galets'], ['Mer Méditerranée', 'Océan Atlantique'], ['Phare', 'Port'], ['Bateau-mouche', 'Péniche'], ['Voilier', 'Catamaran'],
+    ['Kayak', 'Canoë'], ['Paddle', 'Planche de surf'], ['Croisière', 'Ferry'], ['Aéroport', 'Héliport'], ['Hôtel', 'Auberge de jeunesse'],
+    ['Gîte', 'Chambre d\'hôtes'], ['Tente', 'Camping-car'], ['Caravane', 'Mobile-home'], ['Refuge', 'Chalet'], ['Station de ski', 'Station balnéaire'],
+    ['Télésiège', 'Téléphérique'], ['Luge', 'Raquettes'], ['Igloo', 'Cabane'], ['Grotte', 'Tunnel'], ['Pont', 'Viaduc'],
+    ['Autoroute', 'Nationale'], ['Rond-point', 'Carrefour'], ['Feu rouge', 'Stop'], ['Parking', 'Garage souterrain'], ['Station-service', 'Borne de recharge'],
+    ['Péage', 'Douane'], ['Passeport', 'Carte d\'identité'], ['Billet de train', 'Ticket de métro'], ['Valise cabine', 'Bagage en soute'], ['Carte postale', 'Souvenir'],
+    ['Musée du Louvre', 'Musée d\'Orsay'], ['Mont-Saint-Michel', 'Château de Versailles'], ['Marseille', 'Nice'], ['Lyon', 'Bordeaux'], ['Lille', 'Strasbourg'],
+    ['Bretagne', 'Normandie'], ['Alpes', 'Pyrénées'], ['Corse', 'Sardaigne'], ['Belgique', 'Suisse'], ['Allemagne', 'Autriche'],
+    ['Italie', 'Grèce'], ['Maroc', 'Tunisie'], ['Canada', 'Québec'], ['États-Unis', 'Mexique'], ['Brésil', 'Argentine'],
+    ['Australie', 'Nouvelle-Zélande'], ['Égypte', 'Turquie'], ['Inde', 'Thaïlande'], ['Islande', 'Norvège'], ['Londres', 'Dublin'],
+    ['Barcelone', 'Madrid'], ['Berlin', 'Amsterdam'], ['Tokyo', 'Séoul'], ['Miami', 'Hawaï'], ['Disneyland', 'Parc Astérix'],
+    ['Big Ben', 'Statue de la Liberté'], ['Colisée', 'Tour de Pise'], ['Muraille de Chine', 'Machu Picchu'], ['Village', 'Hameau'], ['Ville', 'Capitale'],
+    ['Banlieue', 'Campagne'], ['Ferme', 'Moulin'], ['Mairie', 'Préfecture'], ['Poste', 'Banque'], ['Pharmacie', 'Laboratoire'],
+    ['Commissariat', 'Caserne de pompiers'], ['École', 'Collège'], ['Lycée', 'Université'], ['Crèche', 'Garderie'], ['Stade', 'Gymnase'],
+    ['Patinoire', 'Piscine municipale'], ['Salle de sport', 'Dojo'], ['Casino', 'Salle de jeux'], ['Escape game', 'Laser game'], ['Bar', 'Pub'],
+    ['Discothèque', 'Bar à karaoké'], ['Cirque', 'Spectacle de magie'], ['Jardin public', 'Square'], ['Fontaine', 'Statue'], ['Chien', 'Loup'],
+    ['Chiot', 'Chaton'], ['Souris', 'Rat'], ['Écureuil', 'Hérisson'], ['Lapin de garenne', 'Lièvre'], ['Cerf', 'Chevreuil'],
+    ['Sanglier', 'Cochon'], ['Taureau', 'Bison'], ['Chèvre', 'Brebis'], ['Poney', 'Zèbre'], ['Chameau', 'Dromadaire'],
+    ['Girafe', 'Okapi'], ['Éléphant', 'Rhinocéros'], ['Hippopotame', 'Crocodile'], ['Gorille', 'Chimpanzé'], ['Singe', 'Lémurien'],
+    ['Kangourou', 'Koala'], ['Paresseux', 'Tatou'], ['Panthère', 'Léopard'], ['Guépard', 'Lynx'], ['Ours polaire', 'Phoque'],
+    ['Morse', 'Otarie'], ['Pieuvre', 'Calamar'], ['Méduse', 'Étoile de mer'], ['Crabe', 'Langouste'], ['Tortue', 'Iguane'],
+    ['Poisson rouge', 'Carpe'], ['Truite', 'Brochet'], ['Hibou', 'Chouette'], ['Corbeau', 'Pie'], ['Pigeon', 'Colombe'],
+    ['Moineau', 'Mésange'], ['Perroquet', 'Perruche'], ['Flamant rose', 'Cigogne'], ['Cygne', 'Oie'], ['Paon', 'Faisan'],
+    ['Autruche', 'Émeu'], ['Coq', 'Poussin'], ['Coccinelle', 'Scarabée'], ['Fourmi', 'Termite'], ['Moustique', 'Mouche'],
+    ['Araignée', 'Scorpion'], ['Escargot', 'Limace'], ['Ver de terre', 'Chenille'], ['Chauve-souris', 'Papillon de nuit'], ['Dinosaure', 'Dragon de Komodo'],
+    ['T-Rex', 'Vélociraptor'], ['Mammouth', 'Éléphant d\'Asie'], ['Dentiste', 'Orthodontiste'], ['Vétérinaire', 'Éleveur'], ['Pharmacien', 'Laborantin'],
+    ['Chirurgien', 'Anesthésiste'], ['Kiné', 'Ostéopathe'], ['Psychologue', 'Coach'], ['Agriculteur', 'Jardinier'], ['Boucher', 'Charcutier'],
+    ['Fromager', 'Crémier'], ['Fleuriste', 'Paysagiste'], ['Architecte', 'Ingénieur'], ['Maçon', 'Charpentier'], ['Menuisier', 'Ébéniste'],
+    ['Peintre en bâtiment', 'Tapissier'], ['Mécanicien', 'Garagiste'], ['Chauffeur de taxi', 'Chauffeur VTC'], ['Conducteur de bus', 'Conducteur de train'], ['Capitaine', 'Matelot'],
+    ['Astronaute', 'Pilote de chasse'], ['Soldat', 'Gendarme'], ['Détective', 'Espion'], ['Journaliste', 'Photographe'], ['Présentateur télé', 'Animateur radio'],
+    ['Acteur', 'Cascadeur'], ['Chanteur', 'Rappeur'], ['DJ', 'Musicien'], ['Danseur', 'Chorégraphe'], ['Écrivain', 'Poète'],
+    ['Youtubeur', 'Influenceur'], ['Streamer', 'Joueur pro'], ['Footballeur', 'Arbitre'], ['Entraîneur', 'Capitaine d\'équipe'], ['Maître-nageur', 'Sauveteur'],
+    ['Moniteur de ski', 'Guide de montagne'], ['Banquier', 'Comptable'], ['Secrétaire', 'Assistant'], ['Patron', 'Directeur général'], ['Stagiaire', 'Apprenti'],
+    ['Vendeur', 'Caissier'], ['Serveur de café', 'Barman'], ['Sommelier', 'Caviste'], ['Chef étoilé', 'Commis'], ['Nounou', 'Baby-sitter'],
+    ['Grand-mère', 'Grand-père'], ['Oncle', 'Parrain'], ['Cousin', 'Voisin'], ['Collègue', 'Camarade'], ['Meilleur ami', 'Confident'],
+    ['Bébé', 'Enfant'], ['Ado', 'Étudiant'], ['Mariée', 'Témoin'], ['Cinéma en plein air', 'Drive-in'], ['Série', 'Film'],
+    ['Dessin animé', 'Film d\'animation'], ['Documentaire', 'Reportage'], ['Téléréalité', 'Jeu télévisé'], ['Podcast', 'Livre audio'], ['Roman', 'Bande dessinée'],
+    ['Manga', 'Comics'], ['Magazine', 'Journal'], ['Dictionnaire', 'Encyclopédie'], ['Conte', 'Fable'], ['Poème', 'Chanson'],
+    ['Opéra', 'Comédie musicale'], ['Ballet', 'Danse contemporaine'], ['Salsa', 'Tango'], ['Valse', 'Rock\'n\'roll'], ['Hip-hop', 'Breakdance'],
+    ['Jazz', 'Blues'], ['Rock', 'Métal'], ['Rap', 'Slam'], ['Techno', 'House'], ['Reggae', 'Ska'],
+    ['Batterie', 'Percussions'], ['Trompette', 'Saxophone'], ['Flûte', 'Clarinette'], ['Harpe', 'Lyre'], ['Ukulélé', 'Banjo'],
+    ['Guitare électrique', 'Basse'], ['Micro', 'Mégaphone'], ['Peinture', 'Dessin'], ['Sculpture', 'Poterie'], ['Tricot', 'Crochet'],
+    ['Couture', 'Broderie'], ['Scrapbooking', 'Collage'], ['Photographie', 'Vidéo'], ['Jardinage', 'Bricolage'], ['Pêche', 'Chasse'],
+    ['Camping', 'Bivouac'], ['Jeu de société', 'Jeu de cartes'], ['Monopoly', 'Cluedo'], ['Uno', 'Dobble'], ['Scrabble', 'Boggle'],
+    ['Tarot', 'Belote'], ['Poker', 'Blackjack'], ['Loto', 'Bingo'], ['Pétanque', 'Mölkky'], ['Fléchettes', 'Tir à l\'arc'],
+    ['Billard', 'Baby-foot'], ['Ping-pong', 'Squash'], ['Toboggan', 'Balançoire'], ['Trampoline', 'Château gonflable'], ['Cerf-volant', 'Drone'],
+    ['Bulles de savon', 'Confettis'], ['Handball', 'Volley-ball'], ['Basket', 'Netball'], ['Golf', 'Mini-golf'], ['Hockey', 'Curling'],
+    ['Patin à glace', 'Roller'], ['Skateboard', 'Longboard'], ['BMX', 'VTT'], ['Tour de France', 'Marathon'], ['Formule 1', 'Rallye'],
+    ['Karting', 'Auto-tamponneuse'], ['Escrime', 'Kendo'], ['Karaté', 'Taekwondo'], ['Lutte', 'Sumo'], ['Aviron', 'Kayak de mer'],
+    ['Voile', 'Planche à voile'], ['Surf', 'Bodyboard'], ['Parapente', 'Deltaplane'], ['Saut à l\'élastique', 'Saut en parachute'], ['Plongeon', 'Water-polo'],
+    ['Équitation', 'Polo'], ['Gymnastique', 'Danse classique'], ['Musculation', 'CrossFit'], ['Zumba', 'Aérobic'], ['Jeux olympiques', 'Coupe du monde'],
+    ['Médaille d\'or', 'Trophée'], ['But', 'Panier'], ['Penalty', 'Coup franc'], ['Carton rouge', 'Carton jaune'], ['Supporter', 'Mascotte'],
+    ['Saint-Valentin', 'Fête des mères'], ['Fête de la musique', '14 Juillet'], ['Feu d\'artifice', 'Pétards'], ['Bal', 'Gala'], ['Baptême', 'Communion'],
+    ['Fiançailles', 'Enterrement de vie de garçon'], ['Pendaison de crémaillère', 'Soirée pyjama'], ['Surprise-party', 'Boum'], ['Sapin', 'Couronne de l\'Avent'], ['Père Noël', 'Saint Nicolas'],
+    ['Bûche', 'Galette des rois'], ['Chocolats de Pâques', 'Œufs peints'], ['Citrouille', 'Courge'], ['Déguisement', 'Masque'], ['Cadeau', 'Surprise'],
+    ['Bougie d\'anniversaire', 'Gâteau'], ['Lune de miel', 'Voyage de noces'], ['Rentrée', 'Fin des vacances'], ['Lundi', 'Vendredi'], ['Matin', 'Soir'],
+    ['Midi', 'Minuit'], ['Printemps', 'Automne'], ['Été', 'Hiver'], ['Canicule', 'Sécheresse'], ['Arc-en-ciel', 'Aurore boréale'],
+    ['Étoile filante', 'Comète'], ['Planète', 'Étoile'], ['Mars', 'Jupiter'], ['Soleil couchant', 'Soleil levant'], ['Nuage', 'Fumée'],
+    ['Vent', 'Brise'], ['Tornade', 'Ouragan'], ['Tremblement de terre', 'Tsunami'], ['Foudre', 'Tonnerre'], ['Rosée', 'Givre'],
+    ['Flaque', 'Mare'], ['Sorcier', 'Magicien'], ['Elfe', 'Lutin'], ['Géant', 'Ogre'], ['Troll', 'Gobelin'],
+    ['Sirène', 'Nymphe'], ['Fée Clochette', 'Peter Pan'], ['Capitaine Crochet', 'Barbe Noire'], ['Robin des Bois', 'Zorro'], ['Cendrillon', 'Raiponce'],
+    ['La Belle au bois dormant', 'Blanche-Neige'], ['Aladdin', 'Le Génie'], ['Shrek', 'Fiona'], ['Les Simpson', 'Les Griffin'], ['Bob l\'éponge', 'Patrick'],
+    ['Mickey', 'Donald'], ['Tom et Jerry', 'Titi et Grosminet'], ['Scooby-Doo', 'Snoopy'], ['Garfield', 'Le Chat Botté'], ['Pikachu', 'Évoli'],
+    ['Zelda', 'Link'], ['Luigi', 'Wario'], ['Pac-Man', 'Tetris'], ['Minecraft', 'Roblox'], ['Fortnite', 'Call of Duty'],
+    ['Dark Vador', 'Voldemort'], ['Gandalf', 'Dumbledore'], ['Yoda', 'Obi-Wan Kenobi'], ['Hulk', 'La Chose'], ['Thor', 'Hercule'],
+    ['Wonder Woman', 'Catwoman'], ['Joker', 'Harley Quinn'], ['Wolverine', 'Black Panther'], ['James Bond', 'Mission impossible'], ['Sherlock Holmes', 'Hercule Poirot'],
+    ['Indiana Jones', 'Lara Croft'], ['Jurassic Park', 'King Kong'], ['Le Petit Prince', 'Le Petit Nicolas'], ['Les Schtroumpfs', 'Les Minions'], ['Kirikou', 'Mowgli'],
+    ['Nemo', 'Dory'], ['Woody', 'Buzz l\'Éclair'], ['Elsa', 'Anna'], ['Vaiana', 'Pocahontas'], ['Poudlard', 'Narnia'],
+    ['Wi-Fi', 'Bluetooth'], ['Mot de passe', 'Code PIN'], ['Ordinateur portable', 'Ordinateur fixe'], ['Imprimante 3D', 'Découpeuse laser'], ['Smartphone', 'Téléphone fixe'],
+    ['Appel vidéo', 'Message vocal'], ['Snapchat', 'Instagram story'], ['Facebook', 'Twitter'], ['LinkedIn', 'CV'], ['Emoji', 'Sticker'],
+    ['Hashtag', 'Arobase'], ['Like', 'Partage'], ['Selfie stick', 'Trépied'], ['Jeu vidéo', 'Jeu mobile'], ['Réalité virtuelle', 'Hologramme'],
+    ['Intelligence artificielle', 'Assistant vocal'], ['GPS de voiture', 'Plan papier'], ['Montre à aiguilles', 'Montre digitale'], ['Code-barres', 'QR code'], ['Carte bancaire', 'Chèque'],
+    ['Billet de banque', 'Pièce de monnaie'], ['Tirelire', 'Coffre-fort'], ['Bitcoin', 'Euro'], ['Distributeur', 'Guichet'], ['Douche froide', 'Bain chaud'],
+    ['Sieste', 'Grasse matinée'], ['Rêve', 'Cauchemar'], ['Rire', 'Sourire'], ['Bisou', 'Câlin'], ['Poignée de main', 'Check'],
+    ['Clin d\'œil', 'Pouce levé'], ['Applaudissements', 'Ovation'], ['Dispute', 'Malentendu'], ['Mensonge', 'Secret'], ['Promesse', 'Pari'],
+    ['Rendez-vous', 'Réunion de famille'], ['Embouteillage', 'Grève'], ['Retard', 'Panne'], ['Rhume', 'Grippe'], ['Pansement', 'Plâtre'],
+    ['Piqûre', 'Vaccin'], ['Sirop', 'Comprimé'], ['Ambulance', 'Hélicoptère du SAMU'], ['Urgences', 'Cabinet médical'], ['Lunettes de soleil', 'Masque de ski'],
+    ['Ombre', 'Reflet'], ['Écho', 'Silence'], ['Bougie parfumée', 'Encens'], ['Fleur', 'Bouquet'], ['Rose', 'Tulipe'],
+    ['Tournesol', 'Marguerite'], ['Cactus', 'Plante grasse'], ['Palmier', 'Cocotier'], ['Chêne', 'Hêtre'], ['Herbe', 'Mousse'],
+    ['Feuille morte', 'Gland'], ['Bûche de bois', 'Charbon'], ['Feu de camp', 'Feu de cheminée'], ['Allumette', 'Briquet'], ['Ballon de baudruche', 'Ballon de foot'],
+    ['Bateau en papier', 'Avion en papier'], ['Sablier', 'Chronomètre'], ['Horloge', 'Pendule'],
   ];
   const POINTS = { civil: 2, undercover: 10, white: 6 }, WHITE_BONUS = 5;   // bonus de Mister White qui devine le mot
   const ROLE_NAME = { civil: 'Civil', undercover: 'Undercover', white: 'Mister White' };
-  const HIST_KEY = 'uc-vues';
-
-  const hist = {
-    get() { try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch { return []; } },
-    add(i) { try { const h = hist.get().filter(x => x !== i); h.push(i); localStorage.setItem(HIST_KEY, JSON.stringify(h.slice(-Math.floor(PAIRS.length * 0.8)))); } catch { } },
-  };
+  // Paires déjà jouées : une clé courte par paire (les mots ne voyagent pas). La liste vient du salon
+  // (mémoire d'une partie à l'autre) et du téléphone de l'hôte (mémoire d'une soirée à l'autre, voir app.js).
+  // Elle vit côté hôte ou serveur, jamais dans la vue des joueurs.
+  const SEEN_MAX = 2000;
+  function pairKey(p) {
+    const t = [p[0], p[1]].map(w => String(w).toLowerCase()).sort().join('|');
+    let h = 2166136261; for (let i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 16777619);
+    return (h >>> 0).toString(36);
+  }
+  /** D'abord une paire jamais jouée ; sinon une des plus anciennement jouées. */
+  function choosePair(seen) {
+    const at = new Map(seen.map((k, i) => [k, i])), all = PAIRS.map((_, i) => i);
+    const fresh = all.filter(i => !at.has(pairKey(PAIRS[i])));
+    if (fresh.length) return pick(fresh);
+    const oldest = all.sort((a, b) => at.get(pairKey(PAIRS[a])) - at.get(pairKey(PAIRS[b])));
+    return pick(oldest.slice(0, Math.max(1, oldest.length >> 2)));
+  }
+  function markSeen(seen, idx) {
+    const k = pairKey(PAIRS[idx]), j = seen.indexOf(k);
+    if (j >= 0) seen.splice(j, 1);
+    seen.push(k);
+    if (seen.length > SEEN_MAX) seen.splice(0, seen.length - SEEN_MAX);
+  }
   const pick = a => a[Math.random() * a.length | 0];
 
   function lev(a, b) {
@@ -81,8 +216,9 @@ const Undercover = (() => {
     return { uc: Math.max(1, uc), white };
   }
 
-  function create({ hostId, players, rounds, undercovers, white }) {
+  function create({ hostId, players, rounds, undercovers, white, seen }) {
     const room = {
+      seen: Array.isArray(seen) ? seen : [],
       hostId, rounds: Math.max(1, Math.min(10, +rounds || 3)), round: 0,
       settings: { undercovers: undercovers || 'auto', white: !!white },
       players: players.map(p => ({ id: p.id, name: p.name, online: p.online !== false, bot: !!p.bot, score: 0 })),
@@ -95,9 +231,7 @@ const Undercover = (() => {
   function startRound(room) {
     const ids = shuffle(room.players.filter(p => p.online).map(p => p.id));
     const plan = impostorPlan(ids.length, room.settings.undercovers, room.settings.white);
-    const seen = new Set(hist.get());
-    const fresh = PAIRS.map((_, i) => i).filter(i => !seen.has(i));
-    const idx = pick(fresh.length ? fresh : PAIRS.map((_, i) => i)); hist.add(idx);
+    const idx = choosePair(room.seen); markSeen(room.seen, idx);
     const pair = Math.random() < 0.5 ? PAIRS[idx] : [PAIRS[idx][1], PAIRS[idx][0]];
     room.round += 1;
     room.pair = { civil: pair[0], undercover: pair[1] };
@@ -301,5 +435,5 @@ const Undercover = (() => {
     if (room.phase === 'white-guess' && room.lastElim && isBot(room, room.lastElim.id)) { act(room, room.lastElim.id, { t: 'uc:white-guess', word: any(any(PAIRS)) }); return true; }
     return false;
   }
-  return { PAIRS, POINTS, ROLE_NAME, create, act, tick, join, setOnline, view, sameWord, impostorPlan };
+  return { PAIRS, POINTS, ROLE_NAME, create, act, tick, join, setOnline, view, sameWord, impostorPlan, pairKey };
 })();

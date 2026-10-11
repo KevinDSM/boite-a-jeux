@@ -280,3 +280,188 @@ Slimane | Mon amour
 Tate McRae | greedy
 Doja Cat | Paint the Town Red
 Hatik | Angela
+# Classiques
+Édith Piaf | Non, je ne regrette rien | 1960
+Charles Aznavour | Emmenez-moi | 1967
+Jacques Dutronc | Il est cinq heures, Paris s'éveille | 1968
+Johnny Hallyday | Que je t'aime | 1969
+Claude François | Alexandrie Alexandra | 1977
+Claude François | Cette année-là | 1976
+Joe Dassin | L'Été indien | 1975
+Joe Dassin | Et si tu n'existais pas | 1975
+Dalida | Gigi l'amoroso | 1974
+Michel Delpech | Pour un flirt | 1971
+Michel Polnareff | On ira tous au paradis | 1972
+Gérard Lenorman | La ballade des gens heureux | 1975
+Serge Gainsbourg | Le poinçonneur des Lilas | 1958
+France Gall | Poupée de cire, poupée de son | 1965
+Hugues Aufray | Santiano | 1961
+Christophe | Aline | 1965
+Mike Brant | Laisse-moi t'aimer | 1970
+Plastic Bertrand | Ça plane pour moi | 1977
+Patrick Hernandez | Born to Be Alive | 1979
+Chic | Le Freak | 1978
+Earth, Wind & Fire | September | 1978
+The Jackson 5 | I Want You Back | 1969
+Ben E. King | Stand by Me | 1961
+Chuck Berry | Johnny B. Goode | 1958
+Elvis Presley | Jailhouse Rock | 1957
+The Beatles | Let It Be | 1970
+The Beatles | Yesterday | 1965
+Fleetwood Mac | Dreams | 1977
+Pink Floyd | Another Brick in the Wall | 1979
+Elton John | Rocket Man | 1972
+ABBA | Mamma Mia | 1975
+Queen | We Will Rock You | 1977
+The Clash | London Calling | 1979
+Nancy Sinatra | These Boots Are Made for Walkin' | 1966
+Otis Redding | Dock of the Bay | 1968
+Bob Marley | Is This Love | 1978
+Alain Souchon | J'ai dix ans | 1974
+Laurent Voulzy | Rockollection | 1977
+Francis Cabrel | Petite Marie | 1977
+Maxime Le Forestier | San Francisco | 1972
+Véronique Sanson | Amoureuse | 1972
+Julien Clerc | Ma préférence | 1978
+# Années 80
+Bob Marley | Could You Be Loved | 1980
+AC/DC | Back in Black | 1980
+Blondie | Call Me | 1980
+The Police | Every Breath You Take | 1983
+Dire Straits | Money for Nothing | 1985
+Irene Cara | Flashdance | 1983
+Kenny Loggins | Footloose | 1984
+Tears for Fears | Everybody Wants to Rule the World | 1985
+Simple Minds | Don't You | 1985
+Depeche Mode | Just Can't Get Enough | 1981
+New Order | Blue Monday | 1983
+Wham! | Wake Me Up Before You Go-Go | 1984
+Phil Collins | In the Air Tonight | 1981
+Lionel Richie | All Night Long | 1983
+Tina Turner | What's Love Got to Do with It | 1984
+Madonna | La Isla Bonita | 1987
+Michael Jackson | Beat It | 1983
+Prince | Kiss | 1986
+Bananarama | Venus | 1986
+Kim Wilde | Kids in America | 1981
+Spandau Ballet | True | 1983
+Culture Club | Karma Chameleon | 1983
+Stevie Wonder | I Just Called to Say I Love You | 1984
+Kate Bush | Running Up That Hill | 1985
+Jean-Jacques Goldman | Quand la musique est bonne | 1982
+Jean-Jacques Goldman | Encore un matin | 1984
+Jean-Jacques Goldman | Envole-moi | 1984
+Daniel Balavoine | L'Aziza | 1985
+Daniel Balavoine | Sauver l'amour | 1985
+Indochine | Canary Bay | 1985
+Indochine | Trois nuits par semaine | 1985
+Téléphone | Cendrillon | 1982
+Renaud | Morgane de toi | 1983
+Alain Bashung | Vertige de l'amour | 1981
+Elsa | T'en va pas | 1986
+Début de Soirée | Nuit de folie | 1988
+Gilbert Montagné | On va s'aimer | 1983
+Patrick Bruel | Place des grands hommes | 1989
+Mylène Farmer | Libertine | 1986
+Mylène Farmer | Pourvu qu'elles soient douces | 1988
+Mylène Farmer | Sans contrefaçon | 1987
+Lio | Amoureux solitaires | 1980
+Peter et Sloane | Besoin de rien, envie de toi | 1984
+Gold | Capitaine abandonné | 1985
+Michel Sardou | Être une femme | 1981
+Michel Berger | La groupie du pianiste | 1980
+Laurent Voulzy | Belle-Île-en-Mer | 1985
+Cock Robin | When Your Heart Is Weak | 1985
+Desireless | John | 1989
+# Années 90
+The Cranberries | Zombie | 1994
+2 Unlimited | No Limit | 1993
+Corona | The Rhythm of the Night | 1993
+Whitney Houston | I Will Always Love You | 1992
+Ricky Martin | Livin' la Vida Loca | 1999
+Daft Punk | Around the World | 1997
+Stardust | Music Sounds Better with You | 1998
+MC Solaar | Bouge de là | 1990
+Suprême NTM | Ma Benz | 1998
+Louise Attaque | J't'emmène au vent | 1997
+Noir Désir | Un jour en France | 1996
+Hanson | MMMBop | 1997
+Oasis | Don't Look Back in Anger | 1996
+Blur | Song 2 | 1997
+Radiohead | Creep | 1992
+The Verve | Bitter Sweet Symphony | 1997
+Fatboy Slim | Praise You | 1998
+Robbie Williams | Angels | 1997
+Spice Girls | Say You'll Be There | 1996
+Vengaboys | Boom, Boom, Boom, Boom | 1998
+Mariah Carey | All I Want for Christmas Is You | 1994
+Fredericks Goldman Jones | À nos actes manqués | 1990
+Khaled | Didi | 1992
+Alain Souchon | Foule sentimentale | 1993
+Native | Si tu pars | 1993
+Hélène Ségara | Il y a trop de gens qui t'aiment | 1999
+Notorious B.I.G. | Juicy | 1994
+Dr. Dre | Still D.R.E. | 1999
+Will Smith | Men in Black | 1997
+Bryan Adams | (Everything I Do) I Do It for You | 1991
+# Années 2000
+Eminem | Without Me | 2002
+The White Stripes | Seven Nation Army | 2003
+The Killers | Mr. Brightside | 2004
+Black Eyed Peas | Where Is the Love? | 2003
+Kings of Leon | Sex on Fire | 2008
+MGMT | Kids | 2008
+Britney Spears | Toxic | 2004
+Linkin Park | In the End | 2001
+Gorillaz | Feel Good Inc. | 2005
+Bob Sinclar | Love Generation | 2005
+Lorie | Près de moi | 2001
+Diam's | DJ | 2003
+Grégoire | Toi + moi | 2008
+Yannick Noah | Aux arbres citoyens | 2006
+Jenifer | J'attends l'amour | 2002
+Mickey 3D | Respire | 2003
+Nelly | Hot in Herre | 2002
+50 Cent | In da Club | 2003
+Daniel Powter | Bad Day | 2005
+James Blunt | You're Beautiful | 2005
+Mika | Grace Kelly | 2007
+Duffy | Mercy | 2008
+Kanye West | Stronger | 2007
+OneRepublic | Apologize | 2007
+Shakira | Whenever, Wherever | 2001
+Crazy Frog | Axel F | 2005
+# Années 2010
+Stromae | Formidable | 2013
+Maître Gims | Bella | 2013
+Maître Gims | Sapés comme jamais | 2015
+Vianney | Pas là | 2014
+PNL | Au DD | 2019
+Dadju | Reine | 2018
+Adele | Hello | 2015
+Avicii | Levels | 2011
+Taylor Swift | Shake It Off | 2014
+Imagine Dragons | Believer | 2017
+Lady Gaga | Shallow | 2018
+Robin Schulz | Prayer in C | 2014
+Kungs | This Girl | 2016
+Jain | Makeba | 2015
+Calvin Harris | One Kiss | 2018
+Julien Doré | Paris-Seychelles | 2013
+Coldplay | Paradise | 2011
+# Années 2020
+Ed Sheeran | Bad Habits | 2021
+Doja Cat | Say So | 2020
+Rema | Calm Down | 2022
+SZA | Kill Bill | 2022
+Beyoncé | Break My Soul | 2022
+Elton John | Cold Heart | 2021
+Orelsan | L'odeur de l'essence | 2021
+Stromae | Santé | 2021
+Tayc | Le temps | 2021
+Kungs | Never Going Home | 2023
+The Weeknd | Save Your Tears | 2020
+Dua Lipa | Houdini | 2023
+Teddy Swims | Lose Control | 2023
+Hozier | Too Sweet | 2024
+Shaboozey | A Bar Song | 2024
