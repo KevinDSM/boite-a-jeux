@@ -151,6 +151,11 @@
     .game { grid-template-columns: minmax(96px, 36%) 1fr 3ch; }
     .game .name { white-space: normal; line-height: 1.2; }
   }
+.sugg-list { display: flex; flex-direction: column; gap: 10px; }
+.sugg { border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px 12px; }
+.sugg-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sugg-head span { color: var(--mute); font-size: 13px; flex: 1; }
+.sugg p { margin: 6px 0 0; line-height: 1.45; white-space: normal; overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
@@ -182,6 +187,7 @@
       <section><h2>À quelle heure on lance une partie</h2><div id="hours"></div></section>
       <section><h2>Joueurs</h2><div class="rows" id="players"></div></section>
       <section><h2>Salons</h2><div id="salons"></div></section>
+      <section class="wide"><h2>Suggestions</h2><div id="sugg"></div></section>
       <section class="wide"><h2>Miroir, en direct</h2><div id="miroir"></div></section>
     </div>
     <div class="note">
@@ -240,7 +246,7 @@ async function enter() {
     data = await load();
     try { sessionStorage.setItem('stats-mdp', mdp); } catch { }
     $('login').hidden = true; $('page').hidden = false; draw();
-    loadMiroir();
+    loadMiroir(); loadSugg();
   } catch (e) {
     $('page').hidden = true; $('login').hidden = false;
     if (e.status === 401) { try { sessionStorage.removeItem('stats-mdp'); } catch { } }
@@ -354,6 +360,29 @@ function draw() {
     + (c.salons.length > 15 ? `<button class="btn more" type="button" id="all">${showAll ? 'Voir moins' : `Voir les ${c.salons.length} salons`}</button>` : '');
   $('all')?.addEventListener('click', () => { showAll = !showAll; draw(); });
 }
+
+// ---------------------------------------------------------------- les suggestions des joueurs (bouton de l'accueil)
+async function loadSugg() {
+  const box = $('sugg');
+  const r = await fetch('/stats/suggestions', { headers: { authorization: `Bearer ${mdp}` }, cache: 'no-store' }).catch(() => null);
+  const j = r && r.ok ? await r.json().catch(() => null) : null;
+  if (!j) { box.innerHTML = '<p class="empty">Les suggestions ne sont pas disponibles.</p>'; return; }
+  if (!j.suggestions.length) { box.innerHTML = '<p class="empty">Aucune suggestion pour l’instant.</p>'; return; }
+  box.innerHTML = `<div class="mi-tools"><span>${plural(j.suggestions.length, 'suggestion', 'suggestions')}</span>`
+    + (j.suggestions.length > 1 ? `<button class="btn danger" type="button" data-sdel-all="1">Tout effacer</button>` : '') + '</div>'
+    + `<div class="sugg-list">${j.suggestions.map(x => `<article class="sugg"><div class="sugg-head"><b>${esc(x.nom)}</b><span>${esc(fDay.format(x.cree))}, ${fTime.format(x.cree)}</span>`
+      + `<button class="btn ghost danger" type="button" data-sdel="${x.id}" data-nom="${esc(x.nom)}">Effacer</button></div><p>${esc(x.texte).replace(/\n/g, '<br>')}</p></article>`).join('')}</div>`;
+}
+$('sugg').addEventListener('click', async e => {
+  const one = e.target.closest('[data-sdel]'), all = e.target.closest('[data-sdel-all]');
+  if (!one && !all) return;
+  const ok = one ? await ask('Effacer cette suggestion', `La suggestion de ${one.dataset.nom} disparaît pour de bon.`)
+    : await ask('Effacer toutes les suggestions', 'Toutes les suggestions disparaissent pour de bon.');
+  if (!ok) return;
+  const r = await fetch(`/stats/suggestions?${one ? 'id=' + one.dataset.sdel : 'tout=1'}`, { method: 'POST', headers: { authorization: `Bearer ${mdp}` } }).catch(() => null);
+  if (!r || !r.ok) { alert('Effacement impossible.'); return; }
+  loadSugg();
+});
 
 // ---------------------------------------------------------------- Miroir, en direct
 const MI_PHASE = { ouverte: 'en cours', inscriptions: 'en cours', reponses: 'en cours', resultats: 'résultat lancé' };
