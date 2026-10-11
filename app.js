@@ -464,7 +464,7 @@ function renderLobby(s) {
   }
   renderHistory(s);
   $('#lobby-wait').hidden = isHostPlayer();
-  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre vingt-deux jeux.';
+  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre vingt-six jeux.';
   $('#btn-start').textContent = chosen ? `Lancer ${GAMES[s.pick].name}` : 'Choisis un jeu';
   renderGuestOpts(s);
   if (isHostPlayer() && chosen) queueOptsShare();

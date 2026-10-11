@@ -386,3 +386,144 @@ MORE = {
     'undercover': icon_undercover, 'loupgarou': icon_loupgarou, 'naufrages': icon_naufrages,
     'miroir': icon_miroir, 'regles': icon_regles, 'solo': icon_solo,
 }
+
+
+# ---------------------------------------------------------------- les jeux ajoutés le 11/10/2026, Le Mot du jour et les nouveautés
+# Un dé : une face vers la caméra (face avant = -Y), le dessus (+Z) et la droite (+X) montrent aussi leurs points,
+# rangés comme sur un vrai dé (deux faces opposées font 7).
+DIE_SIDES = {1: (2, 3), 2: (3, 1), 3: (1, 2), 4: (1, 5), 5: (1, 3), 6: (2, 4)}
+PIPS = {1: [(0, 0)], 2: [(-1, 1), (1, -1)], 3: [(-1, 1), (0, 0), (1, -1)], 4: [(-1, 1), (1, 1), (-1, -1), (1, -1)],
+        5: [(-1, 1), (1, 1), (0, 0), (-1, -1), (1, -1)], 6: [(-1, 1), (-1, 0), (-1, -1), (1, 1), (1, 0), (1, -1)]}
+
+def die(name, face, size=1.0, gold=False, loc=(0, 0, 0), rot=(0, 0, 0)):
+    """Un dé arrondi, ivoire (ou doré pour le Paco), points creusés foncés (rouges sur l'or)."""
+    body = mat(name + 'm', hexc('#e9b949') if gold else hexc('#f6f1e6'), rough=0.3 if gold else 0.26, metal=0.55 if gold else 0.0, coat=0.6)
+    ink = mat(name + 'p', hexc('#c0202b') if gold else hexc('#1c2233'), rough=0.35)
+    c = rounded_box(name, size, size, size, size * 0.17, body)
+    top, right = DIE_SIDES[face]
+    h, step, r = size / 2, size * 0.26, size * 0.095
+    for n, place in ((face, lambda a, b: (a, -h, b)), (top, lambda a, b: (a, -b, h)), (right, lambda a, b: (h, a, b))):
+        for a, b in PIPS[n]:
+            p = sphere(f'{name}-{n}-{a}{b}', r * (1.25 if n == 1 and gold else 1), ink, loc=place(a * step, b * step), seg=24)
+            # aplatis le long de la normale de la face : un point peint en creux, pas une bille
+            if place(1, 1)[1] == -h: p.scale = (1, 0.38, 1)
+            elif place(1, 1)[2] == h: p.scale = (1, 1, 0.38)
+            else: p.scale = (0.38, 1, 1)
+            p.parent = c
+    c.location = loc; c.rotation_euler = tuple(math.radians(x) for x in rot)
+    return c
+
+def cup(name, h=1.6, r_top=0.62, r_bot=0.86, loc=(0, 0, 0)):
+    """Le gobelet du Menteur, retourné (ouverture en bas) : cuir brun, liseré doré, coutures."""
+    leather = mat(name + 'c', hexc('#6b3a1f'), rough=0.62, coat=0.25)
+    goldm = mat(name + 'o', hexc('#d9a441'), rough=0.3, metal=0.9)
+    # construit à l'origine (les enfants s'y accrochent sans décalage), puis posé à sa place
+    bpy.ops.mesh.primitive_cone_add(vertices=96, radius1=r_bot, radius2=r_top, depth=h, location=(0, 0, 0))
+    c = bpy.context.active_object; c.name = name; c.data.materials.append(leather)
+    for p in c.data.polygons: p.use_smooth = True
+    md = c.modifiers.new('bev', 'BEVEL'); md.width = 0.05; md.segments = 4; md.limit_method = 'ANGLE'
+    x, y, z = 0, 0, 0
+    for zz, rr in ((z - h / 2 + 0.07, r_bot + 0.015), (z + h / 2 - 0.05, r_top + 0.01)):
+        bpy.ops.mesh.primitive_torus_add(major_radius=rr, minor_radius=0.045, major_segments=96, minor_segments=12, location=(x, y, zz))
+        t = bpy.context.active_object; t.data.materials.append(goldm); t.parent = c
+    # les coutures : de petits traits clairs sur le pourtour, à mi-hauteur
+    stitch = mat(name + 's', hexc('#e8c9a0'), rough=0.6)
+    rm = (r_top + r_bot) / 2
+    for i in range(28):
+        a = i * math.tau / 28
+        s = rounded_box(f'{name}-k{i}', 0.09, 0.03, 0.03, 0.012, stitch, loc=(x + (rm + 0.012) * math.cos(a), y + (rm + 0.012) * math.sin(a), z), rot=(0, 0, a + math.pi / 2))
+        s.parent = c
+    c.location = loc
+    return c
+
+def icon_unseulindice():                   # Un seul indice : une ampoule qui s'allume, l'idée
+    glow = emissive('ampoule', hexc('#ffb81f'), 1.15)
+    metal = mat('culot', hexc('#b9c0c9'), rough=0.25, metal=1.0)
+    bulb = sphere('verre', 0.95, glow, loc=(0, 0, 0.42))
+    bpy.ops.mesh.primitive_cone_add(vertices=64, radius1=0.42, radius2=0.66, depth=0.55, location=(0, 0, -0.45))
+    neck = bpy.context.active_object; neck.data.materials.append(glow)
+    for p in neck.data.polygons: p.use_smooth = True
+    for i in range(4):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.4, minor_radius=0.075, major_segments=48, minor_segments=12, location=(0, 0, -0.78 - i * 0.14))
+        bpy.context.active_object.data.materials.append(metal)
+    tip = sphere('bout', 0.17, mat('pointe', hexc('#3a3f47'), rough=0.4), loc=(0, 0, -1.36))
+    ray = emissive('rayon', hexc('#ffe27a'), 1.6)
+    for k, a in enumerate((-60, -30, 0, 30, 60)):
+        t = math.radians(a)
+        rounded_box(f'rayon{k}', 0.12, 0.08, 0.42, 0.05, ray, loc=(1.42 * math.sin(t), 0, 0.42 + 1.42 * math.cos(t)), rot=(0, t, 0))
+    pivot_all(z=-10)
+    return [bulb]
+
+def icon_menteur():                        # Menteur : le gobelet retourné et trois dés devant, dont un Paco doré
+    cup('gobelet', loc=(-0.55, 0.45, 0.25))
+    die('de5', 5, 0.72, loc=(0.05, -0.55, -0.32), rot=(-6, 0, 18))
+    die('de1', 1, 0.72, gold=True, loc=(0.95, -0.25, -0.32), rot=(-6, 0, -14))
+    die('de3', 3, 0.62, loc=(0.6, -0.95, 0.32), rot=(-24, 10, 32))
+    pivot_all(x=-4, z=-8)
+    return []
+
+def icon_navale():                         # Bataille navale : un cuirassé sur une pastille de mer
+    sea = mat('mer', hexc('#3f9ad6'), rough=0.12, coat=0.8)
+    hull = mat('coque', hexc('#7e8b99'), rough=0.42, coat=0.3); dark = mat('pont', hexc('#4c5764'), rough=0.5)
+    red = mat('ligne', hexc('#b8333a'), rough=0.45); white = mat('blanc', hexc('#eef2f6'), rough=0.4)
+    water = cylinder('mer', 1.55, 0.2, sea, loc=(0, 0, -0.62)); bevel(water, 0.08, 4)
+    # la coque vue de profil, proue à droite, extrudée en épaisseur
+    prof = [(-1.15, -0.15), (1.25, -0.15), (1.55, 0.25), (-1.3, 0.25)]
+    h = poly('coque', prof, 0.62, hull, bev=0.05); h.location.z = -0.32
+    stripe = poly('ligne', [(-1.13, -0.17), (1.23, -0.17), (1.27, -0.1), (-1.15, -0.1)], 0.64, red, bev=0.01); stripe.location.z = -0.32
+    rounded_box('chateau', 0.62, 0.42, 0.42, 0.04, dark, loc=(-0.05, 0, 0.12))
+    rounded_box('passerelle', 0.34, 0.36, 0.26, 0.04, white, loc=(0.0, 0, 0.44))
+    cylinder('cheminee', 0.13, 0.42, dark, loc=(-0.42, 0, 0.36), verts=32)
+    cylinder('mat', 0.025, 0.55, dark, loc=(0.1, 0, 0.82), verts=12)
+    for x, s in ((0.72, 1), (-0.8, -1)):
+        t = cylinder(f'tourelle{x}', 0.2, 0.16, dark, loc=(x, 0, 0.0), verts=32)
+        for dy in (-0.07, 0.07):
+            cylinder(f'canon{x}{dy}', 0.035, 0.5, dark, loc=(x + s * 0.32, dy, 0.03), rot=(0, math.radians(90), 0), verts=12)
+    for o in list(bpy.context.scene.objects):
+        if o.type == 'MESH' and o.name != 'mer' and o.parent is None: o.scale = (1.3, 1.3, 1.3); o.location *= 1.3
+    pivot_all(x=16, z=-14)
+    return [water]
+
+def icon_coinche():                        # Coinche : le neuf et le valet d'atout, et le jeton doré de l'atout
+    card = mat('carte', hexc('#e2d8c6'), rough=0.42, coat=0.3)
+    red = mat('rouge', hexc('#e0263a'), rough=0.35); goldm = mat('or', hexc('#e3a93d'), rough=0.28, metal=1.0)
+    for name, letter, x, ang in (('neuf', '9', -0.45, 12), ('valet', 'V', 0.4, -10)):
+        c = panel(name, 1.35, 1.9, 0.04, card, r=0.12)
+        label(name + 'L', letter, FONT_BOLD, 1.05, red, (0.0, -0.026, 0.1), c, depth=0.02)
+        label(name + 'c', letter, FONT_BOLD, 0.34, red, (-0.42, -0.026, 0.68), c)
+        label(name + 's', '♥', FONT_SYM, 0.3, red, (-0.42, -0.026, 0.4), c)
+        label(name + 'S', '♥', FONT_SYM, 0.42, red, (0.0, -0.026, -0.6), c)
+        c.location = (x, -0.06 if letter == 'V' else 0.04, 0); c.rotation_euler = (0, math.radians(ang), 0)
+    tok = cylinder('jeton', 0.42, 0.12, goldm, loc=(0.95, -0.4, -0.85), rot=(math.radians(90), 0, 0), verts=64); bevel(tok, 0.03, 4)
+    label('atout', '♥', FONT_SYM, 0.46, red, (0.95, -0.47, -0.85))
+    pivot_all(x=-8)
+    return []
+
+def icon_motdujour():                      # Le Mot du jour : trois lettres façon Motus, bien placée (rouge) et mal placée (jaune)
+    red = mat('rouge', hexc('#d8323b'), rough=0.32, coat=0.5); yel = mat('jaune', hexc('#f2c230'), rough=0.32, coat=0.5)
+    blue = mat('bleu', hexc('#24489c'), rough=0.35, coat=0.5); white = mat('blanc', hexc('#ffffff'), rough=0.35)
+    rounded_box('M', 0.92, 0.3, 0.92, 0.1, red, loc=(-1.0, 0, 0.12))
+    cylinder('O', 0.47, 0.3, yel, loc=(0, 0, 0.12), rot=UP, verts=64)
+    rounded_box('T', 0.92, 0.3, 0.92, 0.1, blue, loc=(1.0, 0, 0.12))
+    for x, l in ((-1.0, 'M'), (0, 'O'), (1.0, 'T')):
+        label('l' + l, l, FONT_BOLD, 1.02, white if l != 'O' else mat('encre', hexc('#2a2a2a'), rough=0.4), (x, -0.16, 0.12), depth=0.03)
+    for i in range(3):
+        rounded_box(f'case{i}', 0.92, 0.22, 0.92, 0.1, blue, loc=(-1.0 + i * 1.0, 0.1, -0.95))
+    pivot_all(x=-10, z=-12)
+    return []
+
+def icon_nouveautes():                     # Les nouveautés : un cadeau, ruban doré et gros nœud
+    box = mat('boite', hexc('#d8323b'), rough=0.4, coat=0.5); rib = mat('ruban', hexc('#f2c230'), rough=0.3, metal=0.35, coat=0.6)
+    b = rounded_box('cadeau', 1.7, 1.7, 1.3, 0.06, box, loc=(0, 0, -0.35))
+    rounded_box('couvercle', 1.86, 1.86, 0.32, 0.06, box, loc=(0, 0, 0.42))
+    rounded_box('rubanV', 0.28, 1.9, 1.62, 0.03, rib, loc=(0, 0, -0.18))
+    rounded_box('rubanH', 1.9, 0.28, 1.62, 0.03, rib, loc=(0, 0, -0.18))
+    for s in (-1, 1):
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.34, minor_radius=0.11, major_segments=48, minor_segments=16, location=(s * 0.33, 0, 0.78), rotation=(math.radians(90), 0, math.radians(s * 25)))
+        t = bpy.context.active_object; t.data.materials.append(rib); t.scale = (1, 1, 0.75)
+    sphere('noeud', 0.17, rib, loc=(0, 0, 0.66))
+    pivot_all(x=-14, z=-24)
+    return [b]
+
+MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
+             'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes})

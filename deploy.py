@@ -16,7 +16,7 @@ DIST = os.path.join(ROOT, 'dist')
 SKIP_EXT = ('.py', '.txt', '.log', '.md', '.jsonc')
 # unseulindice.json : les mots d'Un seul indice ne vivent que sur le serveur des salons (server/build.py les emballe)
 SKIP_NAMES = {'.gitignore', 'mirage-rejected.json', 'unseulindice.json'}
-SKIP_DIRS = ('functions/', 'dist/', 'server/')
+SKIP_DIRS = ('functions/', 'dist/', 'server/', 'tools/')
 
 wr = shutil.which('wrangler') or 'wrangler'
 dry = '--dry' in sys.argv

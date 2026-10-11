@@ -605,3 +605,18 @@ button.chx-chip { cursor: pointer; min-height: 40px; }
 #s-chromo .ch-hand.mini .ch-oval b { font-size: 15px; text-shadow: none; }
 #s-chromo .ch-hand.mini .ch-corner { display: none; }
 #s-chromo .ch-hand.mini .ch-wheel.small { width: 44%; }
+
+/* ---------------------------------------------------------------- les nouveautés (nouveautes.js) */
+.ih-app { position: relative; }
+.ih-dot { position: absolute; top: -3px; right: 4px; width: 14px; height: 14px; border-radius: 50%; background: oklch(0.62 0.22 27); box-shadow: 0 0 0 2.5px var(--wall-base), 0 2px 6px rgba(0, 0, 0, .35); }
+#news .sheet { max-width: 520px; }
+.news-day h4 { margin: 14px 2px 4px; font-size: var(--text-footnote); font-weight: 650; color: var(--glass-ink-2); }
+.news-day:first-child h4 { margin-top: 2px; }
+.news-day ul, #news .sheet .news-day ul { list-style: none; margin: 0; padding: 0; }
+.news-day li { padding: 9px 2px; border-top: .5px solid color-mix(in oklab, var(--glass-ink) 12%, transparent); font-size: 15.5px; line-height: 1.4; color: var(--glass-ink); }
+.news-day li:first-child { border-top: 0; }
+/* le Mot du jour : son icône dans l'en-tête du widget */
+.ih-mdj-top { align-items: center; }
+.ih-mdj-ic { width: 34px; height: 34px; border-radius: 9px; flex: none; margin-right: 8px; }
+.ih-mdj-top:has(.ih-mdj-ic) { justify-content: flex-start; }
+.ih-mdj-top:has(.ih-mdj-ic) #ih-mdj-meta { margin-left: auto; }

@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env }) {
   if (/^[A-Z]{4}$/.test(code)) {
     const from = (url.searchParams.get('de') || '').trim().slice(0, 14);
     title = from ? `${from} vous invite à jouer` : 'Une partie vous attend';
-    desc = `Salon ${code}. 22 jeux pour la soirée, chacun sur son téléphone. Touchez le lien pour rejoindre la table.`;
+    desc = `Salon ${code}. 26 jeux pour la soirée, chacun sur son téléphone. Touchez le lien pour rejoindre la table.`;
     image = `${url.origin}/api/invite/${code}`;
   }
   const content = v => ({ element(e) { e.setAttribute('content', v); } });
