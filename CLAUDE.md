@@ -19,7 +19,7 @@ Demander à Kevin ce qui est déjà fait, cocher ici au fur et à mesure, puis s
 - [x] **Un seul indice : icône 3D** dans Blender (`icon_unseulindice()` dans `tools/icons/`, puis `export_web.py` → `icons/web/unseulindice.webp`). En attendant, la carte du salon affiche le dessin plat `.usi-art`.
 - [x] **Le Mot du jour** (tables D1 déjà créées par Kevin le 11/10) : vérifier que le secret Pages `MOT_SEL` est posé (`npx wrangler pages secret put MOT_SEL --project-name boite-a-jeux`, Kevin tape lui-même la phrase), qu'après les essais en préversion les tables ont été vidées (`DELETE FROM motdujour_joueurs; DELETE FROM motdujour_jours;` en `--remote --command`), et que le site est publié.
 - [ ] **Le Mot du jour : icône 3D** (faite le 11/10, dans l'en-tête du widget) dans Blender, et, si Kevin le souhaite, une section dans `/stats` (qui joue chaque jour).
-- [ ] **Camembert** existe dans le code (`GAMES`) mais n'a pas de carte dans le salon : demander à Kevin si c'est voulu.
+- [x] **Camembert** (Kevin, 11/10 : on le garde dans le code, sans carte dans le salon pour le moment) existe dans le code (`GAMES`) mais n'a pas de carte dans le salon : demander à Kevin si c'est voulu.
 - [ ] **Suite du nouveau style** (Chromo = pilote, Un seul indice suit le même modèle) : les 21 autres jeux sont encore dans l'ancienne mise en page. Proposé de commencer par Douze et Kems.
 
 ## À faire à la passation : Menteur, Bataille navale, Coinche (laissé par la session cloud du 11/10/2026)
@@ -41,7 +41,7 @@ Trois jeux de salon sur la table commune, une branche par jeu, chacune partie de
   - Le chargeur d'image 3D facultative (précharger `img/<jeu>/<objet>.webp`, relancer le rendu s'il arrive, dessin CSS en secours) est refait dans chaque jeu : en faire un `tbImg()` commun.
   - Ne pas reconstruire l'affichage pendant que le doigt est posé (placement des bateaux : `nvDown` / `nvPending` dans navale.js) : utile à d'autres jeux.
   - Une puce `tb-chip` impose `color: var(--ink)` à ses `<b>` : un symbole de couleur en `<b>` dans une puce devient blanc sur blanc (corrigé dans coinche.css par `.tb-chip b.cox-suit`).
-- [ ] **Limites connues, à faire valider par Kevin** :
+- [x] **Limites connues, validées par Kevin le 11/10** (décompte de la Coinche et cases de 34 px de la Bataille navale : OK) :
   - Bataille navale : cases de 34 px sur téléphone (sous les 44 px conseillés) ; c'est le maximum pour 10 cases dans 390 px.
   - Coinche : une variante de décompte a été choisie (réussi = contrat atteint ET plus que la défense ; réussi : contrat + points faits, la défense garde les siens ; chuté : 160 + contrat pour la défense ; coinché ×2, surcoinché ×4 ; capot 250). Elle est expliquée dans les règles du jeu ; demander si les amis comptent autrement.
   - Le mode PeerJS (hors pages.dev, l'hôte fait tourner la partie) n'a pas été testé pour ces trois jeux : tout a été testé en mode serveur.
