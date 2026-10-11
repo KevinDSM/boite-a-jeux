@@ -8,14 +8,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=77">
-<link rel="apple-touch-icon" href="icon-180.png?v=77">
+<link rel="manifest" href="manifest.json?v=78">
+<link rel="apple-touch-icon" href="icon-180.png?v=78">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
-<meta name="description" content="26 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta name="description" content="28 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Boîte à jeux">
 <meta property="og:title" content="Boîte à jeux">
-<meta property="og:description" content="26 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta property="og:description" content="28 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:url" content="https://kevindsm.github.io/boite-a-jeux/">
 <meta property="og:image" content="https://kevindsm.github.io/boite-a-jeux/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -26,22 +26,34 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Special+Elite&family=Lilita+One&family=Alfa+Slab+One&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=77">
-<link rel="stylesheet" href="ios.css?v=77">
-<link rel="stylesheet" href="table.css?v=77">
-<link rel="stylesheet" href="jeux/kems.css?v=77">
-<link rel="stylesheet" href="jeux/poker.css?v=77">
-<link rel="stylesheet" href="jeux/bataille.css?v=77">
-<link rel="stylesheet" href="jeux/douze.css?v=77">
-<link rel="stylesheet" href="jeux/solitaire.css?v=77">
-<link rel="stylesheet" href="jeux/naufrages.css?v=77">
-<link rel="stylesheet" href="unseulindice.css?v=77">
-<link rel="stylesheet" href="jeux/menteur.css?v=77">
-<link rel="stylesheet" href="jeux/navale.css?v=77">
-<link rel="stylesheet" href="jeux/coinche.css?v=77">
+<link rel="stylesheet" href="style.css?v=78">
+<link rel="stylesheet" href="ios.css?v=78">
+<link rel="stylesheet" href="table.css?v=78">
+<link rel="stylesheet" href="jeux/kems.css?v=78">
+<link rel="stylesheet" href="jeux/poker.css?v=78">
+<link rel="stylesheet" href="jeux/bataille.css?v=78">
+<link rel="stylesheet" href="jeux/douze.css?v=78">
+<link rel="stylesheet" href="jeux/solitaire.css?v=78">
+<link rel="stylesheet" href="jeux/naufrages.css?v=78">
+<link rel="stylesheet" href="unseulindice.css?v=78">
+<link rel="stylesheet" href="jeux/menteur.css?v=78">
+<link rel="stylesheet" href="jeux/navale.css?v=78">
+<link rel="stylesheet" href="jeux/coinche.css?v=78">
+<link rel="stylesheet" href="jeux/dames.css?v=78">
+<link rel="stylesheet" href="jeux/echecs.css?v=78">
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
 </head>
 <body>
+<!-- les pièces d'échecs (echecs.js) : dessins vectoriels, couleur et contour réglés en CSS (--pf, --ps, --pd) -->
+<svg id="ecx-sprite" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <g id="ecx-base"><rect x="22" y="80" width="56" height="11" rx="5"/></g>
+  <symbol id="ecx-p" viewBox="0 0 100 100"><path d="M36 80c1-14 5-23 10-29h8c5 6 9 15 10 29z"/><circle cx="50" cy="35" r="14"/><path d="M40 51h20"/><use href="#ecx-base"/></symbol>
+  <symbol id="ecx-r" viewBox="0 0 100 100"><path d="M33 80l3-38h28l3 38z"/><path d="M28 42V22h10v8h7v-8h10v8h7v-8h10v20z"/><path class="d" d="M38 52h24M36 70h28"/><use href="#ecx-base"/></symbol>
+  <symbol id="ecx-b" viewBox="0 0 100 100"><path d="M35 80c0-12 4-20 9-25-9-6-12-15-9-24 3-9 9-15 15-19 6 4 12 10 15 19 3 9 0 18-9 24 5 5 9 13 9 25z"/><circle cx="50" cy="9" r="5"/><path class="d" d="M55 24 46 38M41 59h18"/><use href="#ecx-base"/></symbol>
+  <symbol id="ecx-n" viewBox="0 0 100 100"><path d="M31 80c-1-14 4-24 14-31-7-1-13 1-18 6-6-3-7-10-2-16 6-7 12-13 15-21l2-8 6 7c18 2 30 15 31 37 1 11-1 19-4 26z"/><circle class="e" cx="45" cy="30" r="3.2"/><path class="d" d="M44 49c4-3 7-7 8-12"/><use href="#ecx-base"/></symbol>
+  <symbol id="ecx-q" viewBox="0 0 100 100"><path d="M30 80 21 36l14 18 6-26 9 24 9-24 6 26 14-18-9 44z"/><circle cx="21" cy="32" r="5"/><circle cx="41" cy="24" r="5"/><circle cx="59" cy="24" r="5"/><circle cx="79" cy="32" r="5"/><circle cx="50" cy="20" r="5"/><path class="d" d="M32 70h36"/><use href="#ecx-base"/></symbol>
+  <symbol id="ecx-k" viewBox="0 0 100 100"><path d="M31 80c-6-16-6-28 4-34 7-4 12-2 15 4 3-6 8-8 15-4 10 6 10 18 4 34z"/><path d="M45 34V25h-8v-8h8V8h10v9h8v8h-8v9z"/><path class="d" d="M33 70h34"/><use href="#ecx-base"/></symbol>
+</defs></svg>
 <div class="grain" aria-hidden="true"></div>
 <div class="safe-bottom" aria-hidden="true"></div>
 
@@ -65,7 +77,7 @@
   <header class="ih-head">
     <span class="ih-date" id="ih-date"></span>
     <h1>Boîte à jeux</h1>
-    <p class="ih-sub">26 jeux, un téléphone chacun.</p>
+    <p class="ih-sub">28 jeux, un téléphone chacun.</p>
   </header>
 
   <!-- l'entrée en deux temps : d'abord « rejoindre » ou « créer », puis seulement les champs utiles -->
@@ -111,23 +123,23 @@
 
   <!-- le reste de la boîte, sans salon -->
   <div class="ih-grid ih-more" id="ih-grid" role="list" aria-label="Aussi dans la boîte">
-    <a class="ih-app" id="btn-miroir" href="miroir" role="listitem"><span class="ih-ic" style="--c:#6f9bd1"><img src="icons/web/miroir.webp?v=77" alt="" decoding="async"></span><span class="ih-l">Miroir</span></a>
-    <button class="ih-app" id="btn-rules" type="button" role="listitem"><span class="ih-ic" style="--c:#8a8178"><img src="icons/web/regles.webp?v=77" alt="" decoding="async"></span><span class="ih-l">Les règles</span></button>
-    <button class="ih-app" id="btn-solo" type="button" role="listitem"><span class="ih-ic" style="--c:#56657a"><img src="icons/web/solo.webp?v=77" alt="" decoding="async"></span><span class="ih-l">Jouer seul</span></button>
-    <button class="ih-app" id="btn-news" type="button" role="listitem"><span class="ih-ic" style="--c:#c0485a"><img src="icons/web/nouveautes.webp?v=77" alt="" decoding="async"></span><i class="ih-dot" aria-label="Du nouveau" hidden></i><span class="ih-l">Nouveautés</span></button>
+    <a class="ih-app" id="btn-miroir" href="miroir" role="listitem"><span class="ih-ic" style="--c:#6f9bd1"><img src="icons/web/miroir.webp?v=78" alt="" decoding="async"></span><span class="ih-l">Miroir</span></a>
+    <button class="ih-app" id="btn-rules" type="button" role="listitem"><span class="ih-ic" style="--c:#8a8178"><img src="icons/web/regles.webp?v=78" alt="" decoding="async"></span><span class="ih-l">Les règles</span></button>
+    <button class="ih-app" id="btn-solo" type="button" role="listitem"><span class="ih-ic" style="--c:#56657a"><img src="icons/web/solo.webp?v=78" alt="" decoding="async"></span><span class="ih-l">Jouer seul</span></button>
+    <button class="ih-app" id="btn-news" type="button" role="listitem"><span class="ih-ic" style="--c:#c0485a"><img src="icons/web/nouveautes.webp?v=78" alt="" decoding="async"></span><i class="ih-dot" aria-label="Du nouveau" hidden></i><span class="ih-l">Nouveautés</span></button>
   </div>
 
   <!-- le Mot du jour : un mot par jour pour tout le monde, joué sur sa propre page (motdujour.html) -->
   <section class="ih-mdj glass" id="ih-mdj" hidden aria-labelledby="ih-mdj-t">
-    <div class="ih-mdj-top"><span class="ih-ic ih-mdj-ic" style="--c:#2b5bb8" aria-hidden="true"><img src="icons/web/motdujour.webp?v=77" alt="" decoding="async"></span><b id="ih-mdj-t">Mot du jour</b><span id="ih-mdj-meta"></span></div>
+    <div class="ih-mdj-top"><span class="ih-ic ih-mdj-ic" style="--c:#2b5bb8" aria-hidden="true"><img src="icons/web/motdujour.webp?v=78" alt="" decoding="async"></span><b id="ih-mdj-t">Mot du jour</b><span id="ih-mdj-meta"></span></div>
     <div class="ih-mdj-tiles" id="ih-mdj-tiles" aria-hidden="true"></div>
     <div id="ih-mdj-list"></div>
     <a class="btn primary" id="ih-mdj-go" href="motdujour">Jouer</a>
   </section>
 
-  <!-- ce qui arrive, et les idées des joueurs (nouveautes.js) -->
+  <!-- les idées des joueurs (nouveautes.js) -->
   <section class="ih-soon glass" aria-labelledby="ih-soon-t">
-    <div class="ih-soon-t"><b id="ih-soon-t">Bientôt dans la boîte</b><span>Le jeu de dames et les échecs.</span></div>
+    <div class="ih-soon-t"><b id="ih-soon-t">Une idée de jeu ?</b><span>Dis-nous ce que tu voudrais trouver dans la boîte.</span></div>
     <button class="btn" id="btn-sugg" type="button">Vos suggestions</button>
   </section>
 
@@ -287,6 +299,18 @@
         <span class="gname">Menteur</span>
         <span class="gdesc">Cinq dés sous ton gobelet. Annonce, monte, ou crie au menteur.</span>
         <span class="gmeta"><b>2 à 6</b><i>20 min</i></span>
+      </button>
+      <button class="gcard g-echecs" type="button" data-game="echecs">
+        <span class="gart" aria-hidden="true"><span class="ecx-art"><svg viewBox="0 0 100 100"><use href="#ecx-n"/></svg></span></span>
+        <span class="gname">Échecs</span>
+        <span class="gdesc">Le roi des jeux. Contre un ami, ou contre le robot.</span>
+        <span class="gmeta"><b>2 joueurs</b><i>20 min</i></span>
+      </button>
+      <button class="gcard g-dames" type="button" data-game="dames">
+        <span class="gart" aria-hidden="true"><span class="dmx-art"><i></i><i></i><i></i></span></span>
+        <span class="gname">Dames</span>
+        <span class="gdesc">Prise obligatoire, rafles et dames volantes.</span>
+        <span class="gmeta"><b>2 joueurs</b><i>20 min</i></span>
       </button>
       <button class="gcard g-navale" type="button" data-game="navale">
         <span class="gart" aria-hidden="true"><span class="nvx-art"><i></i><b></b></span></span>
@@ -472,6 +496,20 @@
       <label class="field row"><span>Robots à table</span><select id="opt-mt-bots"><option value="0">Aucun</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
       <p class="fine">Chacun ses cinq dés, cachés sur son téléphone. Les robots annoncent, bluffent et crient au menteur.</p>
     </div>
+    <div class="opts" id="opts-echecs" hidden>
+      <label class="field row"><span>Adversaire</span><select id="opt-ec-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
+      <label class="field row"><span>Niveau du robot</span><select id="opt-ec-level"><option value="1">Débutant</option><option value="2" selected>Moyen</option><option value="3">Fort</option></select></label>
+      <label class="field row"><span>L’hôte joue</span><select id="opt-ec-color"><option value="hasard" selected>Au hasard</option><option value="blanc">Les blancs</option><option value="noir">Les noirs</option></select></label>
+      <label class="field row"><span>Pendule</span><select id="opt-ec-clock"><option value="0" selected>Sans</option><option value="15">15 min chacun</option><option value="10">10 min chacun</option><option value="5">5 min chacun</option></select></label>
+      <p class="fine">Un duel à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
+    </div>
+    <div class="opts" id="opts-dames" hidden>
+      <label class="field row"><span>Adversaire</span><select id="opt-dm-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
+      <label class="field row"><span>Niveau du robot</span><select id="opt-dm-level"><option value="1">Débutant</option><option value="2" selected>Moyen</option><option value="3">Fort</option></select></label>
+      <label class="field row"><span>L’hôte joue</span><select id="opt-dm-color"><option value="hasard" selected>Au hasard</option><option value="blanc">Les blancs</option><option value="noir">Les noirs</option></select></label>
+      <label class="field row"><span>Damier</span><select id="opt-dm-size"><option value="10" selected>10 × 10, règles françaises</option><option value="8">8 × 8, partie rapide</option></select></label>
+      <p class="fine">Un duel à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
+    </div>
     <div class="opts" id="opts-navale" hidden>
       <label class="field row"><span>Adversaire</span><select id="opt-nv-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
       <label class="field row"><span>On rejoue quand on touche</span><input id="opt-nv-replay" type="checkbox" class="tick" checked></label>
@@ -628,6 +666,16 @@
 <!-- ====================== MENTEUR ====================== -->
 <section class="screen play menteur tb" id="s-menteur" hidden>
   <div class="stack" id="mt-main"></div>
+</section>
+
+<!-- ====================== ÉCHECS ====================== -->
+<section class="screen play echecs tb" id="s-echecs" hidden>
+  <div class="stack" id="ec-main"></div>
+</section>
+
+<!-- ====================== DAMES ====================== -->
+<section class="screen play dames tb" id="s-dames" hidden>
+  <div class="stack" id="dm-main"></div>
 </section>
 
 <!-- ====================== BATAILLE NAVALE ====================== -->
@@ -836,66 +884,70 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="core.js?v=77"></script>
-<script src="engines/sablier.js?v=77"></script>
-<script src="app.js?v=77"></script>
-<script src="toile.js?v=77"></script>
-<script src="sablier-ui.js?v=77"></script>
-<script src="table.js?v=77"></script>
-<script src="engines/undercover.js?v=77"></script>
-<script src="undercover.js?v=77"></script>
-<script src="geo-config.js?v=77"></script>
-<script src="engines/geo.js?v=77"></script>
-<script src="geo.js?v=77"></script>
-<script src="engines/chromo.js?v=77"></script>
-<script src="chromo.js?v=77"></script>
-<script src="engines/kems.js?v=77"></script>
-<script src="kems.js?v=77"></script>
-<script src="engines/mirage.js?v=77"></script>
-<script src="mirage.js?v=77"></script>
-<script src="engines/douze.js?v=77"></script>
-<script src="douze.js?v=77"></script>
-<script src="engines/petitbac.js?v=77"></script>
-<script src="petitbac.js?v=77"></script>
-<script src="engines/loupgarou.js?v=77"></script>
-<script src="loupgarou.js?v=77"></script>
-<script src="engines/naufrages.js?v=77"></script>
-<script src="naufrages.js?v=77"></script>
-<script src="naufrages3d.js?v=77"></script>
-<script src="engines/memes.js?v=77"></script>
-<script src="memes.js?v=77"></script>
-<script src="limite-cartes.js?v=77"></script>
-<script src="engines/limite.js?v=77"></script>
-<script src="limite.js?v=77"></script>
-<script src="engines/solitaire.js?v=77"></script>
-<script src="solitaire.js?v=77"></script>
-<script src="engines/poker.js?v=77"></script>
-<script src="poker.js?v=77"></script>
-<script src="engines/bataille.js?v=77"></script>
-<script src="bataille.js?v=77"></script>
-<script src="diapason-cartes.js?v=77"></script>
-<script src="engines/diapason.js?v=77"></script>
-<script src="diapason.js?v=77"></script>
-<script src="duel-cartes.js?v=77"></script>
-<script src="engines/duel.js?v=77"></script>
-<script src="duel.js?v=77"></script>
-<script src="engines/teldes.js?v=77"></script>
-<script src="teldes.js?v=77"></script>
-<script src="nomcode-mots.js?v=77"></script>
-<script src="engines/nomcode.js?v=77"></script>
-<script src="nomcode.js?v=77"></script>
-<script src="engines/unseulindice.js?v=77"></script>
-<script src="unseulindice.js?v=77"></script>
-<script src="engines/menteur.js?v=77"></script>
-<script src="menteur.js?v=77"></script>
-<script src="engines/navale.js?v=77"></script>
-<script src="navale.js?v=77"></script>
-<script src="engines/coinche.js?v=77"></script>
-<script src="coinche.js?v=77"></script>
-<script src="desk.js?v=77"></script>
-<script src="regles.js?v=77"></script>
-<script src="salon.js?v=77"></script>
-<script src="nouveautes.js?v=77"></script>
-<script src="ios.js?v=77"></script>
+<script src="core.js?v=78"></script>
+<script src="engines/sablier.js?v=78"></script>
+<script src="app.js?v=78"></script>
+<script src="toile.js?v=78"></script>
+<script src="sablier-ui.js?v=78"></script>
+<script src="table.js?v=78"></script>
+<script src="engines/undercover.js?v=78"></script>
+<script src="undercover.js?v=78"></script>
+<script src="geo-config.js?v=78"></script>
+<script src="engines/geo.js?v=78"></script>
+<script src="geo.js?v=78"></script>
+<script src="engines/chromo.js?v=78"></script>
+<script src="chromo.js?v=78"></script>
+<script src="engines/kems.js?v=78"></script>
+<script src="kems.js?v=78"></script>
+<script src="engines/mirage.js?v=78"></script>
+<script src="mirage.js?v=78"></script>
+<script src="engines/douze.js?v=78"></script>
+<script src="douze.js?v=78"></script>
+<script src="engines/petitbac.js?v=78"></script>
+<script src="petitbac.js?v=78"></script>
+<script src="engines/loupgarou.js?v=78"></script>
+<script src="loupgarou.js?v=78"></script>
+<script src="engines/naufrages.js?v=78"></script>
+<script src="naufrages.js?v=78"></script>
+<script src="naufrages3d.js?v=78"></script>
+<script src="engines/memes.js?v=78"></script>
+<script src="memes.js?v=78"></script>
+<script src="limite-cartes.js?v=78"></script>
+<script src="engines/limite.js?v=78"></script>
+<script src="limite.js?v=78"></script>
+<script src="engines/solitaire.js?v=78"></script>
+<script src="solitaire.js?v=78"></script>
+<script src="engines/poker.js?v=78"></script>
+<script src="poker.js?v=78"></script>
+<script src="engines/bataille.js?v=78"></script>
+<script src="bataille.js?v=78"></script>
+<script src="diapason-cartes.js?v=78"></script>
+<script src="engines/diapason.js?v=78"></script>
+<script src="diapason.js?v=78"></script>
+<script src="duel-cartes.js?v=78"></script>
+<script src="engines/duel.js?v=78"></script>
+<script src="duel.js?v=78"></script>
+<script src="engines/teldes.js?v=78"></script>
+<script src="teldes.js?v=78"></script>
+<script src="nomcode-mots.js?v=78"></script>
+<script src="engines/nomcode.js?v=78"></script>
+<script src="nomcode.js?v=78"></script>
+<script src="engines/unseulindice.js?v=78"></script>
+<script src="unseulindice.js?v=78"></script>
+<script src="engines/menteur.js?v=78"></script>
+<script src="menteur.js?v=78"></script>
+<script src="engines/navale.js?v=78"></script>
+<script src="navale.js?v=78"></script>
+<script src="engines/coinche.js?v=78"></script>
+<script src="coinche.js?v=78"></script>
+<script src="engines/echecs.js?v=78"></script>
+<script src="echecs.js?v=78"></script>
+<script src="engines/dames.js?v=78"></script>
+<script src="dames.js?v=78"></script>
+<script src="desk.js?v=78"></script>
+<script src="regles.js?v=78"></script>
+<script src="salon.js?v=78"></script>
+<script src="nouveautes.js?v=78"></script>
+<script src="ios.js?v=78"></script>
 </body>
 </html>

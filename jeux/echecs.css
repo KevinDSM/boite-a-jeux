@@ -1,0 +1,107 @@
+/* echecs : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Un club d'échecs le soir : tapis vert bouteille sous la lampe, échiquier en bois clair et noyer, pièces ivoire
+   et ébène. La table reste sombre même en thème clair. Les sélecteurs passent par html[data-game] : la tuile
+   .gcard[data-game="echecs"] du salon n'est pas touchée.
+   Images 3D facultatives (img/echecs/wk.webp … bp.webp : w|b + k q r b n p, pièce vue de trois quarts, fond
+   transparent) : elles remplacent les caractères. */
+html[data-game="echecs"], html[data-theme="light"][data-game="echecs"] {
+  --bg: oklch(0.19 0.035 160); --surface: oklch(0.25 0.04 160); --surface-2: oklch(0.3 0.045 160); --line: oklch(0.42 0.04 160 / .6);
+  --ink: oklch(0.97 0.012 95); --ink-2: oklch(0.87 0.025 120); --mute: oklch(0.79 0.03 130);
+  --acc: oklch(0.86 0.14 84); --acc-soft: oklch(0.91 0.1 86); --on-acc: oklch(0.25 0.06 60); --neg: oklch(0.62 0.21 27); --pos: oklch(0.84 0.14 155); --gold: var(--acc);
+  --glass-tint: oklch(0.22 0.035 160 / .5); --glass-tint-thick: oklch(0.19 0.035 160 / .82);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.43 0.08 155); --felt-mid: oklch(0.29 0.065 158); --felt-lo: oklch(0.13 0.03 165);
+}
+/* les couleurs de l'échiquier valent partout : la carte du salon et les règles le dessinent aussi */
+:root {
+  --ecx-light: oklch(0.88 0.05 80); --ecx-dark: oklch(0.6 0.075 55); --ecx-frame: oklch(0.33 0.05 45);
+  --ecx-ivory: oklch(0.97 0.015 90); --ecx-ebony: oklch(0.24 0.02 50); --ecx-last: oklch(0.85 0.15 100 / .55); --ecx-check: oklch(0.62 0.23 27);
+}
+#s-echecs { padding-bottom: 0; }
+#s-echecs button.tb-chip { min-height: 44px; }
+/* style.css fait « respirer » tout .btn.danger (ancien Chromo) : le bouton bougerait sous le doigt */
+#s-echecs .tb-btn.danger { animation: none; }
+[data-game="echecs"] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }
+
+/* la table : l'adversaire en face, l'échiquier au milieu */
+.ecx-table { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ecx-table .tb-opps { height: 96px; width: 100%; }
+.ecx-table.watch .tb-opps { height: 104px; }
+.ecx-table .tb-opps:has(.tb-tag) { height: 114px; }
+.ecx-under { display: inline-flex; align-items: center; gap: 5px; margin-top: 2px; }
+.ecx-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 5px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .45), 0 0 0 2px rgba(255, 255, 255, .25); }
+.ecx-under .ecx-dot { margin: 0; }
+.ecx-dot.w { background: var(--ecx-ivory); } .ecx-dot.b { background: var(--ecx-ebony); }
+.ecx-clock { font: 700 13px/1 var(--font); font-variant-numeric: tabular-nums; padding: 3px 7px; border-radius: 7px; background: rgba(0, 0, 0, .35); color: var(--ink); }
+.ecx-clock.low { background: var(--neg); color: #fff; }
+.ecx-taken { display: inline-flex; flex-wrap: wrap; justify-content: center; max-width: 110px; min-height: 14px; line-height: 1; }
+.ecx-taken .ecx-pc.mini { width: 15px; height: 16px; margin-right: -4px; }
+.ecx-pc.mini svg { width: 100%; height: 100%; stroke-width: 5; }
+
+/* l'échiquier : il tient avec le plateau dans la hauteur de l'écran */
+.ecx-wrap { width: min(100%, calc(100dvh - 420px), 560px); min-width: 280px; padding: 7px; border-radius: 14px;
+  background: linear-gradient(160deg, color-mix(in oklab, var(--ecx-frame), white 14%), var(--ecx-frame) 50%, color-mix(in oklab, var(--ecx-frame), black 25%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 18px 34px -12px rgba(0, 0, 0, .7); }
+.ecx-board { display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); aspect-ratio: 1; border-radius: 6px; overflow: hidden; user-select: none; -webkit-user-select: none; }
+.ecx-sq { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; border-radius: 0; cursor: default; font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.ecx-sq.l { background: var(--ecx-light); } .ecx-sq.d { background: var(--ecx-dark); }
+.ecx-sq.last::before { content: ""; position: absolute; inset: 0; background: var(--ecx-last); }
+.ecx-sq.check::before { content: ""; position: absolute; inset: 0; background: radial-gradient(closest-side, var(--ecx-check), color-mix(in oklab, var(--ecx-check), transparent 60%) 70%, transparent); }
+.ecx-board.can .ecx-sq.mov { cursor: pointer; }
+.ecx-sq.sel::before { content: ""; position: absolute; inset: 0; background: oklch(0.8 0.15 150 / .55); }
+.ecx-sq.to { cursor: pointer; }
+.ecx-sq.to::after { content: ""; position: absolute; width: 30%; height: 30%; border-radius: 50%; background: rgba(20, 40, 25, .38); }
+.ecx-sq.hit { cursor: pointer; }
+.ecx-sq.hit::after { content: ""; position: absolute; inset: 4%; border-radius: 50%; box-shadow: inset 0 0 0 4px rgba(20, 40, 25, .42); }
+.ecx-sq b { position: absolute; font: 700 9.5px/1 var(--font); pointer-events: none; z-index: 1; }
+.ecx-sq.l b { color: var(--ecx-dark); } .ecx-sq.d b { color: var(--ecx-light); }
+.ecx-sq b.rk { top: 2px; left: 3px; } .ecx-sq b.fl { bottom: 2px; right: 3px; }
+
+/* une pièce : son dessin vectoriel (#ecx-sprite), corps --pf, contour --ps, détails --pd ; ou l'image 3D */
+.ecx-pc { position: relative; z-index: 1; display: grid; place-items: center; width: 100%; height: 100%; pointer-events: none; }
+.ecx-pc svg { width: 86%; height: 86%; overflow: visible; fill: var(--pf); stroke: var(--ps); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+.ecx-pc svg .d { fill: none; stroke: var(--pd); stroke-width: 3; }
+.ecx-pc svg .e { fill: var(--pd); stroke: none; }
+.ecx-pc.w { --pf: var(--ecx-ivory); --ps: oklch(0.22 0.02 50); --pd: oklch(0.45 0.03 60); }
+.ecx-pc.b { --pf: var(--ecx-ebony); --ps: oklch(0.12 0.01 50); --pd: oklch(0.78 0.03 70); }
+.ecx-pc:not(.mini) { filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, .45)); }
+.ecx-pc.has-img img { width: 92%; height: 92%; object-fit: contain; }
+.ecx-pc.pop { animation: ecx-land .32s cubic-bezier(.2, .9, .3, 1.25); }
+@keyframes ecx-land { from { scale: 1.18; translate: 0 -10%; } }
+.ecx-pc.mini { display: inline-grid; filter: none; }
+.ecx-pc.mini img { width: 100%; height: 100%; }
+
+/* le plateau : la promotion, les gestes */
+.ecx-tray .tb-tray-top > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.ecx-tray .ecx-taken { max-width: 160px; justify-content: flex-end; }
+.ecx-promo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 4px 0; }
+.ecx-promo-b { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 76px; padding: 6px 0; border: 0; border-radius: 14px; cursor: pointer;
+  background: var(--ecx-light); color: oklch(0.3 0.04 50); font: 600 12px var(--font); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .15); }
+.ecx-promo-b .ecx-pc { width: 48px; height: 48px; }
+.ecx-promo-b small { font-size: 12px; }
+
+/* les coups, notation française (C cavalier, F fou, T tour, D dame, R roi) */
+.ecx-moves { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; font-variant-numeric: tabular-nums; }
+.ecx-moves li { display: grid; grid-template-columns: 30px 1fr 1fr; gap: 6px; padding: 4px 0; border-top: .5px solid rgba(255, 255, 255, .1); font-size: 14px; }
+.ecx-moves li span { color: var(--ink-2); }
+.ecx-moves b { font-weight: 600; }
+.ecx-watch { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+.ecx-side-t { margin-top: 14px; }
+#ec-main > :is(.ec-side, .ec-log) { display: none; }
+
+@media (max-width: 380px) { .ecx-wrap { padding: 5px; } .ecx-table .tb-opps { height: 88px; } }
+/* PC : l'échiquier en grand, les joueurs et les coups dans la colonne de droite */
+@media (min-width: 1100px) {
+  #ec-main.desk-split > .desk-side > :is(.ec-side, .ec-log) { display: block; }
+  .ecx-wrap { width: min(100%, calc(100dvh / var(--z, 1) - 450px), 600px); min-width: 330px; padding: 10px; border-radius: 16px; }
+  .ecx-sq b { font-size: 11px; }
+  #s-echecs .tb-tray { max-width: 640px; width: 100%; margin: auto auto 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ecx-pc.pop { animation: none; } }
+
+/* le dessin de la carte du salon (si l'icône 3D manque) : un coin d'échiquier et un cavalier */
+.ecx-art { position: relative; display: block; width: 54px; height: 54px; border-radius: 10px; overflow: hidden;
+  background: conic-gradient(var(--ecx-dark) 25%, var(--ecx-light) 0 50%, var(--ecx-dark) 0 75%, var(--ecx-light) 0) 0 0 / 50% 50%; box-shadow: inset 0 0 0 2px var(--ecx-frame); }
+.ecx-art svg { position: absolute; inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); fill: var(--ecx-ivory); stroke: oklch(0.22 0.02 50); stroke-width: 3.5; stroke-linejoin: round; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .5)); }
+.ecx-art svg .d { fill: none; } .ecx-art svg .e { fill: oklch(0.22 0.02 50); stroke: none; }

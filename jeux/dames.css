@@ -1,0 +1,85 @@
+/* dames : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Un café le soir : tapis bordeaux sous la lampe, damier en bois clair et acajou, pions ivoire et ébène tournés,
+   la dame couronnée d'or. La table reste sombre même en thème clair. Les sélecteurs passent par html[data-game] :
+   la tuile .gcard[data-game="dames"] du salon n'est pas touchée.
+   Images 3D facultatives (img/dames/pion-blanc.webp, pion-noir.webp, dame-blanche.webp, dame-noire.webp, vues de
+   trois quarts, fond transparent) : elles remplacent le dessin CSS. */
+html[data-game="dames"], html[data-theme="light"][data-game="dames"] {
+  --bg: oklch(0.19 0.04 20); --surface: oklch(0.25 0.045 20); --surface-2: oklch(0.3 0.05 20); --line: oklch(0.42 0.05 20 / .6);
+  --ink: oklch(0.97 0.012 80); --ink-2: oklch(0.87 0.025 60); --mute: oklch(0.79 0.03 50);
+  --acc: oklch(0.86 0.14 84); --acc-soft: oklch(0.91 0.1 86); --on-acc: oklch(0.25 0.06 60); --neg: oklch(0.62 0.21 27); --pos: oklch(0.84 0.14 155); --gold: var(--acc);
+  --glass-tint: oklch(0.22 0.04 20 / .5); --glass-tint-thick: oklch(0.19 0.04 20 / .82);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.42 0.11 22); --felt-mid: oklch(0.29 0.085 20); --felt-lo: oklch(0.13 0.035 20);
+}
+:root {
+  --dmx-light: oklch(0.87 0.05 75); --dmx-dark: oklch(0.45 0.09 40); --dmx-frame: oklch(0.3 0.05 35);
+  --dmx-ivory: oklch(0.95 0.02 85); --dmx-ivory-2: oklch(0.8 0.035 75); --dmx-ebony: oklch(0.3 0.025 40); --dmx-ebony-2: oklch(0.17 0.02 40);
+  --dmx-crown: oklch(0.82 0.15 85); --dmx-last: oklch(0.85 0.15 100 / .4);
+}
+#s-dames { padding-bottom: 0; }
+#s-dames button.tb-chip { min-height: 44px; }
+#s-dames .tb-btn.danger { animation: none; }   /* style.css fait « respirer » tout .btn.danger */
+[data-game="dames"] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }
+#s-dames .tb-chip .ecx-dot { margin: 0 3px 0 0; }
+
+.dmx-table { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dmx-table .tb-opps { height: 92px; width: 100%; }
+.dmx-table.watch .tb-opps { height: 100px; }
+.dmx-table .tb-opps:has(.tb-tag) { height: 110px; }
+.dmx-kings { font: 650 11.5px/1 var(--font); color: var(--dmx-crown); }
+
+/* le damier */
+.dmx-wrap { width: min(100%, calc(100dvh - 410px), 600px); min-width: 290px; padding: 7px; border-radius: 14px;
+  background: linear-gradient(160deg, color-mix(in oklab, var(--dmx-frame), white 14%), var(--dmx-frame) 50%, color-mix(in oklab, var(--dmx-frame), black 25%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 18px 34px -12px rgba(0, 0, 0, .7); }
+.dmx-board { display: grid; grid-template: repeat(var(--n), 1fr) / repeat(var(--n), 1fr); aspect-ratio: 1; border-radius: 6px; overflow: hidden; user-select: none; -webkit-user-select: none; container-type: inline-size; }
+.dmx-sq { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; border-radius: 0; font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.dmx-sq.l { background: var(--dmx-light); }
+.dmx-sq.d { background: var(--dmx-dark); cursor: default; }
+.dmx-sq.last::before { content: ""; position: absolute; inset: 0; background: var(--dmx-last); }
+.dmx-board.can .dmx-sq.mov { cursor: pointer; }
+.dmx-board.can .dmx-sq.mov:not(.sel)::before { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 2px oklch(0.85 0.14 140 / .75); }
+.dmx-sq.sel::before { content: ""; position: absolute; inset: 0; background: oklch(0.75 0.15 150 / .6); }
+.dmx-sq.step::before { content: ""; position: absolute; inset: 0; background: oklch(0.75 0.15 150 / .35); }
+.dmx-sq.to, .dmx-sq.via { cursor: pointer; }
+.dmx-sq.to::after { content: ""; position: absolute; width: 34%; height: 34%; border-radius: 50%; background: oklch(0.88 0.15 140 / .85); box-shadow: 0 0 10px oklch(0.88 0.15 140 / .7); }
+.dmx-sq.via::after { content: ""; position: absolute; width: 30%; height: 30%; border-radius: 50%; box-shadow: inset 0 0 0 3px oklch(0.88 0.15 140 / .85); }
+.dmx-sq.taken .dmx-pc { opacity: .4; }
+.dmx-sq.gone::after { content: ""; position: absolute; width: 60%; height: 60%; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .35); animation: dmx-gone .6s ease-out forwards; }
+@keyframes dmx-gone { from { opacity: 1; scale: 1; } to { opacity: 0; scale: 1.4; } }
+
+/* un pion tourné : un disque bombé, avec ses cannelures ; la dame est un pion doublé et couronné */
+.dmx-pc { position: relative; z-index: 1; width: 80%; height: 80%; border-radius: 50%; pointer-events: none; display: grid; place-items: center; }
+.dmx-pc.w { background: radial-gradient(circle at 35% 30%, #fff, var(--dmx-ivory) 40%, var(--dmx-ivory-2)); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18), inset 0 -3px 0 rgba(0, 0, 0, .12), 0 3px 4px rgba(0, 0, 0, .45); }
+.dmx-pc.b { background: radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--dmx-ebony), white 22%), var(--dmx-ebony) 45%, var(--dmx-ebony-2)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12), inset 0 -3px 0 rgba(0, 0, 0, .3), 0 3px 4px rgba(0, 0, 0, .5); }
+.dmx-pc > i { width: 58%; height: 58%; border-radius: 50%; }
+.dmx-pc.w > i { box-shadow: inset 0 0 0 1.5px rgba(120, 90, 50, .25), 0 0 0 1.5px rgba(255, 255, 255, .5); }
+.dmx-pc.b > i { box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, .4), 0 0 0 1.5px rgba(255, 255, 255, .1); }
+.dmx-pc.king { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .2), 0 -3px 0 -1px var(--dmx-crown), 0 4px 5px rgba(0, 0, 0, .5); }
+.dmx-pc.king > i { width: 54%; height: 54%; box-shadow: none;
+  background: no-repeat center / 100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e8b93a' stroke='%237a5a12' stroke-width='1' d='M3 18 2 7l5 4 5-7 5 7 5-4-1 11z'/%3E%3C/svg%3E"); }
+.dmx-pc.has-img { background: none; box-shadow: none; width: 92%; height: 92%; }
+.dmx-pc.has-img img { width: 100%; height: 100%; object-fit: contain; }
+.dmx-pc.pop { animation: dmx-land .32s cubic-bezier(.2, .9, .3, 1.25); }
+@keyframes dmx-land { from { scale: 1.2; translate: 0 -10%; } }
+
+.dmx-tray .tb-tray-top > span:first-child { display: inline-flex; align-items: center; gap: 4px; }
+#dm-main > :is(.dm-side, .dm-log) { display: none; }
+
+@media (max-width: 380px) { .dmx-wrap { padding: 5px; } }
+@media (min-width: 1100px) {
+  #dm-main.desk-split > .desk-side > :is(.dm-side, .dm-log) { display: block; }
+  .dmx-wrap { width: min(100%, calc(100dvh / var(--z, 1) - 465px), 620px); min-width: 300px; padding: 10px; border-radius: 16px; }
+  #s-dames .tb-tray { max-width: 640px; width: 100%; margin: auto auto 0; }
+}
+@media (prefers-reduced-motion: reduce) { .dmx-pc.pop, .dmx-sq.gone::after { animation: none; } }
+
+/* le dessin de la carte du salon (si l'icône 3D manque) : trois pions sur un coin de damier */
+.dmx-art { position: relative; display: block; width: 54px; height: 54px; border-radius: 10px; overflow: hidden;
+  background: conic-gradient(var(--dmx-dark) 25%, var(--dmx-light) 0 50%, var(--dmx-dark) 0 75%, var(--dmx-light) 0) 0 0 / 50% 50%; box-shadow: inset 0 0 0 2px var(--dmx-frame); }
+.dmx-art i { position: absolute; width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 2px 3px rgba(0, 0, 0, .5); }
+.dmx-art i:nth-child(1) { left: 4px; top: 4px; background: radial-gradient(circle at 35% 30%, #fff, var(--dmx-ivory) 45%, var(--dmx-ivory-2)); }
+.dmx-art i:nth-child(2) { right: 4px; top: 4px; background: radial-gradient(circle at 35% 30%, #777, var(--dmx-ebony) 45%, var(--dmx-ebony-2)); }
+.dmx-art i:nth-child(3) { right: 4px; bottom: 4px; background: radial-gradient(circle at 35% 30%, #777, var(--dmx-ebony) 45%, var(--dmx-ebony-2)); box-shadow: 0 -2px 0 -1px var(--dmx-crown), 0 2px 3px rgba(0, 0, 0, .5); }

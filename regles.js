@@ -372,6 +372,34 @@ const RULES = [
     ['« Menteur ! »', `<p>On lève tous les gobelets et on compte. S’il y a au moins autant de dés que l’annonce, celui qui a crié perd un dé. Sinon, c’est l’annonceur. Celui qui perd un dé ouvre la manche suivante. Sans dé, on sort de la partie.</p>`],
     ['Robots et absents', `<p>De 2 à 6 joueurs, robots compris. Les robots comptent leurs dés et estiment ceux des autres, puis annoncent, bluffent un peu et crient au menteur. Un joueur absent depuis 15 secondes à son tour est remplacé par un robot le temps de son annonce.</p>`],
   ] },
+  { key: 'echecs', parts: [
+    ['Le principe', `<p>Les échecs, en entier, à deux. Chaque camp a 16 pièces : un roi, une dame, deux tours, deux fous, deux cavaliers et huit pions. Les blancs commencent. Le but : mettre le roi adverse en échec et mat, c’est-à-dire attaqué sans aucun moyen d’échapper.</p>`],
+    ['Les joueurs', `<p>L’hôte affronte le premier ami arrivé dans le salon, ou le robot (Débutant, Moyen ou Fort). L’hôte choisit sa couleur, ou laisse le hasard. Les autres regardent la partie en direct. Celui qui a les noirs voit l’échiquier de son côté.</p>`],
+    ['Jouer un coup', `<ul>
+      <li>Touche une de tes pièces : les cases où elle peut aller s’allument (un point pour une case libre, un cercle pour une prise). Touche l’arrivée.</li>
+      <li>Seuls les coups permis sont proposés : impossible de laisser ton roi en échec.</li>
+      <li><b>Roque :</b> déplace ton roi de deux cases vers la tour ; la tour saute par-dessus. Ni le roi ni la tour ne doivent avoir bougé, et le roi ne passe pas par une case attaquée.</li>
+      <li><b>Prise en passant</b> et <b>promotion</b> (tu choisis dame, tour, fou ou cavalier) sont comprises.</li></ul>`],
+    ['La fin', `<ul>
+      <li><b>Gagné :</b> échec et mat, abandon de l’autre, ou temps écoulé à la pendule.</li>
+      <li><b>Nulle :</b> pat (plus de coup permis sans être en échec), même position trois fois, 50 coups sans prise ni pion avancé, plus assez de pièces pour mater, ou nulle proposée et acceptée.</li></ul>`],
+    ['La pendule', `<p>En option : 15, 10 ou 5 minutes pour toute la partie, chacun. Ton temps ne file que pendant ton tour.</p>`],
+    ['Le robot', `<p>Débutant fait des erreurs, Moyen voit les prises et les menaces simples, Fort calcule plusieurs coups à l’avance. Contre lui, « Reprendre mon coup » annule ton dernier coup. Un joueur absent depuis une minute à son tour est remplacé par le robot pour ce coup.</p>`],
+  ] },
+  { key: 'dames', parts: [
+    ['Le principe', `<p>Le jeu de dames, avec les règles françaises (dames internationales). Un damier de 10 × 10 et 20 pions chacun, sur les cases foncées ; ou un damier de 8 × 8 et 12 pions pour une partie rapide, mêmes règles. Les blancs commencent. On gagne quand l’autre ne peut plus jouer : plus de pièces, ou toutes bloquées.</p>`],
+    ['Les joueurs', `<p>L’hôte affronte le premier ami arrivé dans le salon, ou le robot (Débutant, Moyen ou Fort). L’hôte choisit sa couleur, ou laisse le hasard. Les autres regardent. Celui qui a les noirs voit le damier de son côté.</p>`],
+    ['Les pions', `<ul>
+      <li>Un pion avance d’une case en diagonale, vers l’avant.</li>
+      <li>Il <b>prend</b> en sautant une pièce adverse collée à lui, vers l’avant comme vers l’arrière, et peut enchaîner les prises : c’est une rafle.</li>
+      <li>Un pion qui <b>termine</b> son coup sur la dernière rangée devient dame. S’il ne fait qu’y passer pendant une rafle, il reste pion.</li></ul>`],
+    ['Les dames', `<p>La dame vole : elle se déplace d’autant de cases qu’elle veut sur sa diagonale, et prend une pièce à distance si les cases autour sont libres, pour se poser sur n’importe quelle case libre derrière.</p>`],
+    ['Les prises', `<ul>
+      <li><b>La prise est obligatoire</b>, et il faut choisir le coup qui prend le plus de pièces (une dame compte comme un pion).</li>
+      <li>Les pièces prises ne disparaissent qu’à la fin de la rafle, et on ne saute jamais deux fois la même.</li>
+      <li>Pour une rafle, touche ta pièce puis chaque case où elle s’arrête ; dès qu’il n’y a plus qu’un chemin possible, le coup part.</li></ul>`],
+    ['La fin', `<p>Gagné quand l’autre ne peut plus jouer, ou abandonne. Nulle si la même position revient trois fois, après 25 coups de dames de chaque côté sans prise ni pion bougé, ou si une nulle proposée est acceptée. Contre le robot, « Reprendre mon coup » annule ton dernier coup.</p>`],
+  ] },
   { key: 'navale', parts: [
     ['Le principe', `<p>Le grand classique, à deux. Chacun cache sa flotte sur une grille de 10 × 10, puis on tire à tour de rôle sur la grille de l’autre. Le premier qui coule toute la flotte adverse gagne. Ta flotte n’apparaît jamais sur le téléphone de l’autre.</p>`],
     ['Les joueurs', `<p>L’hôte affronte le premier ami arrivé dans le salon, ou le robot. Les autres regardent : ils voient les tirs des deux amiraux, jamais les flottes, qui ne se dévoilent qu’à la fin.</p>`],

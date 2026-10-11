@@ -5,6 +5,8 @@
 'use strict';
 
 const NEWS = [
+  ['2026-10-11', 'Deux nouveaux jeux : les Échecs et les Dames, contre un ami ou contre le robot.'],
+  ['2026-10-11', 'Sur téléphone, les réglages d’un jeu s’ouvrent juste sous sa carte.'],
   ['2026-10-11', 'Plus de chansons, plus de mots à l’Undercover, et presque plus de répétitions.'],
   ['2026-10-11', 'Les Naufragés passent en 3D : une vraie île, la météo, le radeau, et vous autour du feu.'],
   ['2026-10-11', 'Une idée, un bug ? Le bouton « Vos suggestions », juste là sur l’accueil.'],

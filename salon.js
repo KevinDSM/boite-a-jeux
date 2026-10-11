@@ -162,10 +162,10 @@ function drawInvite({ name = '', emoji = '', code = '', game = '', faces = [] } 
     fitFont(ctx, name, 800, 118, 64, maxW); ctx.fillStyle = INV.ink; ctx.fillText(name, 76, 250);
     ctx.font = `700 56px ${INV_FONT}`; ctx.fillStyle = INV.acc; ctx.fillText('vous invite à jouer', 78, 322);
   } else {
-    ctx.font = `800 118px ${INV_FONT}`; ctx.fillStyle = INV.ink; ctx.fillText('26 jeux', 76, 250);
+    ctx.font = `800 118px ${INV_FONT}`; ctx.fillStyle = INV.ink; ctx.fillText('28 jeux', 76, 250);
     ctx.font = `700 56px ${INV_FONT}`; ctx.fillStyle = INV.acc; ctx.fillText('pour la soirée', 78, 322);
   }
-  const line = game ? `Au programme : ${game}` : name ? '26 jeux, chacun sur son téléphone' : 'Chacun joue sur son téléphone';
+  const line = game ? `Au programme : ${game}` : name ? '28 jeux, chacun sur son téléphone' : 'Chacun joue sur son téléphone';
   fitFont(ctx, line, 500, 32, 22, maxW); ctx.fillStyle = INV.ink2; ctx.fillText(line, 78, 384);
 
   if (code) {

@@ -26,12 +26,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-unseulindice' || shownId === 's-menteur' || shownId === 's-navale' || shownId === 's-coinche';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-unseulindice' || shownId === 's-menteur' || shownId === 's-navale' || shownId === 's-dames' || shownId === 's-echecs' || shownId === 's-coinche';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-unseulindice' && id !== 's-menteur' && id !== 's-navale' && id !== 's-coinche') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-unseulindice' && id !== 's-menteur' && id !== 's-navale' && id !== 's-dames' && id !== 's-echecs' && id !== 's-coinche') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-unseulindice' ? 'unseulindice' : id === 's-menteur' ? 'menteur' : id === 's-navale' ? 'navale' : id === 's-coinche' ? 'coinche' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-unseulindice' ? 'unseulindice' : id === 's-menteur' ? 'menteur' : id === 's-navale' ? 'navale' : id === 's-dames' ? 'dames' : id === 's-echecs' ? 'echecs' : id === 's-coinche' ? 'coinche' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -356,6 +356,8 @@ function render() {
   else if (s.phase === 'usi') { show('s-unseulindice'); renderUnSeulIndice(s.usi); }
   else if (s.phase === 'mt') { show('s-menteur'); renderMenteur(s.mt); }
   else if (s.phase === 'nv') { show('s-navale'); renderNavale(s.nv); }
+  else if (s.phase === 'dm') { show('s-dames'); renderDames(s.dm); }
+  else if (s.phase === 'ec') { show('s-echecs'); renderEchecs(s.ec); }
   else if (s.phase === 'co') { show('s-coinche'); renderCoinche(s.co); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
@@ -482,6 +484,8 @@ function renderLobby(s) {
   $('#opts-unseulindice').hidden = s.pick !== 'unseulindice';
   $('#opts-menteur').hidden = s.pick !== 'menteur';
   $('#opts-navale').hidden = s.pick !== 'navale';
+  $('#opts-dames').hidden = s.pick !== 'dames';
+  $('#opts-echecs').hidden = s.pick !== 'echecs';
   $('#opts-coinche').hidden = s.pick !== 'coinche';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
   if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''}, robots compris. Il en faut au moins 5.` : `${n} joueurs, dont ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
@@ -501,11 +505,32 @@ function renderLobby(s) {
   }
   renderHistory(s);
   $('#lobby-wait').hidden = isHostPlayer();
-  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre vingt-six jeux.';
+  $('#lobby-wait').textContent = chosen ? `Ce sera ${GAMES[s.pick].name}. L\u2019hôte règle les derniers détails.` : 'L\u2019hôte hésite encore entre vingt-huit jeux.';
   $('#btn-start').textContent = chosen ? `Lancer ${GAMES[s.pick].name}` : 'Choisis un jeu';
   renderGuestOpts(s);
+  placeLobbyOpts(s);
   if (isHostPlayer() && chosen) queueOptsShare();
 }
+// Téléphone : les réglages du jeu et le bouton « Lancer » s'ouvrent juste sous la carte touchée (avant, ils
+// arrivaient tout en bas du salon, après la liste des jeux). Tablette et PC : à leur place habituelle.
+// On ne déplace le bloc que s'il n'est pas déjà au bon endroit : un réglage en cours de saisie n'est pas dérangé.
+const LOBBY_INLINE = matchMedia('(max-width: 759px)');
+let lobbyScrollTo = null;
+function placeLobbyOpts(s) {
+  const opts = $('#lobby-opts'), guest = $('#lobby-guest-opts'), wait = $('#lobby-wait'), side = wait.parentElement;
+  const card = s.pick ? document.querySelector(`#games .gcard[data-game="${s.pick}"]`) : null;
+  const inline = !!card && LOBBY_INLINE.matches && !card.closest('[hidden]');
+  if (inline) {
+    if (opts.previousElementSibling !== card) card.after(opts);
+    if (guest.previousElementSibling !== opts) opts.after(guest);
+  } else if (opts.parentElement !== side) { side.insertBefore(opts, wait); wait.after(guest); }
+  document.body.classList.toggle('opts-inline', inline);
+  if (inline && lobbyScrollTo === s.pick) {
+    lobbyScrollTo = null;
+    requestAnimationFrame(() => card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+  }
+}
+LOBBY_INLINE.addEventListener('change', () => { if (view?.phase === 'lobby') placeLobbyOpts(view); });
 
 // ------------------------------------------------ Décennies
 let lastTurnKey = null, betArmed = false, lastTlKey = null;
@@ -1179,6 +1204,22 @@ const HELP = {
       <li>Les 1, les <b>Paco</b>, comptent pour toutes les valeurs. Annoncer des Paco, c’est la moitié des dés. En revenir, le double plus un.</li>
       <li>On lève les gobelets. Assez de dés, celui qui a crié perd un dé. Pas assez, l’annonceur en perd un.</li>
     </ul>`,
+  echecs: `<h3>Échecs</h3>
+    <p>À deux : l’hôte contre le premier ami arrivé, ou contre le robot. Les autres regardent.</p>
+    <ul>
+      <li><b>Jouer :</b> touche une de tes pièces, les cases où elle peut aller s’allument. Touche l’arrivée.</li>
+      <li>Roque, prise en passant et promotion sont compris : pour roquer, déplace ton roi de deux cases.</li>
+      <li>Contre le robot, tu peux reprendre ton coup.</li>
+      <li>Échec et mat, abandon ou temps écoulé : la partie s’arrête. Pat, répétition ou nulle acceptée : match nul.</li>
+    </ul>`,
+  dames: `<h3>Dames</h3>
+    <p>À deux : l’hôte contre le premier ami arrivé, ou contre le robot. Les autres regardent.</p>
+    <ul>
+      <li><b>Jouer :</b> touche un de tes pions, puis sa case d’arrivée. Pour une rafle, touche chaque case d’arrêt.</li>
+      <li>La prise est obligatoire, et il faut prendre le plus de pièces possible.</li>
+      <li>Un pion qui finit sur la dernière rangée devient dame : elle file sur toute la diagonale.</li>
+      <li>Celui qui ne peut plus jouer a perdu.</li>
+    </ul>`,
   navale: `<h3>Bataille navale</h3>
     <p>À deux. Chacun cache sa flotte sur sa grille, puis on se tire dessus à tour de rôle.</p>
     <ul>
@@ -1440,15 +1481,16 @@ $('#btn-solo').onclick = async () => {
   net.name = $('#in-name').value.trim() || 'Moi';
   try { await (SALON_WS ? serverHost() : hostGame()); keepAwake(); } catch (ex) { $('#home-err').textContent = 'Connexion impossible : ' + (ex.message || ex); }
 };
-document.querySelectorAll('.gcard').forEach(b => b.onclick = () => act({ t: 'pick', key: b.dataset.game }));
+document.querySelectorAll('.gcard').forEach(b => b.onclick = () => { lobbyScrollTo = b.dataset.game; act({ t: 'pick', key: b.dataset.game }); });
 
 // ============================================================ familles de jeux
 // Les jeux sont rangés par famille, avec un intitulé, et des pastilles pour n'afficher qu'une famille.
 const FAMILIES = [
   { id: 'musique', icon: '🎵', name: 'Musique', short: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
   { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'coinche', 'bataille', 'poker', 'solitaire', 'duel'] },
+  { id: 'plateau', icon: '♟️', name: 'Jeux de plateau', short: 'Plateau', desc: 'Les grands classiques à deux, contre un ami ou contre le robot.', games: ['echecs', 'dames', 'navale'] },
   { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['teldes', 'mirage', 'memes', 'limite'] },
-  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['nomcode', 'unseulindice', 'sablier', 'diapason', 'petitbac', 'geo', 'navale'] },
+  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['nomcode', 'unseulindice', 'sablier', 'diapason', 'petitbac', 'geo'] },
   { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', short: 'Rôles cachés', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages', 'menteur'] },
 ];
 let famCur = 'all'; try { famCur = localStorage.getItem('dc-fam') || 'all'; } catch { }
@@ -1580,6 +1622,16 @@ $('#btn-start').onclick = () => {
     if (n < Menteur.MIN) { toast('Le Menteur se joue à deux minimum : ajoute un robot'); return; }
     if (n > Menteur.MAX) { toast('Six joueurs au maximum, robots compris'); return; }
     act({ t: 'start', opts: { mode: 'menteur', bots: botsOpt('mt') } });
+  }
+  if (pick === 'echecs') {
+    const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-ec-rival').value;
+    if (rival === 'ami' && n < 2) { toast('Il faut un ami connecté, ou choisis le robot'); return; }
+    act({ t: 'start', opts: { mode: 'echecs', rival, level: +$('#opt-ec-level').value, color: $('#opt-ec-color').value, clock: +$('#opt-ec-clock').value } });
+  }
+  if (pick === 'dames') {
+    const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-dm-rival').value;
+    if (rival === 'ami' && n < 2) { toast('Il faut un ami connecté, ou choisis le robot'); return; }
+    act({ t: 'start', opts: { mode: 'dames', rival, level: +$('#opt-dm-level').value, color: $('#opt-dm-color').value, size: +$('#opt-dm-size').value } });
   }
   if (pick === 'navale') {
     const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-nv-rival').value;

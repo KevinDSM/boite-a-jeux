@@ -297,12 +297,26 @@ body:has(#s-lobby:not([hidden])) .topbar .crumb { color: var(--icon-label); font
 #s-lobby .glist { border: 0; border-radius: var(--radius-xl); }
 #games .gcard { min-height: 76px; }
 #games .gcard .gart { display: none; }
+#games .gcard .ih-ic .gart { display: grid; place-items: center; transform: scale(.92); }   /* le dessin de secours, dans l'icône, tant que l'icône 3D manque */
 #games .gcard .ih-ic { grid-row: 1 / 3; grid-column: 1; width: 52px; height: 52px; border-radius: 12px; }
 #games .gcard .ih-ic img { width: 94%; height: 94%; }
 #games .gcard:active { background: color-mix(in oklab, var(--glass-ink) 8%, transparent); }
 #games .gcard[aria-pressed="true"] { background: color-mix(in oklab, var(--acc) 16%, transparent); box-shadow: inset 0 0 0 2px var(--acc); }
 #games .gcard .gmeta { font-variant-numeric: tabular-nums; }
 
+/* téléphone : les réglages du jeu choisi et « Lancer » s'ouvrent juste sous sa carte, dans la liste (placeLobbyOpts, app.js) */
+@media (max-width: 759px) {
+  #games .gcard { scroll-margin-top: calc(var(--bar-h) + env(safe-area-inset-top) + 12px); }
+  #games .glist > :is(#lobby-opts, #lobby-guest-opts) { order: 0; }   /* style.css le range en 4e dans le salon */
+  #games .glist > #lobby-opts { margin: 0; padding: 6px 14px 16px; border-top: .5px solid var(--line);
+    background: color-mix(in oklab, var(--acc) 9%, transparent); box-shadow: inset 0 -2px 0 var(--acc), inset 2px 0 0 var(--acc), inset -2px 0 0 var(--acc); }
+  #games .glist > .gcard[aria-pressed="true"]:has(+ #lobby-opts:not([hidden])) { box-shadow: inset 0 2px 0 var(--acc), inset 2px 0 0 var(--acc), inset -2px 0 0 var(--acc); }
+  #games .glist > #lobby-opts .opts { margin-bottom: 12px; }
+  #games .glist > #lobby-opts #btn-start { margin-top: 2px; }
+  #games .glist > #lobby-guest-opts { margin: 0; border-radius: 0; border-top: .5px solid var(--line); background: color-mix(in oklab, var(--acc) 7%, transparent);
+    box-shadow: inset 0 -2px 0 var(--acc), inset 2px 0 0 var(--acc), inset -2px 0 0 var(--acc); }
+  #games .glist > .gcard[aria-pressed="true"]:has(+ #lobby-opts[hidden] + #lobby-guest-opts:not([hidden])) { box-shadow: inset 0 2px 0 var(--acc), inset 2px 0 0 var(--acc), inset -2px 0 0 var(--acc); }
+}
 /* les réglages */
 #s-lobby .field.row { background: var(--glass-tint); border: 0; box-shadow: inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge);
   -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%); }
