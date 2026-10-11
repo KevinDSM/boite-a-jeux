@@ -37,6 +37,7 @@ const GAMES = {
   teldes: { key: 'teldes', theme: 'teldes', name: 'Téléphone dessiné' },
   nomcode: { key: 'nomcode', theme: 'nomcode', name: 'Nom de code' },
   bataille: { key: 'bataille', theme: 'bataille', name: 'Bataille' },
+  unseulindice: { key: 'unseulindice', theme: 'unseulindice', name: 'Un seul indice' },
 };
 const SP_POINTS = [5, 3, 2, 1];       // points selon l'ordre d'arrivée
 const SP_TRIES = 3;                   // essais par manche
@@ -81,7 +82,7 @@ class Game {
 
   addPlayer(id, name, host = false, emoji = '') {
     let p = this.player(id);
-    if (p) { p.online = true; p.offAt = 0; p.base = name || p.base; p.emoji = this.freeEmoji(emoji || p.emoji, id); p.name = withEmoji(p); if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.hl) HorsLimite.join(this.hl, id, p.name); if (this.so) Solitaire.join(this.so, id, p.name); if (this.pk) Poker.join(this.pk, id, p.name); if (this.dp) Diapason.join(this.dp, id, p.name); if (this.du) Duel.join(this.du, id, p.name); if (this.td) TelDes.join(this.td, id, p.name); if (this.nc) NomCode.join(this.nc, id, p.name); if (this.bt) Bataille.join(this.bt, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
+    if (p) { p.online = true; p.offAt = 0; p.base = name || p.base; p.emoji = this.freeEmoji(emoji || p.emoji, id); p.name = withEmoji(p); if (this.uc) Undercover.join(this.uc, id, p.name); if (this.geo) Geo.join(this.geo, id, p.name); if (this.chromo) Chromo.join(this.chromo, id, p.name); if (this.kems) Kems.join(this.kems, id, p.name); if (this.cm) Camembert.join(this.cm, id, p.name); if (this.mi) Mirage.join(this.mi, id, p.name); if (this.dz) Douze.join(this.dz, id, p.name); if (this.pb) PetitBac.join(this.pb, id, p.name); if (this.lw) LoupGarou.join(this.lw, id, p.name); if (this.nf) Naufrages.join(this.nf, id, p.name); if (this.mm) Memes.join(this.mm, id, p.name); if (this.hl) HorsLimite.join(this.hl, id, p.name); if (this.so) Solitaire.join(this.so, id, p.name); if (this.pk) Poker.join(this.pk, id, p.name); if (this.dp) Diapason.join(this.dp, id, p.name); if (this.du) Duel.join(this.du, id, p.name); if (this.td) TelDes.join(this.td, id, p.name); if (this.nc) NomCode.join(this.nc, id, p.name); if (this.bt) Bataille.join(this.bt, id, p.name); if (this.usi) UnSeulIndice.join(this.usi, id, p.name); if (this.sab) { const q = Sablier.findPlayer(this.sab, id); if (q) q.connected = true; } return p; }
     p = { id, base: name, emoji: this.freeEmoji(emoji, id), tokens: TOKEN_START, timeline: [], score: 0, online: true, host };
     p.name = name = withEmoji(p);
     this.s.players.push(p);
@@ -105,6 +106,7 @@ class Game {
     if (this.td) TelDes.join(this.td, id, name);
     if (this.nc) NomCode.join(this.nc, id, name);
     if (this.bt) Bataille.join(this.bt, id, name);
+    if (this.usi) UnSeulIndice.join(this.usi, id, name);
     if (this.sab) { Sablier.addPlayer(this.sab, id, name); if (this.sab.phase === 'selection') { const q = Sablier.findPlayer(this.sab, id); Sablier.dealTo(this.sab, q, this.sabPool(), Sablier.history.set()); Sablier.history.add(q.hand); } }
     return p;
   }
@@ -121,7 +123,7 @@ class Game {
     if (this.s.players.some(q => q.id !== pid && !q.kicked && q.emoji === e)) return `${e} est déjà pris.`;
     p.emoji = e; p.name = withEmoji(p); return null;
   }
-  setOffline(id) { const p = this.player(id); if (p) { p.online = false; p.offAt = Date.now(); } if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); if (this.hl) HorsLimite.setOnline(this.hl, id, false); if (this.so) Solitaire.setOnline(this.so, id, false); if (this.pk) Poker.setOnline(this.pk, id, false); if (this.dp) Diapason.setOnline(this.dp, id, false); if (this.du) Duel.setOnline(this.du, id, false); if (this.td) TelDes.setOnline(this.td, id, false); if (this.nc) NomCode.setOnline(this.nc, id, false); if (this.bt) Bataille.setOnline(this.bt, id, false); }
+  setOffline(id) { const p = this.player(id); if (p) { p.online = false; p.offAt = Date.now(); } if (this.uc) Undercover.setOnline(this.uc, id, false); if (this.geo) Geo.setOnline(this.geo, id, false); if (this.chromo) Chromo.setOnline(this.chromo, id, false); if (this.kems) Kems.setOnline(this.kems, id, false); if (this.cm) Camembert.setOnline(this.cm, id, false); if (this.mi) Mirage.setOnline(this.mi, id, false); if (this.dz) Douze.setOnline(this.dz, id, false); if (this.pb) PetitBac.setOnline(this.pb, id, false); if (this.lw) LoupGarou.setOnline(this.lw, id, false); if (this.nf) Naufrages.setOnline(this.nf, id, false); if (this.mm) Memes.setOnline(this.mm, id, false); if (this.hl) HorsLimite.setOnline(this.hl, id, false); if (this.so) Solitaire.setOnline(this.so, id, false); if (this.pk) Poker.setOnline(this.pk, id, false); if (this.dp) Diapason.setOnline(this.dp, id, false); if (this.du) Duel.setOnline(this.du, id, false); if (this.td) TelDes.setOnline(this.td, id, false); if (this.nc) NomCode.setOnline(this.nc, id, false); if (this.bt) Bataille.setOnline(this.bt, id, false); if (this.usi) UnSeulIndice.setOnline(this.usi, id, false); }
 
   // --- pioche
   pool() { const c = this.s.cats; const p = this.songs.filter(s => !c || c.includes(s.cat)); return p.length ? p : this.songs; }
@@ -169,6 +171,7 @@ class Game {
     if (s.mode === 'teldes') return this.startTelDes(o);
     if (s.mode === 'nomcode') return this.startNomCode(o);
     if (s.mode === 'bataille') return this.startBataille(o);
+    if (s.mode === 'unseulindice') return this.startUnSeulIndice(o);
     s.target = o.target || 10; s.cats = o.cats?.length ? o.cats : null;
     s.speakerId = o.speakerId || null; s.soundAll = !!o.soundAll;
     s.deck = shuffle([...this.pool()]); s.turn = 0;
@@ -484,13 +487,15 @@ class Game {
   // ================= Téléphone dessiné et Nom de code =================
   startTelDes(o) { const s = this.s; this.td = TelDes.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), speed: o.speed, length: o.length }); s.phase = 'td'; }
   startNomCode(o) { const s = this.s; this.nc = NomCode.create({ hostId: s.players[0].id, players: withRobots(s, o.bots) }); s.phase = 'nc'; }
+  // ================= Un seul indice : la salle vit dans this.usi, le mot ne sort jamais vers le devineur avant la révélation =================
+  startUnSeulIndice(o) { const s = this.s; this.usi = UnSeulIndice.create({ hostId: s.players[0].id, players: withRobots(s, o.bots) }); s.phase = 'usi'; }
   startBataille(o) { const s = this.s; this.bt = Bataille.create({ hostId: s.players[0].id, players: withRobots(s, o.bots), length: o.length }); s.phase = 'bt'; }
   startDuel(o) {
     const s = this.s;
     this.du = Duel.create({ hostId: s.players[0].id, players: s.players.map(p => ({ id: p.id, name: p.name, online: p.online })), rival: o.rival });
     s.phase = 'du';
   }
-  viewFor(base, pid) { if (this.bt) return { ...base, bt: Bataille.view(this.bt, pid) }; if (this.td) return { ...base, td: TelDes.view(this.td, pid) }; if (this.nc) return { ...base, nc: NomCode.view(this.nc, pid) }; if (this.du) return { ...base, du: Duel.view(this.du, pid) }; if (this.dp) return { ...base, dp: Diapason.view(this.dp, pid) }; if (this.so) return { ...base, so: Solitaire.view(this.so, pid) }; if (this.pk) return { ...base, pk: Poker.view(this.pk, pid) }; if (this.hl) return { ...base, hl: HorsLimite.view(this.hl, pid) }; if (this.nf) return { ...base, nf: Naufrages.view(this.nf, pid) }; if (this.mm) return { ...base, mm: Memes.view(this.mm, pid) }; if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
+  viewFor(base, pid) { if (this.usi) return { ...base, usi: UnSeulIndice.view(this.usi, pid) }; if (this.bt) return { ...base, bt: Bataille.view(this.bt, pid) }; if (this.td) return { ...base, td: TelDes.view(this.td, pid) }; if (this.nc) return { ...base, nc: NomCode.view(this.nc, pid) }; if (this.du) return { ...base, du: Duel.view(this.du, pid) }; if (this.dp) return { ...base, dp: Diapason.view(this.dp, pid) }; if (this.so) return { ...base, so: Solitaire.view(this.so, pid) }; if (this.pk) return { ...base, pk: Poker.view(this.pk, pid) }; if (this.hl) return { ...base, hl: HorsLimite.view(this.hl, pid) }; if (this.nf) return { ...base, nf: Naufrages.view(this.nf, pid) }; if (this.mm) return { ...base, mm: Memes.view(this.mm, pid) }; if (this.lw) return { ...base, lw: LoupGarou.view(this.lw, pid) }; if (this.pb) return { ...base, pb: PetitBac.view(this.pb, pid) }; if (this.dz) return { ...base, dz: Douze.view(this.dz, pid) }; if (this.mi) return { ...base, mi: Mirage.view(this.mi, pid) }; if (this.cm) return { ...base, cm: Camembert.view(this.cm, pid) }; if (this.kems) return { ...base, kems: Kems.view(this.kems, pid) }; if (this.chromo) return { ...base, chromo: Chromo.view(this.chromo, pid) }; if (this.geo) return { ...base, geo: Geo.view(this.geo, pid) }; if (this.uc) return { ...base, uc: Undercover.view(this.uc, pid) }; return this.sab ? { ...base, sab: Sablier.viewFor(this.sab, pid, this._sabExtras) } : base; }
 
   /** Résumé d'une partie terminée, pour les podiums du salon ; null si la partie n'est pas allée au bout. */
   summary() {
@@ -519,6 +524,7 @@ class Game {
       ? pack('diapason', top(Diapason.teamList(this.dp).map(t => ({ name: `${t.name} (${t.members.join(', ')})`, score: t.score }))), { unit: 'pts' })
       : pack('diapason', top(Diapason.ranking(this.dp)), { unit: 'pts' });
     if (this.bt?.phase === 'over') return pack('bataille', this.bt.ranking.map(r => ({ name: r.name, score: r.score })), { unit: 'cartes' });
+    if (this.usi?.phase === 'over') { const u = this.usi; return pack('unseulindice', u.players.filter(p => p.inGame).map(p => ({ name: p.name })), { note: `${u.score} carte${u.score > 1 ? 's' : ''} trouvée${u.score > 1 ? 's' : ''} sur ${u.total}`, team: true }); }
     if (this.pk?.phase === 'over') return pack('poker', Poker.ranking(this.pk).map(r => ({ name: r.name, score: r.stack })), { unit: 'jetons' });
     return null;
   }
@@ -528,7 +534,7 @@ class Game {
   }
   restart() {
     this.record();
-    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null; this.nf = null; this.mm = null; this.hl = null; this.so = null; this.pk = null; this.dp = null; this.du = null; this.td = null; this.nc = null; this.bt = null;
+    this.sab = null; this.uc = null; this.geo = null; this.chromo = null; this.kems = null; this.cm = null; this.mi = null; this.dz = null; this.pb = null; this.lw = null; this.nf = null; this.mm = null; this.hl = null; this.so = null; this.pk = null; this.dp = null; this.du = null; this.td = null; this.nc = null; this.bt = null; this.usi = null;
     const s = this.s;
     s.phase = 'lobby'; s.winner = null; s.result = null; s.current = null; s.round = 0;
     s.eclair = {}; s.bet = null; s.passes = []; s.placement = null; s.sprint = {}; s.order = [];
@@ -561,7 +567,7 @@ async function loadSongsJV() { if (!songsJVCache) songsJVCache = await (await fe
 // Le tick de l'hôte, toutes les 500 ms : chronos et robots de chaque jeu. Vrai s'il faut rediffuser.
 function hostTick() {
   const g = net.game, before = g.s.phase; g.tick();
-  const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false) || (g.td ? TelDes.tick(g.td) : false) || (g.nc ? NomCode.tick(g.nc) : false) || (g.bt ? Bataille.tick(g.bt) : false) || (g.hl ? HorsLimite.tick(g.hl) : false) || (g.mm ? Memes.tick(g.mm) : false) || (g.mi ? Mirage.tick(g.mi) : false) || (g.uc ? Undercover.tick(g.uc) : false) || (g.dp ? Diapason.tick(g.dp) : false);
+  const sabChanged = sabTick() || (g.geo ? Geo.tick(g.geo) : false) || (g.chromo ? Chromo.tick(g.chromo) : false) || (g.kems ? Kems.tick(g.kems) : false) || (g.cm ? Camembert.tick(g.cm) : false) || (g.dz ? Douze.tick(g.dz) : false) || (g.pb ? PetitBac.tick(g.pb) : false) || (g.lw ? LoupGarou.tick(g.lw) : false) || (g.nf ? Naufrages.tick(g.nf) : false) || (g.so ? Solitaire.tick(g.so) : false) || (g.pk ? Poker.tick(g.pk) : false) || (g.du ? Duel.tick(g.du) : false) || (g.td ? TelDes.tick(g.td) : false) || (g.nc ? NomCode.tick(g.nc) : false) || (g.bt ? Bataille.tick(g.bt) : false) || (g.usi ? UnSeulIndice.tick(g.usi) : false) || (g.hl ? HorsLimite.tick(g.hl) : false) || (g.mm ? Memes.tick(g.mm) : false) || (g.mi ? Mirage.tick(g.mi) : false) || (g.uc ? Undercover.tick(g.uc) : false) || (g.dp ? Diapason.tick(g.dp) : false);
   return !!(sabChanged || before !== g.s.phase || g.s.phase === 'bet' || g.s.phase === 's-play');
 }
 
@@ -600,6 +606,7 @@ function applyAction(pid, m) {
   if (typeof m.t === 'string' && m.t.startsWith('so:')) return net.game.so ? Solitaire.act(net.game.so, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('td:')) return net.game.td ? TelDes.act(net.game.td, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('bt:')) return net.game.bt ? Bataille.act(net.game.bt, pid, m) : 'Pas de partie en cours';
+  if (typeof m.t === 'string' && m.t.startsWith('usi:')) return net.game.usi ? UnSeulIndice.act(net.game.usi, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('nc:')) return net.game.nc ? NomCode.act(net.game.nc, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('du:')) return net.game.du ? Duel.act(net.game.du, pid, m) : 'Pas de partie en cours';
   if (typeof m.t === 'string' && m.t.startsWith('dp:')) return net.game.dp ? Diapason.act(net.game.dp, pid, m) : 'Pas de partie en cours';

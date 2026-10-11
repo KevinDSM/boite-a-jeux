@@ -11,11 +11,11 @@
 <link rel="manifest" href="manifest.json?v=71">
 <link rel="apple-touch-icon" href="icon-180.png?v=71">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
-<meta name="description" content="22 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta name="description" content="23 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Boîte à jeux">
 <meta property="og:title" content="Boîte à jeux">
-<meta property="og:description" content="22 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta property="og:description" content="23 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:url" content="https://kevindsm.github.io/boite-a-jeux/">
 <meta property="og:image" content="https://kevindsm.github.io/boite-a-jeux/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -34,6 +34,7 @@
 <link rel="stylesheet" href="jeux/bataille.css?v=71">
 <link rel="stylesheet" href="jeux/douze.css?v=71">
 <link rel="stylesheet" href="jeux/solitaire.css?v=71">
+<link rel="stylesheet" href="unseulindice.css?v=71">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -59,7 +60,7 @@
   <header class="ih-head">
     <span class="ih-date" id="ih-date"></span>
     <h1>Boîte à jeux</h1>
-    <p class="ih-sub">22 jeux, un téléphone chacun.</p>
+    <p class="ih-sub">23 jeux, un téléphone chacun.</p>
   </header>
 
   <!-- l'entrée en deux temps : d'abord « rejoindre » ou « créer », puis seulement les champs utiles -->
@@ -263,6 +264,12 @@
         <span class="gdesc">Une phrase devient un dessin, qui devient une phrase. Et tout part en vrille.</span>
         <span class="gmeta"><b>3 à 12</b><i>20 min</i></span>
       </button>
+      <button class="gcard g-unseulindice" type="button" data-game="unseulindice">
+        <span class="gart" aria-hidden="true"><span class="usi-art"><i>?</i><b></b><b></b><b></b></span></span>
+        <span class="gname">Un seul indice</span>
+        <span class="gdesc">Un mot chacun pour le faire deviner. Et surtout pas le même.</span>
+        <span class="gmeta"><b>3 à 8</b><i>20 min</i></span>
+      </button>
       <button class="gcard g-nomcode" type="button" data-game="nomcode">
         <span class="gart" aria-hidden="true"><span class="ncart"><i class="c0"></i><i class="c2"></i><i class="c1"></i><i class="c1"></i><i class="c0"></i><i class="c2"></i><i class="c3"></i><i class="c1"></i><i class="c0"></i></span></span>
         <span class="gname">Nom de code</span>
@@ -427,6 +434,10 @@
       <label class="field row"><span>Robots à table</span><select id="opt-nc-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
       <p class="fine">Deux équipes tirées au sort, qu’on peut changer avant de lancer la grille. Les robots savent être espions ou agents.</p>
     </div>
+    <div class="opts" id="opts-unseulindice" hidden>
+      <label class="field row"><span>Robots à table</span><select id="opt-usi-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+      <p class="fine">Treize cartes, toute la table dans la même équipe. Les robots donnent des indices et devinent à leur tour.</p>
+    </div>
     <div class="opts" id="opts-duel" hidden>
       <label class="field row"><span>Adversaire</span><select id="opt-du-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
       <p class="fine">Un duel se joue à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
@@ -561,6 +572,11 @@
 <!-- ====================== CHROMO ====================== -->
 <section class="screen play chromo" id="s-chromo" hidden>
   <div class="stack" id="ch-main"></div>
+</section>
+
+<!-- ====================== UN SEUL INDICE ====================== -->
+<section class="screen play unseulindice" id="s-unseulindice" hidden>
+  <div class="stack" id="usi-main"></div>
 </section>
 
 <!-- ====================== KEMS ====================== -->
@@ -707,6 +723,12 @@
     <div id="tb-sheet-body"></div>
   </div>
 </div>
+<div class="modal" id="usi-sheet" hidden>
+  <div class="sheet">
+    <div class="sheet-top"><span class="eyebrow">Les cartes</span><button class="btn ghost small" id="usi-sheet-close" type="button">Fermer</button></div>
+    <div id="usi-sheet-body"></div>
+  </div>
+</div>
 <div class="modal" id="ch-sheet" hidden>
   <div class="sheet">
     <div class="sheet-top"><span class="eyebrow" id="ch-sheet-title">Scores</span><button class="btn ghost small" id="ch-sheet-close" type="button">Fermer</button></div>
@@ -778,6 +800,8 @@
 <script src="nomcode-mots.js?v=71"></script>
 <script src="engines/nomcode.js?v=71"></script>
 <script src="nomcode.js?v=71"></script>
+<script src="engines/unseulindice.js?v=71"></script>
+<script src="unseulindice.js?v=71"></script>
 <script src="desk.js?v=71"></script>
 <script src="regles.js?v=71"></script>
 <script src="salon.js?v=71"></script>

@@ -123,6 +123,7 @@ export class Salon {
     if (mode === 'memes') await rt.Memes.load(rt.ASSET_V);
     if (mode === 'mirage') await rt.Mirage.load(rt.ASSET_V);
     if (mode === 'geo') await rt.Geo.loadPlaces();
+    if (mode === 'unseulindice') await rt.UnSeulIndice.load(rt.ASSET_V);   // les mots restent ici, jamais sur les téléphones
   }
 
   // ---------------------------------------------------------------- statistiques (page /stats du site)
