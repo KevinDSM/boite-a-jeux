@@ -358,6 +358,20 @@ const RULES = [
     ['Fin de partie', `<p>Quand les 13 cartes sont passées, on compte celles trouvées. 13, parfait. 12, incroyable. 11, génial. 9 ou 10, super. 7 ou 8, pas mal. En dessous, la revanche s’impose.</p>`],
     ['Réglages et robots', `<p>De 3 à 8 joueurs, robots compris. Les robots écrivent des indices tirés d’une liste d’idées associées à chaque mot, et quand c’est leur tour de deviner, ils cherchent le mot qui va le mieux avec les indices. Deux robots peuvent avoir la même idée, et s’annuler. Si un devineur quitte la partie, l’hôte peut passer sa carte.</p>`],
   ] },
+  { key: 'menteur', parts: [
+    ['Le principe', `<p>L’équivalent maison de Perudo, le jeu de dés et de bluff. Chacun a cinq dés cachés sous son gobelet, visibles sur son téléphone seulement. On parie ensemble sur ce que cachent tous les gobelets, et celui qui se trompe perd un dé. Le dernier à garder des dés gagne.</p>`],
+    ['Une manche', `<ul>
+      <li>Tout le monde secoue ses dés en même temps. Tu ne vois que les tiens.</li>
+      <li>À tour de rôle, on annonce « au moins N dés de valeur X » sur toute la table, par exemple « au moins 4 cinq ».</li>
+      <li>Le joueur suivant doit monter : plus de dés de n’importe quelle valeur, ou autant de dés d’une valeur plus forte. Ou bien il crie « Menteur ! ».</li></ul>`],
+    ['Les Paco', `<ul>
+      <li>Les 1 s’appellent les Paco. Ils sont des jokers : pour « au moins 4 cinq », les cinq <b>et</b> les Paco comptent.</li>
+      <li>On peut annoncer des Paco : il suffit de la moitié des dés de l’annonce précédente, arrondie au-dessus. Après « 7 cinq », « 4 Paco » suffit.</li>
+      <li>Pour revenir à une autre valeur après des Paco, il faut le double plus un. Après « 3 Paco », au moins « 7 » de quelque chose.</li>
+      <li>On n’ouvre jamais une manche sur les Paco.</li></ul>`],
+    ['« Menteur ! »', `<p>On lève tous les gobelets et on compte. S’il y a au moins autant de dés que l’annonce, celui qui a crié perd un dé. Sinon, c’est l’annonceur. Celui qui perd un dé ouvre la manche suivante. Sans dé, on sort de la partie.</p>`],
+    ['Robots et absents', `<p>De 2 à 6 joueurs, robots compris. Les robots comptent leurs dés et estiment ceux des autres, puis annoncent, bluffent un peu et crient au menteur. Un joueur absent depuis 15 secondes à son tour est remplacé par un robot le temps de son annonce.</p>`],
+  ] },
   { key: 'nomcode', parts: [
     ['Le principe', `<p>L’équivalent maison de Codenames. Deux équipes, la Rouge et la Bleue, s’affrontent sur une grille de 25 mots. Chaque équipe a un espion : lui seul sait quels mots cachent ses agents.</p>`],
     ['La grille', `<ul>
