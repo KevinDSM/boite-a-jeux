@@ -2998,6 +2998,15 @@
 },
 {
 "artist": "Jean-Jacques Goldman",
+"title": "Quand la musique est bonne",
+"year": 1982,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/96/22/41/962241f0-e62e-2b7f-6030-c7108ca33dc8/mzaf_7377471114079099101.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/3a/61/b7/3a61b76d-a450-fc5d-93c0-42428598e3d2/888880415950.jpg/300x300bb.jpg",
+"_q": "Jean-Jacques Goldman | Quand la musique est bonne | 1982",
+"cat": "Années 80"
+},
+{
+"artist": "Jean-Jacques Goldman",
 "title": "Encore un matin",
 "year": 1984,
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/71/5c/40/715c4025-bcab-b072-d9c6-12ae22d658e2/mzaf_2930301759504425355.plus.aac.p.m4a",
@@ -3048,6 +3057,15 @@
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a7/05/f1/a705f171-deb2-dc03-ce76-c7da3ab8bb15/mzaf_2436265078709550088.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/58/54/da/5854dad9-95fb-f4bc-eed9-8a0128a5e8f4/4007196104778.jpg/300x300bb.jpg",
 "_q": "Indochine | Trois nuits par semaine | 1985",
+"cat": "Années 80"
+},
+{
+"artist": "Téléphone",
+"title": "Cendrillon",
+"year": 1982,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ce/1b/69/ce1b69a2-99c9-0d05-b48d-e6034d26bbaa/mzaf_7804484407858687533.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/54/82/27/54822797-6ef4-f20c-7501-677a4766cb15/dj.irgzmvcf.jpg/300x300bb.jpg",
+"_q": "Téléphone | Cendrillon | 1982",
 "cat": "Années 80"
 },
 {
@@ -3330,6 +3348,15 @@
 "cat": "Années 90"
 },
 {
+"artist": "Radiohead",
+"title": "Creep",
+"year": 1992,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3a/4d/71/3a4d71e1-5065-904d-5513-b49415710313/mzaf_5597953917760999756.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music5/v4/1f/d2/f7/1fd2f711-ba7e-a2c7-cb48-47f80b214acb/825646201242.jpg/300x300bb.jpg",
+"_q": "Radiohead | Creep | 1992",
+"cat": "Années 90"
+},
+{
 "artist": "The Verve",
 "title": "Bitter Sweet Symphony",
 "year": 1997,
@@ -3372,6 +3399,15 @@
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/88/af/43/88af4376-34c7-f897-0b77-914257ed1e5d/mzaf_1271337608534507316.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/26/b6/b4/26b6b4fb-7450-dfa0-b2fe-677fdc6ef824/22UMGIM63655.rgb.jpg/300x300bb.jpg",
 "_q": "Vengaboys | Boom, Boom, Boom, Boom | 1998",
+"cat": "Années 90"
+},
+{
+"artist": "Justin Bieber & Mariah Carey",
+"title": "All I Want For Christmas Is You",
+"year": 1994,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/11/19/1b/11191b22-a331-cd5e-317d-6f188fdd393e/mzaf_14274943041412205516.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/c8/5f/cc/c85fccdc-dfd4-53bf-7d1b-2a283bef0361/11UMGIM34123.rgb.jpg/300x300bb.jpg",
+"_q": "Mariah Carey | All I Want for Christmas Is You | 1994",
 "cat": "Années 90"
 },
 {
@@ -3429,6 +3465,15 @@
 "cat": "Années 90"
 },
 {
+"artist": "Will Smith",
+"title": "Men In Black",
+"year": 1997,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/df/76/60/df7660a8-6330-d384-2df7-c3ac9566bd8c/mzaf_5968128030680647840.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/eb/3c/15/eb3c1520-e377-fe3f-e53d-32da66fa4490/888880552938.jpg/300x300bb.jpg",
+"_q": "Will Smith | Men in Black | 1997",
+"cat": "Années 90"
+},
+{
 "artist": "Bryan Adams",
 "title": "I Do It for You",
 "year": 1991,
@@ -3436,6 +3481,15 @@
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/a1/e2/48/a1e248b2-fa77-1537-3702-642ba4fa3d48/06UMGIM43948.rgb.jpg/300x300bb.jpg",
 "_q": "Bryan Adams | (Everything I Do) I Do It for You | 1991",
 "cat": "Années 90"
+},
+{
+"artist": "Eminem",
+"title": "Without Me",
+"year": 2002,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/60/7d/60/607d6038-10dd-1d8d-83c7-c7029e709da3/mzaf_13336706630570276296.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/dd/5c/e6/dd5ce621-f7d2-f767-7a08-e7a7eaa7870b/00602537526994.rgb.jpg/300x300bb.jpg",
+"_q": "Eminem | Without Me | 2002",
+"cat": "Années 2000"
 },
 {
 "artist": "The White Stripes",
@@ -3519,6 +3573,15 @@
 "cat": "Années 2000"
 },
 {
+"artist": "Lorie",
+"title": "Près de moi",
+"year": 2001,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/5c/64/3a/5c643a45-591f-3c65-c265-d64d5cd563d9/mzaf_6427809762471909510.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/d7/58/28/d758288c-311f-6e16-82ac-b68a0d4e921c/cover.jpg/300x300bb.jpg",
+"_q": "Lorie | Près de moi | 2001",
+"cat": "Années 2000"
+},
+{
 "artist": "Diam's",
 "title": "DJ",
 "year": 2003,
@@ -3534,6 +3597,15 @@
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ed/cd/5f/edcd5fa8-2a4e-43c9-473e-ba96809c03c9/mzaf_1256681576142221105.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/01/38/0e/01380ebd-a2df-92a4-3411-df37494f1125/mzi.rgehouqa.jpg/300x300bb.jpg",
 "_q": "Grégoire | Toi + moi | 2008",
+"cat": "Années 2000"
+},
+{
+"artist": "Yannick Noah",
+"title": "Aux arbres citoyens",
+"year": 2006,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c8/35/dc/c835dcbd-a30c-5dd2-c5e5-94534a6c52db/mzaf_17165793561903630690.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Features/2b/0d/e0/dj.oaipqtfl.jpg/300x300bb.jpg",
+"_q": "Yannick Noah | Aux arbres citoyens | 2006",
 "cat": "Années 2000"
 },
 {
@@ -3753,6 +3825,15 @@
 "cat": "Années 2010"
 },
 {
+"artist": "Coldplay",
+"title": "Paradise",
+"year": 2011,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/aa/3e/62/aa3e6293-da9a-bba2-15da-0acf90282a5f/mzaf_9828018370517979528.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/fa/41/1c/fa411c37-7a65-8a3e-71c9-4b566c49617c/5099967983858_1562x1562_300dpi.jpg/300x300bb.jpg",
+"_q": "Coldplay | Paradise | 2011",
+"cat": "Années 2010"
+},
+{
 "artist": "Ed Sheeran",
 "title": "Bad Habits",
 "year": 2021,
@@ -3849,6 +3930,15 @@
 "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/09/0d/dc/090ddcdb-d1f2-7dea-4c85-6b9c6f98e4e5/mzaf_10081960992656977424.plus.aac.p.m4a",
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/2b/b9/fe/2bb9fef5-d7f3-8345-25a9-db0e79fde4e4/20UMGIM11048.rgb.jpg/300x300bb.jpg",
 "_q": "The Weeknd | Save Your Tears | 2020",
+"cat": "Années 2020"
+},
+{
+"artist": "Dua Lipa",
+"title": "Houdini",
+"year": 2023,
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2c/da/b5/2cdab5c6-04a8-5231-c697-00101e876479/mzaf_5586859405346659517.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/dd/af/ea/ddafeab5-797a-5b6f-7735-f96c537b45e0/5054197894091.jpg/300x300bb.jpg",
+"_q": "Dua Lipa | Houdini | 2023",
 "cat": "Années 2020"
 },
 {

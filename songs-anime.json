@@ -592,5 +592,491 @@
 "art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/e3/7f/5d/e37f5d02-2c14-e8a7-fd31-3c62bbf9a63e/859737633445_cover.jpg/300x300bb.jpg",
 "_q": "Jeanne et Serge | Jeanne et Serge générique",
 "cat": "Génériques français"
+},
+{
+"game": "Naruto",
+"artist": "Quiet Gaze",
+"title": "Silhouette",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/bd/4e/c7/bd4ec758-31a8-9675-d762-07b45a60b0e6/mzaf_2208235494245659789.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/a8/37/92a837f0-0a66-ff6e-aa9b-27072dd944ad/196872887679.jpg/300x300bb.jpg",
+"_q": "Naruto | Naruto Shippuden Kana-Boon Silhouette",
+"cat": "Shōnen"
+},
+{
+"game": "One Piece",
+"artist": "Rifti Beats, Trap Music Now & Dance Music Now",
+"title": "One Piece - Overtaken",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/fd/a6/a8/fda6a870-1189-a2c7-70e7-f9d0bb1a2284/mzaf_14532655234324357551.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/72/1d/6d/721d6d61-4509-4c85-e83f-3de2deb46327/1057057.jpg/300x300bb.jpg",
+"_q": "One Piece | One Piece Overtaker",
+"cat": "Shōnen"
+},
+{
+"game": "Dragon Ball Z",
+"artist": "Ariane",
+"title": "Dragon Ball",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f2/b2/78/f2b27852-c0b3-5760-59e5-1b8cc3155882/mzaf_7458929945152722509.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/0a/45/01/0a450167-fcc7-4c34-8175-0982a6ac7835/cover.jpg/300x300bb.jpg",
+"_q": "Dragon Ball Z | Dragon Ball Super Ultimate Battle",
+"cat": "Shōnen"
+},
+{
+"game": "Bleach",
+"artist": "Shiro SAGISU",
+"title": "Number One",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6e/1c/1d/6e1c1d54-88f8-c1e7-5e77-3e34a5b7a00b/mzaf_13844124135583563564.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/3b/e2/15/3be21555-46cf-cc3a-6fe8-ef207e36cb4f/4534530140708.jpg/300x300bb.jpg",
+"_q": "Bleach | Bleach Number One Shiro Sagisu",
+"cat": "Shōnen"
+},
+{
+"game": "Fire Force",
+"artist": "zzz - Anime on Piano",
+"title": "Inferno",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/24/a2/32/24a232e0-4955-346f-494f-22faad4b6e74/mzaf_8481161302740742028.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/32/f0/95/32f095a3-b41f-eed6-0bb0-65ddd468e3cd/4090566d-0fb8-4816-9bfa-216459bc9862.jpg/300x300bb.jpg",
+"_q": "Fire Force | Fire Force Inferno Mrs. Green Apple",
+"cat": "Shōnen"
+},
+{
+"game": "Jujutsu Kaisen",
+"artist": "Jonatan King",
+"title": "SPECIALZ",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/09/d1/d3/09d1d3b3-7588-43d3-dc54-6c5cc012e4c8/mzaf_2534128934413192859.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/bb/6b/99/bb6b99ef-6e7b-a9e0-da30-2dc06f59bdf9/artwork.jpg/300x300bb.jpg",
+"_q": "Jujutsu Kaisen | King Gnu Specialz",
+"cat": "Shōnen"
+},
+{
+"game": "Demon Slayer",
+"artist": "Quiet Gaze",
+"title": "Kamado Tanjiro no Uta",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/92/95/c4/9295c484-b7b7-8d0c-301c-48b4e6888f54/mzaf_17364630201156105982.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/e5/0f/ff/e50fff63-5a32-9fa0-32cf-8e7874b6ba94/886448982012.jpg/300x300bb.jpg",
+"_q": "Demon Slayer | Kamado Tanjiro no Uta Go Shiina",
+"cat": "Shōnen"
+},
+{
+"game": "Assassination Classroom",
+"artist": "Piano Echoes",
+"title": "青春サツバツ論",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c5/57/ad/c557ad64-2f9f-6763-bccc-4fba803e357d/mzaf_274447036935472627.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/03/d3/d5/03d3d507-715c-1d26-bfe5-52df714d97aa/Anime_Hits_Piano_Arrange.jpg/300x300bb.jpg",
+"_q": "Assassination Classroom | Assassination Classroom Seishun Satsubatsu-ron",
+"cat": "Shōnen"
+},
+{
+"game": "Seven Deadly Sins",
+"artist": "Meancat Tv",
+"title": "Netsujou No Spectrum",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ea/6a/54/ea6a54a3-7f1d-c4e2-5d26-39610dacffc0/mzaf_17658965902363594536.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/d6/79/f5/d679f5f8-240e-bdf3-47a6-8b87adedafb0/976990.jpg/300x300bb.jpg",
+"_q": "Seven Deadly Sins | Seven Deadly Sins Netsujou no Spectrum",
+"cat": "Shōnen"
+},
+{
+"game": "Soul Eater",
+"artist": "AmaLee",
+"title": "Resonance",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b2/7d/28/b27d28b9-fed5-b213-a433-79df667bce80/mzaf_14681674322392187498.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/34/e4/3f/34e43f31-0bca-175a-faa4-0e1537d208be/840090827978.png/300x300bb.jpg",
+"_q": "Soul Eater | Soul Eater Resonance T.M.Revolution",
+"cat": "Shōnen"
+},
+{
+"game": "Hellsing",
+"artist": "Manga Star",
+"title": "Logos Naki World",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/b9/0f/44/b90f44e0-dffd-04ee-d426-95d04a1d5cde/mzaf_68769355755766308.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/12/54/65/1254653a-7863-466b-cf4f-0e15c71a6205/cover.jpg/300x300bb.jpg",
+"_q": "Hellsing | Hellsing Logos Naki World",
+"cat": "Shōnen"
+},
+{
+"game": "Tokyo Revengers",
+"artist": "V!CE",
+"title": "Cry Baby",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/5e/14/4c/5e144cc3-4607-30e9-c8f8-75002ba18c77/mzaf_14822983335427234798.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/68/c1/5a/68c15a91-1f45-d35f-bca1-81ae1135d0e2/artwork.jpg/300x300bb.jpg",
+"_q": "Tokyo Revengers | Tokyo Revengers Cry Baby Official Hige Dandism",
+"cat": "Shōnen"
+},
+{
+"game": "The Promised Neverland",
+"artist": "Takahiro Obata",
+"title": "The Promised Neverland Main Theme1",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/27/e7/d5/27e7d56a-7e2b-3067-1f02-733c1eae4a09/mzaf_6181307867234895262.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/d1/62/83/d1628306-cd0d-4f9b-b564-27d335edf108/4534530129468.jpg/300x300bb.jpg",
+"_q": "The Promised Neverland | Promised Neverland Touch Off UVERworld",
+"cat": "Shōnen"
+},
+{
+"game": "Kuroko's Basketball",
+"artist": "MIDORI ORGEL",
+"title": "WALK",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e2/5f/80/e25f80de-ba5a-b090-0b50-a801c887f438/mzaf_5372694313023932302.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music4/v4/6f/0d/9e/6f0d9e3d-e462-44b4-8612-4671a730dee8/D000000002134.jpg/300x300bb.jpg",
+"_q": "Kuroko's Basketball | Kuroko no Basket Can Do GRANRODEO",
+"cat": "Shōnen"
+},
+{
+"game": "Bungo Stray Dogs",
+"artist": "Matteo Leonetti",
+"title": "Trash Candy",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/1a/3d/09/1a3d09ad-f23d-557f-6f04-65db3a341f9c/mzaf_5909872956241449998.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/c3/94/a4/c394a4a8-9747-ce32-72e9-db07dafcb6d3/859776234917_cover.jpg/300x300bb.jpg",
+"_q": "Bungo Stray Dogs | Bungo Stray Dogs Trash Candy",
+"cat": "Shōnen"
+},
+{
+"game": "Gachiakuta",
+"artist": "Character Music",
+"title": "Gachiakuta",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/f0/18/50/f01850bd-f47f-7b75-1307-e47e1666c512/mzaf_11519995650376897011.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9e/b6/13/9eb613d6-cedd-271b-7237-03824ec11955/artwork.jpg/300x300bb.jpg",
+"_q": "Gachiakuta | Gachiakuta opening",
+"cat": "Shōnen"
+},
+{
+"game": "Sakamoto Days",
+"artist": "Chanclybass",
+"title": "Sakamoto Days Opening",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/27/5c/eb/275ceb37-659a-4189-c107-90c9badedf45/mzaf_11058462799133357022.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/17/60/7b/17607b37-0f56-df03-ca18-a86d13634ae0/artwork.jpg/300x300bb.jpg",
+"_q": "Sakamoto Days | Sakamoto Days opening",
+"cat": "Shōnen"
+},
+{
+"game": "Fullmetal Alchemist",
+"artist": "Porno Graffitti",
+"title": "メリッサ",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/79/50/f8/7950f886-591b-ad9f-2a24-d8c4461b2cae/mzaf_18244403483303639723.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/21/ef/92/21ef92fa-46db-143c-8cc7-7d210d6dd29b/jacket_SECL00032B00Z_550.jpg/300x300bb.jpg",
+"_q": "Fullmetal Alchemist | Fullmetal Alchemist Melissa Porno Graffitti",
+"cat": "Culte"
+},
+{
+"game": "Trigun",
+"artist": "Tsuneo Imahori",
+"title": "H.T. In \"Badlands Rumble\"",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/cc/01/13/cc011349-85ec-8e4a-b9ad-6fad4e05af36/mzaf_7504584563637016824.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/d7/a3/2b/d7a32b63-bfa1-b528-a6e9-0274319bcdce/mzi.tvdjwidy.jpg/300x300bb.jpg",
+"_q": "Trigun | Trigun H.T. Tsuneo Imahori",
+"cat": "Culte"
+},
+{
+"game": "Lupin III",
+"artist": "Yuji Ohno & Lupintic Six",
+"title": "Theme From Lupin Ⅲ 2021",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/a6/94/a8/a694a80e-164f-13a2-8dd0-70680669ab33/mzaf_14117137061917588211.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/22/01/69/220169a5-96a7-4a12-f18c-1d265d9dccf5/HICD-83549_990000.jpg/300x300bb.jpg",
+"_q": "Lupin III | Lupin III theme Yuji Ohno",
+"cat": "Culte"
+},
+{
+"game": "Ghost in the Shell",
+"artist": "Kenji Kawai",
+"title": "UTA I - Making of Cyborg",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/06/f0/81/06f081dd-db43-05eb-b325-750740e5b84c/mzaf_11550664589232223451.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a9/b9/9b/a9b99b14-998d-8ed4-31a8-816e2c9d6cdb/4988017059159.jpg/300x300bb.jpg",
+"_q": "Ghost in the Shell | Ghost in the Shell Making of Cyborg Kenji Kawai",
+"cat": "Culte"
+},
+{
+"game": "Hajime no Ippo",
+"artist": "Shocking Lemon",
+"title": "Inner Light",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f1/3d/84/f13d8444-38db-2991-c228-68d34a631c1f/mzaf_16090308285245178042.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/5f/78/b9/5f78b948-5385-7680-d9a4-1f54bac1b10a/ticket.ohujashh.jpg/300x300bb.jpg",
+"_q": "Hajime no Ippo | Hajime no Ippo Inner Light",
+"cat": "Culte"
+},
+{
+"game": "Berserk",
+"artist": "RMaster",
+"title": "Tell Me Why",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/15/8f/24/158f24a8-6797-fdfd-8770-8b07eb214750/mzaf_11705174692120986341.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/c1/6a/5a/c16a5a2d-3bb9-85e8-41d5-ac43cac7e521/cover.jpg/300x300bb.jpg",
+"_q": "Berserk | Berserk Tell Me Why",
+"cat": "Culte"
+},
+{
+"game": "Elfen Lied",
+"artist": "PianoDeuss",
+"title": "Lilium",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/86/65/a3/8665a3e7-88b1-2321-43fe-8049d3011446/mzaf_9317020578717939599.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/f7/da/b1/f7dab1a7-8515-7a94-7858-9c0e59954126/artwork.jpg/300x300bb.jpg",
+"_q": "Elfen Lied | Elfen Lied Lilium",
+"cat": "Culte"
+},
+{
+"game": "Clannad",
+"artist": "Kenzie Smith Piano",
+"title": "Clannad - Dango Daikazoku",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/2f/5a/fe2f5a9f-140e-d38d-3433-0e8b7a3283dd/mzaf_4434856261588869779.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music49/v4/68/87/8e/68878ec4-f006-bf01-fe9c-a4cd8dc1093b/pbu2z.png/300x300bb.jpg",
+"_q": "Clannad | Clannad Dango Daikazoku",
+"cat": "Culte"
+},
+{
+"game": "The Melancholy of Haruhi Suzumiya",
+"artist": "Aya, 高良祐子 & Reiko Nakanishi",
+"title": "Hare Hare Yukai",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/df/03/5b/df035b12-4e1c-830a-a78f-bf70f948f244/mzaf_7755230276870810449.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/f0/f8/c2/f0f8c2fc-3952-1869-1895-7d3fc7e8a9c0/asset.png/300x300bb.jpg",
+"_q": "The Melancholy of Haruhi Suzumiya | Hare Hare Yukai",
+"cat": "Culte"
+},
+{
+"game": "Toradora!",
+"artist": "Root Beer Vibes",
+"title": "Pre - Parade ~Chill Mix~",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/1f/99/c8/1f99c8a8-f714-13a9-f4a6-dc5ef803c1a6/mzaf_13427531676798386047.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/a7/55/0e/a7550e54-9506-2ea9-dde5-ed7cd9023c06/199999383826.png/300x300bb.jpg",
+"_q": "Toradora! | Toradora Pre-Parade",
+"cat": "Culte"
+},
+{
+"game": "Lucky Star",
+"artist": "Yukari Fukui",
+"title": "Lucky Star – “Motteke Sailor Fuku”",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/f6/a4/47/f6a4478b-23ca-8cbe-9b3c-c3d74ef95a96/mzaf_10949641896451289209.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/73/7b/c6/mzi.cvfwgpct.jpg/300x300bb.jpg",
+"_q": "Lucky Star | Lucky Star Motteke Sailor Fuku",
+"cat": "Culte"
+},
+{
+"game": "Angel Beats!",
+"artist": "Jajnov",
+"title": "My Soul, Your Beats! - Angel Beats! Opening",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/17/6a/58/176a58a8-8ab6-61a2-7e3e-095237c6cecd/mzaf_6349523990738752568.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music4/v4/a0/e8/fc/a0e8fc76-2dbb-32e5-015c-10a2e55efc85/YTdMk.png/300x300bb.jpg",
+"_q": "Angel Beats! | Angel Beats My Soul Your Beats",
+"cat": "Culte"
+},
+{
+"game": "Your Lie in April",
+"artist": "Torby Brand",
+"title": "Hikaru Nara",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/fa/a1/90/faa19051-1dae-4d34-f7ed-a5534c389318/mzaf_16692973241955184456.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/7f/fc/40/7ffc4040-f2d2-cbf1-eb4c-d8b4868efbcb/194152345475.png/300x300bb.jpg",
+"_q": "Your Lie in April | Your Lie in April Hikaru Nara Goose house",
+"cat": "Culte"
+},
+{
+"game": "Fruits Basket",
+"artist": "Kamie",
+"title": "For Fruits Basket",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/6f/23/13/6f2313c6-7186-0637-482d-20e2359b4845/mzaf_321345461496365754.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/d5/44/88/d54488af-bca2-9580-4e5f-ac7ef2830bb0/198009124565.png/300x300bb.jpg",
+"_q": "Fruits Basket | Fruits Basket For Fruits Basket Ritsuko Okazaki",
+"cat": "Culte"
+},
+{
+"game": "Solo Leveling",
+"artist": "SawanoHiroyuki[nZk]",
+"title": "DARK ARIA <LV2>",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/0a/6c/aa/0a6caad5-292f-bb48-1b07-7f05de6658f2/mzaf_4314181242956577076.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/4e/e2/8c/4ee28c28-f1d4-88c6-cac1-d515fce6385c/4547366665338.jpg/300x300bb.jpg",
+"_q": "Solo Leveling | SawanoHiroyuki LEveL",
+"cat": "Récents"
+},
+{
+"game": "Kaguya-sama",
+"artist": "Miura Jam",
+"title": "Giri Giri",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/79/8b/c5/798bc537-c6e7-3b8a-1e00-36b0c364367e/mzaf_6175379318123098105.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/4e/fb/45/4efb45d6-a5a5-674b-da4e-5849a7566452/artwork.jpg/300x300bb.jpg",
+"_q": "Kaguya-sama | Kaguya-sama Love Dramatic Masayuki Suzuki",
+"cat": "Récents"
+},
+{
+"game": "Horimiya",
+"artist": "Paintamelody",
+"title": "Iro Kousui",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/ee/4b/b6/ee4bb605-6f7a-7fd1-b0f4-4c1c6d100872/mzaf_8152399638479672852.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/6b/a4/35/6ba43594-fb76-926c-a64a-c7b7d001711a/artwork.jpg/300x300bb.jpg",
+"_q": "Horimiya | Horimiya Iro Kousui",
+"cat": "Récents"
+},
+{
+"game": "Mushoku Tensei",
+"artist": "zzz - Anime on Piano",
+"title": "Tabibito No Uta",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview114/v4/08/4d/10/084d100d-88b1-9415-d8d6-907911f5c14d/mzaf_1770855623505608175.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/8f/a2/71/8fa271d1-0606-5341-cf8c-630f17889b9b/195999913681.png/300x300bb.jpg",
+"_q": "Mushoku Tensei | Mushoku Tensei Tabibito no Uta",
+"cat": "Récents"
+},
+{
+"game": "Delicious in Dungeon",
+"artist": "Nobuo Uematsu",
+"title": "Dungeon",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ad/1c/21/ad1c2126-7b63-3cc1-bfb9-bb5c8c6746ce/mzaf_13889693975392847752.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/6d/02/88/6d0288ac-a0ef-200b-f2ae-063a59c00c23/dj.bqdqwpgf.jpg/300x300bb.jpg",
+"_q": "Delicious in Dungeon | Delicious in Dungeon Sleep Walking Orchestra BUMP OF CHICKEN",
+"cat": "Récents"
+},
+{
+"game": "The Apothecary Diaries",
+"artist": "Binou SZ",
+"title": "Hana Ni Natte",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/db/25/19/db25196e-8d51-4d25-1959-23e6f65a185a/mzaf_9886165247314076262.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/95/2c/0e/952c0eec-a229-bb74-8052-df3c72799478/198009544981.png/300x300bb.jpg",
+"_q": "The Apothecary Diaries | Apothecary Diaries Hana ni Natte Ryokuoushoku Shakai",
+"cat": "Récents"
+},
+{
+"game": "Nausicaä de la vallée du vent",
+"artist": "Joe Hisaishi",
+"title": "Requiem - Nausicaä",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/91/9d/74/919d7441-5633-b67c-720b-4aa025a40fb9/mzaf_7703302913147643646.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/02/18/cf/0218cf4b-6850-28b1-6fd3-8cb5278e34b5/TKCA-72717.jpg/300x300bb.jpg",
+"_q": "Nausicaä de la vallée du vent | Nausicaa Joe Hisaishi",
+"cat": "Ghibli"
+},
+{
+"game": "Le Conte de la princesse Kaguya",
+"artist": "Joe Hisaishi",
+"title": "La Petite princesse",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/69/25/c3/6925c3b9-4ec6-5361-238f-00a98b7b5624/mzaf_9958182419435503413.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music2/v4/5c/18/58/5c18581a-d61c-75e0-5a3e-37149c0594de/kaguya_ST_1024_3-1.jpg/300x300bb.jpg",
+"_q": "Le Conte de la princesse Kaguya | Princess Kaguya Joe Hisaishi",
+"cat": "Ghibli"
+},
+{
+"game": "Ponyo sur la falaise",
+"artist": "Joe Hisaishi",
+"title": "Ponyo sur la falaise",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d1/63/7e/d1637e17-92e8-af88-f163-1976daa3afed/mzaf_2075993691075174131.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/f7/19/cc/f719cc4e-05d7-708c-af87-a5cfbbb3ff79/TKCA-.jpg/300x300bb.jpg",
+"_q": "Ponyo sur la falaise | Ponyo on the Cliff by the Sea theme",
+"cat": "Ghibli"
+},
+{
+"game": "Le vent se lève",
+"artist": "Joe Hisaishi",
+"title": "Le vent",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/cc/ac/3f/ccac3f31-fbbf-b126-c5e0-ed6b9a0bcabb/mzaf_14955090490449516401.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music4/v4/11/00/d8/1100d8a4-1990-205e-c4f1-f46e0fcd83ac/Kaze_ST_Jacket1.jpg/300x300bb.jpg",
+"_q": "Le vent se lève | The Wind Rises Joe Hisaishi",
+"cat": "Ghibli"
+},
+{
+"game": "Arrietty",
+"artist": "Cécile Corbel",
+"title": "Arrietty's Song",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/53/d9/ff/53d9ff89-cb59-9ad5-4a60-67a3349486ce/mzaf_10347386610736985305.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/97/a3/1b/97a31b5a-1893-2af3-296a-e15684a70c49/TKCA-73537.jpg/300x300bb.jpg",
+"_q": "Arrietty | Arrietty's Song Cecile Corbel",
+"cat": "Ghibli"
+},
+{
+"game": "Le Garçon et le Héron",
+"artist": "Kenshi Yonezu",
+"title": "Spinning Globe",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3b/fd/ea/3bfdea92-d426-44a2-93ef-6cddad5961e5/mzaf_2943796296692814798.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e1/52/c4/e152c462-576c-e7f7-bd8f-fc36b3c12d46/CD_3000.jpg/300x300bb.jpg",
+"_q": "Le Garçon et le Héron | Kenshi Yonezu Spinning Globe",
+"cat": "Ghibli"
+},
+{
+"game": "Si tu tends l'oreille",
+"artist": "Yoko Honna",
+"title": "Take Me Home, Country Roads",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d4/b5/4d/d4b54dfc-8873-e0bc-b96f-58675c21474a/mzaf_9751535230243561114.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/39/f3/cf/39f3cfe6-e4da-acd3-26db-c53205fc5ae4/TKCA-70648.jpg/300x300bb.jpg",
+"_q": "Si tu tends l'oreille | Whisper of the Heart Country Road",
+"cat": "Ghibli"
+},
+{
+"game": "Ulysse 31",
+"artist": "Lionel Leroy",
+"title": "Ulysse 31",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/00/30/5c/00305cbb-c6a4-14b9-75bb-dd694e2529ca/mzaf_3253974333273876947.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music3/v4/d5/a0/d9/d5a0d9ad-9787-ee4d-9ab3-a058ffafed99/3596973162496_cover.jpg/300x300bb.jpg",
+"_q": "Ulysse 31 | Ulysse 31 générique",
+"cat": "Génériques français"
+},
+{
+"game": "Les Maîtres de l'univers",
+"artist": "Le Cri Du Bitume",
+"title": "Musclor",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/80/aa/b6/80aab640-999f-15ec-81e8-6474ea2e6324/mzaf_5108636885577211898.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/8e/37/b6/8e37b662-b3d1-49e8-9add-e423550b2896/artwork.jpg/300x300bb.jpg",
+"_q": "Les Maîtres de l'univers | Musclor générique",
+"cat": "Génériques français"
+},
+{
+"game": "Bioman",
+"artist": "Bernard Minet",
+"title": "Bioman",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/Music/24/c8/52/mzm.qktvurir.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music/df/df/c8/mzi.fekgoewh.jpg/300x300bb.jpg",
+"_q": "Bioman | Bioman générique",
+"cat": "Génériques français"
+},
+{
+"game": "Princesse Sarah",
+"artist": "Bob & Konnie Patline & C. Willys",
+"title": "Princesse Sarah",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/48/af/89/48af893a-7105-159e-62f3-c0386b43350a/mzaf_10430416240492552267.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/ab/67/0e/ab670ebe-45a0-14da-a4e0-95ba0aba2e0d/3760295593867_cover.jpg/300x300bb.jpg",
+"_q": "Princesse Sarah | Princesse Sarah générique",
+"cat": "Génériques français"
+},
+{
+"game": "Tom Sawyer",
+"artist": "Elfie",
+"title": "Le petit monde de Tom Sawyer",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/49/ad/57/49ad5736-e4f5-3dc8-4b5a-7cb446a640c0/mzaf_3369248786029581081.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/63/21/fe/6321fe82-30d7-1781-87d7-8a4cf7b69619/3700403520507_cover.jpg/300x300bb.jpg",
+"_q": "Tom Sawyer | Tom Sawyer générique",
+"cat": "Génériques français"
+},
+{
+"game": "Il était une fois... la vie",
+"artist": "Millennials Remix",
+"title": "Il Etait Une Fois La Vie - Générique Afro House Edition",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/2d/41/54/2d4154bb-74d0-00e6-ea24-704242537332/mzaf_14161564471938956943.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3c/1c/7e/3c1c7ecb-a066-a3f1-ef22-70eff66efd59/artwork.jpg/300x300bb.jpg",
+"_q": "Il était une fois... la vie | Il était une fois la vie générique",
+"cat": "Génériques français"
+},
+{
+"game": "Ken le Survivant",
+"artist": "Kamini",
+"title": "Club Do",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/ca/11/ff/ca11ff5d-d87a-df91-c7b3-9e74fce6c877/mzaf_14859436213445411864.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/0e/d1/b5/0ed1b534-f507-b6d4-a907-69f899589017/cover_10267932.jpg/300x300bb.jpg",
+"_q": "Ken le Survivant | Ken le survivant générique",
+"cat": "Génériques français"
+},
+{
+"game": "Digimon",
+"artist": "Pokémon",
+"title": "Pokémon Theme",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/11/a9/ef/11a9ef68-e082-5a69-5b09-1fedfaf65fb9/mzaf_14273090018051317150.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/33/a7/44/33a74428-56ca-1ed5-8a61-5999fef6d815/8721215934721.png/300x300bb.jpg",
+"_q": "Digimon | Digimon générique français",
+"cat": "Génériques français"
+},
+{
+"game": "Inspecteur Gadget",
+"artist": "Jacques Cardona",
+"title": "Inspecteur Gadget",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/8a/2f/d0/8a2fd0e5-5d16-c919-0c87-94658636095d/mzaf_16532357467302950062.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music5/v4/aa/74/f5/aa74f5ce-e6ff-c00e-e239-988fa8ea3728/3596973163493_cover.jpg/300x300bb.jpg",
+"_q": "Inspecteur Gadget | Inspecteur Gadget générique",
+"cat": "Génériques français"
+},
+{
+"game": "Les Bisounours",
+"artist": "Magali",
+"title": "Bisous bisous gentil Bisounours",
+"preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/3b/6e/1d/3b6e1d46-f271-264d-1120-5ab014be6da1/mzaf_9895004731486895119.plus.aac.p.m4a",
+"art": "https://is1-ssl.mzstatic.com/image/thumb/Music3/v4/3a/5d/63/3a5d6331-23d0-5da8-8afe-fac5200c73f8/cover.jpg/300x300bb.jpg",
+"_q": "Les Bisounours | Bisounours générique",
+"cat": "Génériques français"
 }
 ]

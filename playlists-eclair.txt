@@ -441,7 +441,7 @@ The Weeknd | Blinding Lights
 Dua Lipa | Don't Start Now
 Vitaa & Slimane | Ça va ça vient
 Tones and I | Dance Monkey
-13 Organisé | Bande organisée
+13'Organisé | Bande organisée
 Master KG | Jerusalema
 Hatik | Angela
 Doja Cat | Say So
@@ -911,7 +911,7 @@ Coldplay | Paradise
 Mumford & Sons | I Will Wait
 Asaf Avidan | One Day
 # 2013
-Maître Gims | Bella
+GIMS | Bella
 Julien Doré | Paris-Seychelles
 # 2014
 Christine and the Queens | Christine
@@ -919,7 +919,7 @@ Vianney | Pas là
 Robin Schulz | Prayer in C
 Calogero | Un jour au mauvais endroit
 # 2015
-Maître Gims | Sapés comme jamais
+GIMS | Sapés comme jamais
 Nekfeu | On verra
 Jain | Makeba
 # 2016
@@ -1063,7 +1063,7 @@ Stromae | Tous les mêmes
 Indila | Tourner dans le vide
 # 2015
 Nekfeu | Égérie
-Maître Gims | Est-ce que tu m'aimes ?
+GIMS | Est-ce que tu m'aimes ?
 # 2016
 Charlie Puth | Attention
 # 2017

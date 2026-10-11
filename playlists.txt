@@ -267,7 +267,7 @@ Wiz Khalifa | See You Again
 # Années 2020
 Tones and I | Dance Monkey
 Vitaa & Slimane | Ça va ça vient
-13 Organisé | Bande organisée
+13'Organisé | Bande organisée
 Måneskin | Beggin'
 Stromae | L'enfer
 Tiakola | Si j'savais
@@ -433,8 +433,7 @@ Shakira | Whenever, Wherever | 2001
 Crazy Frog | Axel F | 2005
 # Années 2010
 Stromae | Formidable | 2013
-Maître Gims | Bella | 2013
-Maître Gims | Sapés comme jamais | 2015
+GIMS | Sapés comme jamais | 2015
 Vianney | Pas là | 2014
 PNL | Au DD | 2019
 Dadju | Reine | 2018
