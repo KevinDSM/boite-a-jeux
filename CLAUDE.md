@@ -10,6 +10,18 @@ Hub de 23 jeux de soirée (+ Miroir et Le Mot du jour, à part) joués sur les t
 - `PRODUCT.md` (le pourquoi) et `DESIGN.md` (la charte) font foi pour toute modification visible. Kevin valide sur une préversion avant toute mise en production.
 - Pour un portage ou une refonte, garder la mise en page que les amis connaissent et ne changer que la peau, sauf demande contraire.
 
+## À faire à la passation (laissé par la session cloud du 11/10/2026)
+
+Demander à Kevin ce qui est déjà fait, cocher ici au fur et à mesure, puis supprimer cette section quand tout est fait.
+
+- [ ] **Un seul indice : ne plus publier `unseulindice.json` sur le site.** Sur pages.dev, seul le serveur des salons en a besoin (il l'emballe via `server/build.py`). L'exclure de `dist/` dans `deploy.py`. Le mode « l'hôte fait tourner la partie » (hors pages.dev) a encore besoin du fichier : soit le garder pour ce cas (le charger depuis un autre chemin), soit accepter que ce mode n'ait plus ce jeu. Vérifier ensuite avec `SRV=ws://127.0.0.1:8787 python tools/tests/unseulindice_play.py`.
+- [ ] **Un seul indice : publier.** Branche `un-seul-indice` (v71). D'abord `python deploy.py --server` (OBLIGATOIRE, le jeu tourne sur le serveur ; redémarre les salons en cours, le faire quand personne ne joue), puis `python deploy.py --site --preview unseulindice`, validation par Kevin, puis `python deploy.py --site`. Fusionner la branche dans main.
+- [ ] **Un seul indice : icône 3D** dans Blender (`icon_unseulindice()` dans `tools/icons/`, puis `export_web.py` → `icons/web/unseulindice.webp`). En attendant, la carte du salon affiche le dessin plat `.usi-art`.
+- [ ] **Le Mot du jour** (tables D1 déjà créées par Kevin le 11/10) : vérifier que le secret Pages `MOT_SEL` est posé (`npx wrangler pages secret put MOT_SEL --project-name boite-a-jeux`, Kevin tape lui-même la phrase), qu'après les essais en préversion les tables ont été vidées (`DELETE FROM motdujour_joueurs; DELETE FROM motdujour_jours;` en `--remote --command`), et que le site est publié.
+- [ ] **Le Mot du jour : icône 3D** dans Blender, et, si Kevin le souhaite, une section dans `/stats` (qui joue chaque jour).
+- [ ] **Camembert** existe dans le code (`GAMES`) mais n'a pas de carte dans le salon : demander à Kevin si c'est voulu.
+- [ ] **Suite du nouveau style** (Chromo = pilote, Un seul indice suit le même modèle) : les 21 autres jeux sont encore dans l'ancienne mise en page. Proposé de commencer par Douze et Kems.
+
 ## Publier
 
 - `python deploy.py --site` publie le site ; `python deploy.py --site --preview NOM` publie une préversion sur `https://NOM.boite-a-jeux.pages.dev` (à faire valider par Kevin) ; `python deploy.py --server` publie le Worker des salons ; sans option : serveur puis site. `--dry` prépare `dist/` sans publier.
