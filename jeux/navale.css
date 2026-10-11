@@ -1,0 +1,152 @@
+/* navale : le nouveau style de table (d'après Chromo). Chargé après table.css.
+   Une table de carte marine : un bleu nuit profond sous la lampe, l'océan quadrillé, des coques d'acier,
+   les touchés en rouge, les tirs à l'eau en écume blanche. La table reste sombre même en thème clair.
+   Les sélecteurs passent par html[data-game] : la tuile .gcard[data-game="navale"] du salon n'est pas touchée.
+   Images 3D facultatives (img/navale/pa, cr, ct, sm, tp.webp, bateau vu de dessus, proue à droite) : elles recouvrent le dessin. */
+html[data-game="navale"], html[data-theme="light"][data-game="navale"] {
+  --bg: oklch(0.18 0.04 245); --surface: oklch(0.24 0.045 245); --surface-2: oklch(0.29 0.05 245); --line: oklch(0.42 0.05 240 / .6);
+  --ink: oklch(0.97 0.01 230); --ink-2: oklch(0.86 0.03 230); --mute: oklch(0.78 0.035 230);
+  --acc: oklch(0.85 0.14 82); --acc-soft: oklch(0.91 0.1 85); --on-acc: oklch(0.25 0.06 60); --neg: oklch(0.62 0.21 28); --pos: oklch(0.84 0.14 160); --gold: var(--acc);
+  --glass-tint: oklch(0.22 0.04 245 / .5); --glass-tint-thick: oklch(0.18 0.04 245 / .82);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.44 0.08 235); --felt-mid: oklch(0.29 0.06 240); --felt-lo: oklch(0.13 0.035 250);
+}
+/* les couleurs des objets valent partout : la carte du salon et les règles dessinent aussi l'océan et les coques */
+:root {
+  --nvx-sea: oklch(0.42 0.1 235); --nvx-sea-2: oklch(0.32 0.09 240); --nvx-gridline: rgba(255, 255, 255, .13);
+  --nvx-hull: oklch(0.72 0.02 240); --nvx-hull-2: oklch(0.48 0.025 245); --nvx-deck: oklch(0.6 0.02 240);
+  --nvx-hit: oklch(0.63 0.22 30); --nvx-foam: oklch(0.97 0.01 220);
+}
+#s-navale { padding-bottom: 0; }
+#s-navale button.tb-chip { min-height: 44px; }
+
+/* la table : un seul adversaire, assis en face ; la grande grille au milieu */
+.nvx-table { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.nvx-table .tb-opps { height: 92px; width: 100%; }
+.nvx-table .tb-opps:has(.tb-opp:nth-child(2)) { height: 100px; }
+.nvx-cap { margin: 0 0 4px; font-size: 13px; font-weight: 650; color: var(--ink-2); text-align: center; grid-column: 1 / -1; }
+
+/* une grille : repères A à J en haut, 1 à 10 à gauche, l'océan quadrillé */
+.nvx-board { display: grid; grid-template-columns: 16px minmax(0, 1fr); grid-template-rows: auto 16px auto; width: min(100%, 372px); }
+.nvx-board > .nvx-cap { grid-row: 1; }
+.nvx-cols { grid-row: 2; grid-column: 2; display: grid; grid-template-columns: repeat(10, 1fr); }
+.nvx-rows { grid-row: 3; grid-column: 1; display: grid; grid-template-rows: repeat(10, 1fr); }
+.nvx-cols i, .nvx-rows i { font: 600 10.5px/16px var(--font); font-style: normal; color: var(--ink-2); text-align: center; display: grid; place-items: center; }
+.nvx-sea { grid-row: 3; grid-column: 2; position: relative; aspect-ratio: 1; display: grid; grid-template: repeat(10, 1fr) / repeat(10, 1fr); border-radius: 10px; overflow: hidden;
+  background: linear-gradient(var(--nvx-gridline) 1px, transparent 1px) 0 0 / 10% 10%, linear-gradient(90deg, var(--nvx-gridline) 1px, transparent 1px) 0 0 / 10% 10%,
+    radial-gradient(120% 90% at 30% 20%, color-mix(in oklab, var(--nvx-sea), white 10%), var(--nvx-sea) 45%, var(--nvx-sea-2));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18), inset 0 0 30px rgba(0, 10, 40, .35), 0 14px 30px -10px rgba(0, 0, 0, .6); user-select: none; -webkit-user-select: none; }
+/* la grande grille tient avec le plateau dans la hauteur de l'écran, sans passer dessous */
+.nvx-board.big { width: min(100%, 372px, calc(100dvh - 420px)); }
+.nvx-table.ph-place .nvx-board.big { width: min(100%, 372px, calc(100dvh - 430px)); }
+.nvx-board.small { width: 158px; grid-template-columns: 11px minmax(0, 1fr); grid-template-rows: auto 11px auto; }
+.nvx-board.small .nvx-cols i, .nvx-board.small .nvx-rows i { font-size: 8px; line-height: 11px; }
+.nvx-board.small .nvx-sea { border-radius: 6px; }
+.nvx-board.mid { width: min(100%, 300px); }
+.nvx-board.empty .nvx-sea { opacity: .5; }
+.nvx-sea.placing { touch-action: none; cursor: pointer; }
+.nvx-board.can .nvx-sea { cursor: crosshair; }
+
+/* les cases : transparentes, elles portent les marques au-dessus des coques */
+.nvx-c { position: relative; z-index: 2; pointer-events: none; }
+.nvx-c::after { content: ""; position: absolute; left: 50%; top: 50%; border-radius: 50%; transform: translate(-50%, -50%); }
+.nvx-c.m::after { width: 30%; height: 30%; background: var(--nvx-foam); opacity: .85; box-shadow: 0 0 0 2px rgba(255, 255, 255, .22); }
+.nvx-c.h::after { width: 46%; height: 46%; background: radial-gradient(circle at 38% 32%, oklch(0.8 0.15 60), var(--nvx-hit) 60%); box-shadow: 0 0 10px 2px color-mix(in oklab, var(--nvx-hit) 70%, transparent); }
+.nvx-c.s::after { width: 42%; height: 42%; background: radial-gradient(circle at 38% 32%, oklch(0.7 0.18 35), oklch(0.45 0.17 28) 70%); box-shadow: 0 0 0 1.5px rgba(0, 0, 0, .35); }
+.nvx-c.aim { z-index: 3; box-shadow: inset 0 0 0 2.5px var(--acc), 0 0 16px 2px color-mix(in oklab, var(--acc) 60%, transparent); border-radius: 4px; }
+.nvx-c.aim::before { content: ""; position: absolute; inset: 22%; background: linear-gradient(var(--acc), var(--acc)) 50% 0 / 2px 100% no-repeat, linear-gradient(var(--acc), var(--acc)) 0 50% / 100% 2px no-repeat; opacity: .9; }
+.nvx-c.fresh::after { animation: nvx-splash .5s cubic-bezier(.2, .9, .3, 1.4); }
+@keyframes nvx-splash { from { transform: translate(-50%, -50%) scale(2.4); opacity: 0; } }
+.nvx-board.small .nvx-c.m::after { box-shadow: none; }
+
+/* les coques : acier, pont rayé, proue arrondie ; coulées en rouge sombre */
+.nvx-ship { position: absolute; z-index: 1; left: calc(var(--c) * 10%); top: calc(var(--r) * 10%); pointer-events: none; }
+.nvx-ship.h { width: calc(var(--l) * 10%); height: 10%; }
+.nvx-ship.v { width: 10%; height: calc(var(--l) * 10%); }
+.nvx-ship > i { position: absolute; inset: 14% 6%; border-radius: 999px 40% 40% 999px; transition: opacity .2s;
+  background: linear-gradient(90deg, transparent 0 12%, rgba(0, 0, 0, .14) 12% 13%, transparent 13% 87%, rgba(0, 0, 0, .14) 87% 88%, transparent 88%),
+    linear-gradient(180deg, color-mix(in oklab, var(--nvx-hull), white 25%), var(--nvx-hull) 40%, var(--nvx-hull-2));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25), 0 3px 6px rgba(0, 0, 0, .45); }
+.nvx-ship.h > i { border-radius: 40% 999px 999px 40%; }
+.nvx-ship.v > i { inset: 6% 14%; border-radius: 40% 40% 999px 999px; background: linear-gradient(180deg, transparent 0 12%, rgba(0, 0, 0, .14) 12% 13%, transparent 13% 87%, rgba(0, 0, 0, .14) 87% 88%, transparent 88%), linear-gradient(90deg, color-mix(in oklab, var(--nvx-hull), white 25%), var(--nvx-hull) 40%, var(--nvx-hull-2)); }
+.nvx-ship > i::after { content: ""; position: absolute; left: 34%; top: 28%; width: 22%; height: 44%; border-radius: 3px; background: var(--nvx-deck); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4); }
+.nvx-ship.v > i::after { left: 28%; top: 34%; width: 44%; height: 22%; }
+.nvx-ship.sunk > i { background: linear-gradient(180deg, oklch(0.45 0.08 30), oklch(0.3 0.07 28)); opacity: .9; }
+.nvx-ship.found > i { opacity: .7; box-shadow: inset 0 0 0 1.5px var(--acc), 0 3px 6px rgba(0, 0, 0, .45); }
+.nvx-ship.lifted { opacity: .3; }
+.nvx-ship .nvx-img { position: absolute; left: 50%; top: 50%; width: 100%; height: 100%; object-fit: contain; transform: translate(-50%, -50%); }
+.nvx-ship.v .nvx-img { width: calc(var(--l) * 100%); height: auto; aspect-ratio: var(--l) / 1; transform: translate(-50%, -50%) rotate(90deg); }
+.nvx-ship:has(.nvx-img) > i { display: none; }
+.nvx-ship.sunk .nvx-img { filter: sepia(.6) hue-rotate(-30deg) saturate(1.6) brightness(.6); }
+/* le bateau qu'on déplace : il suit le doigt, vert s'il a la place, rouge sinon */
+.nvx-ghost { z-index: 4; opacity: .85; }
+.nvx-ghost > i { box-shadow: inset 0 0 0 2px var(--pos), 0 0 16px color-mix(in oklab, var(--pos) 60%, transparent); }
+.nvx-ghost.bad > i { box-shadow: inset 0 0 0 2px var(--nvx-hit), 0 0 16px color-mix(in oklab, var(--nvx-hit) 60%, transparent); opacity: .7; }
+.nvx-ghost[hidden] { display: none; }
+
+/* le plateau : ta flotte en petit à gauche, le tir à droite */
+.nvx-tray:is(.ph-play, .ph-over) { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center; }
+.nvx-tray:is(.ph-play, .ph-over) > .tb-tray-top { grid-column: 1 / -1; }
+.nvx-tray:is(.ph-play, .ph-over) > .nvx-board { grid-column: 1; margin: 4px 0 0; }
+.nvx-tray:is(.ph-play, .ph-over) > .tb-acts { grid-column: 2; flex-direction: column; margin: 0; }
+.nvx-tray:is(.ph-play, .ph-over) > .tb-acts .btn { flex: none; min-width: 0; }
+.nvx-tray .tb-tray-top span:last-child { text-align: right; font-weight: 500; }
+/* sur téléphone, pendant les tirs, l'adversaire est nommé par le meneur et la puce du haut : la grille prend sa place */
+
+.nvx-tray.ph-play:not(:has(.nvx-board)) { display: block; }
+.nvx-picks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 2px; }
+.nvx-pick { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 10px; border: 0; border-radius: 14px; cursor: pointer; text-align: left; color: var(--ink);
+  background: rgba(255, 255, 255, .08); box-shadow: inset 0 0 0 .5px var(--tb-rim); font: 600 14px/1.15 var(--font); }
+.nvx-pick small { display: block; font-size: 11.5px; font-weight: 500; color: var(--ink-2); }
+.nvx-pick.on { background: color-mix(in oklab, var(--acc) 20%, transparent); box-shadow: inset 0 0 0 2px var(--acc); }
+.nvx-pick.done:not(.on) { opacity: .55; }
+.nvx-hull { position: relative; flex: none; width: calc(var(--l) * 9px); height: 12px; }
+.nvx-hull > i { position: absolute; inset: 0; border-radius: 40% 999px 999px 40%; background: linear-gradient(180deg, color-mix(in oklab, var(--nvx-hull), white 25%), var(--nvx-hull) 40%, var(--nvx-hull-2)); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25); }
+.nvx-hull .nvx-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.nvx-hull:has(.nvx-img) > i { display: none; }
+
+/* l'adversaire d'un joueur est nommé par le meneur, la puce du haut et la colonne de droite : la grille prend sa place */
+.nvx-table.player > .tb-opps { display: none; }
+@media (max-width: 1099px) {
+  /* le choix du bateau : une rangée de cinq pastilles, le nom du bateau choisi est en haut du plateau */
+  .nvx-picks { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+  .nvx-pick { flex-direction: column; justify-content: center; gap: 5px; padding: 6px 2px; min-height: 52px; }
+  .nvx-pick .nvx-pick-t { display: none; }
+  .nvx-pick .nvx-hull { width: calc(var(--l) * 10px); max-width: 100%; height: 11px; }
+  .nvx-tray.ph-place .tb-acts .btn { min-width: 0; flex: 1 1 0; font-size: 15px; }
+}
+.nvx-pick-n { display: none; font: 700 12px var(--font); color: var(--ink-2); }
+@media (max-width: 1099px) { .nvx-pick-n { display: block; } }
+
+/* les spectateurs : les deux grilles côte à côte */
+.nvx-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.nvx-duo .nvx-board { width: 100%; }
+.nvx-watch { margin: 10px 0 0; font-size: 13px; color: var(--ink-2); }
+
+/* colonne de droite (PC) et fil ; sur téléphone ils sont dans la feuille */
+#nv-main > :is(.nv-side, .nv-log) { display: none; }
+[data-game="navale"] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }
+/* style.css fait « respirer » tout .btn.danger (ancien Chromo) */
+#s-navale .tb-btn.danger { animation: none; }
+
+@media (min-width: 1100px) {
+  #nv-main.desk-split > .desk-side > :is(.nv-side, .nv-log) { display: block; }
+  #s-navale .nvx-board.big { width: clamp(300px, calc(100dvh - 430px), 440px); }
+  #s-navale .nvx-table.ph-place .nvx-board.big { width: clamp(280px, calc(100dvh - 540px), 460px); }
+  #s-navale .nvx-pair { display: flex; gap: 26px; align-items: flex-start; justify-content: center; }
+  #s-navale .nvx-pair .nvx-board.small { width: 220px; margin-top: 0; }
+  #s-navale .nvx-picks { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  #s-navale .nvx-pick { flex-direction: column; text-align: center; gap: 6px; padding: 8px 6px; }
+  #s-navale .nvx-board.small { width: 200px; }
+  #s-navale .nvx-board.mid { width: 100%; }
+  #s-navale .nvx-duo { max-width: 760px; }
+  #s-navale .tb-tray { max-width: 640px; width: 100%; margin: auto auto 0; }
+}
+@media (prefers-reduced-motion: reduce) { .nvx-c.fresh::after { animation: none; } }
+
+/* le dessin de la carte du salon (si l'icône 3D manque) : un bout d'océan, une coque et un touché */
+.nvx-art { position: relative; display: block; width: 50px; height: 50px; border-radius: 10px; overflow: hidden;
+  background: linear-gradient(rgba(255, 255, 255, .18) 1px, transparent 1px) 0 0 / 10px 10px, linear-gradient(90deg, rgba(255, 255, 255, .18) 1px, transparent 1px) 0 0 / 10px 10px, var(--nvx-sea); }
+.nvx-art i { position: absolute; left: 6px; top: 18px; width: 34px; height: 11px; border-radius: 40% 999px 999px 40%; background: linear-gradient(180deg, color-mix(in oklab, var(--nvx-hull), white 25%), var(--nvx-hull-2)); }
+.nvx-art b { position: absolute; left: 27px; top: 19px; width: 9px; height: 9px; border-radius: 50%; background: var(--nvx-hit); box-shadow: 0 0 8px var(--nvx-hit); }

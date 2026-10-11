@@ -343,6 +343,20 @@ const RULES = [
     ['La lecture', `<p>L’hôte déroule les carnets page par page, sur tous les écrans à la fois. Lis à voix haute ! Pendant la lecture, touche le cœur des meilleurs moments (jamais les tiens). À la fin, on voit qui a récolté le plus de cœurs.</p>`],
     ['Réglages dans le salon', `<p>Robots (ils écrivent et devinent au hasard, et gribouillent), rythme des étapes, longueur des carnets. De 3 à 12 joueurs.</p>`],
   ] },
+  { key: 'navale', parts: [
+    ['Le principe', `<p>Le grand classique, à deux. Chacun cache sa flotte sur une grille de 10 × 10, puis on tire à tour de rôle sur la grille de l’autre. Le premier qui coule toute la flotte adverse gagne. Ta flotte n’apparaît jamais sur le téléphone de l’autre.</p>`],
+    ['Les joueurs', `<p>L’hôte affronte le premier ami arrivé dans le salon, ou le robot. Les autres regardent : ils voient les tirs des deux amiraux, jamais les flottes, qui ne se dévoilent qu’à la fin.</p>`],
+    ['La flotte', `<ul>
+      <li>Un porte-avions (5 cases), un croiseur (4), un contre-torpilleur (3), un sous-marin (3) et un torpilleur (2).</li>
+      <li>À l’horizontale ou à la verticale, sans se chevaucher. Ils peuvent se toucher.</li>
+      <li>Choisis un bateau, puis touche la case de sa première extrémité. Touche un bateau posé pour le tourner, fais-le glisser pour le déplacer. « Au hasard » place toute la flotte d’un coup.</li></ul>`],
+    ['Les tirs', `<ul>
+      <li>À ton tour, touche une case de la grande grille, puis appuie sur Feu (ou touche-la une deuxième fois).</li>
+      <li><b>À l’eau</b> : rien. <b>Touché</b> : une case d’un bateau. <b>Coulé</b> : toutes ses cases sont touchées, et son nom est annoncé.</li>
+      <li>Ta flotte, en petit dans le plateau du bas, montre les tirs reçus.</li>
+      <li>Option « on rejoue quand on touche », cochée de base : tant que tu touches, tu tires encore.</li></ul>`],
+    ['Le robot', `<p>Il tire en damier pour trouver tes bateaux, puis suit chaque touché jusqu’à couler le navire. Un joueur absent depuis 25 secondes à son tour est remplacé par le robot pour ce tir.</p>`],
+  ] },
   { key: 'nomcode', parts: [
     ['Le principe', `<p>L’équivalent maison de Codenames. Deux équipes, la Rouge et la Bleue, s’affrontent sur une grille de 25 mots. Chaque équipe a un espion : lui seul sait quels mots cachent ses agents.</p>`],
     ['La grille', `<ul>
