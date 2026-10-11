@@ -26,12 +26,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-unseulindice' || shownId === 's-menteur';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-unseulindice' || shownId === 's-menteur' || shownId === 's-navale';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-unseulindice' && id !== 's-menteur') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-unseulindice' && id !== 's-menteur' && id !== 's-navale') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-unseulindice' ? 'unseulindice' : id === 's-menteur' ? 'menteur' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-unseulindice' ? 'unseulindice' : id === 's-menteur' ? 'menteur' : id === 's-navale' ? 'navale' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -318,6 +318,7 @@ function render() {
   else if (s.phase === 'bt') { show('s-bataille'); renderBataille(s.bt); }
   else if (s.phase === 'usi') { show('s-unseulindice'); renderUnSeulIndice(s.usi); }
   else if (s.phase === 'mt') { show('s-menteur'); renderMenteur(s.mt); }
+  else if (s.phase === 'nv') { show('s-navale'); renderNavale(s.nv); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
     const n = document.getElementById(keep.id);
@@ -442,6 +443,7 @@ function renderLobby(s) {
   $('#opts-bataille').hidden = s.pick !== 'bataille';
   $('#opts-unseulindice').hidden = s.pick !== 'unseulindice';
   $('#opts-menteur').hidden = s.pick !== 'menteur';
+  $('#opts-navale').hidden = s.pick !== 'navale';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
   if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''}, robots compris. Il en faut au moins 5.` : `${n} joueurs, dont ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
   if (isHostPlayer() && s.pick === 'petitbac') renderPetitBacOpts();
@@ -1138,6 +1140,14 @@ const HELP = {
       <li>Les 1, les <b>Paco</b>, comptent pour toutes les valeurs. Annoncer des Paco, c’est la moitié des dés. En revenir, le double plus un.</li>
       <li>On lève les gobelets. Assez de dés, celui qui a crié perd un dé. Pas assez, l’annonceur en perd un.</li>
     </ul>`,
+  navale: `<h3>Bataille navale</h3>
+    <p>À deux. Chacun cache sa flotte sur sa grille, puis on se tire dessus à tour de rôle.</p>
+    <ul>
+      <li><b>Placement :</b> choisis un bateau, puis touche sa première case. Touche un bateau posé pour le tourner, glisse-le pour le déplacer, ou laisse faire le hasard.</li>
+      <li><b>Tir :</b> touche une case de la grande grille, puis confirme. À l’eau, touché, ou coulé quand le bateau est entièrement touché.</li>
+      <li>En option, on rejoue tant qu’on touche.</li>
+      <li>Le premier qui coule les cinq bateaux d’en face gagne.</li>
+    </ul>`,
   duel: `<h3>Duel des Cités</h3>
     <p>À deux, bâtis la plus grande cité de l’Antiquité en trois âges. Les cartes forment une pyramide, et seules celles que rien ne recouvre se prennent.</p>
     <ul>
@@ -1391,7 +1401,7 @@ const FAMILIES = [
   { id: 'musique', icon: '🎵', name: 'Musique', short: 'Musique', desc: 'On écoute un extrait : l’année, le titre, le plus vite possible.', games: ['timeline', 'eclair', 'sprint'] },
   { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'bataille', 'poker', 'solitaire', 'duel'] },
   { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['teldes', 'mirage', 'memes', 'limite'] },
-  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['nomcode', 'unseulindice', 'sablier', 'diapason', 'petitbac', 'geo'] },
+  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['nomcode', 'unseulindice', 'sablier', 'diapason', 'petitbac', 'geo', 'navale'] },
   { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', short: 'Rôles cachés', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages', 'menteur'] },
 ];
 let famCur = 'all'; try { famCur = localStorage.getItem('dc-fam') || 'all'; } catch { }
@@ -1523,6 +1533,11 @@ $('#btn-start').onclick = () => {
     if (n < Menteur.MIN) { toast('Le Menteur se joue à deux minimum : ajoute un robot'); return; }
     if (n > Menteur.MAX) { toast('Six joueurs au maximum, robots compris'); return; }
     act({ t: 'start', opts: { mode: 'menteur', bots: botsOpt('mt') } });
+  }
+  if (pick === 'navale') {
+    const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-nv-rival').value;
+    if (rival === 'ami' && n < 2) { toast('Il faut un ami connecté, ou choisis le robot'); return; }
+    act({ t: 'start', opts: { mode: 'navale', rival, replay: $('#opt-nv-replay').checked } });
   }
   if (pick === 'duel') {
     const n = (view?.players || []).filter(p => p.online).length, rival = $('#opt-du-rival').value;

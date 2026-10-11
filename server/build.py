@@ -13,7 +13,7 @@ OUT = os.path.join(ROOT, 'server', 'src', 'runtime.js')
 SOURCES = ['core.js', 'limite-cartes.js', 'diapason-cartes.js', 'duel-cartes.js', 'nomcode-mots.js'] + \
           ['engines/' + g + '.js' for g in ['sablier', 'undercover', 'geo', 'chromo', 'kems', 'mirage', 'douze', 'petitbac',
                                              'loupgarou', 'naufrages', 'memes', 'limite', 'solitaire', 'poker', 'bataille',
-                                             'diapason', 'duel', 'teldes', 'nomcode', 'unseulindice', 'menteur']]
+                                             'diapason', 'duel', 'teldes', 'nomcode', 'unseulindice', 'menteur', 'navale']]
 DATA = ['songs.json', 'songs-eclair.json', 'songs-jv.json', 'songs-anime.json', 'memes.json', 'mirage.json', 'geo-places.json', 'unseulindice.json']
 DATA += ['decks/index.json'] + ['decks/%s.json' % d['id'] for d in json.load(io.open(os.path.join(ROOT, 'decks', 'index.json'), encoding='utf-8'))]
 EXPORTS = ['net', 'ASSET_V', 'GAMES', 'Game', 'hostTick', 'handleClientMessage', 'sabOffline', 'loadSongs', 'loadSongsE', 'loadSongsJV',

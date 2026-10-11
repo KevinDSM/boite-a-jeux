@@ -36,6 +36,7 @@ function deskSplit(root, side, needs) {
   ['renderNomCode', '#nc-main', '.nc-side, .nc-log'],
   ['renderBataille', '#bt-main', '.bt-side, .bt-log'],
   ['renderMenteur', '#mt-main', '.mt-side, .mt-log'],
+  ['renderNavale', '#nv-main', '.nv-side, .nv-log'],
   ['renderDuel', '#du-main', '.du-city, .du-log'],
   ['renderDiapason', '#dp-main', '.dp-scores, .dp-log'],
   ['renderPoker', '#pk-main', '.pk-mine, .pk-actions, .pk-size, .pk-result, .pk-log, .note, .btn'],

@@ -36,6 +36,7 @@
 <link rel="stylesheet" href="jeux/solitaire.css?v=VVV">
 <link rel="stylesheet" href="unseulindice.css?v=VVV">
 <link rel="stylesheet" href="jeux/menteur.css?v=VVV">
+<link rel="stylesheet" href="jeux/navale.css?v=VVV">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -277,6 +278,12 @@
         <span class="gdesc">Cinq dés sous ton gobelet. Annonce, monte, ou crie au menteur.</span>
         <span class="gmeta"><b>2 à 6</b><i>20 min</i></span>
       </button>
+      <button class="gcard g-navale" type="button" data-game="navale">
+        <span class="gart" aria-hidden="true"><span class="nvx-art"><i></i><b></b></span></span>
+        <span class="gname">Bataille navale</span>
+        <span class="gdesc">Cache ta flotte. Trouve la sienne. Coule tout.</span>
+        <span class="gmeta"><b>2 joueurs</b><i>15 min</i></span>
+      </button>
       <button class="gcard g-nomcode" type="button" data-game="nomcode">
         <span class="gart" aria-hidden="true"><span class="ncart"><i class="c0"></i><i class="c2"></i><i class="c1"></i><i class="c1"></i><i class="c0"></i><i class="c2"></i><i class="c3"></i><i class="c1"></i><i class="c0"></i></span></span>
         <span class="gname">Nom de code</span>
@@ -449,6 +456,11 @@
       <label class="field row"><span>Robots à table</span><select id="opt-mt-bots"><option value="0">Aucun</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
       <p class="fine">Chacun ses cinq dés, cachés sur son téléphone. Les robots annoncent, bluffent et crient au menteur.</p>
     </div>
+    <div class="opts" id="opts-navale" hidden>
+      <label class="field row"><span>Adversaire</span><select id="opt-nv-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
+      <label class="field row"><span>On rejoue quand on touche</span><input id="opt-nv-replay" type="checkbox" class="tick" checked></label>
+      <p class="fine">Un duel à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
+    </div>
     <div class="opts" id="opts-duel" hidden>
       <label class="field row"><span>Adversaire</span><select id="opt-du-rival"><option value="ami" selected>Le premier ami arrivé dans le salon</option><option value="robot">Le robot</option></select></label>
       <p class="fine">Un duel se joue à deux. L’hôte affronte le premier ami arrivé, ou le robot, et les autres regardent.</p>
@@ -593,6 +605,11 @@
 <!-- ====================== MENTEUR ====================== -->
 <section class="screen play menteur tb" id="s-menteur" hidden>
   <div class="stack" id="mt-main"></div>
+</section>
+
+<!-- ====================== BATAILLE NAVALE ====================== -->
+<section class="screen play navale tb" id="s-navale" hidden>
+  <div class="stack" id="nv-main"></div>
 </section>
 
 <!-- ====================== KEMS ====================== -->
@@ -820,6 +837,8 @@
 <script src="unseulindice.js?v=VVV"></script>
 <script src="engines/menteur.js?v=VVV"></script>
 <script src="menteur.js?v=VVV"></script>
+<script src="engines/navale.js?v=VVV"></script>
+<script src="navale.js?v=VVV"></script>
 <script src="desk.js?v=VVV"></script>
 <script src="regles.js?v=VVV"></script>
 <script src="salon.js?v=VVV"></script>
