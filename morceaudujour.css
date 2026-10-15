@@ -1,0 +1,183 @@
+/* Le Morceau du jour : palette propre au jeu (violet de salle de concert, rose néon, vert « trouvé »),
+   posée sur les jetons de style.css et le verre de ios.css. Préfixe mo-.
+   Le lecteur (bouton et barre d'écoute) est l'objet du jeu ; le reste passe au verre teinté de la palette. */
+[data-game="morceau"] {
+  --bg: oklch(0.2 0.07 305); --surface: oklch(0.25 0.075 305); --surface-2: oklch(0.3 0.08 305);
+  --line: oklch(0.38 0.07 305); --ink: oklch(0.97 0.01 320); --ink-2: oklch(0.87 0.03 320); --mute: oklch(0.78 0.04 315);
+  --acc: oklch(0.78 0.17 350); --acc-soft: oklch(0.85 0.12 350); --on-acc: oklch(0.2 0.06 330);
+  --pos: oklch(0.8 0.15 155); --neg: oklch(0.72 0.18 22); --mo-mid: oklch(0.86 0.15 92);
+  --mo-wall: radial-gradient(70% 45% at 85% 12%, oklch(0.5 0.2 350 / .6), transparent 70%),
+             radial-gradient(65% 45% at 4% 50%, oklch(0.42 0.17 290 / .8), transparent 70%),
+             radial-gradient(75% 50% at 70% 96%, oklch(0.38 0.14 255 / .8), transparent 72%),
+             linear-gradient(180deg, var(--bg) 0, var(--bg) 70px, oklch(0.19 0.07 300) 40%, oklch(0.14 0.05 290));
+  --mo-bar: oklch(0.16 0.05 300 / .7); --mo-unl: oklch(0.42 0.12 320); --mo-fill: linear-gradient(90deg, oklch(0.72 0.19 350), oklch(0.82 0.15 20));
+  --glass-tint: oklch(0.24 0.08 305 / .52); --glass-tint-thick: oklch(0.23 0.08 305 / .78);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .16); --glass-edge: rgba(20, 0, 30, .4);
+  --glass-shadow: 0 10px 34px rgba(20, 0, 40, .42);
+  --glass-ink: oklch(0.97 0.01 320); --glass-ink-2: oklch(0.87 0.03 320);
+  --glass-field: oklch(0.13 0.05 305 / .5);
+}
+[data-game="morceau"][data-theme="light"] {
+  --bg: oklch(0.95 0.025 320); --surface: oklch(0.99 0.008 320); --surface-2: oklch(0.93 0.03 320);
+  --line: oklch(0.86 0.03 320); --ink: oklch(0.24 0.07 305); --ink-2: oklch(0.38 0.07 305); --mute: oklch(0.45 0.06 305);
+  --acc: oklch(0.5 0.2 345); --acc-soft: oklch(0.45 0.19 345); --on-acc: oklch(0.99 0.005 320);
+  --pos: oklch(0.48 0.13 155); --neg: oklch(0.52 0.19 25); --mo-mid: oklch(0.62 0.14 80);
+  --mo-wall: radial-gradient(70% 45% at 85% 12%, oklch(0.88 0.09 350 / .9), transparent 70%),
+             radial-gradient(65% 45% at 4% 50%, oklch(0.86 0.08 290 / .85), transparent 70%),
+             radial-gradient(75% 50% at 70% 96%, oklch(0.88 0.07 250 / .9), transparent 72%),
+             linear-gradient(180deg, var(--bg) 0, var(--bg) 70px, oklch(0.94 0.03 320) 45%, oklch(0.92 0.035 295));
+  --mo-bar: oklch(0.88 0.04 310 / .8); --mo-unl: oklch(0.74 0.1 330);
+  --glass-tint: rgba(255, 250, 255, .58); --glass-tint-thick: rgba(255, 250, 255, .8);
+  --glass-hi: rgba(255, 255, 255, .9); --glass-rim: rgba(255, 255, 255, .55); --glass-edge: rgba(60, 20, 90, .12);
+  --glass-shadow: 0 10px 34px rgba(70, 30, 110, .16);
+  --glass-ink: oklch(0.24 0.07 305); --glass-ink-2: oklch(0.38 0.07 305);
+  --glass-field: rgba(255, 255, 255, .62);
+}
+
+/* le fond d'écran sous le verre ; la barre du haut reste unie */
+html[data-game="morceau"] { background: var(--bg); }
+[data-game="morceau"] body { background: transparent; }
+[data-game="morceau"] body::before { display: none; }
+.mo-wall { position: fixed; inset: 0; z-index: -1; background: var(--mo-wall); background-color: var(--bg); pointer-events: none; }
+@media (prefers-reduced-transparency: reduce) { .mo-wall { background: var(--bg); } }
+.mo-top { background: var(--bg); border-bottom-color: transparent; }
+.mo-top .crumb { font-family: var(--font); font-weight: 650; }
+.mo-top a.ic { text-decoration: none; font-size: 26px; padding-bottom: 4px; width: 44px; height: 44px; border-radius: 50%; border: 0; color: var(--glass-ink);
+  background: var(--glass-tint); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); }
+
+.mo-wrap { max-width: 560px; margin: 0 auto; padding: calc(var(--bar-h) + env(safe-area-inset-top) + 10px) 16px max(28px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 2; }
+.mo-play-col, .mo-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.mo-status { padding: 0 4px; }
+.mo-status .mj-title { font-size: 26px; }
+[hidden] { display: none !important; }
+
+/* les cartes en verre */
+.mo-card { border-radius: var(--radius-xl); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.mo-card h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--glass-ink-2); }
+.mo-card p { margin: 0; color: var(--glass-ink-2); }
+.mo-card input, .mo-card .emo-btn, .mo-search input { background: var(--glass-field); border: 0; color: var(--glass-ink); box-shadow: inset 0 0 0 .5px var(--glass-rim); border-radius: 14px; min-height: 48px; }
+.mo-card input::placeholder, .mo-search input::placeholder { color: var(--glass-ink-2); }
+.mo-card input:focus, .mo-search input:focus { box-shadow: inset 0 0 0 2px var(--acc); outline: 0; }
+.mo-card .field > span { color: var(--glass-ink-2); }
+.mo-card .name-row { display: flex; gap: 8px; }
+.mo-card .name-row input { flex: 1; min-width: 0; padding: 0 14px; font-size: 17px; }
+.mo-card .emo-btn { width: 52px; font-size: 24px; }
+.mo-wrap .btn { border-radius: var(--radius-capsule); min-height: 50px; }
+.mo-wrap .btn:not(.primary) { background: var(--glass-tint); color: var(--glass-ink); border: 0; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); }
+.mo-wrap .btn.primary { background: var(--acc); color: var(--on-acc); border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 8px 20px -10px var(--acc); }
+.mo-wrap .btn.primary:disabled { opacity: .45; box-shadow: none; }
+.mo-emo-pop { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; padding: 8px; background: var(--glass-field); border-radius: 14px; }
+.mo-emo-pop .emo { min-height: 46px; font-size: 24px; background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
+.mo-emo-pop .emo.on { background: color-mix(in oklab, var(--acc) 30%, transparent); }
+
+/* ---------------------------------------------------------------- les trois morceaux du jour : un onglet chacun */
+.mo-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 22px; background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); }
+.mo-tab { min-height: 52px; border: 0; border-radius: 18px; padding: 6px 4px; background: transparent; color: var(--glass-ink); cursor: pointer; font: inherit;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; transition: background .2s var(--ease-out); touch-action: manipulation; }
+.mo-tab b { font-size: 15.5px; font-weight: 650; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.mo-tab small { font-size: 12.5px; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mo-tab.on { background: color-mix(in oklab, var(--glass-ink) 16%, transparent); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 2px 8px rgba(0, 0, 0, .18); }
+[data-theme="light"] .mo-tab.on { background: rgba(255, 255, 255, .92); box-shadow: inset 0 1px 0 #fff, 0 2px 8px rgba(70, 30, 110, .14); }
+.mo-tab-ok { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--pos); color: oklch(0.2 0.05 160); font-size: 11px; font-weight: 800; }
+.mo-tab.ko small { color: var(--neg); }
+.mo-tab:active { transform: scale(.97); }
+.mo-tab:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- le lecteur : un gros bouton et la barre des 16 secondes */
+.mo-player { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 26px; background: var(--glass-tint-thick);
+  -webkit-backdrop-filter: blur(26px) saturate(180%); backdrop-filter: blur(26px) saturate(180%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge), var(--glass-shadow); }
+.mo-play { flex: none; width: 68px; height: 68px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center; color: var(--on-acc); touch-action: manipulation;
+  background: radial-gradient(circle at 35% 28%, color-mix(in oklab, var(--acc) 70%, white), var(--acc) 60%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 10px 24px -8px var(--acc);
+  transition: transform .12s var(--ease-out); }
+.mo-play:active { transform: scale(.93); }
+.mo-play:focus-visible { outline: 3px solid var(--glass-ink); outline-offset: 3px; }
+.mo-play .st { display: none; } .mo-play.on .st { display: inline; } .mo-play.on .pl { display: none; }
+.mo-play.on { animation: mo-pulse 1s ease-in-out infinite alternate; }
+@keyframes mo-pulse { to { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 0 0 8px color-mix(in oklab, var(--acc) 22%, transparent), 0 10px 24px -8px var(--acc); } }
+.mo-barbox { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.mo-bar { position: relative; height: 14px; border-radius: 999px; background: var(--mo-bar); overflow: hidden; box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3); }
+.mo-unl { position: absolute; inset: 0 auto 0 0; background: var(--mo-unl); border-radius: inherit; transition: width .5s var(--ease-out); }
+.mo-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--mo-fill); border-radius: inherit; }
+.mo-tick { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: color-mix(in oklab, var(--glass-ink) 30%, transparent); }
+.mo-tick.on { background: color-mix(in oklab, var(--glass-ink) 55%, transparent); }
+.mo-scale { display: flex; justify-content: space-between; font-size: 13px; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
+.mo-scale span:first-child { color: var(--glass-ink); font-weight: 650; }
+
+/* ---------------------------------------------------------------- les six essais */
+.mo-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.mo-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto auto; align-items: center; gap: 8px; min-height: 46px; padding: 6px 12px; border-radius: 14px;
+  background: var(--glass-tint); box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+.mo-row.mo-vide { background: color-mix(in oklab, var(--glass-tint) 50%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--glass-ink) 10%, transparent); }
+.mo-ic { font-size: 16px; font-weight: 800; text-align: center; }
+.mo-tx { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
+.mo-tx b { font-weight: 650; } .mo-tx small { font-size: 13px; color: var(--glass-ink-2); }
+.mo-row em { font-style: normal; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: color-mix(in oklab, var(--mo-mid) 30%, transparent); color: var(--glass-ink); white-space: nowrap; }
+.mo-s-sec { font-size: 12.5px; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
+.mo-passe .mo-tx { color: var(--glass-ink-2); }
+.mo-faux .mo-ic { color: var(--neg); }
+.mo-artiste { box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--mo-mid) 70%, transparent); } .mo-artiste .mo-ic { color: var(--mo-mid); }
+.mo-ok { background: color-mix(in oklab, var(--pos) 26%, var(--glass-tint)); box-shadow: inset 0 0 0 1.5px var(--pos); } .mo-ok .mo-ic { color: var(--pos); }
+.mo-pop { animation: mo-pop .4s var(--ease-out) backwards; }
+@keyframes mo-pop { from { transform: translateY(6px) scale(.97); opacity: 0; } }
+
+/* ---------------------------------------------------------------- deviner : la recherche, Passer, Valider */
+.mo-guess { display: flex; flex-direction: column; gap: 10px; scroll-margin-top: calc(var(--bar-h) + env(safe-area-inset-top) + 10px); }
+.mo-search { position: relative; }
+.mo-search input { width: 100%; padding: 0 16px; font-size: 17px; min-height: 52px; -webkit-appearance: none; appearance: none; }
+.mo-sugg { list-style: none; margin: 6px 0 0; padding: 4px; border-radius: 18px; background: var(--glass-tint-thick); position: relative; z-index: 5;
+  -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), var(--glass-shadow); }
+.mo-s { width: 100%; min-height: 50px; border: 0; background: transparent; color: var(--glass-ink); text-align: left; padding: 6px 12px; border-radius: 14px; cursor: pointer; font: inherit; display: flex; flex-direction: column; justify-content: center; }
+.mo-s b { font-size: 15.5px; font-weight: 650; } .mo-s small { font-size: 13px; color: var(--glass-ink-2); }
+.mo-s:hover, .mo-s:focus-visible { background: color-mix(in oklab, var(--glass-ink) 10%, transparent); outline: 0; }
+.mo-s:disabled { opacity: .4; cursor: default; }
+.mo-s-none { padding: 12px; font-size: 15px; color: var(--glass-ink-2); }
+.mo-acts { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; }
+.mo-skip small { font-size: 13px; color: var(--glass-ink-2); font-weight: 500; }
+
+/* ---------------------------------------------------------------- la fin : la pochette, le titre, l'écoute en entier */
+.mo-sol { display: flex; gap: 14px; align-items: center; }
+.mo-art { width: 96px; height: 96px; border-radius: 14px; flex: none; object-fit: cover; background: var(--glass-field); box-shadow: 0 8px 20px rgba(0, 0, 0, .3), inset 0 0 0 .5px var(--glass-rim); }
+.mo-sol > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mo-sol small { font-size: 13px; font-weight: 600; color: var(--glass-ink-2); }
+.mo-sol b { font-size: 22px; line-height: 1.15; font-weight: 750; color: var(--glass-ink); }
+.mo-sol span { color: var(--glass-ink-2); font-size: 15px; }
+.mo-full { display: flex; align-items: center; gap: 10px; }
+.mo-full > span { font-size: 13px; color: var(--glass-ink-2); }
+.mo-play-sm { width: 44px; height: 44px; } .mo-play-sm svg { width: 20px; height: 20px; }
+.mo-endbar { flex: 1; height: 8px; border-radius: 999px; background: var(--mo-bar); overflow: hidden; position: relative; }
+.mo-endbar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--mo-fill); border-radius: inherit; }
+.mo-acts2 { display: flex; flex-wrap: wrap; gap: 8px; }
+.mo-acts2 .btn { flex: 1 1 160px; }
+.mo-next { font-size: 15px; text-align: center; }
+.mo-next b { font-variant-numeric: tabular-nums; color: var(--glass-ink); }
+
+/* ---------------------------------------------------------------- le classement */
+.mo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.mo-r { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 48px; padding: 4px 0; border-top: .5px solid color-mix(in oklab, var(--glass-ink) 14%, transparent); }
+.mo-r:first-child { border-top: 0; }
+.mo-r.moi .mo-who b { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--acc); }
+.mo-pos { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--glass-ink-2); text-align: center; }
+.mo-who { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.mo-who b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mo-emo { font-size: 20px; }
+.mo-sc { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 15px; }
+.mo-sc small { display: block; font-weight: 500; font-size: 12.5px; color: var(--glass-ink-2); }
+.mo-r.rate .mo-sc { color: var(--neg); }
+.mo-r.rate .mo-who b { color: var(--glass-ink-2); }
+.mo-x { color: var(--neg); font-weight: 800; }
+.mo-wait, .mo-none { font-size: 15px; }
+.mo-none:empty { display: none; }
+
+/* PC : le lecteur et les essais à gauche, le classement dans un panneau en verre épais à droite */
+@media (min-width: 1100px) {
+  .mo-wrap { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; column-gap: 48px; align-items: start; padding-top: calc(var(--bar-h) + 28px); }
+  .mo-side { position: sticky; top: calc(var(--bar-h) + 20px); }
+  .mo-side .mo-rank { background: var(--glass-tint-thick); -webkit-backdrop-filter: blur(34px) saturate(180%); backdrop-filter: blur(34px) saturate(180%); }
+}
+@media (prefers-reduced-motion: reduce) { .mo-pop, .mo-play.on { animation: none; } .mo-unl { transition: none; } }
+@media (prefers-reduced-transparency: reduce) { .mo-player, .mo-tabs, .mo-sugg, .mo-wrap .btn:not(.primary) { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--surface); } }
+@media (prefers-contrast: more) { .mo-row, .mo-player, .mo-tabs { box-shadow: inset 0 0 0 1.5px var(--glass-ink); } }

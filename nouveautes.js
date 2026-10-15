@@ -5,6 +5,7 @@
 'use strict';
 
 const NEWS = [
+  ['2026-10-15', 'Nouveau : le Morceau du jour. Trois chansons par jour, une seconde pour les reconnaître.'],
   ['2026-10-15', 'Le Mot du jour passe à trois mots par jour, chacun son classement. Et tu peux taper n’importe quelles lettres.'],
   ['2026-10-11', 'Deux nouveaux jeux : les Échecs et les Dames, contre un ami ou contre le robot.'],
   ['2026-10-11', 'Sur téléphone, les réglages d’un jeu s’ouvrent juste sous sa carte.'],

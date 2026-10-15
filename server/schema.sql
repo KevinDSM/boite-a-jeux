@@ -81,3 +81,23 @@ CREATE TABLE IF NOT EXISTS suggestions (
   tok TEXT                          -- le téléphone (mi-tok), seulement pour freiner les envois à la chaîne
 );
 CREATE INDEX IF NOT EXISTS suggestions_cree ON suggestions (cree);
+
+-- Le Morceau du jour (jeu à part, trois chansons par jour pour tout le monde, façon Heardle) : lu et écrit par
+-- functions/api/morceau/. Les chansons de chaque jour sont figées ici à la première visite ; aucune ne part vers un
+-- téléphone (ni son titre, ni l'adresse de son extrait) avant que sa partie soit finie.
+CREATE TABLE IF NOT EXISTS morceau_jours (
+  jour TEXT PRIMARY KEY,            -- AAAA-MM-JJ#1, #2 ou #3 (heure de Paris)
+  cle TEXT NOT NULL,                -- « artiste|titre » sans accents (voir _morceaux.js)
+  artiste TEXT, titre TEXT, annee INTEGER,
+  extrait TEXT NOT NULL,            -- adresse de l'extrait iTunes (jamais envoyée au navigateur)
+  pochette TEXT
+);
+CREATE TABLE IF NOT EXISTS morceau_joueurs (
+  jour TEXT NOT NULL,               -- la clé de la chanson (AAAA-MM-JJ#n)
+  tok TEXT NOT NULL,                -- secret du téléphone (jamais renvoyé aux autres)
+  nom TEXT NOT NULL, emoji TEXT,
+  essais TEXT NOT NULL DEFAULT '[]',-- JSON : les clés proposées dans l'ordre, null = passé
+  debut INTEGER NOT NULL, fin INTEGER,
+  trouve INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (jour, tok)
+);

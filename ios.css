@@ -180,8 +180,9 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
   #s-home .ih-head h1 { font-size: 3.5rem !important; }
   #s-home .ih-head .ih-sub { font-size: var(--text-title-3); }
   #s-home .ih-more { grid-column: 1; grid-row: 2; justify-content: flex-start; align-self: start; margin: 0 0 0 -12px; }
-  #s-home #f-home { grid-column: 2; grid-row: 1 / 4; align-self: center; }
+  #s-home #f-home { grid-column: 2; grid-row: 1 / 3; align-self: center; }
   #s-home .ih-mdj { grid-column: 1; grid-row: 3; align-self: start; max-width: 420px; }
+  #s-home .ih-mo { grid-column: 2; grid-row: 3; max-width: none; }   /* les deux jeux du jour côte à côte */
   #s-home .ih-foot { grid-column: 2; grid-row: 4; align-self: start; }
 }
 
@@ -642,6 +643,11 @@ button.chx-chip { cursor: pointer; min-height: 40px; }
 .news-day li:first-child { border-top: 0; }
 /* le Mot du jour : son icône dans l'en-tête du widget */
 .ih-mdj-top { align-items: center; }
+#ih-mo-tabs button { white-space: nowrap; gap: 3px; font-size: 14px; padding: 0 4px; }
+#ih-mo-tabs i { width: 14px; height: 14px; font-size: 9px; }
+.ih-mo-bar { display: flex; gap: 3px; height: 10px; }
+.ih-mo-bar i { border-radius: 999px; background: color-mix(in oklab, var(--glass-ink) 14%, transparent); }
+.ih-mo-bar i.on { background: linear-gradient(90deg, oklch(0.66 0.21 345), oklch(0.74 0.17 15)); }
 .ih-mdj-ic { width: 34px; height: 34px; border-radius: 9px; flex: none; margin-right: 8px; }
 .ih-mdj-top:has(.ih-mdj-ic) { justify-content: flex-start; }
 .ih-mdj-top:has(.ih-mdj-ic) #ih-mdj-meta { margin-left: auto; }

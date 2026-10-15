@@ -76,6 +76,7 @@ function ihBuild() {
   try { $('#ih-date').textContent = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date()); } catch { }
   ihResume();
   ihMotDuJour();
+  ihMorceauDuJour();
 }
 
 // le Mot du jour : les trois mots du jour en onglets ; pour chacun, la longueur, la première lettre et le top 10
@@ -113,7 +114,40 @@ function ihMdjPaint() {
   go.textContent = moi?.fini ? 'Voir le classement' : moi?.essais?.length ? 'Reprendre' : 'Jouer';
   go.href = ihMdjSel > 1 ? `motdujour?m=${ihMdjSel}` : 'motdujour';
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !$('#s-home').hidden) ihMotDuJour(); });
+// le Morceau du jour : même cadre que le Mot du jour ; à la place des cases, les six écoutes (1 à 16 s),
+// allumées jusqu'à celle où on en est (le jeu vit sur morceaudujour.html)
+let ihMo = null, ihMoSel = 0;
+async function ihMorceauDuJour() {
+  const box = $('#ih-mo'); if (!box) return;
+  let tok = null; try { tok = localStorage.getItem('mi-tok'); } catch { }
+  let s = null;
+  try { const r = await fetch('/api/morceau/jour' + (tok ? '?tok=' + tok : ''), { cache: 'no-store' }); if (r.ok) s = await r.json(); } catch { }
+  if (!s || !s.morceaux?.length) { box.hidden = true; return; }
+  const L = s.morceaux;
+  if (ihMo?.jour !== s.jour || !L[ihMoSel - 1]) ihMoSel = (L.find(x => !x.moi?.fini) || L[0]).num;
+  ihMo = { jour: s.jour, morceaux: L };
+  const tabs = $('#ih-mo-tabs');
+  if (!tabs.dataset.bound) { tabs.dataset.bound = '1'; tabs.addEventListener('click', e => { const t = e.target.closest('button[data-n]'); if (t) { ihMoSel = +t.dataset.n; ihMoPaint(); } }); }
+  ihMoPaint();
+  box.hidden = false;
+}
+function ihMoPaint() {
+  const L = ihMo.morceaux, s = L[ihMoSel - 1], moi = s.moi, nb = ' ';
+  const top = (s.classement || []).filter(x => x.trouve).slice(0, 10), rates = (s.classement || []).filter(x => x.fini && !x.trouve);
+  $('#ih-mo-tabs').innerHTML = L.map(x => `<button type="button" role="tab" data-n="${x.num}" aria-selected="${x.num === ihMoSel}"${x.moi?.trouve ? ' class="ok"' : x.moi?.fini ? ' class="ko"' : ''}>${x.moi?.trouve ? '<i aria-hidden="true">✓</i>' : ''}Morceau ${x.num}</button>`).join('');
+  $('#ih-mo-meta').textContent = moi?.trouve ? `Trouvé en ${moi.secondes}${nb}s` : moi?.fini ? 'Raté' : moi?.essais?.length ? `${moi.essais.length} sur 6` : 'À écouter';
+  const n = moi?.essais?.length || 0, ec = s.ecoutes || [1, 2, 4, 7, 11, 16];
+  $('#ih-mo-bar').innerHTML = ec.map((x, i) => `<i style="flex:${x - (ec[i - 1] || 0)}"${i <= n && !moi?.fini ? ' class="on"' : moi?.trouve && i < n ? ' class="on"' : ''}></i>`).join('');
+  const who = x => `<span><b>${esc(x.emoji || '')} ${esc(x.nom)}</b></span>`;
+  $('#ih-mo-list').innerHTML = (top.length || rates.length)
+    ? (top.length ? '' : '<p class="ih-mdj-none">Personne ne l’a encore trouvé.</p>') + `<ol class="ih-mdj-list">${top.map((x, i) => `<li><span>${i + 1}</span>${who(x)}<span>${x.secondes}${nb}s</span></li>`).join('')}`
+      + `${rates.map(x => `<li class="rate"><span aria-hidden="true">✗</span>${who(x)}<span>pas trouvé</span></li>`).join('')}</ol>`
+    : `<p class="ih-mdj-none">${s.classement?.length ? 'Personne ne l’a encore trouvé.' : `Personne n’a encore joué. À toi${nb}?`}</p>`;
+  const go = $('#ih-mo-go');
+  go.textContent = moi?.fini ? 'Voir le classement' : n ? 'Reprendre' : 'Écouter';
+  go.href = ihMoSel > 1 ? `morceaudujour?m=${ihMoSel}` : 'morceaudujour';
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !$('#s-home').hidden) { ihMotDuJour(); ihMorceauDuJour(); } });
 
 // l'entrée en deux temps : choisir « rejoindre » ou « créer », puis seulement les champs de ce choix
 function ihStep(step) {

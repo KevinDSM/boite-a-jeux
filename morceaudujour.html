@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr" data-game="morceau">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a0f3d">
+<title>Le Morceau du jour · Boîte à jeux</title>
+<meta name="description" content="Trois chansons par jour, les mêmes pour tout le monde. Une seconde d’écoute, puis un peu plus à chaque essai.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Boîte à jeux">
+<meta property="og:title" content="Le Morceau du jour">
+<meta property="og:description" content="Trois chansons par jour. Une seconde pour la reconnaître, et le classement des copains.">
+<meta property="og:image" content="https://boite-a-jeux.pages.dev/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='6' y='6' width='88' height='88' rx='18' fill='%237a2d9c'/><path d='M40 28v34a10 10 0 1 1-6-9V34l30-6v28a10 10 0 1 1-6-9V22z' fill='white'/></svg>">
+<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="ios.css?v=81">
+<link rel="stylesheet" href="morceaudujour.css?v=81">
+</head>
+<body>
+<div class="mo-wall" aria-hidden="true"></div>
+<header class="topbar mo-top">
+  <a class="ic" href="./" aria-label="Retour à la Boîte à jeux">‹</a>
+  <span class="crumb">Le Morceau du jour</span>
+</header>
+<main class="mo-wrap" id="mo-main"></main>
+<audio id="mo-audio" preload="auto" playsinline></audio>
+<div class="toast" id="toast" role="status"></div>
+<script src="morceaudujour.js?v=81"></script>
+</body>
+</html>

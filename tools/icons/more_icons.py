@@ -589,6 +589,28 @@ def icon_dames():                          # Dames : une dame blanche couronnée
     pivot_all(x=24, z=-14)
     return []
 
+def icon_morceaudujour():                  # Le Morceau du jour : un casque audio rose, et une note dorée qui s'en échappe
+    shell = mat('coque', hexc('#e8457f'), rough=0.3, coat=0.7); pad = mat('coussin', hexc('#2b1838'), rough=0.6)
+    band = mat('arceau', hexc('#3a2350'), rough=0.35, coat=0.5); goldm = mat('or', hexc('#f2b53a'), rough=0.24, metal=1.0)
+    # l'arceau : un demi-anneau au-dessus, vu de face
+    bpy.ops.mesh.primitive_torus_add(major_radius=1.05, minor_radius=0.11, major_segments=96, minor_segments=20, location=(0, 0, 0.05), rotation=(math.radians(90), 0, 0))
+    t = bpy.context.active_object; t.data.materials.append(band)
+    bm = bmesh.new(); bm.from_mesh(t.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y < -0.05], context='VERTS')   # garde la moitié du haut (y local = hauteur)
+    bm.to_mesh(t.data); bm.free()
+    for p in t.data.polygons: p.use_smooth = True
+    for x in (-1, 1):
+        cup = cylinder(f'ecouteur{x}', 0.46, 0.34, shell, loc=(x * 1.0, 0, -0.32), rot=(0, math.radians(90), 0), verts=96); bevel(cup, 0.09, 5)
+        cushion = cylinder(f'coussin{x}', 0.38, 0.12, pad, loc=(x * 0.8, 0, -0.32), rot=(0, math.radians(90), 0), verts=96); bevel(cushion, 0.05, 4)
+        cylinder(f'attache{x}', 0.06, 0.4, band, loc=(x * 1.04, 0, 0.02), verts=24)
+    # la note : une croche (tête ronde, hampe, crochet), un peu penchée, devant à droite
+    head = sphere('tete', 0.2, goldm, loc=(0.32, -0.55, -0.62)); head.scale = (1.25, 0.8, 0.95); head.rotation_euler = (0, math.radians(-22), 0)
+    cylinder('hampe', 0.04, 0.82, goldm, loc=(0.54, -0.55, -0.2), verts=24)
+    flag = poly('crochet', [(0.0, 0.0), (0.08, 0.0), (0.36, -0.22), (0.3, -0.36), (0.06, -0.12)], 0.08, goldm, bev=0.02)
+    flag.location = (0.52, -0.55, 0.2)
+    pivot_all(x=-6, z=-16)
+    return []
+
 MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
              'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes,
-             'echecs': icon_echecs, 'dames': icon_dames})
+             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour})
