@@ -6,7 +6,7 @@ const MAX = 400000;
 export async function onRequestGet({ params, env, request }) {
   const code = String(params.code || '').toUpperCase();
   const img = ok(code) ? await env.INVITES.get('inv:' + code, 'arrayBuffer') : null;
-  if (!img) return Response.redirect(new URL('/og.jpg', request.url).href, 302);
+  if (!img) return Response.redirect(new URL('/og.jpg?v=82', request.url).href, 302);
   return new Response(img, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=300' } });
 }
 

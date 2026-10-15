@@ -611,6 +611,38 @@ def icon_morceaudujour():                  # Le Morceau du jour : un casque audi
     pivot_all(x=-6, z=-16)
     return []
 
+def icon_logo():                           # le logo de la Boîte à jeux : la boîte ouverte, son couvercle, et ce qui en sort
+    lacquer = gradient_mat('laque', hexc('#f7b23f'), hexc('#de7f17'), rough=0.24, coat=0.85)
+    inside = mat('dedans', hexc('#2a1d14'), rough=0.7); band = mat('bande', hexc('#ffe3a8'), rough=0.35, coat=0.5)
+    pawnm = mat('pion', hexc('#4fd39d'), rough=0.22, coat=0.85); card = mat('carte', hexc('#fbf6ec'), rough=0.38, coat=0.4)
+    red = mat('rouge', hexc('#e0263a'), rough=0.35); ink = mat('encre', hexc('#1c1c26'), rough=0.4)
+    # la boîte, basse : un bloc laqué, une bande crème, le fond sombre vu par l'ouverture
+    rounded_box('boite', 2.6, 2.4, 0.8, 0.1, lacquer, loc=(0, 0, 0))
+    rounded_box('bande', 2.63, 2.43, 0.15, 0.05, band, loc=(0, 0, -0.1))
+    rounded_box('fond', 2.28, 2.08, 0.06, 0.04, inside, loc=(0, 0, 0.385))
+    # le couvercle relevé derrière, penché vers nous, cerclé d'une bande crème comme la boîte
+    lidm = mat('laqueC', hexc('#e5841a'), rough=0.8, coat=0.0)   # moins brillant : face à la lumière, il virait au blanc
+    rounded_box('couvercle', 2.7, 0.24, 2.0, 0.1, lidm, loc=(0, 1.42, 1.25), rot=(math.radians(-28), 0, 0))
+    rounded_box('bandeC', 2.73, 0.27, 0.13, 0.04, band, loc=(0, 1.42 + 0.72 * math.sin(math.radians(28)), 1.25 - 0.72 * math.cos(math.radians(28))), rot=(math.radians(-28), 0, 0))
+    # deux cartes en éventail, l'as de cœur devant
+    playing_card('roi', 'R', '♠', ink, card, x=0.42, y=0.62, z=1.05, ang=16)
+    playing_card('as', 'A', '♥', red, card, x=-0.2, y=0.4, z=1.1, ang=-12)
+    # le pion vert à gauche, le grand dé qui dépasse à droite
+    lathe('pion', [(0, 0), (0.4, 0), (0.4, 0.1), (0.32, 0.17), (0.23, 0.3), (0.16, 0.76), (0.27, 0.83), (0.27, 0.9), (0.14, 0.96), (0, 0.96)], pawnm).location = (-0.82, -0.35, 0.36)
+    sphere('tete', 0.27, pawnm, loc=(-0.82, -0.35, 1.56))
+    die('de', 5, size=0.8, loc=(0.62, -0.42, 0.62), rot=(16, 8, 30))
+    # devant la boîte : un dé doré et une pile de jetons
+    die('paco', 1, size=0.5, gold=True, loc=(1.6, -1.45, -0.15), rot=(0, 0, -20))
+    for i, c in enumerate(('#e0263a', '#2f6fd8', '#fbf6ec')):
+        z = -0.35 + i * 0.105
+        ch = cylinder(f'jeton{i}', 0.34, 0.1, mat(f'jeton{i}', hexc(c), rough=0.3, coat=0.6), loc=(-1.55, -1.35, z), verts=64); bevel(ch, 0.025, 3)
+        for k in range(6):
+            a = k * math.tau / 6 + i * 0.4
+            rounded_box(f'liseré{i}{k}', 0.1, 0.03, 0.104, 0.01, mat(f'lis{i}{k}', hexc('#ffffff' if c != '#fbf6ec' else '#e0263a'), rough=0.4),
+                        loc=(-1.55 + 0.335 * math.cos(a), -1.35 + 0.335 * math.sin(a), z), rot=(0, 0, a + math.pi / 2))
+    pivot_all(x=8, z=-24)
+    return []
+
 MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
              'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes,
-             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour})
+             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour, 'logo': icon_logo})

@@ -13,7 +13,7 @@ from mathutils import Vector, Euler
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(ROOT, 'icons')
 PREVIEW = os.environ.get('ICON_PREVIEW') == '1'      # aperçu rapide : petit rendu, peu d'échantillons
-SIZE = 256 if PREVIEW else 512
+SIZE = int(os.environ.get('ICON_SIZE') or (256 if PREVIEW else 512))   # ICON_SIZE=1024 pour le logo (images de partage)
 FONT_BOLD = 'C:/Windows/Fonts/segoeuib.ttf'
 FONT_SYM = 'C:/Windows/Fonts/seguisym.ttf'
 

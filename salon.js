@@ -86,7 +86,6 @@ function salonAfterRender() {
 
 // ------------------------------------------------ invitation
 const INV_W = 1200, INV_H = 630;
-const INV_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif';
 const INV_EMOJI = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
 const INV = {
   bg: 'oklch(0.17 0.018 62)', surface: 'oklch(0.225 0.020 62)', surface2: 'oklch(0.27 0.022 62)', line: 'oklch(0.33 0.022 62)',
@@ -122,61 +121,39 @@ function drawGameBox(ctx, x, y, k) {
   ctx.restore();
 }
 
-const fitFont = (ctx, text, weight, size, min, maxW) => { let s = size; do { ctx.font = `${weight} ${s}px ${INV_FONT}`; if (ctx.measureText(text).width <= maxW) break; s -= 4; } while (s > min); return s; };
-function spaced(ctx, text, x, y, gap) { for (const ch of text) { ctx.fillText(ch, x, y); x += ctx.measureText(ch).width + gap; } }
-function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 function emojiAt(ctx, e, cx, cy, size) { ctx.save(); ctx.font = `${size}px ${INV_EMOJI}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, cx, cy + size * .04); ctx.restore(); }
+// le fond de l'invitation = l'image de partage du site (og.jpg : le logo 3D sur son fond, sans texte), chargée d'avance
+const INV_BG = new Image(); INV_BG.src = 'og.jpg?v=' + ASSET_V;
+const invReady = () => INV_BG.decode().catch(() => { });
 
-/** Dessine l'image d'invitation. Sans `name`, c'est l'aperçu générique du site (og.png). */
-function drawInvite({ name = '', emoji = '', code = '', game = '', faces = [] } = {}) {
+/** Dessine l'image d'invitation : le logo de la boîte, l'emoji de celui qui invite, ceux des amis déjà là. Pas de texte :
+    le prénom, le salon et le lien sont déjà écrits sous l'image par la messagerie. */
+function drawInvite({ emoji = '', faces = [] } = {}) {
   const c = document.createElement('canvas'); c.width = INV_W; c.height = INV_H;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = INV.bg; ctx.fillRect(0, 0, INV_W, INV_H);
-  const glow = ctx.createRadialGradient(905, 330, 20, 905, 330, 470);
-  glow.addColorStop(0, 'oklch(0.78 0.155 68 / .26)'); glow.addColorStop(1, 'oklch(0.78 0.155 68 / 0)');
-  ctx.fillStyle = glow; ctx.fillRect(0, 0, INV_W, INV_H);
-
-  // à droite : la boîte, et l'emoji de celui qui invite qui en sort
-  drawGameBox(ctx, 690, 150, 3.7);
-  if (emoji) {
-    ctx.beginPath(); ctx.arc(902, 122, 84, 0, Math.PI * 2); ctx.fillStyle = INV.surface2; ctx.fill();
-    ctx.lineWidth = 7; ctx.strokeStyle = INV.acc; ctx.stroke();
-    emojiAt(ctx, emoji, 902, 122, 102);
+  if (INV_BG.complete && INV_BG.naturalWidth) ctx.drawImage(INV_BG, 0, 0, INV_W, INV_H);
+  else {                                   // l'image n'a pas pu venir : l'ancienne boîte dessinée trait pour trait
+    ctx.fillStyle = INV.bg; ctx.fillRect(0, 0, INV_W, INV_H);
+    const glow = ctx.createRadialGradient(600, 315, 20, 600, 315, 470);
+    glow.addColorStop(0, 'oklch(0.78 0.155 68 / .26)'); glow.addColorStop(1, 'oklch(0.78 0.155 68 / 0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, INV_W, INV_H);
+    drawGameBox(ctx, 378, 120, 3.7);
   }
-  // les joueurs déjà à table
+  // l'emoji de celui qui invite, qui sort de la boîte en haut à droite
+  if (emoji) {
+    ctx.save(); ctx.shadowColor = 'rgba(0, 0, 0, .45)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.beginPath(); ctx.arc(930, 150, 92, 0, Math.PI * 2); ctx.fillStyle = INV.surface2; ctx.fill(); ctx.restore();
+    ctx.lineWidth = 8; ctx.strokeStyle = INV.acc; ctx.beginPath(); ctx.arc(930, 150, 92, 0, Math.PI * 2); ctx.stroke();
+    emojiAt(ctx, emoji, 930, 150, 112);
+  }
+  // les amis déjà à table, en colonne à gauche
   const shown = faces.slice(0, 5);
   shown.forEach((e, i) => {
-    const cx = 735 + i * 70, cy = 560;
-    ctx.beginPath(); ctx.arc(cx, cy, 31, 0, Math.PI * 2); ctx.fillStyle = INV.surface; ctx.fill();
+    const cx = 200 + (i % 2) * 74, cy = 170 + i * 74;
+    ctx.beginPath(); ctx.arc(cx, cy, 34, 0, Math.PI * 2); ctx.fillStyle = INV.surface; ctx.fill();
     ctx.lineWidth = 2; ctx.strokeStyle = INV.line; ctx.stroke();
-    emojiAt(ctx, e, cx, cy, 36);
+    emojiAt(ctx, e, cx, cy, 40);
   });
-  if (faces.length > shown.length) { ctx.font = `600 26px ${INV_FONT}`; ctx.fillStyle = INV.ink2; ctx.textBaseline = 'middle'; ctx.fillText(`+${faces.length - shown.length}`, 735 + shown.length * 70 - 20, 560); }
-
-  // à gauche : le texte
-  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
-  ctx.beginPath(); ctx.arc(89, 92, 8, 0, Math.PI * 2); ctx.fillStyle = INV.acc; ctx.fill();
-  ctx.font = `700 30px ${INV_FONT}`; ctx.fillStyle = INV.ink2; ctx.fillText('Boîte à jeux', 108, 103);
-  const maxW = 560;
-  if (name) {
-    fitFont(ctx, name, 800, 118, 64, maxW); ctx.fillStyle = INV.ink; ctx.fillText(name, 76, 250);
-    ctx.font = `700 56px ${INV_FONT}`; ctx.fillStyle = INV.acc; ctx.fillText('vous invite à jouer', 78, 322);
-  } else {
-    ctx.font = `800 118px ${INV_FONT}`; ctx.fillStyle = INV.ink; ctx.fillText('28 jeux', 76, 250);
-    ctx.font = `700 56px ${INV_FONT}`; ctx.fillStyle = INV.acc; ctx.fillText('pour la soirée', 78, 322);
-  }
-  const line = game ? `Au programme : ${game}` : name ? '28 jeux, chacun sur son téléphone' : 'Chacun joue sur son téléphone';
-  fitFont(ctx, line, 500, 32, 22, maxW); ctx.fillStyle = INV.ink2; ctx.fillText(line, 78, 384);
-
-  if (code) {
-    roundRect(ctx, 78, 430, 318, 118, 24); ctx.fillStyle = INV.surface; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INV.line; ctx.stroke();
-    ctx.font = `600 22px ${INV_FONT}`; ctx.fillStyle = INV.mute; ctx.fillText('Code du salon', 106, 470);
-    ctx.font = `800 58px ${INV_FONT}`; ctx.fillStyle = INV.ink; spaced(ctx, code, 104, 528, 10);
-  } else {
-    ctx.font = `600 26px ${INV_FONT}`; ctx.fillStyle = INV.mute;
-    ctx.fillText('Gratuit, sans compte, sans rien installer.', 78, 470);
-  }
-  ctx.font = `500 21px ${INV_FONT}`; ctx.fillStyle = INV.mute; ctx.fillText(location.host + location.pathname.replace(/\/(index\.html)?$/, ''), 78, 596);
   return c;
 }
 
@@ -195,6 +172,7 @@ function inviteData() {
 let invFile = null, invUrl = null;
 async function openInvite() {
   const d = inviteData();
+  await invReady();
   const canvas = drawInvite(d);
   const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
   invFile = new File([blob], `invitation-${d.code}.png`, { type: 'image/png' });

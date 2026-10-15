@@ -6,7 +6,7 @@ export async function onRequestGet({ request, env }) {
   if (!(res.headers.get('content-type') || '').includes('text/html')) return res;
   const url = new URL(request.url);
   const code = (url.searchParams.get('c') || '').toUpperCase();
-  let title = 'Boîte à jeux', image = url.origin + '/og.jpg', desc = null;
+  let title = 'Boîte à jeux', image = url.origin + '/og.jpg?v=82', desc = null;
   if (/^[A-Z]{4}$/.test(code)) {
     const from = (url.searchParams.get('de') || '').trim().slice(0, 14);
     title = from ? `${from} vous invite à jouer` : 'Une partie vous attend';
