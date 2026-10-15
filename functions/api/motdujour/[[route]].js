@@ -1,19 +1,22 @@
 // Le Mot du jour : l'API (Cloudflare Pages Functions + base D1 « boite-a-jeux-stats », tables motdujour_*).
-// Un mot par jour (heure de Paris), le même pour tout le monde, de 6 à 9 lettres, la première donnée.
-// Six lignes par joueur. Après trois essais ratés, il peut demander l'indice : il prend une ligne.
+// Trois mots par jour (heure de Paris), les mêmes pour tout le monde, de 6 à 9 lettres, la première donnée,
+// chacun avec sa partie et son classement. Six lignes par mot. Après trois essais ratés, l'indice prend une ligne.
+// N'importe quelle suite de lettres est acceptée (pas de dictionnaire) : ça sert à tester des lettres.
 //
 // Le mot ne quitte JAMAIS le serveur avant la fin de la partie du joueur : chaque proposition est vérifiée
-// ici (dictionnaire, longueur, première lettre) et seules les couleurs repartent. Le mot et son indice
-// complet ne sont renvoyés qu'à celui qui a fini (trouvé, ou ses six lignes prises).
+// ici (longueur, première lettre) et seules les couleurs repartent. Le mot et son indice complet ne sont
+// renvoyés qu'à celui qui a fini (trouvé, ou ses six lignes prises).
 // Chaque téléphone a un secret « tok » (le même que pour Miroir) : il prouve qui joue, sans compte.
 //
-// Le mot du jour est choisi dans _mots.js selon un ordre tiré au sort avec le secret MOT_SEL (s'il est posé),
-// puis figé dans motdujour_jours dès la première visite du jour : modifier la liste ne change jamais le mot
-// d'une journée déjà commencée.
+// Les mots sont choisis dans _mots.js selon un ordre tiré au sort avec le secret MOT_SEL (s'il est posé),
+// sans reprendre un mot sorti ces derniers mois, puis figés dans motdujour_jours dès la première visite du jour :
+// modifier la liste ne change jamais les mots d'une journée déjà commencée.
+// En base, la colonne « jour » des deux tables est la clé du mot : « AAAA-MM-JJ » pour le mot 1 (comme avant,
+// quand il n'y en avait qu'un), « AAAA-MM-JJ#2 » et « AAAA-MM-JJ#3 » pour les deux autres.
 import { MOTS } from './_mots.js';
-import { DICO } from './_dico.js';
 
-const LIGNES = 6, INDICE_APRES = 3, MAX_NOM = 14;
+const LIGNES = 6, INDICE_APRES = 3, MAX_NOM = 14, PAR_JOUR = 3;
+const cle = (jour, num) => num === 1 ? jour : `${jour}#${num}`;
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 const err = (msg, status = 400, code) => json({ erreur: msg, code }, status);
 const okTok = t => typeof t === 'string' && /^[a-z0-9]{12,40}$/i.test(t);
@@ -27,18 +30,6 @@ function aujourdhui(now) {
   const jour = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(now));
   const [y, m, d] = jour.split('-').map(Number);
   return { jour, n: Math.round(Date.UTC(y, m - 1, d) / 864e5) };
-}
-
-// un mot existe-t-il ? recherche par dichotomie dans la chaîne de sa longueur
-function existe(mot) {
-  const s = DICO[mot.length], L = mot.length; if (!s) return false;
-  let lo = 0, hi = s.length / L - 1;
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1, w = s.substr(mid * L, L);
-    if (w === mot) return true;
-    if (w < mot) lo = mid + 1; else hi = mid - 1;
-  }
-  return false;
 }
 
 // les couleurs, façon Motus : b = bien placée, m = mal placée, a = absente (une lettre en double ne compte
@@ -63,15 +54,29 @@ async function ordre(sel, cycle) {
   ordres.set(k, o); return o;
 }
 
-// le mot du jour, figé en base à la première visite
-async function motDuJour(db, env, now) {
-  const { jour, n } = aujourdhui(now);
-  let row = await db.prepare('SELECT * FROM motdujour_jours WHERE jour = ?').bind(jour).first();
-  if (row) return row;
-  const o = await ordre(env.MOT_SEL || 'boite-a-jeux', Math.floor(n / MOTS.length));
-  const [affiche, indice] = MOTS[o[n % MOTS.length]];
-  await db.prepare('INSERT OR IGNORE INTO motdujour_jours (jour, mot, affiche, indice) VALUES (?, ?, ?, ?)').bind(jour, norm(affiche), affiche, indice).run();
-  return db.prepare('SELECT * FROM motdujour_jours WHERE jour = ?').bind(jour).first();
+// les trois mots du jour, figés en base à la première visite. Le mot k du jour n est le (3n + k)-ième de la suite
+// tirée au sort ; s'il est déjà sorti récemment (ou plus tôt ce jour-là), on prend le suivant.
+async function motsDuJour(db, env, now) {
+  const { jour, n } = aujourdhui(now), cles = Array.from({ length: PAR_JOUR }, (_, i) => cle(jour, i + 1));
+  const lire = async () => (await db.prepare(`SELECT * FROM motdujour_jours WHERE jour IN (${cles.map(() => '?').join(', ')})`).bind(...cles).all()).results;
+  let rows = await lire();
+  if (rows.length < PAR_JOUR) {
+    const L = MOTS.length, fenetre = Math.max(7, Math.floor(L / PAR_JOUR) - 10);
+    const depuis = new Date((n - fenetre) * 864e5).toISOString().slice(0, 10);
+    const sortis = new Set((await db.prepare('SELECT mot FROM motdujour_jours WHERE jour >= ?').bind(depuis).all()).results.map(r => r.mot));
+    for (let num = 1; num <= PAR_JOUR; num++) {
+      if (rows.some(r => r.jour === cles[num - 1])) continue;
+      let choix = null;
+      for (let k = n * PAR_JOUR + num - 1, essai = 0; !choix; k++, essai++) {
+        const m = MOTS[(await ordre(env.MOT_SEL || 'boite-a-jeux', Math.floor(k / L)))[k % L]];
+        if (!sortis.has(norm(m[0])) || essai >= L) choix = m;
+      }
+      await db.prepare('INSERT OR IGNORE INTO motdujour_jours (jour, mot, affiche, indice) VALUES (?, ?, ?, ?)').bind(cles[num - 1], norm(choix[0]), choix[0], choix[1]).run();
+      sortis.add(norm(choix[0]));
+    }
+    rows = await lire();
+  }
+  return cles.map((k, i) => ({ ...rows.find(r => r.jour === k), cle: k, jour, num: i + 1 }));
 }
 
 const lignes = r => (parse(r.essais) || []).length + (r.indice == null ? 0 : 1);
@@ -94,10 +99,10 @@ async function classement(db, jour, tok) {
   return out;
 }
 
-// ce que voit un joueur : la longueur, la première lettre, ses essais et leurs couleurs ; le mot seulement à la fin
+// ce que voit un joueur d'un mot : la longueur, la première lettre, ses essais et leurs couleurs ; le mot seulement à la fin
 async function etat(db, j, tok) {
-  const moi = okTok(tok) ? await db.prepare('SELECT * FROM motdujour_joueurs WHERE jour = ? AND tok = ?').bind(j.jour, tok).first() : null;
-  const out = { jour: j.jour, n: j.mot.length, premiere: j.mot[0], lignes: LIGNES, indiceApres: INDICE_APRES, moi: null, classement: await classement(db, j.jour, tok) };
+  const moi = okTok(tok) ? await db.prepare('SELECT * FROM motdujour_joueurs WHERE jour = ? AND tok = ?').bind(j.cle, tok).first() : null;
+  const out = { jour: j.jour, num: j.num, n: j.mot.length, premiere: j.mot[0], lignes: LIGNES, indiceApres: INDICE_APRES, moi: null, classement: await classement(db, j.cle, tok) };
   if (moi) {
     const essais = parse(moi.essais) || [];
     out.moi = {
@@ -109,14 +114,20 @@ async function etat(db, j, tok) {
   }
   return out;
 }
+// la journée entière : les trois mots dans « mots » ; le mot 1 aussi à la racine, pour les téléphones
+// qui ont encore l'ancienne page (un seul mot) en cache
+async function journee(db, js, tok) {
+  const mots = await Promise.all(js.map(j => etat(db, j, tok)));
+  return { ...mots[0], mots };
+}
 
 export async function onRequest({ request, env, params }) {
   const db = env.DB; if (!db) return err('La base du Mot du jour n’est pas branchée.', 503);
   const route = (params.route || []).join('/'), url = new URL(request.url), now = Date.now();
   try {
-    const j = await motDuJour(db, env, now);
+    const js = await motsDuJour(db, env, now);
     if (request.method === 'GET') {
-      if (route === 'jour') return json(await etat(db, j, url.searchParams.get('tok')));
+      if (route === 'jour') return json(await journee(db, js, url.searchParams.get('tok')));
       return err('Route inconnue.', 404);
     }
     if (request.method !== 'POST') return err('Méthode non prise en charge.', 405);
@@ -124,9 +135,10 @@ export async function onRequest({ request, env, params }) {
     if (route !== 'essai' && route !== 'indice') return err('Route inconnue.', 404);
     if (!okTok(b.tok)) return err('Téléphone non reconnu, recharge la page.');
     const nom = cleanName(b.nom); if (!nom) return err('Il faut un prénom.', 400, 'nom');
-    if (b.jour && b.jour !== j.jour) return err('Minuit est passé : voici le mot du nouveau jour.', 409, 'jour');
-    let moi = await db.prepare('SELECT * FROM motdujour_joueurs WHERE jour = ? AND tok = ?').bind(j.jour, b.tok).first();
-    if (moi && fini(moi)) return err('Ta partie du jour est finie.', 409, 'fini');
+    if (b.jour && b.jour !== js[0].jour) return err('Minuit est passé : voici les mots du nouveau jour.', 409, 'jour');
+    const j = js[Math.min(PAR_JOUR, Math.max(1, Math.floor(+b.num) || 1)) - 1];
+    let moi = await db.prepare('SELECT * FROM motdujour_joueurs WHERE jour = ? AND tok = ?').bind(j.cle, b.tok).first();
+    if (moi && fini(moi)) return err('Ta partie de ce mot est finie.', 409, 'fini');
     const essais = parse(moi?.essais) || [];
 
     if (route === 'essai') {
@@ -134,29 +146,28 @@ export async function onRequest({ request, env, params }) {
       if (!/^[A-Z]+$/.test(mot) || mot.length !== j.mot.length) return err(`Il faut un mot de ${j.mot.length} lettres.`, 400, 'longueur');
       if (mot[0] !== j.mot[0]) return err(`Le mot commence par ${j.mot[0]}.`, 400, 'lettre');
       if (essais.includes(mot)) return err('Déjà proposé.', 400, 'deja');
-      if (!existe(mot)) return err('Ce mot n’est pas dans le dictionnaire.', 400, 'dico');
       const apres = [...essais, mot], trouve = mot === j.mot ? 1 : 0;
       const finit = trouve || apres.length + (moi?.indice == null ? 0 : 1) >= LIGNES;
       if (!moi) {
         const r = await db.prepare('INSERT OR IGNORE INTO motdujour_joueurs (jour, tok, nom, emoji, essais, debut, fin, trouve) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-          .bind(j.jour, b.tok, nom, cleanEmoji(b.emoji), JSON.stringify(apres), now, finit ? now : null, trouve).run();
+          .bind(j.cle, b.tok, nom, cleanEmoji(b.emoji), JSON.stringify(apres), now, finit ? now : null, trouve).run();
         if (!r.meta.changes) return err('Deux propositions en même temps : recharge la page.', 409, 'course');
       } else {
         // la ligne n'est écrite que si personne n'a joué entre-temps depuis ce téléphone (deux onglets ouverts)
         const r = await db.prepare('UPDATE motdujour_joueurs SET essais = ?, nom = ?, emoji = ?, fin = ?, trouve = ? WHERE jour = ? AND tok = ? AND essais = ?')
-          .bind(JSON.stringify(apres), nom, cleanEmoji(b.emoji), finit ? now : null, trouve, j.jour, b.tok, moi.essais).run();
+          .bind(JSON.stringify(apres), nom, cleanEmoji(b.emoji), finit ? now : null, trouve, j.cle, b.tok, moi.essais).run();
         if (!r.meta.changes) return err('Deux propositions en même temps : recharge la page.', 409, 'course');
       }
-      return json(await etat(db, j, b.tok));
+      return json(await journee(db, js, b.tok));
     }
 
     // l'indice : après trois essais ratés, une seule fois, et s'il reste au moins une ligne pour en profiter
     if (!moi || essais.length < INDICE_APRES) return err(`L’indice s’ouvre après ${INDICE_APRES} essais.`, 409, 'tot');
-    if (moi.indice != null) return json(await etat(db, j, b.tok));
+    if (moi.indice != null) return json(await journee(db, js, b.tok));
     if (lignes(moi) + 1 >= LIGNES) return err('Plus assez de lignes pour un indice.', 409, 'tard');
     await db.prepare('UPDATE motdujour_joueurs SET indice = ?, nom = ?, emoji = ? WHERE jour = ? AND tok = ? AND indice IS NULL')
-      .bind(essais.length, nom, cleanEmoji(b.emoji), j.jour, b.tok).run();
-    return json(await etat(db, j, b.tok));
+      .bind(essais.length, nom, cleanEmoji(b.emoji), j.cle, b.tok).run();
+    return json(await journee(db, js, b.tok));
   } catch (e) {
     console.error('motdujour', route, e?.stack || e);
     return err('Le serveur du Mot du jour a eu un souci. Réessaie dans un instant.', 500);

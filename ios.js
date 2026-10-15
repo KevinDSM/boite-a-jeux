@@ -78,21 +78,38 @@ function ihBuild() {
   ihMotDuJour();
 }
 
-// le Mot du jour : la longueur, la première lettre, le top 10 du classement (le jeu vit sur motdujour.html)
+// le Mot du jour : les trois mots du jour en onglets ; pour chacun, la longueur, la première lettre et le top 10
+// de son classement (le jeu vit sur motdujour.html)
+let ihMdj = null, ihMdjSel = 0;
 async function ihMotDuJour() {
   const box = $('#ih-mdj'); if (!box) return;
   let tok = null; try { tok = localStorage.getItem('mi-tok'); } catch { }
   let s = null;
   try { const r = await fetch('/api/motdujour/jour' + (tok ? '?tok=' + tok : ''), { cache: 'no-store' }); if (r.ok) s = await r.json(); } catch { }
   if (!s || !s.n) { box.hidden = true; return; }      // pas de fonctions (serveur de test) : pas de widget
-  const nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 10);
-  $('#ih-mdj-meta').textContent = moi?.trouve ? `Trouvé en ${moi.lignes}` : moi?.fini ? 'Raté aujourd’hui' : `${s.n} lettres`;
+  const L = s.mots?.length ? s.mots : [{ ...s, num: 1 }];
+  if (ihMdj?.jour !== s.jour || !L[ihMdjSel - 1]) ihMdjSel = (L.find(x => !x.moi?.fini) || L[0]).num;   // le premier mot pas encore fini
+  ihMdj = { jour: s.jour, mots: L };
+  const tabs = $('#ih-mdj-tabs');
+  if (tabs && !tabs.dataset.bound) { tabs.dataset.bound = '1'; tabs.addEventListener('click', e => { const t = e.target.closest('button[data-n]'); if (t) { ihMdjSel = +t.dataset.n; ihMdjPaint(); } }); }
+  ihMdjPaint();
+  box.hidden = false;
+}
+function ihMdjPaint() {
+  const L = ihMdj.mots, s = L[ihMdjSel - 1], nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 10);
+  const tabs = $('#ih-mdj-tabs');
+  if (tabs) {
+    tabs.hidden = L.length < 2;
+    tabs.innerHTML = L.map(x => `<button type="button" role="tab" data-n="${x.num}" aria-selected="${x.num === ihMdjSel}"${x.moi?.trouve ? ' class="ok"' : x.moi?.fini ? ' class="ko"' : ''}>${x.moi?.trouve ? '<i aria-hidden="true">✓</i>' : ''}Mot ${x.num}</button>`).join('');
+  }
+  $('#ih-mdj-meta').textContent = moi?.trouve ? `Trouvé en ${moi.lignes}` : moi?.fini ? 'Raté' : `${s.n} lettres`;
   $('#ih-mdj-tiles').innerHTML = Array.from({ length: s.n }, (_, i) => `<i${i ? '' : ' class="on"'}>${i ? '' : esc(s.premiere)}</i>`).join('');
   $('#ih-mdj-list').innerHTML = top.length
     ? `<ol class="ih-mdj-list">${top.map((x, i) => `<li><span>${i + 1}</span><span><b>${esc(x.emoji || '')} ${esc(x.nom)}</b>${x.indice ? ' 💡' : ''}</span><span>${x.lignes} essai${x.lignes > 1 ? 's' : ''}</span></li>`).join('')}</ol>`
     : `<p class="ih-mdj-none">${s.classement?.length ? 'Personne ne l’a encore trouvé.' : `Personne n’a encore joué. À toi${nb}?`}</p>`;
-  $('#ih-mdj-go').textContent = moi?.fini ? 'Voir le classement' : moi?.essais?.length ? 'Reprendre' : 'Jouer';
-  box.hidden = false;
+  const go = $('#ih-mdj-go');
+  go.textContent = moi?.fini ? 'Voir le classement' : moi?.essais?.length ? 'Reprendre' : 'Jouer';
+  go.href = ihMdjSel > 1 ? `motdujour?m=${ihMdjSel}` : 'motdujour';
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !$('#s-home').hidden) ihMotDuJour(); });
 

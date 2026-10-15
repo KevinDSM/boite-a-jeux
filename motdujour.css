@@ -68,6 +68,22 @@ html[data-game="motdujour"] { background: var(--bg); }
 .md-emo-pop .emo { min-height: 46px; font-size: 24px; background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
 .md-emo-pop .emo.on { background: color-mix(in oklab, var(--acc) 30%, transparent); }
 
+/* ---------------------------------------------------------------- les trois mots du jour : un onglet chacun */
+.md-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 22px; background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(22px) saturate(185%); backdrop-filter: blur(22px) saturate(185%);
+  box-shadow: inset 0 1.2px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 0 0 .5px var(--glass-edge); }
+.md-tabs[hidden] { display: none; }
+.md-tab { min-height: 52px; border: 0; border-radius: 18px; padding: 6px 4px; background: transparent; color: var(--glass-ink); cursor: pointer; font: inherit;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; transition: background .2s var(--ease-out); touch-action: manipulation; }
+.md-tab b { font-size: 16px; font-weight: 650; display: inline-flex; align-items: center; gap: 4px; }
+.md-tab small { font-size: 12.5px; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.md-tab.on { background: color-mix(in oklab, var(--glass-ink) 16%, transparent); box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 2px 8px rgba(0, 0, 0, .18); }
+[data-theme="light"] .md-tab.on { background: rgba(255, 255, 255, .92); box-shadow: inset 0 1px 0 #fff, 0 2px 8px rgba(30, 40, 110, .14); }
+.md-tab-ok { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--md-good); color: #fff; font-size: 11px; font-weight: 800; }
+.md-tab.ko small { color: var(--neg); }
+.md-tab:active { transform: scale(.97); }
+.md-tab:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
 /* ---------------------------------------------------------------- la grille (objet de jeu) */
 .md-boardbox { align-self: center; width: min(100%, calc(var(--md-n, 7) * 60px + 20px)); padding: 10px; border-radius: 20px; background: var(--md-panel);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), inset 0 0 0 1px rgba(255, 255, 255, .06), 0 14px 34px rgba(0, 4, 40, .35); }

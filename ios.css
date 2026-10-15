@@ -190,6 +190,15 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
 .ih-mdj-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .ih-mdj-top b { font-size: var(--text-headline); font-weight: 650; letter-spacing: -.01em; }
 .ih-mdj-top span { font-size: var(--text-footnote); color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
+.ih-mdj-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; border-radius: var(--radius-capsule); background: color-mix(in oklab, var(--glass-ink) 9%, transparent); }
+.ih-mdj-tabs[hidden] { display: none; }
+.ih-mdj-tabs button { min-height: 36px; border: 0; border-radius: var(--radius-capsule); background: transparent; color: var(--glass-ink); font: 600 var(--text-subhead)/1 var(--font); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px; touch-action: manipulation; }
+.ih-mdj-tabs button[aria-selected="true"] { background: color-mix(in oklab, var(--glass-ink) 18%, transparent); box-shadow: inset 0 1px 0 var(--glass-hi), 0 1px 4px rgba(0, 0, 0, .16); }
+[data-theme="light"] .ih-mdj-tabs button[aria-selected="true"] { background: rgba(255, 255, 255, .95); }
+.ih-mdj-tabs button.ko { color: var(--glass-ink-2); }
+.ih-mdj-tabs i { font-style: normal; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: oklch(0.56 0.205 27); color: #fff; font-size: 10px; font-weight: 800; }
+.ih-mdj-tabs button:focus-visible { outline: 2px solid var(--acc); outline-offset: 1px; }
 .ih-mdj-tiles { display: flex; gap: 4px; }
 .ih-mdj-tiles i { width: 26px; height: 26px; border-radius: 5px; display: grid; place-items: center; font: 700 15px/1 var(--font); font-style: normal; color: #fff;
   background: oklch(0.44 0.16 263); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18); }

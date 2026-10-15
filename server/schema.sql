@@ -51,10 +51,11 @@ CREATE TABLE IF NOT EXISTS miroir_reponses (
 );
 CREATE INDEX IF NOT EXISTS miroir_parties_cree ON miroir_parties (cree);
 
--- Le Mot du jour (jeu à part, un mot par jour pour tout le monde) : lu et écrit par functions/api/motdujour/.
--- Le mot de chaque jour est figé ici à la première visite ; il ne part vers un téléphone qu'une fois sa partie finie.
+-- Le Mot du jour (jeu à part, trois mots par jour pour tout le monde) : lu et écrit par functions/api/motdujour/.
+-- Les mots de chaque jour sont figés ici à la première visite ; un mot ne part vers un téléphone qu'une fois sa partie finie.
+-- « jour » est la clé du mot : AAAA-MM-JJ pour le mot 1, AAAA-MM-JJ#2 et AAAA-MM-JJ#3 pour les deux autres.
 CREATE TABLE IF NOT EXISTS motdujour_jours (
-  jour TEXT PRIMARY KEY,            -- AAAA-MM-JJ, heure de Paris
+  jour TEXT PRIMARY KEY,            -- AAAA-MM-JJ (heure de Paris), suivi de #2 ou #3 pour les mots 2 et 3
   mot TEXT NOT NULL,                -- en capitales, sans accent (MAISON)
   affiche TEXT,                     -- tel qu'on l'écrit (château), montré à la fin
   indice TEXT                       -- le thème ou la courte définition

@@ -1,5 +1,6 @@
-/* Le Mot du jour : un mot par jour, le même pour tout le monde, façon Motus.
-   Un jeu à part de la Boîte à jeux, sans salon. La première lettre est donnée, six lignes pour trouver.
+/* Le Mot du jour : trois mots par jour, les mêmes pour tout le monde, façon Motus.
+   Un jeu à part de la Boîte à jeux, sans salon. Un onglet par mot (Mot 1, 2, 3), chacun avec sa grille et son
+   classement. La première lettre est donnée, six lignes pour trouver ; toute suite de lettres est acceptée.
    Après trois essais ratés, on peut demander l'indice (un thème ou une courte définition) : il prend une
    ligne et met une 💡 à côté du prénom dans le classement du jour.
    Le mot ne vient jamais jusqu'ici avant la fin : chaque proposition part au serveur (functions/api/motdujour/),
@@ -30,7 +31,7 @@ let toastTimer;
 function toast(msg, ms = 2600) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms); }
 
 async function api(path, data) {
-  const opts = data ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...data, tok, nom: myName(), emoji: myEmoji, jour: S?.jour }) } : { cache: 'no-store' };
+  const opts = data ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...data, tok, nom: myName(), emoji: myEmoji, jour: S?.jour, num: cur }) } : { cache: 'no-store' };
   const r = await fetch('/api/motdujour/' + path, opts).catch(() => null);
   if (!r) throw new Error('Pas de réseau. Vérifie ta connexion et réessaie.');
   const j = await r.json().catch(() => ({}));
@@ -41,14 +42,14 @@ async function api(path, data) {
 // ---------------------------------------------------------------- la voix du meneur
 // plusieurs répliques par situation, choisies de façon stable pour la journée
 const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.codePointAt(0), 16777619); return h >>> 0; };
-const pick = (key, list) => list[hash((S?.jour || '') + key) % list.length];
+const pick = (key, list) => list[hash((S?.jour || '') + cur + key) % list.length];
 const plur = (k, mot) => `${k} ${mot}${k > 1 ? 's' : ''}`;
 const affiche = m => (m || '').toLocaleUpperCase('fr-FR');
 
 function voice() {
   const m = S.moi, n = S.n, P = S.premiere;
-  if (!myName()) return ['Le Mot du jour', 'Un mot par jour, le même pour tout le monde. Dis-nous qui joue.'];
-  if (!m || !m.essais.length) return [`${n} lettres, il commence par ${P}.`, pick('debut', ['Tout le monde a le même aujourd’hui.', 'Six lignes pour le trouver.', 'À toi de jouer.'])];
+  if (!myName()) return ['Le Mot du jour', 'Trois mots par jour, les mêmes pour tout le monde. Dis-nous qui joue.'];
+  if (!m || !m.essais.length) return [`${n} lettres, il commence par ${P}.`, pick('debut', ['Tout le monde a le même aujourd’hui.', 'Six lignes pour le trouver.', 'À toi de jouer.', 'Teste les lettres que tu veux, même sans vrai mot.'])];
   if (m.trouve) {
     const k = m.lignes;
     const say = k <= 1 ? pick('t1', [`On ne t’a rien soufflé, au moins${NB}?`, 'Chapeau bas.'])
@@ -57,7 +58,11 @@ function voice() {
       : pick('t6', ['Ouf, de justesse.', 'Sur le fil.', 'Il était temps.']);
     return [k <= 1 ? `Trouvé du premier coup${NB}!` : `Trouvé en ${k} essais${NB}!`, m.indice ? say + ' Avec l’indice, mais ça compte.' : say];
   }
-  if (m.fini) return ['Raté pour aujourd’hui.', pick('perdu', [`Le mot était ${affiche(S.solution.affiche)}. Revanche demain.`, `C’était ${affiche(S.solution.affiche)}. Demain, tu l’auras.`])];
+  if (m.fini) {
+    const nx = suivant();
+    return ['Raté pour celui-là.', nx ? pick('perdu', [`C’était ${affiche(S.solution.affiche)}. Il te reste le mot ${nx}.`, `Le mot était ${affiche(S.solution.affiche)}. Revanche au mot ${nx}.`])
+      : pick('perdu', [`Le mot était ${affiche(S.solution.affiche)}. Revanche demain.`, `C’était ${affiche(S.solution.affiche)}. Demain, tu l’auras.`])];
+  }
   const reste = S.lignes - m.lignes, last = m.essais[m.essais.length - 1].c;
   const bien = [...last].filter(c => c === 'b').length, mal = [...last].filter(c => c === 'm').length;
   const title = reste === 1 ? 'Dernière ligne.' : `Encore ${reste} lignes.`;
@@ -69,14 +74,34 @@ function voice() {
 }
 
 // ---------------------------------------------------------------- état
-let S = null, buf = [], busy = false, shown = -1, boardKey = '', armed = null, poll = null;
+// D = la journée (les trois mots), S = le mot affiché (D.mots[cur - 1])
+let D = null, S = null, cur = 1, buf = [], busy = false, shown = -1, boardKey = '', armed = null, poll = null;
 const main = () => $('#md-main');
+// le premier mot pas encore fini après le mot affiché (puis avant), ou 0 s'ils sont tous finis
+const suivant = () => { const L = D?.mots || []; for (let i = 1; i < L.length; i++) { const x = L[(cur - 1 + i) % L.length]; if (!x.moi?.fini) return x.num; } return 0; };
+function setDay(d) {
+  // une page en cache plus ancienne que l'API, ou l'inverse : un seul mot, alors on fait comme avant
+  D = d.mots?.length ? d : { ...d, mots: [{ ...d, num: 1 }] };
+  if (cur > D.mots.length) cur = 1;
+  S = D.mots[cur - 1];
+}
+function choose(n) {
+  if (!D || n === cur || !D.mots[n - 1]) return;
+  cur = n; S = D.mots[n - 1]; buf = [S.premiere]; boardKey = ''; shown = -1;
+  if (armed) { clearTimeout(armed); armed = null; }
+  try { history.replaceState(null, '', n === 1 ? location.pathname : `?m=${n}`); } catch { }
+  render();
+}
 const indiceDispo = () => { const m = S?.moi; return !!m && !m.fini && !m.indice && m.essais.length >= S.indiceApres && m.lignes + 1 < S.lignes; };
 
 async function load() {
-  try { S = await api('jour?tok=' + tok); }
+  let d; try { d = await api('jour?tok=' + tok); }
   catch (e) { return fail(e.message); }
-  buf = [S.premiere]; render(); startPoll();
+  // le mot demandé par le lien (?m=2), sinon le premier qu'on n'a pas fini
+  const want = +new URLSearchParams(location.search).get('m');
+  const L = d.mots?.length ? d.mots : [d];
+  cur = want >= 1 && want <= L.length ? want : (L.find(x => !x.moi?.fini)?.num || 1);
+  setDay(d); buf = [S.premiere]; render(); startPoll();
 }
 function fail(msg) {
   const m = main(); m.innerHTML = ''; delete m.dataset.built; shown = -1; boardKey = '';
@@ -90,6 +115,7 @@ function build() {
   const m = main(); m.innerHTML = ''; m.dataset.built = '1';
   m.innerHTML = `
     <div class="md-play">
+      <div class="md-tabs" id="md-tabs" role="tablist" aria-label="Les mots du jour"></div>
       <section class="mj-status md-status" aria-live="polite"><h1 class="mj-title" id="md-title"></h1><p class="mj-say" id="md-say"></p></section>
       <form class="md-card glass md-namebox" id="md-name" hidden>
         <div class="field"><span>Ton prénom et ton emoji</span><div class="name-row"><button class="emo-btn" type="button" aria-label="Choisir ton emoji">${myEmoji}</button><input name="nom" maxlength="14" placeholder="Prénom" autocomplete="off" required></div></div>
@@ -123,6 +149,7 @@ function build() {
     kb.appendChild(r);
   });
   kb.addEventListener('click', e => { const b = e.target.closest('.md-key'); if (b) press(b.dataset.k); });
+  $('#md-tabs').addEventListener('click', e => { const b = e.target.closest('.md-tab'); if (b) choose(+b.dataset.n); });
   $('#md-hintbtn').onclick = askHint;
 }
 
@@ -145,7 +172,19 @@ function render() {
   if (!named) { const f = $('#md-name'); if (!f.nom.value) setTimeout(() => f.nom.focus({ preventScroll: true }), 50); }
   $('#md-boardbox').hidden = !named;
   $('#md-kb').hidden = !named || fini;
-  renderBoard(); paintKeys(); renderHint(); renderEnd(); renderRank();
+  renderTabs(); renderBoard(); paintKeys(); renderHint(); renderEnd(); renderRank();
+}
+
+// les onglets des trois mots : où on en est sur chacun
+function renderTabs() {
+  const box = $('#md-tabs'), L = D.mots;
+  box.hidden = L.length < 2 || !myName();
+  box.innerHTML = L.map(x => {
+    const m = x.moi, etat = m?.trouve ? `Trouvé en ${m.lignes}` : m?.fini ? 'Raté' : m?.essais?.length ? `${m.lignes} sur ${x.lignes}` : `${x.n} lettres`;
+    const ic = m?.trouve ? '<span class="md-tab-ok" aria-hidden="true">✓</span>' : '';
+    return `<button class="md-tab${x.num === cur ? ' on' : ''}${m?.trouve ? ' ok' : m?.fini ? ' ko' : ''}" type="button" role="tab" data-n="${x.num}" aria-selected="${x.num === cur}">
+      <b>${ic}Mot ${x.num}</b><small>${etat}</small></button>`;
+  }).join('');
 }
 
 // les lignes de la grille : les essais, l'indice à sa place, la ligne en cours, puis les lignes vides
@@ -235,16 +274,15 @@ async function submit() {
   if (buf.length < S.n) { shake(); toast(`Il faut ${S.n} lettres.`); return; }
   busy = true; paintInput();
   try {
-    S = await api('essai', { mot }); buf = [S.premiere];
+    setDay(await api('essai', { mot })); buf = [S.premiere];
     render();
   } catch (e) { onError(e, mot); }
   finally { busy = false; paintInput(); }
 }
 function onError(e, mot) {
-  if (e.code === 'dico') { shake(); toast(pick('dico' + mot, [`${mot}${NB}? Pas dans mon dictionnaire.`, `${mot}, connais pas.`, `${mot}${NB}? Essaie un vrai mot.`])); return; }
   if (e.code === 'deja') { shake(); toast('Tu l’as déjà proposé.'); return; }
   if (e.code === 'lettre' || e.code === 'longueur') { shake(); toast(e.message); return; }
-  if (e.code === 'jour') { toast('Minuit est passé. Nouveau jour, nouveau mot.', 3600); boardKey = ''; shown = -1; load(); return; }
+  if (e.code === 'jour') { toast('Minuit est passé. Nouveau jour, nouveaux mots.', 3600); boardKey = ''; shown = -1; load(); return; }
   if (e.code === 'fini' || e.code === 'course' || e.code === 'tot' || e.code === 'tard') { toast(e.message); refresh(true); return; }
   toast(e.message, 4000);
 }
@@ -260,7 +298,7 @@ async function askHint() {
   if (busy || !indiceDispo()) return;
   if (!armed) { armed = setTimeout(() => { armed = null; renderHint(); }, 4000); renderHint(); return; }
   clearTimeout(armed); armed = null; busy = true;
-  try { S = await api('indice', {}); render(); }
+  try { setDay(await api('indice', {})); render(); }
   catch (e) { onError(e, ''); }
   finally { busy = false; renderHint(); }
 }
@@ -276,16 +314,19 @@ function avantMinuit() {
 function renderEnd() {
   const box = $('#md-end'), m = S.moi;
   box.hidden = !m?.fini; if (!m?.fini) return;
+  const nx = suivant(), plusieurs = D.mots.length > 1;
   box.innerHTML = `
-    <div class="md-sol"><small>Le mot du jour</small><b>${esc(affiche(S.solution.affiche))}</b><span>${esc(S.solution.indice)}</span></div>
-    <div class="md-acts"><button class="btn primary" type="button" id="md-share">Partager ma grille</button><a class="btn" href="./">Retour à la boîte</a></div>
-    <p class="md-next">Prochain mot dans <b id="md-next">${avantMinuit()}</b>.</p>`;
+    <div class="md-sol"><small>${plusieurs ? `Le mot ${cur}` : 'Le mot du jour'}</small><b>${esc(affiche(S.solution.affiche))}</b><span>${esc(S.solution.indice)}</span></div>
+    <div class="md-acts">${nx ? `<button class="btn primary" type="button" id="md-go">Au mot ${nx}</button><button class="btn" type="button" id="md-share">Partager ma grille</button>`
+      : `<button class="btn primary" type="button" id="md-share">Partager ma grille</button><a class="btn" href="./">Retour à la boîte</a>`}</div>
+    ${nx ? '' : `<p class="md-next">${plusieurs ? 'Prochains mots' : 'Prochain mot'} dans <b id="md-next">${avantMinuit()}</b>.</p>`}`;
   $('#md-share').onclick = share;
+  if (nx) $('#md-go').onclick = () => { choose(nx); scrollTo({ top: 0, behavior: REDUCE ? 'auto' : 'smooth' }); };
 }
 async function share() {
   const m = S.moi, d = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' }).format(new Date(S.jour + 'T12:00:00'));
   const lines = rows().filter(r => r.t === 'mot' || r.t === 'indice').map(r => r.t === 'indice' ? '💡' : [...r.c].map(c => ({ b: '🟥', m: '🟡', a: '🟦' }[c])).join(''));
-  const text = `Le Mot du jour, ${d}\n${m.trouve ? `Trouvé en ${m.lignes}` : 'Pas trouvé'}${m.indice ? ' 💡' : ''}\n${lines.join('\n')}\n${location.origin}/motdujour`;
+  const text = `Le Mot du jour, ${d}${D.mots.length > 1 ? `, mot ${cur}` : ''}\n${m.trouve ? `Trouvé en ${m.lignes}` : 'Pas trouvé'}${m.indice ? ' 💡' : ''}\n${lines.join('\n')}\n${location.origin}/motdujour${cur > 1 ? `?m=${cur}` : ''}`;
   if (navigator.share && TOUCH) { try { await navigator.share({ text }); return; } catch (e) { if (e?.name === 'AbortError') return; } }
   try { await navigator.clipboard.writeText(text); toast('Copié. Colle-le où tu veux.'); }
   catch { toast('Copie impossible sur ce navigateur.'); }
@@ -305,8 +346,8 @@ function renderRank() {
       <span class="md-sc">${x.trouve ? plur(x.lignes, 'essai') : 'pas trouvé'}<small>${x.fin ? heure(x.fin) : ''}</small></span></li>`;
   }).join('');
   const names = wait.map(x => esc(x.nom) + (x.indice ? ' 💡' : ''));
-  box.innerHTML = `<h2>Classement du jour</h2>` +
-    (li ? `<ol class="md-list">${li}</ol>` : `<p class="md-none">${S.moi?.fini ? '' : 'Personne ne l’a encore trouvé aujourd’hui.'}</p>`) +
+  box.innerHTML = `<h2>${D.mots.length > 1 ? `Classement du mot ${cur}` : 'Classement du jour'}</h2>` +
+    (li ? `<ol class="md-list">${li}</ol>` : `<p class="md-none">${S.moi?.fini ? '' : 'Personne ne l’a encore trouvé.'}</p>`) +
     (names.length ? `<p class="md-wait">${names.length > 1 ? 'Cherchent encore' : 'Cherche encore'}${NB}: ${names.join(', ')}</p>` : '');
 }
 
@@ -315,10 +356,11 @@ async function refresh(full = false) {
   if (!S) return;
   try {
     const s = await api('jour?tok=' + tok);
-    if (s.jour !== S.jour) { toast('Minuit est passé. Nouveau jour, nouveau mot.', 3600); S = s; buf = [S.premiere]; boardKey = ''; shown = -1; render(); return; }
-    const moved = JSON.stringify(s.moi) !== JSON.stringify(S.moi);
-    S = s;
-    if (moved || full) { if (moved) buf = [S.premiere]; render(); } else renderRank();
+    if (s.jour !== S.jour) { toast('Minuit est passé. Nouveau jour, nouveaux mots.', 3600); cur = 1; setDay(s); buf = [S.premiere]; boardKey = ''; shown = -1; render(); return; }
+    const old = JSON.stringify(D.mots.map(x => x.moi)), moved = JSON.stringify(S.moi) !== JSON.stringify((s.mots?.[cur - 1] || s).moi);
+    setDay(s);
+    if (moved || full) { if (moved) buf = [S.premiere]; render(); }
+    else { renderRank(); if (old !== JSON.stringify(D.mots.map(x => x.moi))) { renderTabs(); renderEnd(); } }
     const n = $('#md-next'); if (n) n.textContent = avantMinuit();
   } catch { }
 }
