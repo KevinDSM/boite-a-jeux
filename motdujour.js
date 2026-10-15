@@ -341,9 +341,9 @@ function renderRank() {
   const li = done.map(x => {
     if (x.trouve) rang++;
     return `<li class="md-r${x.moi ? ' moi' : ''}${x.trouve ? '' : ' rate'}">
-      <span class="md-pos">${x.trouve ? rang : ''}</span>
+      <span class="md-pos">${x.trouve ? rang : '<span class="md-x" role="img" aria-label="pas trouvé">✗</span>'}</span>
       <span class="md-who"><span class="md-emo" aria-hidden="true">${esc(x.emoji || '🙂')}</span><b>${esc(x.nom)}</b>${x.indice ? '<span class="md-bulb" role="img" aria-label="avec l’indice">💡</span>' : ''}</span>
-      <span class="md-sc">${x.trouve ? plur(x.lignes, 'essai') : 'pas trouvé'}<small>${x.fin ? heure(x.fin) : ''}</small></span></li>`;
+      <span class="md-sc">${x.trouve ? plur(x.lignes, 'essai') : 'Pas trouvé'}<small>${x.fin ? heure(x.fin) : ''}</small></span></li>`;
   }).join('');
   const names = wait.map(x => esc(x.nom) + (x.indice ? ' 💡' : ''));
   box.innerHTML = `<h2>${D.mots.length > 1 ? `Classement du mot ${cur}` : 'Classement du jour'}</h2>` +

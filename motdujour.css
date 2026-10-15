@@ -159,7 +159,9 @@ html[data-game="motdujour"] { background: var(--bg); }
 .md-bulb { font-size: 15px; }
 .md-sc { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 15px; }
 .md-sc small { display: block; font-weight: 500; font-size: 12.5px; color: var(--glass-ink-2); }
-.md-r.rate .md-sc { color: var(--glass-ink-2); font-weight: 500; }
+.md-r.rate .md-sc { color: var(--neg); font-weight: 600; }
+.md-r.rate .md-who b { color: var(--glass-ink-2); }
+.md-x { color: var(--neg); font-weight: 800; }
 .md-wait, .md-none { font-size: 15px; }
 .md-none:empty { display: none; }
 

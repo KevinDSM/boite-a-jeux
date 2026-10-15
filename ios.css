@@ -208,6 +208,8 @@ body:has(#s-home:not([hidden])) .topbar .ic { background: var(--glass-tint); col
 .ih-mdj-list li > span:first-child { font-weight: 700; color: var(--glass-ink-2); font-variant-numeric: tabular-nums; text-align: center; }
 .ih-mdj-list li b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ih-mdj-list li > span:last-child { color: var(--glass-ink-2); font-variant-numeric: tabular-nums; }
+.ih-mdj-list li.rate b { color: var(--glass-ink-2); font-weight: 500; }
+.ih-mdj-list li.rate > span:first-child, .ih-mdj-list li.rate > span:last-child { color: var(--neg); font-weight: 600; }
 .ih-mdj-none { margin: 0; font-size: var(--text-subhead); color: var(--glass-ink-2); }
 .ih-mdj .btn { border-radius: var(--radius-capsule); min-height: 48px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
 .ih-mdj .btn.primary { background: var(--acc); color: var(--on-acc); border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 8px 18px -10px color-mix(in oklab, var(--acc) 80%, black); }

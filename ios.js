@@ -96,7 +96,7 @@ async function ihMotDuJour() {
   box.hidden = false;
 }
 function ihMdjPaint() {
-  const L = ihMdj.mots, s = L[ihMdjSel - 1], nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 10);
+  const L = ihMdj.mots, s = L[ihMdjSel - 1], nb = ' ', moi = s.moi, top = (s.classement || []).filter(x => x.trouve).slice(0, 10), rates = (s.classement || []).filter(x => x.fini && !x.trouve);
   const tabs = $('#ih-mdj-tabs');
   if (tabs) {
     tabs.hidden = L.length < 2;
@@ -104,8 +104,10 @@ function ihMdjPaint() {
   }
   $('#ih-mdj-meta').textContent = moi?.trouve ? `Trouvé en ${moi.lignes}` : moi?.fini ? 'Raté' : `${s.n} lettres`;
   $('#ih-mdj-tiles').innerHTML = Array.from({ length: s.n }, (_, i) => `<i${i ? '' : ' class="on"'}>${i ? '' : esc(s.premiere)}</i>`).join('');
-  $('#ih-mdj-list').innerHTML = top.length
-    ? `<ol class="ih-mdj-list">${top.map((x, i) => `<li><span>${i + 1}</span><span><b>${esc(x.emoji || '')} ${esc(x.nom)}</b>${x.indice ? ' 💡' : ''}</span><span>${x.lignes} essai${x.lignes > 1 ? 's' : ''}</span></li>`).join('')}</ol>`
+  const who = x => `<span><b>${esc(x.emoji || '')} ${esc(x.nom)}</b>${x.indice ? ' 💡' : ''}</span>`;
+  $('#ih-mdj-list').innerHTML = (top.length || rates.length)
+    ? (top.length ? '' : '<p class="ih-mdj-none">Personne ne l’a encore trouvé.</p>') + `<ol class="ih-mdj-list">${top.map((x, i) => `<li><span>${i + 1}</span>${who(x)}<span>${x.lignes} essai${x.lignes > 1 ? 's' : ''}</span></li>`).join('')}`
+      + `${rates.map(x => `<li class="rate"><span aria-hidden="true">✗</span>${who(x)}<span>pas trouvé</span></li>`).join('')}</ol>`
     : `<p class="ih-mdj-none">${s.classement?.length ? 'Personne ne l’a encore trouvé.' : `Personne n’a encore joué. À toi${nb}?`}</p>`;
   const go = $('#ih-mdj-go');
   go.textContent = moi?.fini ? 'Voir le classement' : moi?.essais?.length ? 'Reprendre' : 'Jouer';
