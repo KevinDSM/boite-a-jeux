@@ -643,6 +643,19 @@ def icon_logo():                           # le logo de la Boîte à jeux : la b
     pivot_all(x=8, z=-24)
     return []
 
+def icon_ordre():                          # Dans l'ordre : trois cartes crème en escalier, numérotées, la dernière mal placée
+    card = mat('carte', hexc('#fbf3e2'), rough=0.34, coat=0.6); ink = mat('encre', hexc('#2c2622'), rough=0.4)
+    good = mat('vert', hexc('#2fd27a'), rough=0.28, coat=0.7); bad = mat('rouge', hexc('#f04444'), rough=0.28, coat=0.7)
+    for i, (n, m) in enumerate((('1', good), ('2', good), ('3', bad))):
+        c = panel(f'carte{n}', 2.1, 1.0, 0.24, card, loc=(0, 0, 0), r=0.16)
+        rounded_box(f'bord{n}', 0.34, 0.27, 0.9, 0.12, m, loc=(-0.86, -0.01, 0)).parent = c
+        label(f'num{n}', n, FONT_BOLD, 0.78, ink, (-0.3, -0.13, 0.0), c, depth=0.04)
+        for k, w in enumerate((0.78, 0.5)):
+            rounded_box(f'ligne{n}{k}', w, 0.04, 0.11, 0.04, mat(f'trait{n}{k}', hexc('#d6c8ab'), rough=0.5), loc=(0.18 + w / 2, -0.12, 0.17 - k * 0.32)).parent = c
+        c.location = (-0.36 + i * 0.36, -i * 0.18, 1.12 - i * 1.12); c.rotation_euler = (0, math.radians(-5 + i * 5), 0)
+    pivot_all(x=-12, z=-22)
+    return []
+
 MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
              'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes,
-             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour, 'logo': icon_logo})
+             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour, 'logo': icon_logo, 'ordre': icon_ordre})

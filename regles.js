@@ -358,6 +358,17 @@ const RULES = [
     ['Fin de partie', `<p>Quand les 13 cartes sont passées, on compte celles trouvées. 13, parfait. 12, incroyable. 11, génial. 9 ou 10, super. 7 ou 8, pas mal. En dessous, la revanche s’impose.</p>`],
     ['Réglages et robots', `<p>De 3 à 8 joueurs, robots compris. Les robots écrivent des indices tirés d’une liste d’idées associées à chaque mot, et quand c’est leur tour de deviner, ils cherchent le mot qui va le mieux avec les indices. Deux robots peuvent avoir la même idée, et s’annuler. Si un devineur quitte la partie, l’hôte peut passer sa carte.</p>`],
   ] },
+  { key: 'ordre', parts: [
+    ['Le principe', `<p>Un jeu coopératif : tout le monde joue ensemble contre le jeu. À chaque manche, il faut retrouver dans quel ordre un ami classe cinq cartes, de ce qu’il préfère à ce qu’il aime le moins. Le premier à compléter le mot ORDRE gagne : l’équipe, ou le jeu.</p>`],
+    ['Une manche', `<ul>
+      <li>Cinq cartes sont tirées : des petits plaisirs, des petites galères, des situations gênantes, des choses absurdes.</li>
+      <li><b>Le classeur</b> les range en secret sur son téléphone, du doigt : en haut ce qu’il préfère (1), en bas ce qu’il aime le moins (5). Puis il valide.</li>
+      <li>Les autres voient les mêmes cartes et déplacent ensemble un classement commun : chaque carte bougée se voit sur tous les téléphones. On peut commencer à débattre pendant qu’il classe.</li>
+      <li>Le classeur ne dit rien, et ne fait pas de grimace.</li>
+      <li>Chacun valide quand il est d’accord. Une carte déplacée annule les validations.</li></ul>`],
+    ['La révélation', `<p>Les cartes se retournent une à une : vert si elle est à la bonne place, rouge sinon, avec la place qu’elle avait vraiment. Les cinq bien placées : l’équipe gagne la lettre suivante du mot ORDRE. Sinon, c’est le jeu qui la prend. En règle douce (au réglage), quatre cartes sur cinq suffisent.</p>`],
+    ['Robots et absents', `<p>De 2 à 10 joueurs, robots compris. Un robot qui classe range les cartes au hasard ; les robots valident quand un humain a validé. Si plus personne ne devine, les robots devinent seuls, avec un peu d’intuition. Si le classeur s’en va, l’hôte peut passer son tour.</p>`],
+  ] },
   { key: 'menteur', parts: [
     ['Le principe', `<p>L’équivalent maison de Perudo, le jeu de dés et de bluff. Chacun a cinq dés cachés sous son gobelet, visibles sur son téléphone seulement. On parie ensemble sur ce que cachent tous les gobelets, et celui qui se trompe perd un dé. Le dernier à garder des dés gagne.</p>`],
     ['Une manche', `<ul>

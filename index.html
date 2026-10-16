@@ -11,11 +11,11 @@
 <link rel="manifest" href="manifest.json?v=83">
 <link rel="apple-touch-icon" href="icon-180.png?v=83">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
-<meta name="description" content="28 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta name="description" content="29 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Boîte à jeux">
 <meta property="og:title" content="Boîte à jeux">
-<meta property="og:description" content="28 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta property="og:description" content="29 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:url" content="https://kevindsm.github.io/boite-a-jeux/">
 <meta property="og:image" content="https://boite-a-jeux.pages.dev/og.jpg?v=83">
 <meta property="og:image:width" content="1200">
@@ -37,6 +37,7 @@
 <link rel="stylesheet" href="jeux/naufrages.css?v=83">
 <link rel="stylesheet" href="unseulindice.css?v=83">
 <link rel="stylesheet" href="jeux/menteur.css?v=83">
+<link rel="stylesheet" href="jeux/ordre.css?v=83">
 <link rel="stylesheet" href="jeux/navale.css?v=83">
 <link rel="stylesheet" href="jeux/coinche.css?v=83">
 <link rel="stylesheet" href="jeux/dames.css?v=83">
@@ -77,7 +78,7 @@
   <header class="ih-head">
     <span class="ih-date" id="ih-date"></span>
     <h1>Boîte à jeux</h1>
-    <p class="ih-sub">28 jeux, un téléphone chacun.</p>
+    <p class="ih-sub">29 jeux, un téléphone chacun.</p>
   </header>
 
   <!-- l'entrée en deux temps : d'abord « rejoindre » ou « créer », puis seulement les champs utiles -->
@@ -298,6 +299,12 @@
         <span class="gdesc">Une phrase devient un dessin, qui devient une phrase. Et tout part en vrille.</span>
         <span class="gmeta"><b>3 à 12</b><i>20 min</i></span>
       </button>
+      <button class="gcard g-ordre" type="button" data-game="ordre">
+        <span class="gart" aria-hidden="true"><span class="odx-art"><i></i><i></i><i></i></span></span>
+        <span class="gname">Dans l’ordre</span>
+        <span class="gdesc">Retrouvez ensemble ce qu’un ami préfère, du meilleur au pire.</span>
+        <span class="gmeta"><b>2 à 10</b><i>20 min</i></span>
+      </button>
       <button class="gcard g-unseulindice" type="button" data-game="unseulindice">
         <span class="gart" aria-hidden="true"><span class="usi-art"><i>?</i><b></b><b></b><b></b></span></span>
         <span class="gname">Un seul indice</span>
@@ -498,6 +505,11 @@
       <label class="field row"><span>Robots à table</span><select id="opt-nc-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label>
       <p class="fine">Deux équipes tirées au sort, qu’on peut changer avant de lancer la grille. Les robots savent être espions ou agents.</p>
     </div>
+    <div class="opts" id="opts-ordre" hidden>
+      <label class="field row"><span>Robots à table</span><select id="opt-od-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+      <label class="field row"><span>Règle</span><select id="opt-od-soft"><option value="normal" selected>Normale : les 5 bien placées</option><option value="doux">Douce : 4 sur 5 suffisent</option></select></label>
+      <p class="fine">Tout le monde contre le jeu. Chacun son tour classe cinq cartes en secret, les autres retrouvent son ordre.</p>
+    </div>
     <div class="opts" id="opts-unseulindice" hidden>
       <label class="field row"><span>Robots à table</span><select id="opt-usi-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
       <p class="fine">Treize cartes, toute la table dans la même équipe. Les robots donnent des indices et devinent à leur tour.</p>
@@ -669,6 +681,10 @@
 </section>
 
 <!-- ====================== UN SEUL INDICE ====================== -->
+<section class="screen play ordre tb" id="s-ordre" hidden>
+  <div class="stack" id="od-main"></div>
+</section>
+
 <section class="screen play unseulindice" id="s-unseulindice" hidden>
   <div class="stack" id="usi-main"></div>
 </section>
@@ -944,6 +960,9 @@
 <script src="nomcode.js?v=83"></script>
 <script src="engines/unseulindice.js?v=83"></script>
 <script src="unseulindice.js?v=83"></script>
+<script src="ordre-cartes.js?v=83"></script>
+<script src="engines/ordre.js?v=83"></script>
+<script src="ordre.js?v=83"></script>
 <script src="engines/menteur.js?v=83"></script>
 <script src="menteur.js?v=83"></script>
 <script src="engines/navale.js?v=83"></script>

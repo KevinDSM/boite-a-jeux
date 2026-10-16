@@ -1,0 +1,103 @@
+/* Dans l'ordre : le style de table (d'après Chromo), chargé après table.css. Préfixe odx-.
+   Un tapis bleu canard, des cartes crème vernies qu'on fait glisser dans la colonne « 1 j'adore … 5 j'aime pas »,
+   la course aux lettres du mot ORDRE (l'équipe en vert, le jeu en rouge). La table reste sombre en thème clair.
+   Les sélecteurs passent par html[data-game] : la tuile .gcard[data-game="ordre"] du salon n'est pas touchée. */
+html[data-game="ordre"], html[data-theme="light"][data-game="ordre"] {
+  --bg: oklch(0.18 0.04 215); --surface: oklch(0.24 0.045 212); --surface-2: oklch(0.29 0.05 210); --line: oklch(0.42 0.05 205 / .6);
+  --ink: oklch(0.97 0.012 90); --ink-2: oklch(0.86 0.03 190); --mute: oklch(0.78 0.035 195);
+  --acc: oklch(0.84 0.15 78); --acc-soft: oklch(0.9 0.1 80); --on-acc: oklch(0.24 0.06 60); --neg: oklch(0.68 0.19 25); --pos: oklch(0.8 0.15 150);
+  --glass-tint: oklch(0.2 0.04 215 / .5); --glass-tint-thick: oklch(0.17 0.04 218 / .82);
+  --glass-hi: rgba(255, 255, 255, .3); --glass-rim: rgba(255, 255, 255, .14); --glass-edge: rgba(0, 0, 0, .35);
+  --glass-ink: var(--ink); --glass-ink-2: var(--ink-2); --glass-field: rgba(255, 255, 255, .1);
+  --felt-hi: oklch(0.46 0.09 200); --felt-mid: oklch(0.3 0.07 207); --felt-lo: oklch(0.15 0.04 218);
+}
+/* les couleurs des cartes valent partout : la carte du salon et les règles les dessinent aussi */
+:root { --odx-card: oklch(0.97 0.018 85); --odx-card-hi: oklch(0.995 0.01 85); --odx-ink: oklch(0.27 0.03 60); --odx-good: oklch(0.78 0.16 150); --odx-bad: oklch(0.68 0.19 25); }
+#s-ordre { padding-bottom: 0; }
+#s-ordre button.tb-chip { min-height: 44px; }
+#s-ordre .tb-chip b { color: var(--acc); }
+[data-game="ordre"] #tb-sheet :is(.tb-rows, .tb-log) { padding-left: 0; margin: 0; }
+#s-ordre .tb-btn.danger { animation: none; }
+
+/* la course aux lettres : l'équipe contre le jeu */
+.odx-race { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; padding: 10px 14px; border-radius: 20px;
+  background: var(--tb-glass, var(--glass-tint)); -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: inset 0 1px 0 var(--glass-hi), inset 0 0 0 .5px var(--glass-rim), 0 10px 26px rgba(0, 0, 0, .25); }
+.odx-race > span { font-size: 13px; font-weight: 650; color: var(--ink-2); }
+.odx-word { display: flex; gap: 5px; }
+.odx-word i { flex: 1; max-width: 36px; height: 30px; border-radius: 8px; display: grid; place-items: center; font: 800 16px var(--font); font-style: normal;
+  background: rgba(255, 255, 255, .07); color: rgba(255, 255, 255, .28); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); transition: background .3s, color .3s; }
+.odx-word.us i.on { background: var(--odx-good); color: oklch(0.2 0.05 150); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4); }
+.odx-word.them i.on { background: var(--odx-bad); color: oklch(0.98 0.01 25); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3); }
+.odx-word i.new { animation: odx-pop .55s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes odx-pop { from { transform: scale(.35); } }
+
+/* les joueurs autour de la table */
+.odx-seats { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 12px; }
+.odx-seat { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 56px; max-width: 76px; }
+.odx-av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 23px; position: relative; background: rgba(255, 255, 255, .1); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .14); }
+.odx-seat.ranker .odx-av { box-shadow: inset 0 0 0 2.5px var(--acc), 0 0 16px -4px var(--acc); }
+.odx-seat.off { opacity: .5; }
+.odx-av em { position: absolute; right: -4px; bottom: -3px; font-style: normal; font-size: 12px; width: 19px; height: 19px; border-radius: 50%; display: grid; place-items: center; background: var(--glass-tint-thick); box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+.odx-av em.ok { background: var(--odx-good); color: oklch(0.2 0.05 150); font-weight: 800; }
+.odx-seat b { font-size: 12.5px; font-weight: 600; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.odx-seat small { font-size: 11px; color: var(--ink-2); min-height: 14px; }
+
+/* la colonne des rangs, et les cinq cartes qu'on fait glisser */
+.odx-board { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 8px; --odx-row: 64px; }
+.odx-ranks { display: flex; flex-direction: column; gap: 8px; }
+.odx-rank { height: var(--odx-row); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--ink); }
+.odx-rank small { font-size: 10px; font-weight: 600; color: var(--ink-2); line-height: 1.1; text-align: center; }
+.odx-list { position: relative; list-style: none; margin: 0; padding: 0; height: calc(5 * var(--odx-row) + 32px); touch-action: none; }
+.odx-card { position: absolute; left: 0; right: 0; top: 0; height: var(--odx-row); box-sizing: border-box; border-radius: 16px; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 10px;
+  background: linear-gradient(180deg, var(--odx-card-hi), var(--odx-card)); color: var(--odx-ink);
+  box-shadow: inset 0 1px 0 #fff, inset 0 -2px 0 rgba(120, 90, 40, .12), 0 2px 0 rgba(0, 0, 0, .18), 0 8px 16px -6px rgba(0, 0, 0, .45);
+  transition: transform .42s cubic-bezier(.25, 1.25, .4, 1), box-shadow .2s, background .3s; user-select: none; -webkit-user-select: none; cursor: grab; will-change: transform; }
+.odx-card:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
+.odx-e { font-size: 29px; width: 40px; text-align: center; flex: none; }
+.odx-t { flex: 1; min-width: 0; font-weight: 650; font-size: 15.5px; line-height: 1.2; }
+.odx-grip { width: 22px; flex: none; display: grid; gap: 3px; opacity: .35; }
+.odx-grip i { display: block; height: 2.5px; border-radius: 2px; background: var(--odx-ink); }
+.odx-card.drag { transition: box-shadow .2s; cursor: grabbing; z-index: 5; box-shadow: inset 0 1px 0 #fff, 0 18px 34px -8px rgba(0, 0, 0, .6), 0 0 0 2px var(--acc); }
+.odx-card.locked { cursor: default; }
+.odx-card.locked .odx-grip { visibility: hidden; }
+.odx-who { position: absolute; top: -10px; left: 52px; font-size: 12px; font-weight: 700; padding: 2px 9px 2px 5px; border-radius: 999px; background: var(--acc); color: var(--on-acc); box-shadow: 0 3px 8px rgba(0, 0, 0, .3); animation: odx-pop .4s cubic-bezier(.3, 1.6, .5, 1); white-space: nowrap; }
+.odx-truth { position: absolute; top: -10px; right: 10px; font-weight: 750; font-size: 12.5px; padding: 2px 9px; border-radius: 999px; pointer-events: none; white-space: nowrap;
+  opacity: 0; transform: translateY(6px) scale(.8); transition: opacity .25s, transform .45s cubic-bezier(.3, 1.5, .5, 1); box-shadow: 0 3px 8px rgba(0, 0, 0, .3); }
+.odx-card.mine .odx-truth { opacity: 1; transform: none; background: var(--glass-tint-thick); color: var(--ink); }
+.odx-card.ok { background: linear-gradient(180deg, oklch(0.97 0.04 150), oklch(0.93 0.06 150)); box-shadow: inset 0 0 0 2.5px var(--odx-good), 0 8px 16px -6px rgba(0, 0, 0, .45); }
+.odx-card.ko { background: linear-gradient(180deg, oklch(0.97 0.03 25), oklch(0.93 0.045 25)); box-shadow: inset 0 0 0 2.5px var(--odx-bad), 0 8px 16px -6px rgba(0, 0, 0, .45); }
+.odx-card.ok .odx-truth { opacity: 1; transform: none; background: var(--odx-good); color: oklch(0.2 0.05 150); }
+.odx-card.ko .odx-truth { opacity: 1; transform: none; background: var(--odx-bad); color: oklch(0.98 0.01 25); }
+
+/* le plateau : les votes, une note */
+.odx-votes { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-height: 26px; flex-wrap: wrap; }
+.odx-votes span { font-size: 19px; opacity: .3; transition: opacity .3s, transform .3s; }
+.odx-votes span.on { opacity: 1; transform: scale(1.1); }
+.odx-note { margin: 0; text-align: center; font-size: 13.5px; color: var(--ink-2); }
+.odx-rule { text-align: left; margin-bottom: 10px; }
+.odx-soft { width: 100%; }
+#tb-sheet .odx-hist { margin: 4px 0 14px; }
+.odx-hist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.odx-hist li { padding: 8px 10px; border-radius: 12px; background: rgba(255, 255, 255, .06); font-size: 14px; box-shadow: inset 3px 0 0 var(--odx-bad); }
+.odx-hist li.win { box-shadow: inset 3px 0 0 var(--odx-good); }
+.odx-hist small { display: block; margin-top: 4px; color: var(--ink-2); font-size: 12.5px; line-height: 1.45; }
+
+/* la carte du salon : trois cartes crème en escalier, en attendant l'icône 3D */
+.odx-art { position: relative; display: block; width: 54px; height: 54px; }
+.odx-art i { position: absolute; left: 6px; right: 6px; height: 12px; border-radius: 4px; background: var(--odx-card); box-shadow: 0 2px 3px rgba(0, 0, 0, .35); }
+.odx-art i:nth-child(1) { top: 8px; box-shadow: inset 4px 0 0 var(--odx-good), 0 2px 3px rgba(0, 0, 0, .35); }
+.odx-art i:nth-child(2) { top: 21px; left: 10px; box-shadow: inset 4px 0 0 var(--odx-good), 0 2px 3px rgba(0, 0, 0, .35); }
+.odx-art i:nth-child(3) { top: 34px; right: 10px; box-shadow: inset 4px 0 0 var(--odx-bad), 0 2px 3px rgba(0, 0, 0, .35); }
+
+/* téléphone : le fil et les manches passent dans la feuille ; PC : colonne de droite */
+@media (max-width: 1099px) { #od-main > .odx-side { display: none; } }
+@media (max-width: 360px) { .odx-board { --odx-row: 58px; } .odx-t { font-size: 14.5px; } .odx-e { font-size: 25px; } }
+@media (min-width: 1100px) {
+  .odx-board { --odx-row: 70px; max-width: 620px; margin: 0 auto; width: 100%; }
+  #s-ordre .tb-tray { position: static; border-radius: 28px; }
+  #s-ordre .odx-side { display: flex; flex-direction: column; gap: 14px; }
+  #s-ordre .odx-side > div { padding: 16px 18px; border-radius: 26px; background: var(--tb-glass-thick, rgba(8, 30, 40, .78));
+    -webkit-backdrop-filter: blur(30px) saturate(170%); backdrop-filter: blur(30px) saturate(170%); box-shadow: inset 0 1.2px 0 rgba(255, 255, 255, .3), inset 0 0 0 .5px rgba(255, 255, 255, .14), 0 10px 30px rgba(0, 0, 0, .3); }
+}
+@media (prefers-reduced-motion: reduce) { .odx-card, .odx-truth, .odx-word i { transition: none; animation: none !important; } }

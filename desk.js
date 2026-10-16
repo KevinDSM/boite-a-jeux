@@ -36,6 +36,7 @@ function deskSplit(root, side, needs) {
   ['renderNomCode', '#nc-main', '.nc-side, .nc-log'],
   ['renderBataille', '#bt-main', '.bt-side, .bt-log'],
   ['renderMenteur', '#mt-main', '.mt-side, .mt-log'],
+  ['renderOrdre', '#od-main', '.odx-side'],
   ['renderNavale', '#nv-main', '.nv-side, .nv-log'],
   ['renderDames', '#dm-main', '.dm-side, .dm-log'],
   ['renderEchecs', '#ec-main', '.ec-side, .ec-log'],

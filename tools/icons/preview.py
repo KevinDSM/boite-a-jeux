@@ -7,7 +7,7 @@ COL = {'timeline': '#df6438', 'eclair': '#e3a619', 'sprint': '#2b9d6a', 'chromo'
        'nomcode': '#b53327', 'sablier': '#c58d34', 'diapason': '#d4446c', 'petitbac': '#e0852b', 'geo': '#2b8bc5', 'undercover': '#3b4859',
        'loupgarou': '#2c3166', 'naufrages': '#1592a3', 'miroir': '#6f9bd1', 'regles': '#8a8178', 'solo': '#56657a',
        'unseulindice': '#8a3576', 'menteur': '#9a5a2c', 'navale': '#2d5f9e', 'coinche': '#1f6f86', 'motdujour': '#2b5bb8', 'nouveautes': '#c0485a',
-       'echecs': '#3f6b45', 'dames': '#8a4b2a', 'morceaudujour': '#7a2d9c'}
+       'echecs': '#3f6b45', 'dames': '#8a4b2a', 'morceaudujour': '#7a2d9c', 'ordre': '#1d7c8a'}
 keys = sys.argv[1:-1] or list(COL); out = sys.argv[-1]
 T = 180
 def tile(color):
