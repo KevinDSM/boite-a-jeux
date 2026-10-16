@@ -10,10 +10,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'server', 'src', 'runtime.js')
 
 # ordre de chargement du navigateur : le cœur, les données des cartes, puis les règles
-SOURCES = ['core.js', 'limite-cartes.js', 'diapason-cartes.js', 'duel-cartes.js', 'nomcode-mots.js', 'ordre-cartes.js'] + \
+SOURCES = ['core.js', 'limite-cartes.js', 'diapason-cartes.js', 'duel-cartes.js', 'nomcode-mots.js', 'ordre-cartes.js', 'rail-carte.js'] + \
           ['engines/' + g + '.js' for g in ['sablier', 'undercover', 'geo', 'chromo', 'kems', 'mirage', 'douze', 'petitbac',
                                              'loupgarou', 'naufrages', 'memes', 'limite', 'solitaire', 'poker', 'bataille',
-                                             'diapason', 'duel', 'teldes', 'nomcode', 'unseulindice', 'menteur', 'navale', 'coinche', 'dames', 'echecs', 'ordre']]
+                                             'diapason', 'duel', 'teldes', 'nomcode', 'unseulindice', 'menteur', 'navale', 'coinche', 'dames', 'echecs', 'ordre', 'rail']]
 DATA = ['songs.json', 'songs-eclair.json', 'songs-jv.json', 'songs-anime.json', 'memes.json', 'mirage.json', 'geo-places.json', 'unseulindice.json']
 DATA += ['decks/index.json'] + ['decks/%s.json' % d['id'] for d in json.load(io.open(os.path.join(ROOT, 'decks', 'index.json'), encoding='utf-8'))]
 EXPORTS = ['net', 'ASSET_V', 'GAMES', 'Game', 'hostTick', 'handleClientMessage', 'sabOffline', 'loadSongs', 'loadSongsE', 'loadSongsJV',

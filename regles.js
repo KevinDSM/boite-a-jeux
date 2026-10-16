@@ -369,6 +369,22 @@ const RULES = [
     ['La révélation', `<p>Les cartes se retournent une à une : vert si elle est à la bonne place, rouge sinon, avec la place qu’elle avait vraiment. Les cinq bien placées : l’équipe gagne la lettre suivante du mot ORDRE. Sinon, c’est le jeu qui la prend. En règle douce (au réglage), quatre cartes sur cinq suffisent.</p>`],
     ['Robots et absents', `<p>De 2 à 10 joueurs, robots compris. Un robot qui classe range les cartes au hasard ; les robots valident quand un humain a validé. Si plus personne ne devine, les robots devinent seuls, avec un peu d’intuition. Si le classeur s’en va, l’hôte peut passer son tour.</p>`],
   ] },
+  { key: 'rail', parts: [
+    ['Le principe', `<p>Notre jeu de trains, façon Aventuriers du Rail, sur une carte de France écrite pour la boîte : 41 villes, de Brest à Bastia. Chacun pose ses wagons pour relier les villes de ses billets. Les lignes rapportent des points, les billets reliés aussi, les billets ratés en retirent. Le plus de points gagne.</p>`],
+    ['Le départ', `<ul>
+      <li>Chacun reçoit 45 wagons (30 en partie courte) et quatre cartes wagon.</li>
+      <li>Chacun choisit ses billets en secret parmi un grand billet et trois petits, et en garde au moins deux. Un billet relie deux villes ; ses points vont de 4 à 20.</li></ul>`],
+    ['À ton tour, une seule chose', `<ul>
+      <li><b>Piocher deux cartes wagon</b>, parmi les cinq visibles ou dans la pioche. Une locomotive visible compte pour deux : tu n’en prends qu’une, et jamais en deuxième carte.</li>
+      <li><b>Prendre une ligne</b> en posant autant de cartes de sa couleur qu’elle a de cases. Une ligne grise accepte n’importe quelle couleur, toute de la même. La locomotive remplace n’importe quelle carte. Touche la ligne sur la carte, ou ouvre « Lignes possibles ».</li>
+      <li><b>Piocher trois billets</b> et en garder au moins un. Ceux que tu rends repartent sous la pile.</li></ul>`],
+    ['Points des lignes', `<p>1 case : 1 point. 2 cases : 2. 3 cases : 4. 4 cases : 7. 5 cases : 10. 6 cases : 15. Les longues lignes rapportent beaucoup plus.</p>`],
+    ['Tunnels et ferries', `<p>Au réglage, actifs par défaut. <b>Un tunnel</b> (bord en pointillés : Alpes, Pyrénées, Massif central, Jura, Corse) retourne trois cartes de la pioche ; chaque carte de la couleur jouée, ou locomotive, coûte une carte de plus. Tu payes, ou tu renonces et ton tour passe. <b>Un ferry</b> (vers la Corse) exige une locomotive par rond noir.</p>`],
+    ['Voies doublées', `<p>Certaines villes sont reliées par deux voies côte à côte. À moins de quatre joueurs, une seule des deux peut être prise. À quatre ou cinq, les deux s’ouvrent, mais jamais deux pour le même joueur.</p>`],
+    ['Gares', `<p>En option. Trois gares chacun : la première coûte une carte, la deuxième deux, la troisième trois, toutes de la même couleur. Une gare par ville. En fin de partie, chaque gare emprunte une ligne d’un autre qui part de sa ville, pour relier tes billets (le jeu choisit la meilleure). Chaque gare gardée vaut 4 points.</p>`],
+    ['Fin de partie', `<p>Quand un joueur n’a plus que deux wagons ou moins, chacun, lui compris, joue un dernier tour. On compte alors : les lignes, les billets reliés (en plus) et ratés (en moins), 10 points pour le plus long trajet continu (à égalité, chacun les prend) et les gares gardées. En cas d’égalité, le plus de billets reliés l’emporte.</p>`],
+    ['Robots et absents', `<p>De 2 à 5 joueurs, robots compris. Les robots relient leurs billets par le plus court chemin libre, piochent les couleurs qui leur manquent et finissent sur les longues lignes. Ils ne construisent pas de gare. Un joueur absent une minute à son tour est remplacé par le robot pour ce coup.</p>`],
+  ] },
   { key: 'menteur', parts: [
     ['Le principe', `<p>L’équivalent maison de Perudo, le jeu de dés et de bluff. Chacun a cinq dés cachés sous son gobelet, visibles sur son téléphone seulement. On parie ensemble sur ce que cachent tous les gobelets, et celui qui se trompe perd un dé. Le dernier à garder des dés gagne.</p>`],
     ['Une manche', `<ul>

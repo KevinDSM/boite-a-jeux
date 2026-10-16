@@ -19,3 +19,6 @@ server/src/runtime.js
 
 # captures des tests Playwright
 tools/tests/out/
+
+# rendu brut du plateau de Grandes Lignes (5 Mo, refait par tools/icons/rail.py)
+tools/icons/rail/plateau.png

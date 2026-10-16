@@ -656,6 +656,24 @@ def icon_ordre():                          # Dans l'ordre : trois cartes crème 
     pivot_all(x=-12, z=-22)
     return []
 
+def icon_rail():                           # Grandes Lignes : la locomotive à vapeur des cartes, de trois quarts avant, sur son bout de voie
+    # même modèle que les cartes du jeu (tools/icons/rail.py) : on ne reprend que ses fonctions de modélisation
+    import ast
+    src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rail.py'), encoding='utf-8').read()
+    tree = ast.parse(src); keep = {'wood', 'track', 'wheel', 'bump', 'node', 'loco'}
+    code = '\n\n'.join(ast.get_source_segment(src, n) for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in keep)
+    g = dict(globals()); g['R90'] = math.radians(90); exec(code, g)
+    frame_m = mat('chassis', hexc('#2a2c30'), rough=0.55); steel = mat('acier', hexc('#6d727a'), rough=0.35, metal=0.9)
+    glass = mat('vitre', hexc('#1c2a36'), rough=0.08, coat=1.0); gold = mat('laiton', hexc('#d8a64a'), rough=0.25, metal=1.0)
+    g['track'](1.6); g['loco'](frame_m, steel, glass, gold)
+    # la fumée : trois boules blanches qui s'envolent de la cheminée
+    smoke = mat('fumee', hexc('#f4f2ee'), rough=0.9)
+    for i, (x, z, r) in enumerate(((1.42, 2.02, 0.17), (1.3, 2.3, 0.23), (1.05, 2.58, 0.29))):
+        sphere(f'fumee{i}', r, smoke, loc=(x, 0, z))
+    pivot_all(x=4, z=-70)
+    return []
+
 MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
              'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes,
-             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour, 'logo': icon_logo, 'ordre': icon_ordre})
+             'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour, 'logo': icon_logo, 'ordre': icon_ordre,
+             'rail': icon_rail})

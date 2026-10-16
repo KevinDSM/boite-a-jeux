@@ -5,6 +5,7 @@
 'use strict';
 
 const NEWS = [
+  ['2026-10-16', 'Nouveau jeu : Grandes Lignes. Pose tes wagons à travers la France et relie tes villes.'],
   ['2026-10-16', 'Nouveau jeu : Dans l’ordre. Retrouvez ensemble ce qu’un ami préfère, du meilleur au pire.'],
   ['2026-10-16', 'La boîte a un nouveau logo, en 3D.'],
   ['2026-10-15', 'Nouveau : le Morceau du jour. Trois chansons par jour, une seconde pour les reconnaître.'],
