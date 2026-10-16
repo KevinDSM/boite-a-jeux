@@ -635,12 +635,55 @@ button.chx-chip { cursor: pointer; min-height: 40px; }
 /* ---------------------------------------------------------------- les nouveautés (nouveautes.js) */
 .ih-app { position: relative; }
 .ih-dot { position: absolute; top: -3px; right: 4px; width: 14px; height: 14px; border-radius: 50%; background: oklch(0.62 0.22 27); box-shadow: 0 0 0 2.5px var(--wall-base), 0 2px 6px rgba(0, 0, 0, .35); }
-#news .sheet { max-width: 520px; }
-.news-day h4 { margin: 14px 2px 4px; font-size: var(--text-footnote); font-weight: 650; color: var(--glass-ink-2); }
-.news-day:first-child h4 { margin-top: 2px; }
-.news-day ul, #news .sheet .news-day ul { list-style: none; margin: 0; padding: 0; }
-.news-day li { padding: 9px 2px; border-top: .5px solid color-mix(in oklab, var(--glass-ink) 12%, transparent); font-size: 15.5px; line-height: 1.4; color: var(--glass-ink); }
-.news-day li:first-child { border-top: 0; }
+/* La feuille : un jour = un intitulé en grand (« Aujourd'hui », « Hier », « Samedi 11 octobre ») puis une liste groupée
+   en verre ; une entrée = la tuile du jeu (son icône 3D), une étiquette (Nouveau jeu, Amélioré…), un titre, une phrase.
+   Une entrée avec vidéo garde sa bande-annonce verticale sous le texte, lancée en silence à l'ouverture. */
+#news .sheet { max-width: 560px; }
+.nw-day + .nw-day { margin-top: 24px; }
+.nw-day h4 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 6px 4px 10px; }
+.nw-date { font-size: 22px; font-weight: 750; letter-spacing: -.02em; color: var(--glass-ink); }
+.nw-date-s { font-size: var(--text-footnote); font-weight: 500; color: var(--glass-ink-2); }
+.nw-list, #news .sheet .nw-list { list-style: none; margin: 0; padding: 0; border-radius: 20px; overflow: hidden;
+  background: var(--glass-field); box-shadow: inset 0 0 0 .5px var(--glass-rim); }
+.nw-item + .nw-item { border-top: .5px solid color-mix(in oklab, var(--glass-ink) 12%, transparent); }
+.nw-row { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; align-items: start; padding: 14px 16px; }
+.nw-ics { position: relative; width: 52px; height: 52px; display: grid; }
+.nw-ic { position: relative; display: grid; place-items: center; overflow: hidden; border-radius: 13px;
+  background: linear-gradient(165deg, color-mix(in oklab, var(--c) 78%, white), var(--c) 52%, color-mix(in oklab, var(--c) 80%, black));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), inset 0 0 0 .5px rgba(255, 255, 255, .14), 0 3px 8px rgba(0, 0, 0, .22); }
+.nw-ic::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(180deg, rgba(255, 255, 255, .22), transparent 42%); }
+.nw-ic img { width: 90%; height: 90%; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .28)); }
+.nw-ic svg { width: 58%; height: 58%; position: relative; z-index: 1; }
+/* plusieurs jeux d'un coup : deux tuiles en escalier, ou quatre en carré */
+.nw-ics.n2 .nw-ic { position: absolute; width: 38px; height: 38px; border-radius: 10px; }
+.nw-ics.n2 .nw-ic:first-child { left: 0; top: 0; } .nw-ics.n2 .nw-ic:last-child { right: 0; bottom: 0; box-shadow: 0 0 0 2px var(--glass-tint-thick, rgba(0,0,0,.4)), 0 3px 8px rgba(0, 0, 0, .25); }
+.nw-ics.n3, .nw-ics.n4 { grid-template-columns: 1fr 1fr; gap: 3px; }
+.nw-ics.n3 .nw-ic, .nw-ics.n4 .nw-ic { border-radius: 8px; }
+.nw-txt { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nw-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 2px; }
+.nw-kind { font-size: 12px; font-weight: 650; line-height: 1; padding: 5px 9px; border-radius: var(--radius-capsule);
+  color: var(--glass-ink-2); background: color-mix(in oklab, var(--glass-ink) 9%, transparent); }
+.nw-kind.k-jeu { color: color-mix(in oklab, var(--acc) 62%, var(--glass-ink)); background: color-mix(in oklab, var(--acc) 20%, transparent); }
+.nw-kind.k-new { color: color-mix(in oklab, oklch(0.7 0.14 160) 62%, var(--glass-ink)); background: color-mix(in oklab, oklch(0.7 0.14 160) 18%, transparent); }
+.nw-fresh { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 650; color: var(--glass-ink); }
+.nw-fresh::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.62 0.22 27); }
+.nw-txt b { font-size: 16.5px; font-weight: 650; letter-spacing: -.01em; line-height: 1.25; color: var(--glass-ink); }
+.nw-txt > span { font-size: 14.5px; line-height: 1.38; color: var(--glass-ink-2); }
+/* la bande-annonce : verticale, centrée, aussi haute que l'écran le permet */
+.nw-video { position: relative; margin: 0 auto 16px; width: min(calc(100% - 32px), calc(48dvh * 9 / 16), 300px); aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden;
+  background: #111; box-shadow: 0 0 0 .5px rgba(255, 255, 255, .12), 0 14px 34px -12px rgba(0, 0, 0, .6); }
+.nw-video video { display: block; width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+.nw-play { position: absolute; inset: 0; margin: auto; width: 68px; height: 68px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; color: #fff;
+  background: rgba(17, 17, 17, .55); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 0 .5px rgba(255, 255, 255, .2); }
+.nw-play svg { width: 30px; height: 30px; margin-left: 4px; }
+.nw-video.playing .nw-play { display: none; }
+.nw-sound { position: absolute; left: 10px; bottom: 10px; min-height: 44px; padding: 0 14px 0 11px; border: 0; border-radius: var(--radius-capsule); display: inline-flex; align-items: center; gap: 7px;
+  font: 600 14px var(--font, system-ui); color: #fff; cursor: pointer; background: rgba(17, 17, 17, .6); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), inset 0 0 0 .5px rgba(255, 255, 255, .18); }
+.nw-sound svg { width: 20px; height: 20px; }
+.nw-sound .on { display: none; } .nw-sound[aria-pressed="true"] .on { display: inline; } .nw-sound[aria-pressed="true"] .off { display: none; }
+.nw-play:focus-visible, .nw-sound:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (prefers-reduced-transparency: reduce) { .nw-play, .nw-sound { background: #111; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 /* le Mot du jour : son icône dans l'en-tête du widget */
 .ih-mdj-top { align-items: center; }
 #ih-mo-tabs button { white-space: nowrap; gap: 3px; font-size: 14px; padding: 0 4px; }
