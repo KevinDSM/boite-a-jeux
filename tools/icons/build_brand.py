@@ -9,7 +9,19 @@ from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 P = lambda *a: os.path.join(ROOT, *a)
 logo = Image.open(P("icons", "logo.png")).convert("RGBA")
-logo = logo.crop(logo.getbbox())
+# le rendu garde une vraie ombre au sol (sol « attrape-ombre » de Blender) : on la fait fondre avant les bords de
+# l'image, sinon elle s'arrête net en traçant un rectangle ; puis on recadre sur l'objet et son ombre proche
+def fondre(im):
+    a = im.getchannel("A"); obj = a.point(lambda v: 255 if v > 200 else 0).getbbox()
+    if not obj: return im
+    x0, y0, x1, y1 = obj; w, h = x1 - x0, y1 - y0
+    m = Image.new("L", im.size, 0); ImageDraw.Draw(m).rounded_rectangle((x0 - w * .04, y0 - h * .04, x1 + w * .04, y1 + h * .06), radius=min(w, h) * .3, fill=255)
+    m = m.filter(ImageFilter.GaussianBlur(min(w, h) * .05))
+    from PIL import ImageChops
+    im.putalpha(ImageChops.multiply(a, m)); return im
+logo = fondre(logo)
+logo = logo.crop(logo.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox())
+VRAIE_OMBRE = True   # le logo apporte son ombre : pas d'ombre dessinée en plus
 BASE, GLOW = (34, 28, 23), (240, 160, 48)          # l'espresso de l'appli (#221c17) et l'ambre de l'accent
 
 def fond(w, h, cx=.5, cy=.5, r=.62, force=.34):
@@ -27,10 +39,11 @@ def pose(im, h_logo, cx, cy):
     """Le logo à la hauteur voulue, centré en (cx, cy), avec son ombre douce posée dessous."""
     lg = logo.resize((round(logo.width * h_logo / logo.height), h_logo), Image.LANCZOS)
     x, y = round(cx - lg.width / 2), round(cy - lg.height / 2)
-    sh = Image.new("L", im.size, 0); d = ImageDraw.Draw(sh)
-    d.ellipse((x + lg.width * .1, y + lg.height * .9, x + lg.width * .9, y + lg.height * 1.02), fill=120)
-    sh = sh.filter(ImageFilter.GaussianBlur(h_logo / 16))
-    im.paste(Image.new("RGB", im.size, (8, 5, 2)), (0, 0), sh)
+    if not VRAIE_OMBRE:
+        sh = Image.new("L", im.size, 0); d = ImageDraw.Draw(sh)
+        d.ellipse((x + lg.width * .1, y + lg.height * .9, x + lg.width * .9, y + lg.height * 1.02), fill=120)
+        sh = sh.filter(ImageFilter.GaussianBlur(h_logo / 16))
+        im.paste(Image.new("RGB", im.size, (8, 5, 2)), (0, 0), sh)
     im.paste(lg, (x, y), lg)
     return im
 
