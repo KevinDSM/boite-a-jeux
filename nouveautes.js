@@ -8,6 +8,7 @@
 // les icônes (clés de icons/web/<clé>.webp, ou un pictogramme de NEWS_GLYPH), un titre court, une phrase,
 // et en option une vidéo verticale (nouveautes/<nom>.mp4, et <nom>.jpg pour l'image d'attente).
 const NEWS = [
+  { d: '2026-10-17', k: 'jeu', ic: ['huisclos'], t: 'Huis clos', s: 'Notre escape game : enfermés dans un labo, 45 minutes pour sortir, chacun ses indices.' },
   { d: '2026-10-16', k: 'jeu', ic: ['rail'], t: 'Grandes Lignes', s: 'Pose tes wagons à travers la France et relie tes villes.', video: 'nouveautes/grandes-lignes' },
   { d: '2026-10-16', k: 'jeu', ic: ['ordre'], t: 'Dans l’ordre', s: 'Retrouvez ensemble ce qu’un ami préfère, du meilleur au pire.', video: 'nouveautes/dans-l-ordre' },
   { d: '2026-10-16', k: 'look', ic: ['logo'], t: 'Un nouveau logo', s: 'La boîte passe en 3D.' },

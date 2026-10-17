@@ -358,6 +358,21 @@ const RULES = [
     ['Fin de partie', `<p>Quand les 13 cartes sont passées, on compte celles trouvées. 13, parfait. 12, incroyable. 11, génial. 9 ou 10, super. 7 ou 8, pas mal. En dessous, la revanche s’impose.</p>`],
     ['Réglages et robots', `<p>De 3 à 8 joueurs, robots compris. Les robots écrivent des indices tirés d’une liste d’idées associées à chaque mot, et quand c’est leur tour de deviner, ils cherchent le mot qui va le mieux avec les indices. Deux robots peuvent avoir la même idée, et s’annuler. Si un devineur quitte la partie, l’hôte peut passer sa carte.</p>`],
   ] },
+  { key: 'huisclos', parts: [
+    ['Le principe', `<p>Notre escape game, écrit pour la boîte. Vous êtes enfermés, tous ensemble, et vous avez un temps limité pour sortir : on fouille les pièces, on trouve des objets, on les combine, on ouvre des cadenas. Tout le monde gagne, ou tout le monde reste enfermé.</p>`],
+    ['Fouiller', `<ul>
+      <li>Touche un endroit de la pièce pour le voir de près : un tiroir, un tableau, une armoire. Certains ont un bouton (« Ouvrir le tiroir »), d’autres un cadenas.</li>
+      <li>Les onglets du haut mènent aux autres pièces, une fois leur porte ouverte. Chacun se promène où il veut ; les autres voient dans quelle pièce tu es.</li></ul>`],
+    ['Les objets', `<ul>
+      <li>Tout ce qu’on trouve va dans l’<b>inventaire commun</b>, visible sur tous les téléphones.</li>
+      <li>Pour utiliser un objet, fais-le glisser du doigt sur un endroit de la pièce, ou sur un autre objet pour les combiner. Tu peux aussi le toucher, « Prendre en main », puis toucher la cible.</li>
+      <li>Si rien ne se passe, ce n’est pas grave : rien n’est perdu.</li></ul>`],
+    ['Les documents', `<p>Au départ, chacun reçoit des documents (un carnet, une fiche, un message vocal…), marqués d’un point ambre. Ils ne s’affichent QUE sur ton téléphone : lis-les, et raconte aux autres ce qu’ils disent. Beaucoup d’énigmes demandent les documents de plusieurs joueurs. Seul, tu les as tous. Si un joueur s’en va, ses documents passent à un autre au bout d’une minute.</p>`],
+    ['Les codes et le chrono', `<p>Un code faux coûte du temps (une minute en général, deux pour un court-circuit). Le chrono est réglable : 45 minutes, 60, ou sans chrono pour jouer tranquille.</p>`],
+    ['Les indices', `<p>Bloqués ? « Indice » montre les énigmes en cours. Pour chacune, un coup de pouce, puis la réponse. Les indices pris se voient sur tous les téléphones et comptent dans le score.</p>`],
+    ['Le score', `<p>À la sortie : le temps restant, les indices et les erreurs, et jusqu’à trois étoiles. Une étoile de moins à partir de 4 indices, une de moins à partir de 3 erreurs, une de moins s’il restait moins de 5 minutes.</p>`],
+    ['Les scénarios', `<p><b>Protocole Ambre</b> : le labo du Dr Vasseur s’est verrouillé avec vous dedans. Trois pièces, environ 45 minutes, de 1 à 8 joueurs.</p>`],
+  ] },
   { key: 'ordre', parts: [
     ['Le principe', `<p>Un jeu coopératif : tout le monde joue ensemble contre le jeu. À chaque manche, il faut retrouver dans quel ordre un ami classe cinq cartes, de ce qu’il préfère à ce qu’il aime le moins. Le premier à compléter le mot ORDRE gagne : l’équipe, ou le jeu.</p>`],
     ['Une manche', `<ul>

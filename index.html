@@ -8,41 +8,42 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Boîte à jeux">
-<link rel="manifest" href="manifest.json?v=87">
-<link rel="apple-touch-icon" href="icon-180.png?v=87">
+<link rel="manifest" href="manifest.json?v=88">
+<link rel="apple-touch-icon" href="icon-180.png?v=88">
 <title>Boîte à jeux · des jeux entre amis, chacun sur son téléphone</title>
-<meta name="description" content="30 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta name="description" content="31 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Boîte à jeux">
 <meta property="og:title" content="Boîte à jeux">
-<meta property="og:description" content="30 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
+<meta property="og:description" content="31 jeux pour la soirée, chacun sur son téléphone. Gratuit, sans compte, sans rien installer.">
 <meta property="og:url" content="https://kevindsm.github.io/boite-a-jeux/">
-<meta property="og:image" content="https://boite-a-jeux.pages.dev/og.jpg?v=87">
+<meta property="og:image" content="https://boite-a-jeux.pages.dev/og.jpg?v=88">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/png" href="icon-192.png?v=87">
+<link rel="icon" type="image/png" href="icon-192.png?v=88">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@120,800&family=Special+Elite&family=Lilita+One&family=Alfa+Slab+One&family=Rubik:wght@500;700;800&family=Patrick+Hand&family=Grenze+Gotisch:wght@500;700&family=Chewy&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=87">
-<link rel="stylesheet" href="ios.css?v=87">
-<link rel="stylesheet" href="table.css?v=87">
-<link rel="stylesheet" href="jeux/kems.css?v=87">
-<link rel="stylesheet" href="jeux/poker.css?v=87">
-<link rel="stylesheet" href="jeux/bataille.css?v=87">
-<link rel="stylesheet" href="jeux/douze.css?v=87">
-<link rel="stylesheet" href="jeux/solitaire.css?v=87">
-<link rel="stylesheet" href="jeux/naufrages.css?v=87">
-<link rel="stylesheet" href="unseulindice.css?v=87">
-<link rel="stylesheet" href="jeux/menteur.css?v=87">
-<link rel="stylesheet" href="jeux/ordre.css?v=87">
-<link rel="stylesheet" href="jeux/rail.css?v=87">
-<link rel="stylesheet" href="jeux/navale.css?v=87">
-<link rel="stylesheet" href="jeux/coinche.css?v=87">
-<link rel="stylesheet" href="jeux/dames.css?v=87">
-<link rel="stylesheet" href="jeux/echecs.css?v=87">
+<link rel="stylesheet" href="style.css?v=88">
+<link rel="stylesheet" href="ios.css?v=88">
+<link rel="stylesheet" href="table.css?v=88">
+<link rel="stylesheet" href="jeux/kems.css?v=88">
+<link rel="stylesheet" href="jeux/poker.css?v=88">
+<link rel="stylesheet" href="jeux/bataille.css?v=88">
+<link rel="stylesheet" href="jeux/douze.css?v=88">
+<link rel="stylesheet" href="jeux/solitaire.css?v=88">
+<link rel="stylesheet" href="jeux/naufrages.css?v=88">
+<link rel="stylesheet" href="unseulindice.css?v=88">
+<link rel="stylesheet" href="jeux/menteur.css?v=88">
+<link rel="stylesheet" href="jeux/ordre.css?v=88">
+<link rel="stylesheet" href="jeux/rail.css?v=88">
+<link rel="stylesheet" href="jeux/huisclos.css?v=88">
+<link rel="stylesheet" href="jeux/navale.css?v=88">
+<link rel="stylesheet" href="jeux/coinche.css?v=88">
+<link rel="stylesheet" href="jeux/dames.css?v=88">
+<link rel="stylesheet" href="jeux/echecs.css?v=88">
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
 </head>
 <body>
@@ -79,7 +80,7 @@
   <header class="ih-head">
     <span class="ih-date" id="ih-date"></span>
     <h1>Boîte à jeux</h1>
-    <p class="ih-sub">30 jeux, un téléphone chacun.</p>
+    <p class="ih-sub">31 jeux, un téléphone chacun.</p>
   </header>
 
   <!-- l'entrée en deux temps : d'abord « rejoindre » ou « créer », puis seulement les champs utiles -->
@@ -125,15 +126,15 @@
 
   <!-- le reste de la boîte, sans salon -->
   <div class="ih-grid ih-more" id="ih-grid" role="list" aria-label="Aussi dans la boîte">
-    <a class="ih-app" id="btn-miroir" href="miroir" role="listitem"><span class="ih-ic" style="--c:#6f9bd1"><img src="icons/web/miroir.webp?v=87" alt="" decoding="async"></span><span class="ih-l">Miroir</span></a>
-    <button class="ih-app" id="btn-rules" type="button" role="listitem"><span class="ih-ic" style="--c:#8a8178"><img src="icons/web/regles.webp?v=87" alt="" decoding="async"></span><span class="ih-l">Les règles</span></button>
-    <button class="ih-app" id="btn-solo" type="button" role="listitem"><span class="ih-ic" style="--c:#56657a"><img src="icons/web/solo.webp?v=87" alt="" decoding="async"></span><span class="ih-l">Jouer seul</span></button>
-    <button class="ih-app" id="btn-news" type="button" role="listitem"><span class="ih-ic" style="--c:#c0485a"><img src="icons/web/nouveautes.webp?v=87" alt="" decoding="async"></span><i class="ih-dot" aria-label="Du nouveau" hidden></i><span class="ih-l">Nouveautés</span></button>
+    <a class="ih-app" id="btn-miroir" href="miroir" role="listitem"><span class="ih-ic" style="--c:#6f9bd1"><img src="icons/web/miroir.webp?v=88" alt="" decoding="async"></span><span class="ih-l">Miroir</span></a>
+    <button class="ih-app" id="btn-rules" type="button" role="listitem"><span class="ih-ic" style="--c:#8a8178"><img src="icons/web/regles.webp?v=88" alt="" decoding="async"></span><span class="ih-l">Les règles</span></button>
+    <button class="ih-app" id="btn-solo" type="button" role="listitem"><span class="ih-ic" style="--c:#56657a"><img src="icons/web/solo.webp?v=88" alt="" decoding="async"></span><span class="ih-l">Jouer seul</span></button>
+    <button class="ih-app" id="btn-news" type="button" role="listitem"><span class="ih-ic" style="--c:#c0485a"><img src="icons/web/nouveautes.webp?v=88" alt="" decoding="async"></span><i class="ih-dot" aria-label="Du nouveau" hidden></i><span class="ih-l">Nouveautés</span></button>
   </div>
 
   <!-- le Mot du jour : un mot par jour pour tout le monde, joué sur sa propre page (motdujour.html) -->
   <section class="ih-mdj glass" id="ih-mdj" hidden aria-labelledby="ih-mdj-t">
-    <div class="ih-mdj-top"><span class="ih-ic ih-mdj-ic" style="--c:#2b5bb8" aria-hidden="true"><img src="icons/web/motdujour.webp?v=87" alt="" decoding="async"></span><b id="ih-mdj-t">Mot du jour</b><span id="ih-mdj-meta"></span></div>
+    <div class="ih-mdj-top"><span class="ih-ic ih-mdj-ic" style="--c:#2b5bb8" aria-hidden="true"><img src="icons/web/motdujour.webp?v=88" alt="" decoding="async"></span><b id="ih-mdj-t">Mot du jour</b><span id="ih-mdj-meta"></span></div>
     <div class="ih-mdj-tabs" id="ih-mdj-tabs" role="tablist" aria-label="Les trois mots du jour" hidden></div>
     <div class="ih-mdj-tiles" id="ih-mdj-tiles" aria-hidden="true"></div>
     <div id="ih-mdj-list"></div>
@@ -142,7 +143,7 @@
 
   <!-- le Morceau du jour : trois chansons par jour pour tout le monde, jouées sur leur propre page (morceaudujour.html) -->
   <section class="ih-mdj ih-mo glass" id="ih-mo" hidden aria-labelledby="ih-mo-t">
-    <div class="ih-mdj-top"><span class="ih-ic ih-mdj-ic" style="--c:#7a2d9c" aria-hidden="true"><img src="icons/web/morceaudujour.webp?v=87" alt="" decoding="async"></span><b id="ih-mo-t">Morceau du jour</b><span id="ih-mo-meta"></span></div>
+    <div class="ih-mdj-top"><span class="ih-ic ih-mdj-ic" style="--c:#7a2d9c" aria-hidden="true"><img src="icons/web/morceaudujour.webp?v=88" alt="" decoding="async"></span><b id="ih-mo-t">Morceau du jour</b><span id="ih-mo-meta"></span></div>
     <div class="ih-mdj-tabs" id="ih-mo-tabs" role="tablist" aria-label="Les trois morceaux du jour"></div>
     <div class="ih-mo-bar" id="ih-mo-bar" aria-hidden="true"></div>
     <div id="ih-mo-list"></div>
@@ -299,6 +300,12 @@
         <span class="gname">Téléphone dessiné</span>
         <span class="gdesc">Une phrase devient un dessin, qui devient une phrase. Et tout part en vrille.</span>
         <span class="gmeta"><b>3 à 12</b><i>20 min</i></span>
+      </button>
+      <button class="gcard g-huisclos" type="button" data-game="huisclos">
+        <span class="gart" aria-hidden="true"><span class="hcx-art-card"><b></b><i></i><em></em></span></span>
+        <span class="gname">Huis clos</span>
+        <span class="gdesc">Enfermés dans un labo. Fouillez, combinez, parlez-vous : 45 minutes pour sortir.</span>
+        <span class="gmeta"><b>1 à 8</b><i>45 min</i></span>
       </button>
       <button class="gcard g-ordre" type="button" data-game="ordre">
         <span class="gart" aria-hidden="true"><span class="odx-art"><i></i><i></i><i></i></span></span>
@@ -519,6 +526,11 @@
       <label class="field row"><span>Durée</span><select id="opt-gl-length"><option value="normal" selected>Normale : 45 wagons</option><option value="court">Courte : 30 wagons</option></select></label>
       <p class="fine">De 2 à 5 joueurs. Ta main et tes billets restent sur ton téléphone. Les robots relient leurs billets et visent les longues lignes.</p>
     </div>
+    <div class="opts" id="opts-huisclos" hidden>
+      <label class="field row"><span>Scénario</span><select id="opt-hc-scen"><option value="ambre" selected>Protocole Ambre (labo)</option></select></label>
+      <label class="field row"><span>Chrono</span><select id="opt-hc-time"><option value="45" selected>45 minutes</option><option value="60">60 minutes</option><option value="0">Sans chrono</option></select></label>
+      <p class="fine">Tout le monde ensemble, de 1 à 8. Chacun reçoit des documents que les autres n’ont pas : seul, tu les as tous.</p>
+    </div>
     <div class="opts" id="opts-ordre" hidden>
       <label class="field row"><span>Robots à table</span><select id="opt-od-bots"><option value="0" selected>Aucun</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
       <label class="field row"><span>Règle</span><select id="opt-od-soft"><option value="normal" selected>Normale : les 5 bien placées</option><option value="doux">Douce : 4 sur 5 suffisent</option></select></label>
@@ -697,6 +709,10 @@
 <!-- ====================== UN SEUL INDICE ====================== -->
 <section class="screen play rail tb" id="s-rail" hidden>
   <div class="stack" id="gl-main"></div>
+</section>
+
+<section class="screen play huisclos tb" id="s-huisclos" hidden>
+  <div class="stack" id="hc-main"></div>
 </section>
 
 <section class="screen play ordre tb" id="s-ordre" hidden>
@@ -928,76 +944,78 @@
 <script>
   if (typeof Peer === 'undefined') document.write('<scr' + 'ipt src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></scr' + 'ipt>');
 </script>
-<script src="core.js?v=87"></script>
-<script src="engines/sablier.js?v=87"></script>
-<script src="app.js?v=87"></script>
-<script src="toile.js?v=87"></script>
-<script src="sablier-ui.js?v=87"></script>
-<script src="table.js?v=87"></script>
-<script src="engines/undercover.js?v=87"></script>
-<script src="undercover.js?v=87"></script>
-<script src="geo-config.js?v=87"></script>
-<script src="engines/geo.js?v=87"></script>
-<script src="geo.js?v=87"></script>
-<script src="engines/chromo.js?v=87"></script>
-<script src="chromo.js?v=87"></script>
-<script src="engines/kems.js?v=87"></script>
-<script src="kems.js?v=87"></script>
-<script src="engines/mirage.js?v=87"></script>
-<script src="mirage.js?v=87"></script>
-<script src="engines/douze.js?v=87"></script>
-<script src="douze.js?v=87"></script>
-<script src="engines/petitbac.js?v=87"></script>
-<script src="petitbac.js?v=87"></script>
-<script src="engines/loupgarou.js?v=87"></script>
-<script src="loupgarou.js?v=87"></script>
-<script src="engines/naufrages.js?v=87"></script>
-<script src="naufrages.js?v=87"></script>
-<script src="naufrages3d.js?v=87"></script>
-<script src="engines/memes.js?v=87"></script>
-<script src="memes.js?v=87"></script>
-<script src="limite-cartes.js?v=87"></script>
-<script src="engines/limite.js?v=87"></script>
-<script src="limite.js?v=87"></script>
-<script src="engines/solitaire.js?v=87"></script>
-<script src="solitaire.js?v=87"></script>
-<script src="engines/poker.js?v=87"></script>
-<script src="poker.js?v=87"></script>
-<script src="engines/bataille.js?v=87"></script>
-<script src="bataille.js?v=87"></script>
-<script src="diapason-cartes.js?v=87"></script>
-<script src="engines/diapason.js?v=87"></script>
-<script src="diapason.js?v=87"></script>
-<script src="duel-cartes.js?v=87"></script>
-<script src="engines/duel.js?v=87"></script>
-<script src="duel.js?v=87"></script>
-<script src="engines/teldes.js?v=87"></script>
-<script src="teldes.js?v=87"></script>
-<script src="nomcode-mots.js?v=87"></script>
-<script src="engines/nomcode.js?v=87"></script>
-<script src="nomcode.js?v=87"></script>
-<script src="engines/unseulindice.js?v=87"></script>
-<script src="unseulindice.js?v=87"></script>
-<script src="ordre-cartes.js?v=87"></script>
-<script src="engines/ordre.js?v=87"></script>
-<script src="ordre.js?v=87"></script>
-<script src="rail-carte.js?v=87"></script>
-<script src="engines/rail.js?v=87"></script>
-<script src="rail.js?v=87"></script>
-<script src="engines/menteur.js?v=87"></script>
-<script src="menteur.js?v=87"></script>
-<script src="engines/navale.js?v=87"></script>
-<script src="navale.js?v=87"></script>
-<script src="engines/coinche.js?v=87"></script>
-<script src="coinche.js?v=87"></script>
-<script src="engines/echecs.js?v=87"></script>
-<script src="echecs.js?v=87"></script>
-<script src="engines/dames.js?v=87"></script>
-<script src="dames.js?v=87"></script>
-<script src="desk.js?v=87"></script>
-<script src="regles.js?v=87"></script>
-<script src="salon.js?v=87"></script>
-<script src="nouveautes.js?v=87"></script>
-<script src="ios.js?v=87"></script>
+<script src="core.js?v=88"></script>
+<script src="engines/sablier.js?v=88"></script>
+<script src="app.js?v=88"></script>
+<script src="toile.js?v=88"></script>
+<script src="sablier-ui.js?v=88"></script>
+<script src="table.js?v=88"></script>
+<script src="engines/undercover.js?v=88"></script>
+<script src="undercover.js?v=88"></script>
+<script src="geo-config.js?v=88"></script>
+<script src="engines/geo.js?v=88"></script>
+<script src="geo.js?v=88"></script>
+<script src="engines/chromo.js?v=88"></script>
+<script src="chromo.js?v=88"></script>
+<script src="engines/kems.js?v=88"></script>
+<script src="kems.js?v=88"></script>
+<script src="engines/mirage.js?v=88"></script>
+<script src="mirage.js?v=88"></script>
+<script src="engines/douze.js?v=88"></script>
+<script src="douze.js?v=88"></script>
+<script src="engines/petitbac.js?v=88"></script>
+<script src="petitbac.js?v=88"></script>
+<script src="engines/loupgarou.js?v=88"></script>
+<script src="loupgarou.js?v=88"></script>
+<script src="engines/naufrages.js?v=88"></script>
+<script src="naufrages.js?v=88"></script>
+<script src="naufrages3d.js?v=88"></script>
+<script src="engines/memes.js?v=88"></script>
+<script src="memes.js?v=88"></script>
+<script src="limite-cartes.js?v=88"></script>
+<script src="engines/limite.js?v=88"></script>
+<script src="limite.js?v=88"></script>
+<script src="engines/solitaire.js?v=88"></script>
+<script src="solitaire.js?v=88"></script>
+<script src="engines/poker.js?v=88"></script>
+<script src="poker.js?v=88"></script>
+<script src="engines/bataille.js?v=88"></script>
+<script src="bataille.js?v=88"></script>
+<script src="diapason-cartes.js?v=88"></script>
+<script src="engines/diapason.js?v=88"></script>
+<script src="diapason.js?v=88"></script>
+<script src="duel-cartes.js?v=88"></script>
+<script src="engines/duel.js?v=88"></script>
+<script src="duel.js?v=88"></script>
+<script src="engines/teldes.js?v=88"></script>
+<script src="teldes.js?v=88"></script>
+<script src="nomcode-mots.js?v=88"></script>
+<script src="engines/nomcode.js?v=88"></script>
+<script src="nomcode.js?v=88"></script>
+<script src="engines/unseulindice.js?v=88"></script>
+<script src="unseulindice.js?v=88"></script>
+<script src="ordre-cartes.js?v=88"></script>
+<script src="engines/ordre.js?v=88"></script>
+<script src="ordre.js?v=88"></script>
+<script src="rail-carte.js?v=88"></script>
+<script src="engines/rail.js?v=88"></script>
+<script src="rail.js?v=88"></script>
+<script src="engines/huisclos.js?v=88"></script>
+<script src="huisclos.js?v=88"></script>
+<script src="engines/menteur.js?v=88"></script>
+<script src="menteur.js?v=88"></script>
+<script src="engines/navale.js?v=88"></script>
+<script src="navale.js?v=88"></script>
+<script src="engines/coinche.js?v=88"></script>
+<script src="coinche.js?v=88"></script>
+<script src="engines/echecs.js?v=88"></script>
+<script src="echecs.js?v=88"></script>
+<script src="engines/dames.js?v=88"></script>
+<script src="dames.js?v=88"></script>
+<script src="desk.js?v=88"></script>
+<script src="regles.js?v=88"></script>
+<script src="salon.js?v=88"></script>
+<script src="nouveautes.js?v=88"></script>
+<script src="ios.js?v=88"></script>
 </body>
 </html>

@@ -1,0 +1,192 @@
+{
+  "v": 1,
+  "scenarios": [
+    {
+      "id": "ambre",
+      "title": "Protocole Ambre",
+      "place": "Institut Ambre, labo du Dr Vasseur",
+      "minutes": 45,
+      "intro": [
+        "22 h 40. Vous étiez venus aider le Dr Vasseur à ranger son labo. Elle est sortie chercher des gants, et toutes les portes se sont verrouillées derrière elle.",
+        "Une alarme tourne au plafond. Une voix de synthèse annonce un confinement et la coupure de la ventilation dans 45 minutes.",
+        "Fouillez, combinez, parlez-vous. Chacun a reçu quelque chose sur son téléphone que les autres n’ont pas."
+      ],
+      "win": "Le confinement se lève. Les portes se déverrouillent une à une, et le Dr Vasseur vous attend dans le couloir, une boîte de gants à la main. Elle n’a pas l’air surprise.",
+      "lose": "La ventilation se coupe. Vous vous réveillez dans le couloir, un peu sonnés, sous le regard déçu du Dr Vasseur.",
+      "rooms": [
+        { "id": "labo", "name": "Le labo" },
+        { "id": "reserve", "name": "La réserve", "open": "porteB" },
+        { "id": "controle", "name": "Le contrôle", "open": "porteC" }
+      ],
+      "items": {
+        "lampe": { "name": "Lampe UV", "desc": "Une petite lampe à ultraviolets. Rien ne s’allume : le logement de la pile est vide." },
+        "pile": { "name": "Pile", "desc": "Une pile plate de 3 volts, sortie du minuteur." },
+        "lampeOn": { "name": "Lampe UV", "desc": "Elle s’allume d’une lumière violette. De quoi lire ce que l’œil ne voit pas." },
+        "grattoir": { "name": "Grattoir", "desc": "Un grattoir en métal, comme pour le pare-brise en hiver. Bien aiguisé." },
+        "tournevis": { "name": "Tournevis", "desc": "Un tournevis cruciforme, manche orange." },
+        "lame": { "name": "Lame A-7", "desc": "Une lame de verre étiquetée « A-7, échantillon de référence ». Il y a quelque chose dessus, trop petit pour l’œil nu." },
+        "tube": { "name": "Tube Ambre-7", "desc": "Un tube scellé. La culture à l’intérieur luit d’un orange inquiétant et fait de petites bulles. Elle ne devrait pas faire ça." },
+        "badge": { "name": "Badge visiteur", "desc": "Un badge tout juste imprimé, encore tiède. « Visiteur, accès salle de contrôle »." },
+        "cle": { "name": "Petite clé", "desc": "Une petite clé dorée, comme celles des tiroirs de bureau." },
+        "seringue": { "name": "Seringue doseuse", "desc": "Une grosse seringue graduée, faite pour une machine de dosage." },
+        "fusible": { "name": "Fusible", "desc": "Un fusible neuf, dans son emballage. « 16 A »." },
+        "notes": { "name": "Notes, page 2", "desc": "Une page arrachée d’un cahier.", "doc": { "kind": "paper", "title": "Notes du Dr Vasseur, page 2", "html": "…suite du stabilisateur.<br><br><b>Vert</b> : autant de doses que de flacons verts sur l’étagère de la réserve.<br><br>Toujours dans cet ordre : bleu, vert, rouge." } },
+        "stabilisateur": { "name": "Stabilisateur", "desc": "Une fiole de liquide ambré, tiède. Prête à être injectée." }
+      },
+      "docs": [
+        { "id": "carnet", "name": "Carnet de pH", "kind": "paper", "title": "Le carnet du Dr Vasseur", "html": "Réactifs, pH mesuré le 12/10<br>jaune : 9<br>rouge : 2<br>vert : 7<br>bleu : 4<br><br><s>code armoire</s> à changer, trop facile à deviner." },
+        { "id": "vocal", "name": "Message vocal", "kind": "voice", "title": "Message vocal", "html": "C’est Vasseur. Si tu entends ça, méfie-toi de mon vieux microscope : il montre tout à l’envers. Lis toujours de droite à gauche." },
+        { "id": "fiche", "name": "Fiche d’alerte", "kind": "form", "title": "Fiche d’alerte n° 4", "html": "<b>Procédure de confinement</b>En cas de verrouillage du laboratoire, la porte de la réserve s’ouvre avec le code de secours : l’année de la découverte du Dr Vasseur.<br><br>Cette année est gravée sur l’échantillon de référence." },
+        { "id": "plan", "name": "Plan électrique", "kind": "form", "title": "Plan électrique de la réserve", "html": "<b>Tableau de la réserve</b>Les étiquettes se décollent, alors je note.<br><br>La salle de contrôle est branchée juste entre la ventilation et l’alarme.<br><br>Rémi" },
+        { "id": "recette", "name": "Recette, page 1", "kind": "paper", "title": "Notes du Dr Vasseur, page 1", "html": "Stabilisateur Ambre, pour 1 tube.<br><br><b>Bleu</b> : 3 doses.<br><b>Rouge</b> : deux de plus que le vert.<br><br>Jamais plus de 9 doses en tout. Le vert est sur l’autre page, rangée dans le classeur de la réserve." },
+        { "id": "remi", "name": "Note de Rémi", "kind": "paper", "title": "Un mot de Rémi, le technicien", "html": "Pour entrer en salle de contrôle, il faut du courant ET un badge. Les badges visiteurs s’impriment sur le PC de Vasseur. Son mot de passe ? Le nom de son chat, évidemment.<br><br>La seringue du doseur est sous clé dans son bureau. La clé ? Restée dans ma blouse, désolé." }
+      ],
+      "spots": {
+        "bureau": { "room": "labo", "name": "Le bureau", "views": [
+          { "not": ["tiroir"], "title": "Le bureau du Dr Vasseur", "kicker": "Rangé à la hâte", "text": "Des copies corrigées, une tasse froide, et un post-it jaune : « Le tableau ne dit pas tout. » Deux tiroirs : celui du haut n’est pas fermé, celui du bas est fermé à clé.", "acts": ["tiroir"] },
+          { "if": ["tiroirBas"], "title": "Le bureau du Dr Vasseur", "kicker": "Fouillé", "text": "Les deux tiroirs sont ouverts et vides. Le post-it jaune dit toujours : « Le tableau ne dit pas tout. »" },
+          { "title": "Le bureau du Dr Vasseur", "kicker": "Tiroir du haut ouvert", "text": "Le post-it jaune : « Le tableau ne dit pas tout. » Le tiroir du bas est fermé à clé." }
+        ] },
+        "photo": { "room": "labo", "name": "La photo", "views": [
+          { "title": "Une photo encadrée", "kicker": "Sur le bureau", "art": "photo", "text": "Le Dr Vasseur et un gros chat roux qui dort sur un clavier. Au dos, à l’encre : « Curie et moi, 2019 »." }
+        ] },
+        "pc": { "room": "labo", "name": "L’ordinateur", "views": [
+          { "not": ["pc"], "title": "L’ordinateur du Dr Vasseur", "kicker": "Session verrouillée", "art": "pc-login", "text": "Un post-it collé sur l’écran : « Mot de passe : tu sais bien qui dort sur mon clavier. »", "lock": "pc" },
+          { "not": ["badge"], "title": "L’ordinateur du Dr Vasseur", "kicker": "Journal d’expérience", "art": "pc-journal", "text": "« 22 h 31. La culture Ambre-7 s’emballe, je n’aurais jamais dû la sortir du froid. Le labo s’est verrouillé. Il faut injecter le stabilisateur dans la chambre de confinement, en salle de contrôle : le confinement se lèvera. Je sors chercher de l’aide. V. »", "acts": ["badge"] },
+          { "title": "L’ordinateur du Dr Vasseur", "kicker": "Journal d’expérience", "art": "pc-journal", "text": "« Il faut injecter le stabilisateur dans la chambre de confinement, en salle de contrôle : le confinement se lèvera. » Le badge visiteur est imprimé." }
+        ] },
+        "tableau": { "room": "labo", "name": "Le tableau blanc", "views": [
+          { "if": ["uv"], "title": "Le tableau blanc", "kicker": "Sous la lampe UV", "art": "board", "text": "Quatre fioles apparaissent, tracées à l’encre invisible, de gauche à droite." },
+          { "title": "Le tableau blanc", "kicker": "Formules à moitié effacées", "art": "board", "text": "Des calculs effacés, un « H₂O₂ ? » griffonné. Rien d’utile, en apparence." }
+        ] },
+        "armoire": { "room": "labo", "name": "L’armoire à réactifs", "views": [
+          { "if": ["armoire"], "title": "L’armoire à réactifs", "kicker": "Ouverte", "text": "Il ne reste que des flacons sans intérêt." },
+          { "title": "L’armoire à réactifs", "kicker": "Cadenas à 4 chiffres", "text": "Derrière la vitre, quatre flacons de couleur : jaune, vert, rouge, bleu. Une boîte en métal sur l’étagère du bas.", "lock": "armoire" }
+        ] },
+        "frigo": { "room": "labo", "name": "Le frigo", "views": [
+          { "if": ["frigo"], "title": "Le frigo", "kicker": "Ouvert", "text": "Des tubes étiquetés, vides. Rien d’autre à prendre." },
+          { "title": "Le frigo", "kicker": "−18 °C", "text": "La porte est prise dans une épaisse couche de givre. Impossible de l’ouvrir à mains nues." }
+        ] },
+        "minuteur": { "room": "labo", "name": "Le minuteur", "views": [
+          { "if": ["pile"], "title": "Le minuteur", "kicker": "Démonté", "text": "Il ne sert plus à rien." },
+          { "title": "Un minuteur de cuisine", "kicker": "Sur la paillasse", "text": "Il affiche 00:00 et ne réagit à rien. Le capot arrière se dévisse à la main.", "acts": ["pile"] }
+        ] },
+        "micro": { "room": "labo", "name": "Le microscope", "views": [
+          { "if": ["micro"], "title": "Le microscope", "kicker": "Lame A-7 en place", "art": "micro", "text": "Au cœur de l’échantillon, quatre chiffres gravés." },
+          { "title": "Le microscope", "kicker": "Un vieux modèle", "text": "La platine est vide. Il lui faut une lame à observer." }
+        ] },
+        "porteB": { "room": "labo", "name": "La porte de la réserve", "views": [
+          { "if": ["porteB"], "title": "La porte de la réserve", "kicker": "Ouverte", "text": "La réserve est juste derrière.", "goto": "reserve" },
+          { "title": "La porte de la réserve", "kicker": "Clavier à 4 chiffres", "text": "Une affichette : « Code de secours en cas de confinement ». Le voyant est rouge.", "lock": "porteB" }
+        ] },
+        "etageres": { "room": "reserve", "name": "Les étagères", "views": [
+          { "title": "Les étagères", "kicker": "Des produits en stock", "art": "shelves", "text": "Des cartons, des gants, et sur l’étagère du milieu une rangée de flacons. Les étiquettes sont illisibles, mais les couleurs sont nettes." }
+        ] },
+        "affiche": { "room": "reserve", "name": "L’affiche", "views": [
+          { "if": ["posterUv"], "title": "Le tableau périodique", "kicker": "Sous la lampe UV", "art": "poster", "text": "Sous la lampe, quatre cases sont entourées et numérotées de 1 à 4." },
+          { "title": "Le tableau périodique", "kicker": "Une affiche au mur", "art": "poster", "text": "Les éléments chimiques, du plus léger au plus lourd, avec leur numéro. Quelques cases brillent un peu, comme si on y avait écrit quelque chose." }
+        ] },
+        "blouse": { "room": "reserve", "name": "La blouse", "views": [
+          { "if": ["cle"], "title": "La blouse de Rémi", "kicker": "Fouillée", "text": "Un stylo qui fuit et un ticket de cantine. Rien d’autre." },
+          { "title": "La blouse de Rémi", "kicker": "Au porte-manteau", "text": "Une blouse de labo brodée « Rémi ». Les poches ont l’air pleines.", "acts": ["cle"] }
+        ] },
+        "caisse": { "room": "reserve", "name": "La caisse", "views": [
+          { "if": ["caisse"], "title": "La caisse", "kicker": "Ouverte", "text": "De la paille et des emballages vides." },
+          { "title": "Une caisse en bois", "kicker": "« Pièces électriques »", "text": "Le couvercle est vissé aux quatre coins." }
+        ] },
+        "fusibles": { "room": "reserve", "name": "Le tableau électrique", "views": [
+          { "if": ["power"], "title": "Le tableau électrique", "kicker": "Courant rétabli", "art": "fuse", "text": "Le nouveau fusible est en place. Un ronronnement vient de la porte de la salle de contrôle." },
+          { "if": ["fuseIn"], "title": "Le tableau électrique", "kicker": "Fusible en main", "art": "fuse", "text": "Trois emplacements sont vides. Un mauvais choix, et c’est le court-circuit.", "lock": "fusibles" },
+          { "title": "Le tableau électrique", "kicker": "Trois emplacements vides", "art": "fuse", "text": "Six emplacements, trois sont vides. Les étiquettes des vides se sont décollées." }
+        ] },
+        "classeur": { "room": "reserve", "name": "Le classeur", "views": [
+          { "if": ["classeur"], "title": "Le classeur métallique", "kicker": "Ouvert", "text": "Des dossiers de subventions. Rien d’autre d’utile." },
+          { "title": "Le classeur métallique", "kicker": "Cadenas à 4 chiffres", "text": "Un classeur à tiroirs, fermé par un cadenas. Une étiquette : « Notes perso, pas touche ».", "lock": "classeur" }
+        ] },
+        "porteC": { "room": "reserve", "name": "La porte du contrôle", "views": [
+          { "if": ["porteC"], "title": "La porte de la salle de contrôle", "kicker": "Ouverte", "text": "La salle de contrôle est juste derrière.", "goto": "controle" },
+          { "if": ["power"], "title": "La porte de la salle de contrôle", "kicker": "Lecteur de badge", "text": "Le lecteur clignote en vert. Il attend un badge." },
+          { "title": "La porte de la salle de contrôle", "kicker": "Lecteur de badge éteint", "text": "Le lecteur de badge est éteint. Pas de courant de ce côté." }
+        ] },
+        "ecran": { "room": "controle", "name": "Les écrans", "views": [
+          { "title": "Les écrans de contrôle", "kicker": "Alerte en cours", "art": "screen", "text": "« Ambre-7 : instable. Confinement : actif. Stabilisateur requis : 9 doses au total. »" }
+        ] },
+        "doseur": { "room": "controle", "name": "Le doseur", "views": [
+          { "if": ["stab"], "title": "Le doseur", "kicker": "Mélange terminé", "text": "Le doseur a rendu le stabilisateur. Ses réservoirs sont vides." },
+          { "if": ["seringue"], "title": "Le doseur", "kicker": "Seringue en place", "text": "Trois réservoirs : bleu, vert, rouge. Réglez les doses, puis lancez le mélange.", "lock": "doseur" },
+          { "title": "Le doseur", "kicker": "Trois réservoirs", "text": "Trois réservoirs : bleu, vert, rouge. Le logement de la seringue doseuse est vide." }
+        ] },
+        "chambre": { "room": "controle", "name": "La chambre de confinement", "views": [
+          { "if": ["tubeIn"], "title": "La chambre de confinement", "kicker": "Tube en place", "text": "Le tube Ambre-7 bouillonne derrière la vitre. L’injecteur attend sa dose." },
+          { "title": "La chambre de confinement", "kicker": "Vide", "text": "Une cloche de verre épais. Un support vide attend un tube, un injecteur attend une dose." }
+        ] },
+        "sortie": { "room": "controle", "name": "La sortie de secours", "views": [
+          { "title": "La sortie de secours", "kicker": "Verrouillée", "text": "Elle ne s’ouvrira pas tant que le confinement est actif." }
+        ] }
+      },
+      "acts": {
+        "tiroir": { "label": "Ouvrir le tiroir du haut", "set": ["tiroir"], "give": ["lampe"], "log": "{who} trouve une lampe UV dans le tiroir." },
+        "pile": { "label": "Le démonter", "set": ["pile"], "give": ["pile"], "log": "{who} récupère une pile dans le minuteur." },
+        "badge": { "label": "Imprimer un badge visiteur", "set": ["badge"], "give": ["badge"], "log": "{who} imprime un badge visiteur." },
+        "cle": { "label": "Fouiller les poches", "set": ["cle"], "give": ["cle"], "log": "{who} trouve une petite clé dans la blouse." }
+      },
+      "uses": [
+        { "item": "lampe", "on": "pile", "set": ["lampeOk"], "take": ["lampe", "pile"], "give": ["lampeOn"], "log": "{who} glisse la pile dans la lampe UV. Elle marche." },
+        { "item": "pile", "on": "lampe", "set": ["lampeOk"], "take": ["lampe", "pile"], "give": ["lampeOn"], "log": "{who} glisse la pile dans la lampe UV. Elle marche." },
+        { "item": "lampe", "on": "tableau", "say": "La lampe reste éteinte. Il lui manque quelque chose." },
+        { "item": "lampe", "on": "affiche", "say": "La lampe reste éteinte. Il lui manque quelque chose." },
+        { "item": "lampeOn", "on": "tableau", "not": ["uv"], "set": ["uv"], "open": "tableau", "log": "{who} passe la lampe UV sur le tableau. Quatre fioles apparaissent." },
+        { "item": "lampeOn", "on": "affiche", "not": ["posterUv"], "set": ["posterUv"], "open": "affiche", "log": "{who} passe la lampe UV sur l’affiche. Quatre cases s’allument." },
+        { "item": "lampeOn", "say": "La lumière violette ne révèle rien ici." },
+        { "item": "grattoir", "on": "frigo", "set": ["frigo"], "take": ["grattoir"], "give": ["lame", "tube"], "log": "{who} gratte le givre et ouvre le frigo : une lame A-7 et un tube qui bouillonne." },
+        { "item": "lame", "on": "micro", "set": ["micro"], "take": ["lame"], "open": "micro", "log": "{who} glisse la lame A-7 sous le microscope." },
+        { "item": "tournevis", "on": "caisse", "set": ["caisse"], "take": ["tournevis"], "give": ["fusible"], "log": "{who} dévisse la caisse : un fusible neuf." },
+        { "item": "cle", "on": "bureau", "set": ["tiroirBas"], "take": ["cle"], "give": ["seringue"], "log": "{who} ouvre le tiroir du bas : une seringue doseuse." },
+        { "item": "fusible", "on": "fusibles", "set": ["fuseIn"], "take": ["fusible"], "open": "fusibles", "log": "{who} s’approche du tableau électrique, fusible en main." },
+        { "item": "badge", "on": "porteC", "need": ["power"], "set": ["porteC"], "take": ["badge"], "log": "{who} passe le badge. La porte de la salle de contrôle s’ouvre." },
+        { "item": "badge", "on": "porteC", "say": "Le lecteur est éteint. Il n’y a pas de courant de ce côté." },
+        { "item": "seringue", "on": "doseur", "set": ["seringue"], "take": ["seringue"], "open": "doseur", "log": "{who} installe la seringue dans le doseur." },
+        { "item": "tube", "on": "chambre", "set": ["tubeIn"], "take": ["tube"], "log": "{who} place le tube Ambre-7 dans la chambre de confinement." },
+        { "item": "stabilisateur", "on": "chambre", "need": ["tubeIn"], "set": ["fin"], "take": ["stabilisateur"], "log": "{who} injecte le stabilisateur." },
+        { "item": "stabilisateur", "on": "chambre", "say": "Il n’y a rien à stabiliser dans la chambre. Où est passée la culture ?" },
+        { "item": "tube", "on": "micro", "say": "Le tube est scellé. On ne voit rien à travers." }
+      ],
+      "locks": {
+        "armoire": { "kind": "digits", "len": 4, "code": "2479", "cost": 60, "set": ["armoire"], "give": ["grattoir", "tournevis"], "log": "{who} ouvre l’armoire : un grattoir et un tournevis." },
+        "porteB": { "kind": "digits", "len": 4, "code": "1987", "cost": 60, "set": ["porteB"], "log": "{who} ouvre la porte de la réserve." },
+        "pc": { "kind": "letters", "len": 5, "code": "CURIE", "cost": 60, "set": ["pc"], "log": "{who} déverrouille l’ordinateur." },
+        "classeur": { "kind": "digits", "len": 4, "code": "6854", "cost": 60, "set": ["classeur"], "give": ["notes"], "log": "{who} ouvre le classeur : la page 2 des notes." },
+        "fusibles": { "kind": "slots", "n": 6, "code": "4", "cost": 120, "set": ["power"], "bad": "Court-circuit ! Ça vous coûte {p}.", "log": "{who} branche le fusible. Le courant revient." },
+        "doseur": { "kind": "doses", "labels": ["Bleu", "Vert", "Rouge"], "code": "324", "cost": 60, "set": ["stab"], "give": ["stabilisateur"], "bad": "Le mélange vire au gris et retombe. Raté, et ça vous coûte {p}.", "log": "{who} lance le mélange. Il vire à l’ambre doux : stabilisateur prêt." }
+      },
+      "art": {
+        "uv": { "board": ["#ff5a5a", "#5aa8ff", "#5aff9a", "#ffe45a"] },
+        "micro": { "micro": "7891" },
+        "posterUv": { "poster": [["C", 1], ["O", 2], ["B", 3], ["Be", 4]] },
+        "frigo": { "frost": false }
+      },
+      "steps": [
+        { "id": "tiroir", "label": "Le bureau", "done": "tiroir", "hints": ["Le bureau du Dr Vasseur n’a pas encore tout livré.", "Ouvrez le tiroir du haut du bureau : une lampe UV."] },
+        { "id": "pile", "label": "La lampe UV", "avail": ["tiroir"], "done": "lampeOk", "hints": ["La lampe a besoin d’énergie. Un appareil du labo fonctionne à pile.", "Démontez le minuteur sur la paillasse, puis faites glisser la pile sur la lampe."] },
+        { "id": "tableau", "label": "Le tableau blanc", "avail": ["lampeOk"], "done": "uv", "hints": ["Le post-it du bureau : le tableau ne dit pas tout.", "Faites glisser la lampe UV sur le tableau blanc."] },
+        { "id": "armoire", "label": "L’armoire à réactifs", "avail": ["uv"], "done": "armoire", "hints": ["Le tableau donne l’ordre des couleurs. Il manque un chiffre par couleur : quelqu’un a un carnet.", "Le carnet donne rouge 2, bleu 4, vert 7, jaune 9. Dans l’ordre du tableau : 2479."] },
+        { "id": "frigo", "label": "Le frigo", "avail": ["armoire"], "done": "frigo", "hints": ["Le frigo est pris dans le givre. Il faut de quoi gratter.", "Faites glisser le grattoir de l’armoire sur le frigo."] },
+        { "id": "micro", "label": "Le microscope", "avail": ["frigo"], "done": "micro", "hints": ["La lame A-7 cache quelque chose de minuscule.", "Faites glisser la lame A-7 sur le microscope."] },
+        { "id": "porteB", "label": "La porte de la réserve", "avail": ["micro"], "done": "porteB", "hints": ["Quelqu’un a une fiche d’alerte, quelqu’un d’autre a un message vocal. Mettez-les ensemble.", "Le microscope montre tout à l’envers : 7891 se lit 1987. C’est le code de la porte."] },
+        { "id": "pc", "label": "L’ordinateur", "done": "pc", "hints": ["Le post-it parle de quelqu’un qui dort sur le clavier. Regardez bien le bureau.", "C’est le chat de la photo : CURIE."] },
+        { "id": "badge", "label": "Le badge", "avail": ["pc"], "done": "badge", "hints": ["L’ordinateur sait faire autre chose que raconter.", "Sur l’ordinateur, imprimez un badge visiteur."] },
+        { "id": "cle", "label": "La blouse", "avail": ["porteB"], "done": "cle", "hints": ["Les techniciens oublient tout dans leurs poches.", "Fouillez la blouse de Rémi, dans la réserve : une petite clé."] },
+        { "id": "tiroirBas", "label": "La petite clé", "avail": ["cle"], "done": "tiroirBas", "hints": ["Cette petite clé ouvre un meuble du labo.", "Faites glisser la petite clé sur le bureau du labo : le tiroir du bas."] },
+        { "id": "caisse", "label": "La caisse", "avail": ["porteB", "armoire"], "done": "caisse", "hints": ["Le couvercle de la caisse est vissé.", "Faites glisser le tournevis de l’armoire sur la caisse."] },
+        { "id": "fusibles", "label": "Le tableau électrique", "avail": ["caisse"], "done": "power", "hints": ["Trois emplacements vides, un seul est le bon. Quelqu’un a le plan électrique.", "La salle de contrôle est entre la ventilation (3) et l’alarme (5) : emplacement 4."] },
+        { "id": "affiche", "label": "L’affiche", "avail": ["porteB", "lampeOk"], "done": "posterUv", "hints": ["L’affiche du tableau périodique cache de l’encre invisible.", "Faites glisser la lampe UV sur l’affiche."] },
+        { "id": "classeur", "label": "Le classeur", "avail": ["posterUv"], "done": "classeur", "hints": ["Chaque case entourée a un numéro d’ordre, et chaque élément a son numéro atomique.", "Carbone 6, oxygène 8, bore 5, béryllium 4 : le code est 6854."] },
+        { "id": "porteC", "label": "La porte du contrôle", "avail": ["badge", "power"], "done": "porteC", "hints": ["Le lecteur a du courant. Il attend quelque chose.", "Faites glisser le badge visiteur sur la porte de la salle de contrôle."] },
+        { "id": "seringue", "label": "Le doseur", "avail": ["porteC", "tiroirBas"], "done": "seringue", "hints": ["Il manque une pièce au doseur.", "Faites glisser la seringue doseuse sur le doseur."] },
+        { "id": "doseur", "label": "Les doses", "avail": ["seringue"], "done": "stab", "hints": ["La recette est en deux morceaux : une page sur un téléphone, l’autre dans le classeur. Et comptez les flacons verts de l’étagère.", "Bleu 3, vert 2, rouge 4 (deux de plus que le vert)."] },
+        { "id": "chambre", "label": "La chambre", "avail": ["stab"], "done": "fin", "hints": ["Le stabilisateur doit rejoindre la culture.", "Faites glisser le tube Ambre-7 sur la chambre de confinement, puis le stabilisateur."] }
+      ],
+      "finish": "fin"
+    }
+  ]
+}

@@ -673,7 +673,24 @@ def icon_rail():                           # Grandes Lignes : la locomotive à v
     pivot_all(x=4, z=-70)
     return []
 
-MORE.update({'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
+def icon_huisclos():                       # Huis clos : un gros cadenas à code, laqué ambre, anse d'acier, quatre molettes chiffrées
+    body = mat('corps', hexc('#e9a23b'), rough=0.3, coat=0.8); steel = mat('acier', hexc('#c9d0d6'), rough=0.22, metal=1.0)
+    dark = mat('fente', hexc('#1d2226'), rough=0.5); tile = mat('molette', hexc('#f3efe6'), rough=0.35, coat=0.4); ink = mat('chiffre', hexc('#22262a'), rough=0.4)
+    rounded_box('corps', 1.7, 0.72, 1.36, 0.2, body, loc=(0, 0, 0))
+    # l'anse : deux montants et un arc, d'un seul trait
+    pts = [(-0.52, 0, 0.45)] + [(-0.52 * math.cos(math.radians(d)), 0, 0.95 + 0.52 * math.sin(math.radians(d))) for d in range(0, 181, 6)] + [(0.52, 0, 0.45)]
+    tube('anse', pts, 0.13, steel)
+    # la fente des molettes et les quatre chiffres
+    rounded_box('fente', 1.36, 0.12, 0.5, 0.06, dark, loc=(0, -0.34, -0.12))
+    for i, d in enumerate('3147'):
+        x = -0.48 + i * 0.32
+        rounded_box(f'mol{i}', 0.26, 0.12, 0.4, 0.05, tile, loc=(x, -0.39, -0.12))
+        label(f'chif{i}', d, FONT_BOLD, 0.3, ink, (x, -0.46, -0.12), depth=0.02)
+    cylinder('trou', 0.07, 0.06, dark, loc=(0, -0.37, 0.38), rot=(math.radians(90), 0, 0))
+    pivot_all(x=-8, z=-24)
+    return []
+
+MORE.update({'huisclos': icon_huisclos, 'unseulindice': icon_unseulindice, 'menteur': icon_menteur, 'navale': icon_navale, 'coinche': icon_coinche,
              'motdujour': icon_motdujour, 'nouveautes': icon_nouveautes,
              'echecs': icon_echecs, 'dames': icon_dames, 'morceaudujour': icon_morceaudujour, 'logo': icon_logo, 'ordre': icon_ordre,
              'rail': icon_rail})

@@ -56,7 +56,7 @@ const IH_COLORS = {
   timeline: '#df6438', eclair: '#e3a619', sprint: '#2b9d6a', chromo: '#df453b', douze: '#1f9187', kems: '#7650cf', bataille: '#bf3a3a',
   poker: '#1e6c42', solitaire: '#2e7a4e', duel: '#8a683e', teldes: '#4a78dd', mirage: '#a964d6', memes: '#e0a000', limite: '#55555f',
   nomcode: '#b53327', sablier: '#c58d34', diapason: '#d4446c', petitbac: '#e0852b', geo: '#2b8bc5', undercover: '#3b4859',
-  loupgarou: '#2c3166', naufrages: '#1592a3', camembert: '#d9a21b', unseulindice: '#8a3576', menteur: '#9a5a2c', navale: '#2d5f9e', dames: '#8a4b2a', echecs: '#3f6b45', coinche: '#1f6f86', ordre: '#1d7c8a', rail: '#8a5a2b',
+  loupgarou: '#2c3166', naufrages: '#1592a3', camembert: '#d9a21b', unseulindice: '#8a3576', menteur: '#9a5a2c', navale: '#2d5f9e', dames: '#8a4b2a', echecs: '#3f6b45', coinche: '#1f6f86', ordre: '#1d7c8a', huisclos: '#b8741a', rail: '#8a5a2b',
 };
 const ihStore = {
   json(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },

@@ -26,12 +26,12 @@ let shownId = null;
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
   if (id !== shownId) {
-    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-unseulindice' || shownId === 's-menteur' || shownId === 's-navale' || shownId === 's-dames' || shownId === 's-echecs' || shownId === 's-coinche' || shownId === 's-ordre' || shownId === 's-rail';
+    const wasPlay = shownId === 's-game' || shownId === 's-eclair' || shownId === 's-sprint' || shownId === 's-sablier' || shownId === 's-undercover' || shownId === 's-geo' || shownId === 's-chromo' || shownId === 's-kems' || shownId === 's-camembert' || shownId === 's-mirage' || shownId === 's-douze' || shownId === 's-petitbac' || shownId === 's-loupgarou' || shownId === 's-naufrages' || shownId === 's-memes' || shownId === 's-limite' || shownId === 's-solitaire' || shownId === 's-poker' || shownId === 's-diapason' || shownId === 's-duel' || shownId === 's-teldes' || shownId === 's-nomcode' || shownId === 's-bataille' || shownId === 's-unseulindice' || shownId === 's-menteur' || shownId === 's-navale' || shownId === 's-dames' || shownId === 's-echecs' || shownId === 's-coinche' || shownId === 's-ordre' || shownId === 's-rail' || shownId === 's-huisclos';
     shownId = id; window.scrollTo(0, 0);
     // quitter un écran de jeu coupe le son : il ne doit pas continuer dans le salon
-    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-unseulindice' && id !== 's-menteur' && id !== 's-navale' && id !== 's-dames' && id !== 's-echecs' && id !== 's-coinche' && id !== 's-ordre' && id !== 's-rail') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
+    if (wasPlay && id !== 's-game' && id !== 's-eclair' && id !== 's-sprint' && id !== 's-sablier' && id !== 's-undercover' && id !== 's-geo' && id !== 's-chromo' && id !== 's-kems' && id !== 's-camembert' && id !== 's-mirage' && id !== 's-douze' && id !== 's-petitbac' && id !== 's-loupgarou' && id !== 's-naufrages' && id !== 's-memes' && id !== 's-limite' && id !== 's-solitaire' && id !== 's-poker' && id !== 's-diapason' && id !== 's-duel' && id !== 's-teldes' && id !== 's-nomcode' && id !== 's-bataille' && id !== 's-unseulindice' && id !== 's-menteur' && id !== 's-navale' && id !== 's-dames' && id !== 's-echecs' && id !== 's-coinche' && id !== 's-ordre' && id !== 's-rail' && id !== 's-huisclos') { stopSnippet(); audio.pause(); lastTurnKey = null; lastTlKey = null; eLastRound = null; spLastRound = null; }
   }
-  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-unseulindice' ? 'unseulindice' : id === 's-menteur' ? 'menteur' : id === 's-navale' ? 'navale' : id === 's-dames' ? 'dames' : id === 's-echecs' ? 'echecs' : id === 's-coinche' ? 'coinche' : id === 's-ordre' ? 'ordre' : id === 's-rail' ? 'rail' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
+  const game = id === 's-game' ? 'decennies' : id === 's-eclair' ? 'eclair' : id === 's-sablier' ? 'sablier' : id === 's-undercover' ? 'undercover' : id === 's-geo' ? 'geo' : id === 's-chromo' ? 'chromo' : id === 's-kems' ? 'kems' : id === 's-camembert' ? 'camembert' : id === 's-mirage' ? 'mirage' : id === 's-douze' ? 'douze' : id === 's-petitbac' ? 'petitbac' : id === 's-loupgarou' ? 'loupgarou' : id === 's-naufrages' ? 'naufrages' : id === 's-memes' ? 'memes' : id === 's-limite' ? 'limite' : id === 's-solitaire' ? 'solitaire' : id === 's-poker' ? 'poker' : id === 's-diapason' ? 'diapason' : id === 's-duel' ? 'duel' : id === 's-teldes' ? 'teldes' : id === 's-nomcode' ? 'nomcode' : id === 's-bataille' ? 'bataille' : id === 's-unseulindice' ? 'unseulindice' : id === 's-menteur' ? 'menteur' : id === 's-navale' ? 'navale' : id === 's-dames' ? 'dames' : id === 's-echecs' ? 'echecs' : id === 's-coinche' ? 'coinche' : id === 's-ordre' ? 'ordre' : id === 's-rail' ? 'rail' : id === 's-huisclos' ? 'huisclos' : id === 's-sprint' ? GAMES[view?.mode]?.theme || 'sprint' : (id === 's-end' && view ? GAMES[view.mode]?.theme : '');
   if (game) document.documentElement.dataset.game = game; else delete document.documentElement.dataset.game;
   $('#btn-back').hidden = id === 's-home';
   $('#btn-help').hidden = id === 's-home' || id === 's-rules';
@@ -360,6 +360,7 @@ function render() {
   else if (s.phase === 'ec') { show('s-echecs'); renderEchecs(s.ec); }
   else if (s.phase === 'od') { show('s-ordre'); renderOrdre(s.od); }
   else if (s.phase === 'gl') { show('s-rail'); renderRail(s.gl); }
+  else if (s.phase === 'hc') { show('s-huisclos'); renderHuisClos(s.hc); }
   else if (s.phase === 'co') { show('s-coinche'); renderCoinche(s.co); }
   else { show('s-game'); renderGame(s); }
   if (keep) {
@@ -490,6 +491,7 @@ function renderLobby(s) {
   $('#opts-echecs').hidden = s.pick !== 'echecs';
   $('#opts-ordre').hidden = s.pick !== 'ordre';
   $('#opts-rail').hidden = s.pick !== 'rail';
+  $('#opts-huisclos').hidden = s.pick !== 'huisclos';
   $('#opts-coinche').hidden = s.pick !== 'coinche';
   if (isHostPlayer() && s.pick === 'memes') Memes.load(ASSET_V).then(() => { const all = Memes.count(); $('#opt-mm-count').textContent = all ? `${all} mèmes et GIF de la bibliothèque publique d\u2019Imgflip, et ${Memes.PROMPTS.length} situations.` : 'Mèmes introuvables.'; });
   if (isHostPlayer() && s.pick === 'loupgarou') { const n = s.players.filter(p => p.online).length + botsOpt('lw'); $('#opt-lw-count').textContent = n < 5 ? `${n} joueur${n > 1 ? 's' : ''}, robots compris. Il en faut au moins 5.` : `${n} joueurs, dont ${LoupGarou.autoWolves(n)} loup${LoupGarou.autoWolves(n) > 1 ? 's' : ''} en automatique.`; }
@@ -1231,6 +1233,14 @@ const HELP = {
       <li>Un pion qui finit sur la dernière rangée devient dame : elle file sur toute la diagonale.</li>
       <li>Celui qui ne peut plus jouer a perdu.</li>
     </ul>`,
+  huisclos: `<h3>Huis clos</h3>
+    <p>Un escape game : tout le monde ensemble, contre le chrono.</p>
+    <ul>
+      <li>Touche la pièce pour fouiller. Les onglets du haut mènent aux autres pièces, une fois ouvertes.</li>
+      <li>Ce qu’on trouve va dans l’inventaire commun. Glisse un objet sur la pièce ou sur un autre objet pour l’utiliser (ou prends-le en main, puis touche la cible).</li>
+      <li>Chacun a des documents que les autres n’ont pas (point ambre) : racontez-vous ce que vous lisez.</li>
+      <li>Un code faux coûte du temps. Bloqués ? « Indice » : un coup de pouce, puis la réponse.</li>
+    </ul>`,
   rail: `<h3>Grandes Lignes</h3>
     <p>Relie les villes de tes billets avec tes wagons. Le plus de points gagne.</p>
     <ul>
@@ -1509,7 +1519,7 @@ const FAMILIES = [
   { id: 'cartes', icon: '🃏', name: 'Jeux de cartes', short: 'Cartes', desc: 'Les grands classiques, entre amis ou contre des robots.', games: ['chromo', 'douze', 'kems', 'coinche', 'bataille', 'poker', 'solitaire', 'duel'] },
   { id: 'plateau', icon: '♟️', name: 'Jeux de plateau', short: 'Plateau', desc: 'Des trains à travers la France, et les grands classiques à deux.', games: ['rail', 'echecs', 'dames', 'navale'] },
   { id: 'rire', icon: '😂', name: 'Humour et imagination', short: 'Humour', desc: 'Chacun pose sa carte, la plus drôle ou la plus juste marque.', games: ['teldes', 'mirage', 'memes', 'limite'] },
-  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'Faire deviner, écrire vite, viser juste, situer une photo sur la carte.', games: ['ordre', 'nomcode', 'unseulindice', 'sablier', 'diapason', 'petitbac', 'geo'] },
+  { id: 'deviner', icon: '💡', name: 'Devinettes et culture', short: 'Devinettes', desc: 'S’échapper d’un labo, faire deviner, écrire vite, situer une photo sur la carte.', games: ['huisclos', 'ordre', 'nomcode', 'unseulindice', 'sablier', 'diapason', 'petitbac', 'geo'] },
   { id: 'roles', icon: '🕵️', name: 'Rôles cachés et bluff', short: 'Rôles cachés', desc: 'Qui ment ? On débat, on vote, on trahit parfois.', games: ['undercover', 'loupgarou', 'naufrages', 'menteur'] },
 ];
 let famCur = 'all'; try { famCur = localStorage.getItem('dc-fam') || 'all'; } catch { }
@@ -1625,6 +1635,15 @@ $('#btn-start').onclick = () => {
     const n = (view?.players || []).filter(p => p.online).length + botsOpt('nc');
     if (n < 4) { toast('Nom de code se joue à quatre minimum, deux par équipe : ajoute des robots'); return; }
     act({ t: 'start', opts: { mode: 'nomcode', bots: botsOpt('nc') } });
+  }
+  if (pick === 'huisclos') {
+    (async () => {
+      const n = (view?.players || []).filter(p => p.online).length;
+      if (n > HuisClos.MAX) { toast('Huis clos se joue à huit au maximum'); return; }
+      if (!SALON_WS) { await HuisClos.load(ASSET_V); if (!HuisClos.count()) { toast('Scénario introuvable : huisclos.json manque'); return; } }
+      act({ t: 'start', opts: { mode: 'huisclos', scenario: $('#opt-hc-scen').value, minutes: +$('#opt-hc-time').value } });
+    })();
+    return;
   }
   if (pick === 'rail') {
     const n = (view?.players || []).filter(p => p.online).length + botsOpt('gl');
